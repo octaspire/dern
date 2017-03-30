@@ -17,3 +17,9 @@ To run the unit tests:
 ```shell
 test/octaspire-dern-test-runner
 ```
+
+To start the REPL with color diagnostics:
+
+```shell
+./octaspire-dern-repl -c
+```
