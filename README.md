@@ -23,4 +23,5 @@ To start the REPL with color diagnostics:
 ```shell
 ./octaspire-dern-repl -c
 ```
-<script type="text/javascript" src="https://asciinema.org/a/2ejot73uc3o6m045jpqvjf8av.js" id="asciicast-2ejot73uc3o6m045jpqvjf8av" async></script>
+[![asciicast](https://asciinema.org/a/2ejot73uc3o6m045jpqvjf8av.png)](https://asciinema.org/a/2ejot73uc3o6m045jpqvjf8av)
+
