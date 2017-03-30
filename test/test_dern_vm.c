@@ -3114,7 +3114,6 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_string_inside_function
             "(f)");
 
     ASSERT(evaluatedValue);
-    octaspire_dern_value_print(evaluatedValue, vm->allocator);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(99,                               evaluatedValue->value.integer);
 
@@ -3124,7 +3123,6 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_string_inside_function
             "counter");
 
     ASSERT(evaluatedValue);
-    octaspire_dern_value_print(evaluatedValue, vm->allocator);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(4,                               evaluatedValue->value.integer);
 
@@ -3147,11 +3145,10 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_environment_inside_fun
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
 
-    printf("\n----------------------------------------------------------------\n");
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '() (fn () (define a [a] 1) (define b [b] 2) (define c [c] 3) (for i in (env-current) (println i) (println counter) (+= counter 1) (if (== counter 1) (return 99)))))");
+            "(define f [f] '() (fn () (define a [a] 1) (define b [b] 2) (define c [c] 3) (for i in (env-current) (+= counter 1) (if (== counter 1) (return 99)))))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3163,7 +3160,6 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_environment_inside_fun
             "(f)");
 
     ASSERT(evaluatedValue);
-    octaspire_dern_value_print(evaluatedValue, vm->allocator);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(99,                               evaluatedValue->value.integer);
 
@@ -3173,8 +3169,6 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_environment_inside_fun
             "counter");
 
     ASSERT(evaluatedValue);
-    printf("\nHERE IT IS:\n");
-    octaspire_dern_value_print(evaluatedValue, vm->allocator);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(1,                               evaluatedValue->value.integer);
 
@@ -3197,11 +3191,10 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_hash_map_inside_functi
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
 
-    printf("\n----------------------------------------------------------------\n");
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '() (fn () (for i in (hash-map |a| 1 |b| 2 |c| 3) (println i) (println counter) (+= counter 1) (if (== counter 1) (return 99)))))");
+            "(define f [f] '() (fn () (for i in (hash-map |a| 1 |b| 2 |c| 3) (+= counter 1) (if (== counter 1) (return 99)))))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3213,7 +3206,6 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_hash_map_inside_functi
             "(f)");
 
     ASSERT(evaluatedValue);
-    octaspire_dern_value_print(evaluatedValue, vm->allocator);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(99,                               evaluatedValue->value.integer);
 
@@ -3223,8 +3215,6 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_hash_map_inside_functi
             "counter");
 
     ASSERT(evaluatedValue);
-    printf("\nHERE IT IS:\n");
-    octaspire_dern_value_print(evaluatedValue, vm->allocator);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(1,                               evaluatedValue->value.integer);
 
