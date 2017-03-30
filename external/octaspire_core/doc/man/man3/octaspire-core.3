@@ -1,0 +1,48 @@
+.TH OCTASPIRE-CORE 3 "2017-01-25" "www.octaspire.com" "Octaspire Core Manual"
+.SH NAME
+Octaspire Core \- Utility library of containers and other useful things, written in standard C99
+.SH SYNOPSIS
+.B #include <octaspire/core/octaspire_container_hash_map.h>
+
+.B  octaspire_container_hash_map_t *octaspire_container_hash_map_new(
+.br
+.RS 4
+.BI     "size_t const " keySizeInOctets ", "
+.br
+.BI     "size_t const " valueSizeInOctets ", "
+.br
+.BI     "octaspire_container_hash_map_key_compare_function_t " keyCompareFunction ", "
+.br
+.BI     "octaspire_container_hash_map_key_hash_function_t " keyHashFunction ", "
+.br
+.BI     "octaspire_container_hash_map_element_callback_function_t " keyReleaseCallback ", "
+.br
+.BI     "octaspire_container_hash_map_element_callback_function_t " valueReleaseCallback ", "
+.br
+.BI     "octaspire_memory_allocator_t " *allocator ");"
+.RE
+
+.BI "void octaspire_container_hash_map_release(octaspire_container_hash_map_t " "*self" ");"
+
+.B  bool octaspire_container_hash_map_remove(
+.br
+.RS 4
+.BI     "octaspire_container_hash_map_t " *self ", "
+.br
+.BI     "uint32_t const " hash ", "
+.br
+.BI     "void const * const " key ");"
+.RE
+
+.B  bool octaspire_container_hash_map_put(
+.br
+.RS 4
+.BI     "octaspire_container_hash_map_t " *self ", "
+.br
+.BI     "uint32_t const " hash ", "
+.br
+.BI     "void const * const " key ", "
+.br
+.BI     "void " *value ");"
+.RE
+

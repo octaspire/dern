@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 3.5.1)
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/resource" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/")
+file(GLOB SOURCES "*.c")
+include_directories(${OCTASPIRE_CORE_INCLUDE_DIR})
+include_directories(${CMAKE_SOURCE_DIR})
+include_directories("${CMAKE_BINARY_DIR}/include")
+add_executable(octaspire-core-test-runner ${SOURCES})
+set_property(TARGET octaspire-core-test-runner PROPERTY C_STANDARD 99)
+set_property(TARGET octaspire-core-test-runner PROPERTY C_EXTENSIONS OFF)
+
+if(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -pedantic -Werror")
+endif(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
+
+if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcolor-diagnostics")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fcolor-diagnostics -fsanitize=undefined,address")
+endif(CMAKE_C_COMPILER_ID MATCHES "Clang")
+
+if(CMAKE_C_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_EXE_LINKER_FLAGS="-coverage -fprofile-arcs -ftest-coverage")
+    target_link_libraries(octaspire-core-test-runner octaspire_core gcov)
+else()
+    target_link_libraries(octaspire-core-test-runner octaspire_core)
+endif(CMAKE_C_COMPILER_ID MATCHES "GNU")
+
+add_test(octaspire-core-test-runner octaspire-core-test-runner)
