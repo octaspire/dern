@@ -1,0 +1,129 @@
+#ifndef OCTASPIRE_DERN_LEXER_H
+#define OCTASPIRE_DERN_LEXER_H
+
+#include <stddef.h>
+#include <octaspire/core/octaspire_memory.h>
+#include <octaspire/core/octaspire_container_utf8_string.h>
+#include <octaspire/core/octaspire_input.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef enum
+{
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_LPAREN,
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN,
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_QUOTE,
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_TRUE,
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_FALSE,
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_NIL,
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER,
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_REAL,
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_STRING,
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER,
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_SYMBOL,
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+}
+octaspire_dern_lexer_token_tag_t;
+
+typedef struct octaspire_dern_lexer_token_t octaspire_dern_lexer_token_t;
+
+typedef struct octaspire_dern_lexer_token_position_t
+{
+    size_t start;
+    size_t end;
+}
+octaspire_dern_lexer_token_position_t;
+
+octaspire_dern_lexer_token_position_t octaspire_dern_lexer_token_position_init(
+    size_t const start, size_t const end);
+
+bool octaspire_dern_lexer_token_position_is_equal(
+    octaspire_dern_lexer_token_position_t const * const self,
+    octaspire_dern_lexer_token_position_t const * const other);
+
+octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
+    octaspire_dern_lexer_token_tag_t const typeTag,
+    void const * const value,
+    octaspire_dern_lexer_token_position_t const line,
+    octaspire_dern_lexer_token_position_t const column,
+    octaspire_dern_lexer_token_position_t const ucsIndex,
+    octaspire_memory_allocator_t *allocator);
+
+octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new_format(
+    octaspire_dern_lexer_token_tag_t const typeTag,
+    octaspire_dern_lexer_token_position_t const line,
+    octaspire_dern_lexer_token_position_t const column,
+    octaspire_dern_lexer_token_position_t const ucsIndex,
+    octaspire_memory_allocator_t *allocator,
+    void const * const format,
+    ...);
+
+void octaspire_dern_lexer_token_release(
+    octaspire_dern_lexer_token_t *self);
+
+octaspire_dern_lexer_token_tag_t octaspire_dern_lexer_token_get_type_tag(
+    octaspire_dern_lexer_token_t const * const self);
+
+char const *octaspire_dern_lexer_token_get_type_tag_as_c_string(
+    octaspire_dern_lexer_token_t const * const self);
+
+int32_t octaspire_dern_lexer_token_get_integer_value(
+    octaspire_dern_lexer_token_t const * const self);
+
+double octaspire_dern_lexer_token_get_real_value(
+    octaspire_dern_lexer_token_t const * const self);
+
+char const *octaspire_dern_lexer_token_get_string_value_as_c_string(
+    octaspire_dern_lexer_token_t const * const self);
+
+char const *octaspire_dern_lexer_token_get_character_value_as_c_string(
+    octaspire_dern_lexer_token_t const * const self);
+
+char const *octaspire_dern_lexer_token_get_symbol_value_as_c_string(
+    octaspire_dern_lexer_token_t const * const self);
+
+char const *octaspire_dern_lexer_token_get_error_value_as_c_string(
+    octaspire_dern_lexer_token_t const * const self);
+
+
+
+
+
+
+
+
+octaspire_dern_lexer_token_position_t *octaspire_dern_lexer_token_get_position_line(
+    octaspire_dern_lexer_token_t const * const self);
+
+octaspire_dern_lexer_token_position_t *octaspire_dern_lexer_token_get_position_column(
+    octaspire_dern_lexer_token_t const * const self);
+
+octaspire_dern_lexer_token_position_t *octaspire_dern_lexer_token_get_position_ucs_index(
+    octaspire_dern_lexer_token_t const * const self);
+
+
+
+
+bool octaspire_dern_lexer_token_is_equal(
+    octaspire_dern_lexer_token_t const * const self,
+    octaspire_dern_lexer_token_t const * const other);
+
+
+octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
+    octaspire_dern_lexer_token_t const * const self);
+
+void octaspire_dern_lexer_token_print(
+    octaspire_dern_lexer_token_t const * const self);
+
+octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
+    octaspire_input_t *input,
+    octaspire_memory_allocator_t *allocator);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+

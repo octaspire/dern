@@ -1,0 +1,5 @@
+build
+*.swp
+*.swo
+TAGS
+doc/book/Programming_in_Octaspire_Dern.html

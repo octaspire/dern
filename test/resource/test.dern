@@ -1,0 +1,4 @@
+(define y [y] 100)
+y
+(define x [x] 200)
+x

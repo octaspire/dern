@@ -1,0 +1,79 @@
+cmake_minimum_required(VERSION 3.6.2)
+
+set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 1)
+set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
+
+set(OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/resource/")
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/octaspire/dern/octaspire_dern_config.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/include/octaspire/dern/octaspire_dern_config.h")
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
+        "Choode the type of build, options are: Debug Release RelWithDebInfo MinSizeRel. " FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
+
+project(octaspire_dern C)
+
+if(EXISTS "${CMAKE_SOURCE_DIR}/.gitmodules")
+    execute_process(
+        COMMAND git submodule update --init --recursive --remote
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+endif()
+
+add_subdirectory(external/octaspire_core)
+file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
+file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/octaspire/dern/*.h")
+file(GLOB MANUAL1 "${CMAKE_CURRENT_SOURCE_DIR}/doc/man/man1/octaspire-dern-repl.1")
+file(GLOB MANUAL3 "${CMAKE_CURRENT_SOURCE_DIR}/doc/man/man3/octaspire-dern.3")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/octaspire_core/include")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
+add_library(octaspire_dern STATIC  ${SOURCES})
+set_property(TARGET octaspire_dern PROPERTY C_STANDARD 99)
+set_property(TARGET octaspire_dern PROPERTY C_EXTENSIONS OFF)
+
+if(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fno-omit-frame-pointer -Wall -Wextra -pedantic -Werror")
+endif(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
+
+if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcolor-diagnostics")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fcolor-diagnostics -fsanitize=undefined")
+endif(CMAKE_C_COMPILER_ID MATCHES "Clang")
+
+if(CMAKE_C_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -coverage -fprofile-arcs -ftest-coverage")
+endif(CMAKE_C_COMPILER_ID MATCHES "GNU")
+
+target_link_libraries(octaspire_dern octaspire_core m)
+add_executable(octaspire-dern-repl "src/octaspire_dern_repl.c")
+target_link_libraries(octaspire-dern-repl octaspire_dern)
+set_property(TARGET octaspire-dern-repl PROPERTY C_STANDARD 99)
+install(TARGETS octaspire_dern DESTINATION lib)
+install(FILES ${HEADERS} DESTINATION "include/octaspire/dern")
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/include/octaspire/dern/octaspire_dern_config.h" DESTINATION "include/octaspire/dern")
+install(FILES ${MANUAL1} DESTINATION "man/man1")
+install(FILES ${MANUAL3} DESTINATION "man/man3")
+add_custom_target(
+    cppcheck-dern
+    COMMAND cppcheck --std=c99 -I "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/external/octaspire_core/include"
+            --enable=warning,performance,portability
+            --verbose --quiet ${SOURCES} ${HEADERS})
+
+add_custom_target(
+    vera-dern
+    COMMAND vera++ --error ${SOURCES} ${HEADERS})
+
+add_custom_target(
+    book-dern
+    COMMAND asciidoc -a source-highlighter=pygments -a max-width=55em --backend=html5 "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc")
+    #COMMAND asciidoc -a source-highlighter=pygments --theme=flask --backend=html5 "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc")
+
+enable_testing()
+include(CTest)
+add_subdirectory(test)
+

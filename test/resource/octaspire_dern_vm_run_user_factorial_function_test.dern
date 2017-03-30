@@ -1,0 +1,3 @@
+(define fact [fact] '(n [value to calculate n!]) (fn (n) (if (== n 0) 1 (* n (fact (- n 1))))))
+(define i [i] 0)
+(while (<= i 100) (fact 10) (++ i))

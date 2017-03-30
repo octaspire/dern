@@ -1,0 +1,67 @@
+= Ohjelmoi Octaspire Dernillä
+
+== Esittely
+
+Octaspire Dern on Lisp-tyyppinen ohjelmointikieli. Se tukee imperatiivista ja
+funktionaalista ohjelmointia.
+
+
+== Aloittaminen
+
+
+=== Octaspire Dernin asentaminen
+
+Alla on ohjeet Octaspire Dernin asentamiseksi Debianissa ja Ubuntussa.
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+sudo apt-get install git cmake
+git clone https://github.com/octaspire/dern
+cd dern/build
+cmake ..
+make
+----
+
+Ensin täytyy asentaa git ja cmake, jos niitä ei ole jo ennestään asennettu.
+Tämän jälkeen kloonataan githubista Dernin repo ja sen jälkeen päästään kääntämään
+projektia.
+
+
+=== Esimerkkiohjelma ja sen ajaminen
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern,linenums]
+----
+(println [Hello World])
+----
+
+
+
+* item 1
+* item 2
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern,linenums]
+----
+(println [Hello World])
+----
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,c,linenums]
+----
+int main(int argc, char *argv[])
+{
+    printf("Hello World\n");
+    return 0;
+}
+----
+
