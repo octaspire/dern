@@ -18,11 +18,11 @@ class DernLexer(RegexLexer):
             'if', 'define'
     )
 
-    valid_name = r'[\w!$%&*/\:;,.<=>?@^~]+'
+    valid_name = r'[\w!$%&*+-/\:;,.<=>?@^~]+'
 
     tokens = {
             'root' : [
-                (r';.*$', Comment.Single),
+                (r';.*?$', Comment.Singleline),
                 (r'\s+',  Text), #Whitespace
                 (r'(true|false|nil)',  Name.Constant),
                 (r'-?\d+\.\d+', Number.Float),

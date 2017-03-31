@@ -1,67 +1,373 @@
-= Ohjelmoi Octaspire Dernillä
+= Programming in Octaspire Dern
 
-== Esittely
+== About
 
-Octaspire Dern on Lisp-tyyppinen ohjelmointikieli. Se tukee imperatiivista ja
-funktionaalista ohjelmointia.
+Octaspire Dern is a programming language. It is a dialect of Lisp, having taken influences from
+languages scheme and emacs lisp. The name of the language means
+an *obscure language*. footnote:[https://en.wiktionary.org/wiki/dern]
 
+Dern should support imperative and functional programming. It has atomic types
+*integer*, *real*, (utf-8) *string*, (utf-8) *character*, *boolean*, *nil* and *hash-map*.
+As non-atomic type it has *vector*. So, where in scheme `'(1 2 3)` is a list, in Dern it
+is a vector.
 
-== Aloittaminen
+Every variable and function definition in Dern must be documented by a *documentation string*.
+Dern also makes sure that every formal function parameter is documented in the
+documentation of function definition. The documentation can be accessed with *doc*-function.
 
+Dern can also be extended with functions written in C; C-functions can be registered
+as *builtins* or *specials*. Arguments to builtins are evaluated normally, but to specials
+are not, so specials can be used to implement special forms like *if*, etc.
 
-=== Octaspire Dernin asentaminen
+Dern is written in standard *C99* and depends only on C99 compiler, standard library
+and *octaspire-core* (container, utf-8, and utility library).
 
-Alla on ohjeet Octaspire Dernin asentamiseksi Debianissa ja Ubuntussa.
+[NOTE]
+This is the first language I have ever designed or implemented. There
+are also a lot of features not yet implemented and probably bugs not yet fixed. The interpreter
+is currently also just a tree walker, and not a faster bytecode vm.
+Also, English in not my native language, so please bear with me, especially
+when this first piece/draft of documentation is written in a hurry.
+
+== Building from source
+
+To build Dern from source in Raspberry Pi or Debian system:
 
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
 [source,bash]
 ----
-sudo apt-get install git cmake
-git clone https://github.com/octaspire/dern
-cd dern/build
+sudo apt-get install cmake git
+git clone https://gitlab.com/octaspire/dern.git
+cd dern
+mkdir build
+cd build
 cmake ..
 make
 ----
 
-Ensin täytyy asentaa git ja cmake, jos niitä ei ole jo ennestään asennettu.
-Tämän jälkeen kloonataan githubista Dernin repo ja sen jälkeen päästään kääntämään
-projektia.
+On different systems the required commands can vary. In any case, You should install
+a *C compiler*, *cmake* and *git*.
 
+This is all there should be to it; *octaspire core* is included as a git submodule
+and it should be updated and be build automatically, so when make finishes, everything
+should be ready.
 
-=== Esimerkkiohjelma ja sen ajaminen
+To run the unit tests:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+test/octaspire-dern-test-runner
+----
+
+To start the REPL with color diagnostics (requires support for ANSI color escapes):
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+./octaspire-dern-repl -c
+----
+
+To see the allowed options run:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+./octaspire-dern-repl -h
+----
+
+[NOTE]
+Man pages are not ready yet.
+
+== Quick tour of language features
+
+Here we take a quick look of some of the features of the language.
+
+=== Values
 
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
 [source,dern,linenums]
 ----
-(println [Hello World])
+ 128              ; These are integers
+-100
+ 3.14             ; These are real
+-1.12
+[Hello]           ; These are strings (utf-8)
+[Hello|newline|]
+|a|               ; These are characters (utf-8)
+|newline|
+|tab|
+|bar|
+true              ; These are booleans
+false
+nil               ; Nil
+'(1 2 |a| [cat])                                   ; These are vectors
+'()
+(hash-map 'John [likes cats]                       ; This is hash map
+          'Lisa [likes dogs]
+          'Mike '([likes numbers] 1 2 3 4)
+           1    |a|
+           [Hi] 2)
 ----
 
+The text after character *;* is a *comment*. Comments run until the end of the line. Dern
+doesn't have multiline comments.
 
-
-* item 1
-* item 2
+=== Binding names to values with define
 
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
 [source,dern,linenums]
 ----
-(println [Hello World])
+(define pi [value for pi] 3.14)
+(define names [names list] '(John Lisa Mark))
+(define double [doubles numbers] '(x [this is doubled]) (fn (x) (* 2 x)))
 ----
+
+Here we bind three values to a name: one real, one vector and one function taking one argument.
+Here is an example of using those names:
 
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,c,linenums]
+[source,dern,linenums]
 ----
-int main(int argc, char *argv[])
-{
-    printf("Hello World\n");
-    return 0;
-}
+pi
+names
+(double 1)
 ----
+
+And to see the documentation for these values:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern,linenums]
+----
+(doc pi)
+(doc names)
+(doc double)
+----
+
+The documentation of the function contains also documentation for the parameters. 
+
+Function `doc` can also be used with builtins and specials defined by the standard
+library or user in C.
+
+[NOTE]
+Please note that at the time of writing most of the functions
+in Dern's standard library are not yet documented properly. This is a work in progress.
+
+
+=== Iteration
+
+Dern has two looping constructs: *while* and *for*. For can be used numerically or with a
+container (vector, string, hash-map, etc.) Below is couple of examples:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern,linenums]
+----
+(define i [my counter] 0)
+(while (<= i 10) (println [Counting at {}...] i))
+----
+
+Numerical for:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern,linenums]
+----
+(for i from 0 to 10 (println [Hello {} World!] i))
+----
+
+Container for:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern,linenums]
+----
+(define names [names list] '(John Mark Lisa))
+(for i in names (println [Hello {} World!] i))
+----
+
+
+=== Comparing and changing values, predicates
+
+Here are few examples:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern,linenums]
+----
+(<  1 2)   ; true
+(<  2 2)   ; false
+(>  2 1)   ; true
+(<= 1 1)   ; true
+(>= 1 1)   ; true
+(== 3 3)   ; true
+(== 3 1)   ; false
+(!= 3 1)   ; true
+(+ 1)      ;  1
+(+ 1 1)    ;  2
+(- 1)      ; -1
+(- 1 2 3)  ; -4
+
+(not true)     ; false
+
+(uid +)        ; unique id of +
+
+(len '(1 2 3))          ; length of vector:   3
+(len [abc])             ; length of string:   3
+(len (hash-map 1 |a|))  ; length of hash-map: 1
+
+(define number [my number] 1)
+(++ number)                      ; number is 2
+(-- number)                      ; number is 1
+(+= number 2)                    ; number is 3
+
+(+ [Hello] [ ] [World.] [ Bye.]) ; Hello World. Bye.
+
+(define greeting [my greeting] [Hello])
+(+= greeting [ World!])                 ; Hello World!
+(+= greeting |!|)                       ; Hello World!!
+
+(+= '(1 2 3) '(4 5 6))                  ; (1 2 3 (4 5 6))
+----
+
+Operators *++*, *--*, *+=*, *==* and *!=* are similar to those in C. Note also that
+*the operands need not to be numbers*.
+
+[WARNING]
+All the examples above should work, but support for non-numeric types is not finished
+on most of the operators. Using those operators with non-numeric arguments
+aborts the program or returns error. Complete support for non numeric operands
+for the above operators should be implemented in the standard library eventually.
+
+
+=== Branching and selection
+
+Here are few examples:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern,linenums]
+----
+(if true  [Yes])         ; Yes
+(if false [Yes])         ; nil
+(if false [Yes] [No])    ; No
+
+(if true  (println [Yes]) (println [No]))         ; Prints Yes
+
+(if true  (do (println [Yes]) (println [OK])))    ; Prints Yes|newline|OK
+----
+
+[NOTE]
+Dern should have at some point *select* function that allows
+selection of one of many values.
+
+
+=== Formatted and regular printing
+
+Here are few examples:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern,linenums]
+----
+(print   [Hi])   ; Prints Hi without newline
+(println [Hi])   ; Prints Hi and newline
+
+(define name1  [some name 1] 'Jim)
+(define name2  [some name 2] 'Alice)
+(define number [some number] 30)
+
+(println [Hi {} and {}! It is {} degrees outside.] name1 name2 number)  ; Prints Hi Jim and Alice! It is 30 degrees outside.
+----
+
+=== Formatted string creation
+
+Here are few examples:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern,linenums]
+----
+(define name1  [some name 1] 'Jim)
+(define name2  [some name 2] 'Alice)
+(define number [some number] 30)
+
+(string-format [Hi {} and {}! It is {} degrees outside.] name1 name2 number)  ; Creates a sting [Hi Jim and Alice! It is 30 degrees outside.]
+----
+
+
+=== Functions with variable number of arguments
+
+Here are few examples:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern,linenums]
+----
+(define f [f] '(x [x] ... [varargs]) (fn (x ...) x))
+
+(f 1 2 3)   ; (1 2 3)
+
+
+(define f [f] '(x [x] y [rest of the args] ... [varargs]) (fn (x y ...) (println x) (println y)))
+
+(f 1 2 3)   ; Prints 1|newline|(2 3)
+----
+
+=== Environments
+
+Here are few examples:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern,linenums]
+----
+(env-global)
+(env-current)
+(env-new)
+----
+
+=== Mutability and how many times a value can be changed
+
+TODO
+
+
+=== Converting between types
+
+TODO
+
+
+=== Searching and indexing
+
+TODO
+
+
+=== Embedding in C programs
+
+TODO
 
