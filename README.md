@@ -23,5 +23,11 @@ To start the REPL with color diagnostics:
 ```shell
 ./octaspire-dern-repl -c
 ```
+
+Language manual can be found from doc/book or from here:
+[http://www.octaspire.com/dern](http://www.octaspire.com/dern)
+
+Video of Dern in action:
+
 [![asciicast](https://asciinema.org/a/2ejot73uc3o6m045jpqvjf8av.png)](https://asciinema.org/a/2ejot73uc3o6m045jpqvjf8av)
 
