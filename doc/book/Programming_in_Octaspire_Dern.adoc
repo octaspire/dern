@@ -181,7 +181,7 @@ container (vector, string, hash-map, etc.) Below is couple of examples:
 [source,dern,linenums]
 ----
 (define i [my counter] 0)
-(while (<= i 10) (println [Counting at {}...] i))
+(while (<= i 10) (println [Counting at {}...] i) (++ i))
 ----
 
 Numerical for:
