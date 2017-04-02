@@ -294,7 +294,6 @@ bool octaspire_dern_value_set(
     octaspire_dern_value_t  * const self,
     octaspire_dern_value_t  * const value)
 {
-
     if (self == value)
     {
         return true;
@@ -394,21 +393,75 @@ bool octaspire_dern_value_set(
 
             for (size_t i = 0; i < octaspire_container_vector_get_length(value->value.vector); ++i)
             {
-                if (!octaspire_container_vector_push_back_element(
-                    self->value.vector,
-                    octaspire_dern_vm_create_new_value_copy(
-                        self->vm,
-                        octaspire_container_vector_get_element_at(value->value.vector, i))))
+                octaspire_dern_value_t * tmpVal =
+                    octaspire_container_vector_get_element_at(value->value.vector, i);
+
+                if (octaspire_dern_value_is_atom(tmpVal))
+                {
+                    tmpVal = octaspire_dern_vm_create_new_value_copy(self->vm, tmpVal);
+                }
+
+                octaspire_dern_vm_push_value(self->vm, tmpVal);
+
+                if (!octaspire_container_vector_push_back_element(self->value.vector, &tmpVal))
                 {
                     abort();
                 }
+
+                octaspire_dern_vm_pop_value(self->vm, tmpVal);
             }
         }
         break;
 
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         {
-            abort();
+            self->value.hashMap = octaspire_container_hash_map_new(
+                sizeof(octaspire_dern_value_t*),
+                true,
+                sizeof(octaspire_dern_value_t*),
+                true,
+                (octaspire_container_hash_map_key_compare_function_t)octaspire_dern_value_is_equal,
+                (octaspire_container_hash_map_key_hash_function_t)octaspire_dern_value_get_hash,
+                0,
+                0,
+                octaspire_dern_vm_get_allocator(self->vm));
+
+            for (size_t i = 0;
+                 i < octaspire_container_hash_map_get_number_of_elements(value->value.hashMap);
+                 ++i)
+            {
+                octaspire_container_hash_map_element_t * const element =
+                    octaspire_container_hash_map_get_at_index(value->value.hashMap, i);
+
+                octaspire_dern_value_t *key = octaspire_container_hash_map_element_get_key(element);
+                octaspire_dern_value_t *val = octaspire_container_hash_map_element_get_value(element);
+
+                if (octaspire_dern_value_is_atom(key))
+                {
+                    key = octaspire_dern_vm_create_new_value_copy(self->vm, key);
+                }
+
+                octaspire_dern_vm_push_value(self->vm, key);
+
+                if (octaspire_dern_value_is_atom(val))
+                {
+                    val = octaspire_dern_vm_create_new_value_copy(self->vm, val);
+                }
+
+                octaspire_dern_vm_push_value(self->vm, val);
+
+                if (!octaspire_container_hash_map_put(
+                    self->value.hashMap,
+                    octaspire_container_hash_map_element_get_hash(element),
+                    &key,
+                    &val))
+                {
+                    abort();
+                }
+
+                octaspire_dern_vm_pop_value(self->vm, val);
+                octaspire_dern_vm_pop_value(self->vm, key);
+            }
         }
         break;
 
