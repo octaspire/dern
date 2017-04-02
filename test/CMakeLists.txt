@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6.2)
+cmake_minimum_required(VERSION 3.0.2)
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/resource" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/")
 file(GLOB SOURCES "*.c")
 include_directories(${OCTASPIRE_DERN_INCLUDE_DIR})
@@ -9,8 +9,8 @@ set_property(TARGET octaspire-dern-test-runner PROPERTY C_STANDARD 99)
 set_property(TARGET octaspire-dern-test-runner PROPERTY C_EXTENSIONS OFF)
 
 if(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -pedantic -Werror")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra -pedantic")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c99 -Wall -Wextra -pedantic -Werror")
 endif(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU")

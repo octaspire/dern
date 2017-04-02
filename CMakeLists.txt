@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6.2)
+cmake_minimum_required(VERSION 3.0.2)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
 set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 1)
@@ -36,8 +36,8 @@ set_property(TARGET octaspire_dern PROPERTY C_STANDARD 99)
 set_property(TARGET octaspire_dern PROPERTY C_EXTENSIONS OFF)
 
 if(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fno-omit-frame-pointer -Wall -Wextra -pedantic -Werror")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra -pedantic")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c99 -fno-omit-frame-pointer -Wall -Wextra -pedantic -Werror")
 endif(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
 
 if(CMAKE_C_COMPILER_ID MATCHES "Clang")
