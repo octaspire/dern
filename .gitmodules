@@ -1,4 +1,4 @@
 [submodule "external/octaspire_core"]
 	path = external/octaspire_core
-    url = https://gitlab.com/octaspire/core.git
+	url = https://gitlab.com/octaspire/core.git
     branch = master
