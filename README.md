@@ -1,6 +1,6 @@
 Programming language written in standard C99
 
-To build on Raspberry Pi:
+To build Dern from source in Raspberry Pi or Debian system:
 
 ```shell
 sudo apt-get install cmake git
