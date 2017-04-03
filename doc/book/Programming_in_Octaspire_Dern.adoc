@@ -96,7 +96,7 @@ Here we take a quick look of some of the features of the language.
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,dern,linenums]
+[source,dern]
 ----
  128              ; These are integers
 -100
@@ -128,7 +128,7 @@ doesn't have multiline comments.
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,dern,linenums]
+[source,dern]
 ----
 (define pi [value for pi] 3.14)
 (define names [names list] '(John Lisa Mark))
@@ -141,7 +141,7 @@ Here is an example of using those names:
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,dern,linenums]
+[source,dern]
 ----
 pi
 names
@@ -153,7 +153,7 @@ And to see the documentation for these values:
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,dern,linenums]
+[source,dern]
 ----
 (doc pi)
 (doc names)
@@ -178,7 +178,7 @@ container (vector, string, hash-map, etc.) Below is couple of examples:
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,dern,linenums]
+[source,dern]
 ----
 (define i [my counter] 0)
 (while (<= i 10) (println [Counting at {}...] i) (++ i))
@@ -189,7 +189,7 @@ Numerical for:
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,dern,linenums]
+[source,dern]
 ----
 (for i from 0 to 10 (println [Hello {} World!] i))
 ----
@@ -199,7 +199,7 @@ Container for:
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,dern,linenums]
+[source,dern]
 ----
 (define names [names list] '(John Mark Lisa))
 (for i in names (println [Hello {} World!] i))
@@ -213,7 +213,7 @@ Here are few examples:
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,dern,linenums]
+[source,dern]
 ----
 (<  1 2)   ; true
 (<  2 2)   ; false
@@ -272,7 +272,7 @@ Here are few examples:
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,dern,linenums]
+[source,dern]
 ----
 (if true  [Yes])         ; Yes
 (if false [Yes])         ; nil
@@ -295,7 +295,7 @@ Here are few examples:
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,dern,linenums]
+[source,dern]
 ----
 (print   [Hi])   ; Prints Hi without newline
 (println [Hi])   ; Prints Hi and newline
@@ -314,7 +314,7 @@ Here are few examples:
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,dern,linenums]
+[source,dern]
 ----
 (define name1  [some name 1] 'Jim)
 (define name2  [some name 2] 'Alice)
@@ -331,7 +331,7 @@ Here are few examples:
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,dern,linenums]
+[source,dern]
 ----
 (define f [f] '(x [x] ... [varargs]) (fn (x ...) x))
 
@@ -350,7 +350,7 @@ Here are few examples:
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
-[source,dern,linenums]
+[source,dern]
 ----
 (env-global)
 (env-current)

@@ -876,26 +876,7 @@ should be ready.</p></div>
 <div class="sect2">
 <h3 id="_values">Values</h3>
 <div class="listingblock">
-<div class="content"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="mi">128</span>              <span class="c c-Singleline">; These are integers</span>
+<div class="content"><div class="highlight"><pre><span></span> <span class="mi">128</span>              <span class="c c-Singleline">; These are integers</span>
 <span class="mi">-100</span>
  <span class="mf">3.14</span>             <span class="c c-Singleline">; These are real</span>
 <span class="mf">-1.12</span>
@@ -915,40 +896,30 @@ should be ready.</p></div>
           <span class="ss">&#39;Mike</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">[likes numbers]</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span><span class="p">)</span>
            <span class="mi">1</span>    <span class="sc">|a|</span>
            <span class="s">[Hi]</span> <span class="mi">2</span><span class="p">)</span>
-</pre></div>
-</td></tr></table></div></div>
+</pre></div></div></div>
 <div class="paragraph"><p>The text after character <strong>;</strong> is a <strong>comment</strong>. Comments run until the end of the line. Dern
 doesn&#8217;t have multiline comments.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_binding_names_to_values_with_define">Binding names to values with define</h3>
 <div class="listingblock">
-<div class="content"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">pi</span> <span class="s">[value for pi]</span> <span class="mf">3.14</span><span class="p">)</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">pi</span> <span class="s">[value for pi]</span> <span class="mf">3.14</span><span class="p">)</span>
 <span class="p">(</span><span class="nb">define </span><span class="nv">names</span> <span class="s">[names list]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">John</span> <span class="nv">Lisa</span> <span class="nv">Mark</span><span class="p">))</span>
 <span class="p">(</span><span class="nb">define </span><span class="nv">double</span> <span class="s">[doubles numbers]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">x</span> <span class="s">[this is doubled]</span><span class="p">)</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">(</span><span class="nf">x</span><span class="p">)</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">2</span> <span class="nv">x</span><span class="p">)))</span>
-</pre></div>
-</td></tr></table></div></div>
+</pre></div></div></div>
 <div class="paragraph"><p>Here we bind three values to a name: one real, one vector and one function taking one argument.
 Here is an example of using those names:</p></div>
 <div class="listingblock">
-<div class="content"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nv">pi</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="nv">pi</span>
 <span class="nv">names</span>
 <span class="p">(</span><span class="nf">double</span> <span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</td></tr></table></div></div>
+</pre></div></div></div>
 <div class="paragraph"><p>And to see the documentation for these values:</p></div>
 <div class="listingblock">
-<div class="content"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">doc</span> <span class="nv">pi</span><span class="p">)</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">doc</span> <span class="nv">pi</span><span class="p">)</span>
 <span class="p">(</span><span class="nf">doc</span> <span class="nv">names</span><span class="p">)</span>
 <span class="p">(</span><span class="nf">doc</span> <span class="nv">double</span><span class="p">)</span>
-</pre></div>
-</td></tr></table></div></div>
+</pre></div></div></div>
 <div class="paragraph"><p>The documentation of the function contains also documentation for the parameters.</p></div>
 <div class="paragraph"><p>Function <span class="monospaced">doc</span> can also be used with builtins and specials defined by the standard
 library or user in C.</p></div>
@@ -967,66 +938,24 @@ in Dern&#8217;s standard library are not yet documented properly. This is a work
 <div class="paragraph"><p>Dern has two looping constructs: <strong>while</strong> and <strong>for</strong>. For can be used numerically or with a
 container (vector, string, hash-map, etc.) Below is couple of examples:</p></div>
 <div class="listingblock">
-<div class="content"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">i</span> <span class="s">[my counter]</span> <span class="mi">0</span><span class="p">)</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">i</span> <span class="s">[my counter]</span> <span class="mi">0</span><span class="p">)</span>
 <span class="p">(</span><span class="nf">while</span> <span class="p">(</span><span class="nf">&lt;=</span> <span class="nv">i</span> <span class="mi">10</span><span class="p">)</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Counting at {}...]</span> <span class="nv">i</span><span class="p">)</span> <span class="p">(</span><span class="nf">++</span> <span class="nv">i</span><span class="p">))</span>
-</pre></div>
-</td></tr></table></div></div>
+</pre></div></div></div>
 <div class="paragraph"><p>Numerical for:</p></div>
 <div class="listingblock">
-<div class="content"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">for</span> <span class="nv">i</span> <span class="nv">from</span> <span class="mi">0</span> <span class="nv">to</span> <span class="mi">10</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
-</pre></div>
-</td></tr></table></div></div>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">for</span> <span class="nv">i</span> <span class="nv">from</span> <span class="mi">0</span> <span class="nv">to</span> <span class="mi">10</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
+</pre></div></div></div>
 <div class="paragraph"><p>Container for:</p></div>
 <div class="listingblock">
-<div class="content"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">names</span> <span class="s">[names list]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">John</span> <span class="nv">Mark</span> <span class="nv">Lisa</span><span class="p">))</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">names</span> <span class="s">[names list]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">John</span> <span class="nv">Mark</span> <span class="nv">Lisa</span><span class="p">))</span>
 <span class="p">(</span><span class="nf">for</span> <span class="nv">i</span> <span class="nv">in</span> <span class="nv">names</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
-</pre></div>
-</td></tr></table></div></div>
+</pre></div></div></div>
 </div>
 <div class="sect2">
 <h3 id="_comparing_and_changing_values_predicates">Comparing and changing values, predicates</h3>
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
-<div class="content"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">&lt;</span>  <span class="mi">1</span> <span class="mi">2</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">&lt;</span>  <span class="mi">1</span> <span class="mi">2</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
 <span class="p">(</span><span class="nf">&lt;</span>  <span class="mi">2</span> <span class="mi">2</span><span class="p">)</span>   <span class="c c-Singleline">; false</span>
 <span class="p">(</span><span class="nf">&gt;</span>  <span class="mi">2</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
 <span class="p">(</span><span class="nf">&lt;=</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
@@ -1064,8 +993,7 @@ container (vector, string, hash-map, etc.) Below is couple of examples:</p></div
 <span class="p">(</span><span class="nf">+=</span> <span class="nv">capitals</span> <span class="s">[Nepal]</span> <span class="s">[Kathmandu]</span><span class="p">)</span>
 <span class="p">(</span><span class="nf">+=</span> <span class="nv">capitals</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">[Norway]</span> <span class="s">[Oslo]</span> <span class="s">[Poland]</span> <span class="s">[Warsaw]</span><span class="p">))</span>
 <span class="p">(</span><span class="nf">+=</span> <span class="nv">capitals</span> <span class="p">(</span><span class="nf">hash-map</span> <span class="s">[Peru]</span> <span class="s">[Lima]</span><span class="p">))</span>
-</pre></div>
-</td></tr></table></div></div>
+</pre></div></div></div>
 <div class="paragraph"><p>Operators <strong><span class="monospaced">+</strong>, <strong>--</strong>, <strong></span>=</strong>, <strong>==</strong> and <strong>!=</strong> are similar to those in C. Note also that
 <strong>the operands need not to be numbers</strong>.</p></div>
 <div class="admonitionblock">
@@ -1084,21 +1012,14 @@ for the above operators should be implemented in the standard library eventually
 <h3 id="_branching_and_selection">Branching and selection</h3>
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
-<div class="content"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">if </span><span class="no">true</span>  <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; Yes</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">if </span><span class="no">true</span>  <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; Yes</span>
 <span class="p">(</span><span class="nb">if </span><span class="no">false</span> <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; nil</span>
 <span class="p">(</span><span class="nb">if </span><span class="no">false</span> <span class="s">[Yes]</span> <span class="s">[No]</span><span class="p">)</span>    <span class="c c-Singleline">; No</span>
 
 <span class="p">(</span><span class="nb">if </span><span class="no">true</span>  <span class="p">(</span><span class="nf">println</span> <span class="s">[Yes]</span><span class="p">)</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[No]</span><span class="p">))</span>         <span class="c c-Singleline">; Prints Yes</span>
 
 <span class="p">(</span><span class="nb">if </span><span class="no">true</span>  <span class="p">(</span><span class="nf">do</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Yes]</span><span class="p">)</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[OK]</span><span class="p">)))</span>    <span class="c c-Singleline">; Prints Yes|newline|OK</span>
-</pre></div>
-</td></tr></table></div></div>
+</pre></div></div></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -1113,14 +1034,7 @@ selection of one of many values.</td>
 <h3 id="_formatted_and_regular_printing">Formatted and regular printing</h3>
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
-<div class="content"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">print</span>   <span class="s">[Hi]</span><span class="p">)</span>   <span class="c c-Singleline">; Prints Hi without newline</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">print</span>   <span class="s">[Hi]</span><span class="p">)</span>   <span class="c c-Singleline">; Prints Hi without newline</span>
 <span class="p">(</span><span class="nf">println</span> <span class="s">[Hi]</span><span class="p">)</span>   <span class="c c-Singleline">; Prints Hi and newline</span>
 
 <span class="p">(</span><span class="nb">define </span><span class="nv">name1</span>  <span class="s">[some name 1]</span> <span class="ss">&#39;Jim</span><span class="p">)</span>
@@ -1128,37 +1042,24 @@ selection of one of many values.</td>
 <span class="p">(</span><span class="nb">define </span><span class="nv">number</span> <span class="s">[some number]</span> <span class="mi">30</span><span class="p">)</span>
 
 <span class="p">(</span><span class="nf">println</span> <span class="s">[Hi {} and {}! It is {} degrees outside.]</span> <span class="nv">name1</span> <span class="nv">name2</span> <span class="nv">number</span><span class="p">)</span>  <span class="c c-Singleline">; Prints Hi Jim and Alice! It is 30 degrees outside.</span>
-</pre></div>
-</td></tr></table></div></div>
+</pre></div></div></div>
 </div>
 <div class="sect2">
 <h3 id="_formatted_string_creation">Formatted string creation</h3>
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
-<div class="content"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">name1</span>  <span class="s">[some name 1]</span> <span class="ss">&#39;Jim</span><span class="p">)</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">name1</span>  <span class="s">[some name 1]</span> <span class="ss">&#39;Jim</span><span class="p">)</span>
 <span class="p">(</span><span class="nb">define </span><span class="nv">name2</span>  <span class="s">[some name 2]</span> <span class="ss">&#39;Alice</span><span class="p">)</span>
 <span class="p">(</span><span class="nb">define </span><span class="nv">number</span> <span class="s">[some number]</span> <span class="mi">30</span><span class="p">)</span>
 
 <span class="p">(</span><span class="nf">string-format</span> <span class="s">[Hi {} and {}! It is {} degrees outside.]</span> <span class="nv">name1</span> <span class="nv">name2</span> <span class="nv">number</span><span class="p">)</span>  <span class="c c-Singleline">; Creates a sting [Hi Jim and Alice! It is 30 degrees outside.]</span>
-</pre></div>
-</td></tr></table></div></div>
+</pre></div></div></div>
 </div>
 <div class="sect2">
 <h3 id="_functions_with_variable_number_of_arguments">Functions with variable number of arguments</h3>
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
-<div class="content"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">x</span> <span class="s">[x]</span> <span class="nv">...</span> <span class="s">[varargs]</span><span class="p">)</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">(</span><span class="nf">x</span> <span class="nv">...</span><span class="p">)</span> <span class="nv">x</span><span class="p">))</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">x</span> <span class="s">[x]</span> <span class="nv">...</span> <span class="s">[varargs]</span><span class="p">)</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">(</span><span class="nf">x</span> <span class="nv">...</span><span class="p">)</span> <span class="nv">x</span><span class="p">))</span>
 
 <span class="p">(</span><span class="nf">f</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>   <span class="c c-Singleline">; (1 2 3)</span>
 
@@ -1166,20 +1067,16 @@ selection of one of many values.</td>
 <span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">x</span> <span class="s">[x]</span> <span class="nv">y</span> <span class="s">[rest of the args]</span> <span class="nv">...</span> <span class="s">[varargs]</span><span class="p">)</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">(</span><span class="nf">x</span> <span class="nv">y</span> <span class="nv">...</span><span class="p">)</span> <span class="p">(</span><span class="nf">println</span> <span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="nf">println</span> <span class="nv">y</span><span class="p">)))</span>
 
 <span class="p">(</span><span class="nf">f</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>   <span class="c c-Singleline">; Prints 1|newline|(2 3)</span>
-</pre></div>
-</td></tr></table></div></div>
+</pre></div></div></div>
 </div>
 <div class="sect2">
 <h3 id="_environments">Environments</h3>
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
-<div class="content"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">env-global</span><span class="p">)</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">env-global</span><span class="p">)</span>
 <span class="p">(</span><span class="nf">env-current</span><span class="p">)</span>
 <span class="p">(</span><span class="nf">env-new</span><span class="p">)</span>
-</pre></div>
-</td></tr></table></div></div>
+</pre></div></div></div>
 </div>
 <div class="sect2">
 <h3 id="_mutability_and_how_many_times_a_value_can_be_changed">Mutability and how many times a value can be changed</h3>
@@ -1204,7 +1101,7 @@ selection of one of many values.</td>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-04-03 22:22:45 EEST
+ 2017-04-03 23:07:13 EEST
 </div>
 </div>
 </body>
