@@ -1021,7 +1021,12 @@ container (vector, string, hash-map, etc.) Below is couple of examples:</p></div
 30
 31
 32
-33</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">&lt;</span>  <span class="mi">1</span> <span class="mi">2</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
+33
+34
+35
+36
+37
+38</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">&lt;</span>  <span class="mi">1</span> <span class="mi">2</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
 <span class="p">(</span><span class="nf">&lt;</span>  <span class="mi">2</span> <span class="mi">2</span><span class="p">)</span>   <span class="c c-Singleline">; false</span>
 <span class="p">(</span><span class="nf">&gt;</span>  <span class="mi">2</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
 <span class="p">(</span><span class="nf">&lt;=</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
@@ -1054,6 +1059,11 @@ container (vector, string, hash-map, etc.) Below is couple of examples:</p></div
 <span class="p">(</span><span class="nf">+=</span> <span class="nv">greeting</span> <span class="sc">|!|</span><span class="p">)</span>                       <span class="c c-Singleline">; Hello World!!</span>
 
 <span class="p">(</span><span class="nf">+=</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">4</span> <span class="mi">5</span> <span class="mi">6</span><span class="p">))</span>                  <span class="c c-Singleline">; (1 2 3 (4 5 6))</span>
+
+<span class="p">(</span><span class="nb">define </span><span class="nv">capitals</span> <span class="s">[country -&gt; capital]</span> <span class="p">(</span><span class="nf">hash-map</span> <span class="s">[United Kingdom]</span> <span class="s">[London]</span> <span class="s">[Spain]</span> <span class="s">[Madrid]</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">+=</span> <span class="nv">capitals</span> <span class="s">[Nepal]</span> <span class="s">[Kathmandu]</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">+=</span> <span class="nv">capitals</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">[Norway]</span> <span class="s">[Oslo]</span> <span class="s">[Poland]</span> <span class="s">[Warsaw]</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">+=</span> <span class="nv">capitals</span> <span class="p">(</span><span class="nf">hash-map</span> <span class="s">[Peru]</span> <span class="s">[Lima]</span><span class="p">))</span>
 </pre></div>
 </td></tr></table></div></div>
 <div class="paragraph"><p>Operators <strong><span class="monospaced">+</strong>, <strong>--</strong>, <strong></span>=</strong>, <strong>==</strong> and <strong>!=</strong> are similar to those in C. Note also that
@@ -1194,7 +1204,7 @@ selection of one of many values.</td>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-04-01 00:27:14 EEST
+ 2017-04-03 22:22:45 EEST
 </div>
 </div>
 </body>

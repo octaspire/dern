@@ -248,6 +248,11 @@ Here are few examples:
 (+= greeting |!|)                       ; Hello World!!
 
 (+= '(1 2 3) '(4 5 6))                  ; (1 2 3 (4 5 6))
+
+(define capitals [country -> capital] (hash-map [United Kingdom] [London] [Spain] [Madrid]))
+(+= capitals [Nepal] [Kathmandu])
+(+= capitals '([Norway] [Oslo] [Poland] [Warsaw]))
+(+= capitals (hash-map [Peru] [Lima]))
 ----
 
 Operators *++*, *--*, *+=*, *==* and *!=* are similar to those in C. Note also that
