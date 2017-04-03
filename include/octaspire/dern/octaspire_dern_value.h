@@ -202,7 +202,8 @@ uintmax_t octaspire_dern_value_get_unique_id(
 
 bool octaspire_dern_value_as_hash_map_add(
     octaspire_dern_value_t * const self,
-    octaspire_dern_value_t * const other);
+    octaspire_dern_value_t * const toBeAdded1,
+    octaspire_dern_value_t * const toBeAdded2);
 
 bool octaspire_dern_value_as_character_add(
     octaspire_dern_value_t * const self,

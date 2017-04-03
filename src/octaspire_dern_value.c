@@ -1151,23 +1151,28 @@ uintmax_t octaspire_dern_value_get_unique_id(
 
 bool octaspire_dern_value_as_hash_map_add(
     octaspire_dern_value_t * const self,
-    octaspire_dern_value_t * const other)
+    octaspire_dern_value_t * const toBeAdded1,
+    octaspire_dern_value_t * const toBeAdded2)
 {
     assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
 
-    switch (other->typeTag)
+    switch (toBeAdded1->typeTag)
     {
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         {
+            assert(!toBeAdded2);
+
             return octaspire_container_hash_map_add_hash_map(
                 self->value.hashMap,
-                other->value.hashMap);
+                toBeAdded1->value.hashMap);
         }
         break;
 
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         {
-            size_t const vecLen = octaspire_dern_value_as_vector_get_length(other);
+            assert(!toBeAdded2);
+
+            size_t const vecLen = octaspire_dern_value_as_vector_get_length(toBeAdded1);
 
             if (vecLen % 2 != 0)
             {
@@ -1177,8 +1182,8 @@ bool octaspire_dern_value_as_hash_map_add(
             bool result = true;
             for (size_t i = 0; i < vecLen; i += 2)
             {
-                octaspire_dern_value_t *key = octaspire_dern_value_as_vector_get_element_at(other, i);
-                octaspire_dern_value_t *val = octaspire_dern_value_as_vector_get_element_at(other, i + 1);
+                octaspire_dern_value_t *key = octaspire_dern_value_as_vector_get_element_at(toBeAdded1, i);
+                octaspire_dern_value_t *val = octaspire_dern_value_as_vector_get_element_at(toBeAdded1, i + 1);
 
                 uint32_t const hash = octaspire_dern_value_get_hash(key);
 
@@ -1198,7 +1203,23 @@ bool octaspire_dern_value_as_hash_map_add(
 
         default:
         {
-            return false;
+            if (!toBeAdded2)
+            {
+                return false;
+            }
+
+            uint32_t const hash = octaspire_dern_value_get_hash(toBeAdded1);
+
+            if (!octaspire_dern_value_as_hash_map_put(
+                    self,
+                    hash,
+                    toBeAdded1,
+                    toBeAdded2))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 

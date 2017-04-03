@@ -2950,12 +2950,38 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
 
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         {
-            for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
+            if (octaspire_container_vector_get_length(vec) == 2)
             {
-                octaspire_dern_value_t * const anotherArg =
-                    octaspire_container_vector_get_element_at(vec, i);
-
-                octaspire_dern_value_as_hash_map_add(firstArg, anotherArg);
+                if (!octaspire_dern_value_as_hash_map_add(
+                        firstArg,
+                        octaspire_container_vector_get_element_at(vec, 1),
+                        0))
+                {
+                    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    return octaspire_dern_vm_create_new_value_error_from_c_string(
+                        vm,
+                        "Builtin '+=' failed");
+                }
+            }
+            else if (octaspire_container_vector_get_length(vec) == 3)
+            {
+                if (!octaspire_dern_value_as_hash_map_add(
+                        firstArg,
+                        octaspire_container_vector_get_element_at(vec, 1),
+                        octaspire_container_vector_get_element_at(vec, 2)))
+                {
+                    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    return octaspire_dern_vm_create_new_value_error_from_c_string(
+                        vm,
+                        "Builtin '+=' failed");
+                }
+            }
+            else
+            {
+                assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_from_c_string(
+                    vm,
+                    "Builtin '+=' expects one or two additional arguments for hash map");
             }
         }
         break;
