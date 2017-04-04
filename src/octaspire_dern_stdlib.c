@@ -2850,6 +2850,155 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_env_global(
     return octaspire_dern_vm_get_global_environment(vm);
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_equals(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    octaspire_container_vector_t * const vec = arguments->value.vector;
+
+    if (octaspire_container_vector_get_length(vec) < 1)
+    {
+        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin '-=' expects at least one argument.");
+    }
+
+    octaspire_dern_value_t * const firstArg = octaspire_container_vector_get_element_at(vec, 0);
+
+    switch (firstArg->typeTag)
+    {
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        {
+            for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
+            {
+                octaspire_dern_value_t * const anotherArg =
+                    octaspire_container_vector_get_element_at(vec, i);
+
+                if (i == 1)
+                {
+                    octaspire_dern_value_as_character_subtract(firstArg, anotherArg);
+                }
+                else
+                {
+                    octaspire_dern_value_as_string_pop_back_ucs_character(firstArg);
+                }
+            }
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        {
+            for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
+            {
+                octaspire_dern_value_t * const anotherArg =
+                    octaspire_container_vector_get_element_at(vec, i);
+
+                octaspire_dern_value_as_real_subtract(firstArg, anotherArg);
+            }
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        {
+            for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
+            {
+                octaspire_dern_value_t * const anotherArg =
+                    octaspire_container_vector_get_element_at(vec, i);
+
+                octaspire_dern_value_as_integer_subtract(firstArg, anotherArg);
+            }
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        {
+            for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
+            {
+                octaspire_dern_value_t * const anotherArg =
+                    octaspire_container_vector_get_element_at(vec, i);
+
+                // TODO XXX remove the need for '&' in &another for vectors!!!!!
+                for (size_t j = 0; j < octaspire_dern_value_as_vector_get_length(firstArg); /*NOP*/)
+                {
+                    octaspire_dern_value_t * const val =
+                        octaspire_dern_value_as_vector_get_element_at(firstArg, j);
+
+                    if (octaspire_dern_value_is_equal(anotherArg, val))
+                    {
+                        octaspire_dern_value_as_vector_remove_element_at(firstArg, j);
+                    }
+                    else
+                    {
+                        ++j;
+                    }
+                }
+            }
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
+            {
+                octaspire_dern_value_t * const anotherArg =
+                    octaspire_container_vector_get_element_at(vec, i);
+
+                if (!octaspire_dern_value_as_string_remove_all_substrings(firstArg, anotherArg))
+                {
+                    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    return octaspire_dern_vm_create_new_value_error_from_c_string(
+                        vm,
+                        "Builtin '-=' failed");
+                }
+            }
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        {
+            for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
+            {
+                octaspire_dern_value_t * const anotherArg =
+                    octaspire_container_vector_get_element_at(vec, i);
+
+                if (!octaspire_dern_value_as_hash_map_remove(firstArg, anotherArg))
+                {
+                    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    return octaspire_dern_vm_create_new_value_error_from_c_string(
+                        vm,
+                        "Builtin '-=' failed");
+                }
+            }
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        {
+            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return firstArg;
+        }
+
+        default:
+        {
+            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "First argument to builtin '-=' cannot be of type '%s'.",
+                octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+        }
+    }
+
+    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return firstArg;
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

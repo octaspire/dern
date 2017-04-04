@@ -205,7 +205,15 @@ bool octaspire_dern_value_as_hash_map_add(
     octaspire_dern_value_t * const toBeAdded1,
     octaspire_dern_value_t * const toBeAdded2);
 
+bool octaspire_dern_value_as_hash_map_remove(
+    octaspire_dern_value_t * const self,
+    octaspire_dern_value_t * const keyValue);
+
 bool octaspire_dern_value_as_character_add(
+    octaspire_dern_value_t * const self,
+    octaspire_dern_value_t * const other);
+
+bool octaspire_dern_value_as_character_subtract(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const other);
 
@@ -213,7 +221,15 @@ bool octaspire_dern_value_as_integer_add(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const other);
 
+bool octaspire_dern_value_as_integer_subtract(
+    octaspire_dern_value_t * const self,
+    octaspire_dern_value_t * const other);
+
 bool octaspire_dern_value_as_real_add(
+    octaspire_dern_value_t * const self,
+    octaspire_dern_value_t * const other);
+
+bool octaspire_dern_value_as_real_subtract(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const other);
 
@@ -221,6 +237,13 @@ char const *octaspire_dern_value_as_character_get_c_string(
     octaspire_dern_value_t const * const self);
 
 bool octaspire_dern_value_as_string_push_back(
+    octaspire_dern_value_t * const self,
+    octaspire_dern_value_t * const value);
+
+bool octaspire_dern_value_as_string_pop_back_ucs_character(
+    octaspire_dern_value_t * const self);
+
+bool octaspire_dern_value_as_string_remove_all_substrings(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const value);
 
@@ -244,6 +267,10 @@ bool octaspire_dern_value_as_vector_push_front_element(
 bool octaspire_dern_value_as_vector_push_back_element(
     octaspire_dern_value_t *self,
     void const *element);
+
+bool octaspire_dern_value_as_vector_remove_element_at(
+    octaspire_dern_value_t *self,
+    size_t const index);
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at(
     octaspire_dern_value_t * const self,

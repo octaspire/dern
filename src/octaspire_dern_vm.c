@@ -447,6 +447,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new(
         abort();
     }
 
+    // -=
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "-=",
+        octaspire_dern_vm_builtin_minus_equals,
+        1,
+        "Subtract value or values from the first argument (modify it)",
+        env))
+    {
+        abort();
+    }
+
     // +=
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,

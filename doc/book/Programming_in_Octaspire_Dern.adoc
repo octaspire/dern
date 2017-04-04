@@ -121,7 +121,8 @@ nil               ; Nil
 ----
 
 The text after character *;* is a *comment*. Comments run until the end of the line. Dern
-doesn't have multiline comments.
+doesn't have multiline comments. Note that string delimiters in Dern are *[* and *]* and not *"*;
+this way dern code can be written inside C-programs without escaping.
 
 === Binding names to values with define
 
@@ -253,9 +254,16 @@ Here are few examples:
 (+= capitals [Nepal] [Kathmandu])
 (+= capitals '([Norway] [Oslo] [Poland] [Warsaw]))
 (+= capitals (hash-map [Peru] [Lima]))
+
+(-= 10 1 2 3)                 ; 4
+(-= |x| 2)                    ; |v|
+(-= |x| |!|)                  ; |W|
+(-= [abba] |a|)               ; [bb]
+(-= (hash-map 1 |a| 2 |b|) 1) ; (hash-map 2 |b|)
+(-= '(1 1 2 2 3) 1 2)         ; (3)
 ----
 
-Operators *++*, *--*, *+=*, *==* and *!=* are similar to those in C. Note also that
+Operators *++*, *--*, *+=*, *-=*, *==* and *!=* are similar to those in C. Note also that
 *the operands need not to be numbers*.
 
 [WARNING]
