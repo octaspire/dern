@@ -2357,6 +2357,101 @@ TEST octaspire_dern_vm_builtin_equals_with_vector_of_strings_and_integer_1_and_s
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_same_key_inserted_multiple_times_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define target [target] (hash-map |a| 1))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+
+
+    // First addition
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(= target |a| 2)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "target");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
+
+    octaspire_container_hash_map_t * hashMap = evaluatedValue->value.hashMap;
+
+    ASSERT_EQ(1, octaspire_container_hash_map_get_number_of_elements(hashMap));
+
+    octaspire_container_hash_map_element_t *element =
+        octaspire_container_hash_map_get_at_index(hashMap, 0);
+
+    ASSERT(element);
+
+    octaspire_dern_value_t *key = octaspire_container_hash_map_element_get_key(element);
+    ASSERT(key);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, key->typeTag);
+    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(key->value.string));
+
+    octaspire_dern_value_t *value = octaspire_container_hash_map_element_get_value(element);
+    ASSERT(value);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, value->typeTag);
+    ASSERT_EQ(2,                                 value->value.integer);
+
+
+
+    // Second addition
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(= target |a| 3)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "target");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
+
+    hashMap = evaluatedValue->value.hashMap;
+
+    ASSERT_EQ(1, octaspire_container_hash_map_get_number_of_elements(hashMap));
+
+    element =
+        octaspire_container_hash_map_get_at_index(hashMap, 0);
+
+    ASSERT(element);
+
+    key = octaspire_container_hash_map_element_get_key(element);
+    ASSERT(key);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, key->typeTag);
+    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(key->value.string));
+
+    value = octaspire_container_hash_map_element_get_value(element);
+    ASSERT(value);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, value->typeTag);
+    ASSERT_EQ(3,                                 value->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_hash_map_with_elements_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -4084,6 +4179,7 @@ second_run:
     RUN_TEST(octaspire_dern_vm_string_literal_with_embedded_character_in_hex_failure_on_too_many_hex_digits_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_with_empty_vector_of_strings_and_integer_10_and_string_cat_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_with_vector_of_strings_and_integer_1_and_string_cat_test);
+    RUN_TEST(octaspire_dern_vm_builtin_equals_with_hash_map_and_same_key_inserted_multiple_times_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_with_hash_map_and_hash_map_with_elements_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_with_hash_map_and_empty_hash_map_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_with_vector_and_vector_with_elements_test);

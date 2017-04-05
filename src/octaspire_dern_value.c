@@ -466,6 +466,14 @@ bool octaspire_dern_value_set(
 
                 octaspire_dern_vm_push_value(self->vm, val);
 
+                // Any previous value must be removed, because hash map
+                // can contain multiple values per key, and we must replace, not
+                // add the value.
+                octaspire_container_hash_map_remove(
+                    self->value.hashMap,
+                    octaspire_container_hash_map_element_get_hash(element),
+                    &key);
+
                 if (!octaspire_container_hash_map_put(
                     self->value.hashMap,
                     octaspire_container_hash_map_element_get_hash(element),
@@ -593,6 +601,14 @@ bool octaspire_dern_value_set_collection(
             octaspire_dern_value_is_atom(value) ?
             octaspire_dern_vm_create_new_value_copy(self->vm, value) :
             value;
+
+        // Any previous value must be removed, because hash map
+        // can contain multiple values per key, and we must replace, not
+        // add the value.
+        octaspire_container_hash_map_remove(
+            self->value.hashMap,
+            octaspire_dern_value_get_hash(indexOrKey),
+            &indexOrKey);
 
         return octaspire_container_hash_map_put(
             self->value.hashMap,
