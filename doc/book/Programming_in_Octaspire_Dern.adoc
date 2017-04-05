@@ -1,4 +1,8 @@
-= Programming in Octaspire Dern
+Programming in Octaspire Dern
+=============================
+:author: www.octaspire.com
+:lang: en
+:toc:
 
 == About
 
@@ -364,6 +368,27 @@ Here are few examples:
 (env-current)
 (env-new)
 ----
+
+
+=== Returning from functions early
+
+The value of the last expression of function is usually the return value from that function.
+However, by using *return* one can return early and have multiple exit points from a function.
+Small example:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(define errorCode [0 means no error.] 1)
+
+(define start-engine [Start engine if all OK] '() (fn ()
+    (if (!= errorCode 0) (return [Cannot start the engine]))
+    ; .... Start the engine here...))
+----
+
+
 
 === Mutability and how many times a value can be changed
 

@@ -46,6 +46,7 @@ file(GLOB MANUAL1 "${CMAKE_CURRENT_SOURCE_DIR}/doc/man/man1/octaspire-dern-repl.
 file(GLOB MANUAL3 "${CMAKE_CURRENT_SOURCE_DIR}/doc/man/man3/octaspire-dern.3")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/octaspire_core/include")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
 add_library(octaspire_dern STATIC  ${SOURCES})
 set_property(TARGET octaspire_dern PROPERTY C_STANDARD 99)

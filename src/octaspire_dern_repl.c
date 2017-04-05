@@ -20,6 +20,8 @@ limitations under the License.
 #include <octaspire/core/octaspire_input.h>
 #include <octaspire/core/octaspire_region.h>
 #include <octaspire/dern/octaspire_dern_config.h>
+#include "external/octaspire_dern_banner_color.h"
+#include "external/octaspire_dern_banner_white.h"
 
 #define ANSI_COLOR_RED    "\x1B[31m"
 #define ANSI_COLOR_GREEN  "\x1B[32m"
@@ -97,6 +99,26 @@ void octaspire_dern_repl_print_version(bool const useColors)
         OCTASPIRE_DERN_CONFIG_VERSION_STR,
         OCTASPIRE_DERN_REPL_MESSAGE_INFO,
         useColors);
+
+    printf("\n");
+}
+
+void octaspire_dern_repl_print_banner(bool const useColors)
+{
+    if (useColors)
+    {
+        for (size_t i = 0; i < banner_color_len; ++i)
+        {
+            putchar(banner_color[i]);
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < banner_white_len; ++i)
+        {
+            putchar(banner_white[i]);
+        }
+    }
 }
 
 void octaspire_dern_repl_print_usage(char const * const binaryName)
@@ -204,8 +226,6 @@ int main(int argc, char *argv[])
     octaspire_input_t *input = octaspire_input_new_from_c_string("", allocator);
     octaspire_dern_vm_t *vm  = octaspire_dern_vm_new(allocator, stdio);
 
-
-
     // Eval all files given as cmdline args
     if (userFilesStartIdx >= 0)
     {
@@ -237,11 +257,12 @@ int main(int argc, char *argv[])
         }
     }
 
-
-
-
+    octaspire_dern_repl_print_banner(useColors);
     octaspire_dern_repl_print_version(useColors);
-    octaspire_dern_repl_print_message_c_str("version 0.1.0\nQuit by pressing CTRL-d on empty line or by writing (exit) and then enter\n\n", OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+
+    octaspire_dern_repl_print_message_c_str(
+        "Quit by pressing CTRL-d on empty line or by writing (exit) and then enter\n\n",
+        OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
 
     do
     {

@@ -788,13 +788,18 @@ install: function(toclevels) {
 }
 
 }
-asciidoc.install();
+asciidoc.install(2);
 /*]]>*/
 </script>
 </head>
 <body class="article" style="max-width:55em">
 <div id="header">
 <h1>Programming in Octaspire Dern</h1>
+<span id="author">www.octaspire.com</span><br>
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
+</div>
 </div>
 <div id="content">
 <div class="sect1">
@@ -1087,6 +1092,19 @@ selection of one of many values.</td>
 </pre></div></div></div>
 </div>
 <div class="sect2">
+<h3 id="_returning_from_functions_early">Returning from functions early</h3>
+<div class="paragraph"><p>The value of the last expression of function is usually the return value from that function.
+However, by using <strong>return</strong> one can return early and have multiple exit points from a function.
+Small example:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">errorCode</span> <span class="s">[0 means no error.]</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">define </span><span class="nv">start-engine</span> <span class="s">[Start engine if all OK]</span> <span class="o">&#39;</span><span class="p">()</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">()</span>
+    <span class="p">(</span><span class="nb">if </span><span class="p">(</span><span class="nf">!=</span> <span class="nv">errorCode</span> <span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="nf">return</span> <span class="s">[Cannot start the engine]</span><span class="p">))</span>
+    <span class="c c-Singleline">; .... Start the engine here...))</span>
+</pre></div></div></div>
+</div>
+<div class="sect2">
 <h3 id="_mutability_and_how_many_times_a_value_can_be_changed">Mutability and how many times a value can be changed</h3>
 <div class="paragraph"><p>TODO</p></div>
 </div>
@@ -1109,7 +1127,7 @@ selection of one of many values.</td>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-04-04 23:53:49 EEST
+ 2017-04-05 15:00:31 EEST
 </div>
 </div>
 </body>
