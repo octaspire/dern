@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #******************************************************************************/
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 2.8.7)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
 set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 2)
