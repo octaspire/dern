@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/octaspire/dern.svg?branch=master)](https://travis-ci.org/octaspire/dern)
 
+[![Coverage Status](https://coveralls.io/repos/github/octaspire/dern/badge.svg?branch=master)](https://coveralls.io/github/octaspire/dern?branch=master)
+
 Programming language written in standard C99
 
 To build Dern from source in Raspberry Pi or Debian system:
