@@ -2144,9 +2144,11 @@ TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(vo
     PASS();
 }
 
+static size_t octaspireDernLexerSuiteNumTimesRun = 0;
+
 GREATEST_SUITE(octaspire_dern_lexer_suite)
 {
-    size_t numTimesRun = 0;
+    octaspireDernLexerSuiteNumTimesRun = 0;
 
     allocator = octaspire_memory_allocator_new_create_region(
         OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
@@ -2221,9 +2223,9 @@ second_run:
     octaspire_memory_allocator_release(allocator);
     allocator = 0;
 
-    ++numTimesRun;
+    ++octaspireDernLexerSuiteNumTimesRun;
 
-    if (numTimesRun < 2)
+    if (octaspireDernLexerSuiteNumTimesRun < 2)
     {
         // Second run without region allocator
 

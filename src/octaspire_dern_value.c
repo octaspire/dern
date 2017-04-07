@@ -78,9 +78,9 @@ void octaspire_dern_function_release(octaspire_dern_function_t *self)
 size_t octaspire_dern_function_get_number_of_required_arguments(
     octaspire_dern_function_t const * const self)
 {
-    assert(self);
-    assert(self->formals);
-    assert(self->formals->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(self);
+    octaspire_helpers_verify(self->formals);
+    octaspire_helpers_verify(self->formals->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
 
     size_t const numFormalArgs = octaspire_container_vector_get_length(
         self->formals->value.vector);
@@ -93,7 +93,7 @@ size_t octaspire_dern_function_get_number_of_required_arguments(
             self->formals->value.vector,
             i);
 
-        assert(formal->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+        octaspire_helpers_verify(formal->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
 
         octaspire_container_utf8_string_t const * const formalAsStr = formal->value.string;
 
@@ -113,7 +113,7 @@ octaspire_container_utf8_string_t *octaspire_dern_function_private_is_string_in_
     octaspire_container_utf8_string_t const * const str,
     octaspire_container_vector_t const * const vec)
 {
-    assert(str && vec);
+    octaspire_helpers_verify(str && vec);
 
     // (symbol docstrforit symbol docstrforit symbol docstrforit ...)
 
@@ -122,7 +122,7 @@ octaspire_container_utf8_string_t *octaspire_dern_function_private_is_string_in_
         octaspire_dern_value_t const * const symbol =
             octaspire_container_vector_get_element_at_const(vec, i);
 
-        assert(symbol && symbol->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+        octaspire_helpers_verify(symbol && symbol->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
 
         if (octaspire_container_utf8_string_is_equal(str, symbol->value.symbol))
         {
@@ -172,8 +172,8 @@ octaspire_container_utf8_string_t *octaspire_dern_function_are_all_formals_menti
     octaspire_dern_function_t const * const self,
     octaspire_dern_value_t const * const docvec)
 {
-    assert(docvec && docvec->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(self && self->formals && self->formals->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(docvec && docvec->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(self && self->formals && self->formals->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
 
     octaspire_container_utf8_string_t *result =
         octaspire_container_utf8_string_new("", self->allocator);
@@ -189,7 +189,7 @@ octaspire_container_utf8_string_t *octaspire_dern_function_are_all_formals_menti
             self->formals,
             i);
 
-        assert(formal && formal->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+        octaspire_helpers_verify(formal && formal->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
 
         octaspire_container_utf8_string_t *errorString = octaspire_dern_function_private_is_string_in_vector(
                 self->allocator,
@@ -250,7 +250,7 @@ void octaspire_dern_special_release(octaspire_dern_special_t *self)
 size_t octaspire_dern_special_get_number_of_required_arguments(
     octaspire_dern_special_t const * const self)
 {
-    assert(self);
+    octaspire_helpers_verify(self);
     return self->numRequiredActualArguments;
 }
 
@@ -292,7 +292,7 @@ void octaspire_dern_builtin_release(octaspire_dern_builtin_t *self)
 size_t octaspire_dern_builtin_get_number_of_required_arguments(
     octaspire_dern_builtin_t const * const self)
 {
-    assert(self);
+    octaspire_helpers_verify(self);
     return self->numRequiredActualArguments;
 }
 
@@ -301,7 +301,7 @@ size_t octaspire_dern_builtin_get_number_of_required_arguments(
 
 char const * octaspire_dern_value_helper_get_type_as_c_string(octaspire_dern_value_tag_t const typeTag)
 {
-    assert(typeTag < (sizeof(octaspire_dern_value_helper_type_tags_as_c_strings) / sizeof(octaspire_dern_value_helper_type_tags_as_c_strings[0])));
+    octaspire_helpers_verify(typeTag < (sizeof(octaspire_dern_value_helper_type_tags_as_c_strings) / sizeof(octaspire_dern_value_helper_type_tags_as_c_strings[0])));
 
     return octaspire_dern_value_helper_type_tags_as_c_strings[typeTag];
 }
@@ -522,7 +522,7 @@ bool octaspire_dern_value_set_collection(
     octaspire_dern_value_t const * const indexOrKey,
     octaspire_dern_value_t * const value)
 {
-    assert(self && indexOrKey && value);
+    octaspire_helpers_verify(self && indexOrKey && value);
 
     if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING)
     {
@@ -656,15 +656,15 @@ uint32_t octaspire_dern_value_get_hash(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.builtin);
     }
 
-    assert(false);
+    abort();
 }
 
 bool octaspire_dern_value_is_equal(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_t const * const other)
 {
-    assert(self);
-    assert(other);
+    octaspire_helpers_verify(self);
+    octaspire_helpers_verify(other);
 
     if (self->typeTag != other->typeTag)
     {
@@ -695,15 +695,15 @@ bool octaspire_dern_value_is_equal(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin == other->value.builtin;
     }
 
-    assert(false);
+    abort();
 }
 
 bool octaspire_dern_value_is_less_than(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_t const * const other)
 {
-    assert(self);
-    assert(other);
+    octaspire_helpers_verify(self);
+    octaspire_helpers_verify(other);
 
     if (self->typeTag != other->typeTag)
     {
@@ -737,20 +737,20 @@ bool octaspire_dern_value_is_less_than(
         */
         default:
         {
-            assert(false);
+            octaspire_helpers_verify(false);
         }
         break;
     }
 
-    assert(false);
+    abort();
 }
 
 bool octaspire_dern_value_is_greater_than(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_t const * const other)
 {
-    assert(self);
-    assert(other);
+    octaspire_helpers_verify(self);
+    octaspire_helpers_verify(other);
 
     if (self->typeTag != other->typeTag)
     {
@@ -784,24 +784,24 @@ bool octaspire_dern_value_is_greater_than(
         */
         default:
         {
-            assert(false);
+            octaspire_helpers_verify(false);
         }
         break;
     }
 
-    assert(false);
+    abort();
 }
 
 bool octaspire_dern_value_is_less_than_or_equal(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_t const * const other)
 {
-    assert(self);
-    assert(other);
+    octaspire_helpers_verify(self);
+    octaspire_helpers_verify(other);
 
     // remove these 2 lines
-    assert(self->typeTag);
-    assert(other->typeTag);
+    octaspire_helpers_verify(self->typeTag);
+    octaspire_helpers_verify(other->typeTag);
 
     if (self->typeTag != other->typeTag)
     {
@@ -835,20 +835,20 @@ bool octaspire_dern_value_is_less_than_or_equal(
         */
         default:
         {
-            assert(false);
+            octaspire_helpers_verify(false);
         }
         break;
     }
 
-    assert(false);
+    abort();
 }
 
 bool octaspire_dern_value_is_greater_than_or_equal(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_t const * const other)
 {
-    assert(self);
-    assert(other);
+    octaspire_helpers_verify(self);
+    octaspire_helpers_verify(other);
 
     if (self->typeTag != other->typeTag)
     {
@@ -882,12 +882,12 @@ bool octaspire_dern_value_is_greater_than_or_equal(
         */
         default:
         {
-            assert(false);
+            octaspire_helpers_verify(false);
         }
         break;
     }
 
-    assert(false);
+    abort();
 }
 
 octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
@@ -895,7 +895,7 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
     bool const plain,
     octaspire_memory_allocator_t * const allocator)
 {
-    assert(self);
+    octaspire_helpers_verify(self);
 
     switch (self->typeTag)
     {
@@ -977,20 +977,20 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
             case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
             {
                 octaspire_container_utf8_string_t *result = octaspire_container_utf8_string_new("(", allocator);
-                assert(result);
+                octaspire_helpers_verify(result);
 
                 for (size_t i = 0; i < octaspire_container_vector_get_length(self->value.vector); ++i)
                 {
                     octaspire_dern_value_t *tmpValue =
                         octaspire_container_vector_get_element_at(self->value.vector, i);
 
-                    assert(tmpValue);
+                    octaspire_helpers_verify(tmpValue);
 
                     octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
                         tmpValue,
                         allocator);
 
-                    assert(tmpStr);
+                    octaspire_helpers_verify(tmpStr);
 
                     if (!octaspire_container_utf8_string_concatenate_c_string(
                         result,
@@ -1024,7 +1024,7 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
                 octaspire_container_utf8_string_t *result =
                     octaspire_container_utf8_string_new("(hash-map ",allocator);
 
-                assert(result);
+                octaspire_helpers_verify(result);
 
                 for (size_t i = 0;
                     i < octaspire_container_hash_map_get_number_of_elements(self->value.hashMap);
@@ -1038,7 +1038,7 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
                         octaspire_container_hash_map_element_get_key(element),
                         allocator);
 
-                    assert(tmpStr);
+                    octaspire_helpers_verify(tmpStr);
 
                     if (!octaspire_container_utf8_string_concatenate_c_string(
                         result,
@@ -1063,7 +1063,7 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
                         octaspire_container_hash_map_element_get_value(element),
                         allocator);
 
-                    assert(tmpStr);
+                    octaspire_helpers_verify(tmpStr);
 
                     if (!octaspire_container_utf8_string_concatenate_c_string(
                         result,
@@ -1113,7 +1113,7 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
 
             case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
             {
-                assert(self->value.environment);
+                octaspire_helpers_verify(self->value.environment);
                 return octaspire_dern_environment_to_string(self->value.environment);
             }
             break;
@@ -1122,10 +1122,12 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
             {
                 printf(">>>>>>>typeTag problem %i\n", (int)self->typeTag);
                 // TODO XXX add support for rest of the value-types
-                assert(false);
+                octaspire_helpers_verify(false);
             }
             break;
         }
+
+    abort();
 }
 
 octaspire_container_utf8_string_t *octaspire_dern_value_to_string(
@@ -1169,7 +1171,7 @@ bool octaspire_dern_value_as_hash_map_remove(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const keyValue)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
 
     return octaspire_container_hash_map_remove(
         self->value.hashMap,
@@ -1182,13 +1184,13 @@ bool octaspire_dern_value_as_hash_map_add(
     octaspire_dern_value_t * const toBeAdded1,
     octaspire_dern_value_t * const toBeAdded2)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
 
     switch (toBeAdded1->typeTag)
     {
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         {
-            assert(!toBeAdded2);
+            octaspire_helpers_verify(!toBeAdded2);
 
             return octaspire_container_hash_map_add_hash_map(
                 self->value.hashMap,
@@ -1198,7 +1200,7 @@ bool octaspire_dern_value_as_hash_map_add(
 
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         {
-            assert(!toBeAdded2);
+            octaspire_helpers_verify(!toBeAdded2);
 
             size_t const vecLen = octaspire_dern_value_as_vector_get_length(toBeAdded1);
 
@@ -1258,7 +1260,7 @@ bool octaspire_dern_value_as_character_add(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const other)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_CHARACTER);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_CHARACTER);
 
     switch (other->typeTag)
     {
@@ -1311,7 +1313,7 @@ bool octaspire_dern_value_as_character_subtract(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const other)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_CHARACTER);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_CHARACTER);
 
     switch (other->typeTag)
     {
@@ -1362,7 +1364,7 @@ bool octaspire_dern_value_as_integer_add(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const other)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_INTEGER);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_INTEGER);
 
     switch (other->typeTag)
     {
@@ -1443,7 +1445,7 @@ bool octaspire_dern_value_as_integer_subtract(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const other)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_INTEGER);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_INTEGER);
 
     switch (other->typeTag)
     {
@@ -1524,7 +1526,7 @@ bool octaspire_dern_value_as_real_add(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const other)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_REAL);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_REAL);
 
     switch (other->typeTag)
     {
@@ -1600,7 +1602,7 @@ bool octaspire_dern_value_as_real_subtract(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const other)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_REAL);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_REAL);
 
     switch (other->typeTag)
     {
@@ -1675,7 +1677,7 @@ bool octaspire_dern_value_as_real_subtract(
 char const *octaspire_dern_value_as_character_get_c_string(
     octaspire_dern_value_t const * const self)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_CHARACTER);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_CHARACTER);
     return octaspire_container_utf8_string_get_c_string(self->value.character);
 }
 
@@ -1683,7 +1685,7 @@ bool octaspire_dern_value_as_string_push_back(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const value)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
 
     switch (value->typeTag)
     {
@@ -1746,7 +1748,7 @@ bool octaspire_dern_value_as_string_push_back(
 bool octaspire_dern_value_as_string_pop_back_ucs_character(
     octaspire_dern_value_t * const self)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
 
     return octaspire_container_utf8_string_pop_back_ucs_character(self->value.string);
 }
@@ -1755,7 +1757,7 @@ bool octaspire_dern_value_as_string_remove_all_substrings(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const value)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
 
     switch (value->typeTag)
     {
@@ -1787,21 +1789,21 @@ bool octaspire_dern_value_as_string_remove_all_substrings(
 char const *octaspire_dern_value_as_string_get_c_string(
     octaspire_dern_value_t const * const self)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
     return octaspire_container_utf8_string_get_c_string(self->value.string);
 }
 
 char const *octaspire_dern_value_as_symbol_get_c_string(
     octaspire_dern_value_t const * const self)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
     return octaspire_container_utf8_string_get_c_string(self->value.symbol);
 }
 
 size_t octaspire_dern_value_as_vector_get_length(
     octaspire_dern_value_t const * const self)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
     return octaspire_container_vector_get_length(self->value.vector);
 }
 
@@ -1809,7 +1811,7 @@ bool octaspire_dern_value_as_vector_is_valid_index(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const index)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
     return octaspire_container_vector_is_valid_index(self->value.vector, index);
 }
 
@@ -1817,8 +1819,8 @@ bool octaspire_dern_value_as_vector_push_front_element(
     octaspire_dern_value_t *self,
     void const *element)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(element);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(element);
 
     return octaspire_container_vector_push_front_element(self->value.vector, element);
 }
@@ -1827,8 +1829,8 @@ bool octaspire_dern_value_as_vector_push_back_element(
     octaspire_dern_value_t *self,
     void const *element)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(element);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(element);
 
     return octaspire_container_vector_push_back_element(self->value.vector, element);
 }
@@ -1837,7 +1839,7 @@ bool octaspire_dern_value_as_vector_remove_element_at(
     octaspire_dern_value_t *self,
     size_t const index)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
 
     return octaspire_container_vector_remove_element_at(self->value.vector, index);
 }
@@ -1846,7 +1848,7 @@ octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at(
     octaspire_dern_value_t * const self,
     size_t const index)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
 
     return octaspire_container_vector_get_element_at(self->value.vector, index);
 }
@@ -1855,7 +1857,7 @@ octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_cons
     octaspire_dern_value_t const * const self,
     size_t const index)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
 
     return octaspire_container_vector_get_element_at_const(self->value.vector, index);
 }
@@ -1867,7 +1869,7 @@ octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
 {
     octaspire_dern_value_t * result = octaspire_dern_value_as_vector_get_element_at(self, index);
 
-    assert(result);
+    octaspire_helpers_verify(result);
 
     if (result->typeTag == typeTag)
     {
@@ -1885,7 +1887,7 @@ octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_of_type
     octaspire_dern_value_t const *result =
         octaspire_dern_value_as_vector_get_element_at_const(self,index);
 
-    assert(result);
+    octaspire_helpers_verify(result);
 
     if (result->typeTag == typeTag)
     {
@@ -1902,14 +1904,14 @@ bool octaspire_dern_value_as_hash_map_put(
     octaspire_dern_value_t const * const key,
     octaspire_dern_value_t *value)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
     return octaspire_container_hash_map_put(self->value.hashMap, hash, &key, &value);
 }
 
 size_t octaspire_dern_value_as_hash_map_get_number_of_elements(
     octaspire_dern_value_t const * const self)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
     return octaspire_container_hash_map_get_number_of_elements(self->value.hashMap);
 }
 
@@ -1917,7 +1919,7 @@ octaspire_container_hash_map_element_t *octaspire_dern_value_as_hash_map_get_at_
     octaspire_dern_value_t * const self,
     size_t const index)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
     return octaspire_container_hash_map_get_at_index(self->value.hashMap, index);
 }
 
@@ -1926,7 +1928,7 @@ octaspire_container_hash_map_element_t *octaspire_dern_value_as_hash_map_get(
     uint32_t const hash,
     octaspire_dern_value_t const * const key)
 {
-    assert(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
     return octaspire_container_hash_map_get(self->value.hashMap, hash, &key);
 }
 
@@ -1960,7 +1962,7 @@ size_t octaspire_dern_value_get_length(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin->numRequiredActualArguments;
     }
 
-    assert(false);
+    abort();
 }
 
 bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
@@ -2024,7 +2026,7 @@ bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
             octaspire_dern_value_t *tmpVal =
                 octaspire_container_vector_get_element_at(self->value.vector, i);
 
-            assert(tmpVal);
+            octaspire_helpers_verify(tmpVal);
 
             if (!octaspire_dern_value_mark(tmpVal))
             {
@@ -2084,8 +2086,8 @@ int octaspire_dern_value_compare(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_t const * const other)
 {
-    assert(self);
-    assert(other);
+    octaspire_helpers_verify(self);
+    octaspire_helpers_verify(other);
 
     if (self->typeTag != other->typeTag)
     {
@@ -2136,7 +2138,7 @@ int octaspire_dern_value_compare(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return (ptrdiff_t)self->value.builtin - (ptrdiff_t)other->value.builtin;
     }
 
-    assert(false);
+    abort();
 }
 
 bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)

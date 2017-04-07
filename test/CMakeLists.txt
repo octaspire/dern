@@ -29,11 +29,10 @@ if(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c99 -Wall -Wextra -pedantic -Werror")
 endif(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
 
-if(CMAKE_C_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_EXE_LINKER_FLAGS="-coverage -fprofile-arcs -ftest-coverage")
-    target_link_libraries(octaspire-dern-test-runner octaspire_dern gcov)
-else()
-    target_link_libraries(octaspire-dern-test-runner octaspire_dern)
-endif(CMAKE_C_COMPILER_ID MATCHES "GNU")
+if(OCTASPIRE_DERN_COVERAGE)
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} --coverage")
+endif(OCTASPIRE_DERN_COVERAGE)
+
+target_link_libraries(octaspire-dern-test-runner octaspire_dern)
 
 add_test(octaspire-dern-test-runner octaspire-dern-test-runner)

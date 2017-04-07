@@ -17,7 +17,7 @@
 cmake_minimum_required(VERSION 2.8.7)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 2)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 3)
 set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
 
 set(OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/resource/")
@@ -26,13 +26,15 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/octaspire/dern/octaspire_der
     "${CMAKE_CURRENT_BINARY_DIR}/include/octaspire/dern/octaspire_dern_config.h")
 
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
-        "Choode the type of build, options are: Debug Release RelWithDebInfo MinSizeRel. " FORCE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+        "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel. " FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 project(octaspire_dern C)
+message("== Build type is ${CMAKE_BUILD_TYPE}")
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/.gitmodules")
+    message("== Updating git submodules...")
     execute_process(
         COMMAND git submodule update --init --recursive --remote
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -63,9 +65,12 @@ if(CMAKE_C_COMPILER_ID MATCHES "Clang")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fcolor-diagnostics")
 endif(CMAKE_C_COMPILER_ID MATCHES "Clang")
 
-if(CMAKE_C_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -coverage -fprofile-arcs -ftest-coverage")
-endif(CMAKE_C_COMPILER_ID MATCHES "GNU")
+option(OCTASPIRE_DERN_COVERAGE "OCTASPIRE_DERN_COVERAGE" OFF)
+
+if(OCTASPIRE_DERN_COVERAGE)
+    message("== Code coverage enabled")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} --coverage")
+endif(OCTASPIRE_DERN_COVERAGE)
 
 target_link_libraries(octaspire_dern octaspire_core m)
 add_executable(octaspire-dern-repl "src/octaspire_dern_repl.c")

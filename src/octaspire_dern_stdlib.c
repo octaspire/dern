@@ -17,6 +17,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_stdlib.h"
 #include <assert.h>
 #include <inttypes.h>
+#include <octaspire/core/octaspire_helpers.h>
 #include "octaspire/dern/octaspire_dern_vm.h"
 
 octaspire_dern_value_t *octaspire_dern_stdlib_private_validate_function(
@@ -30,14 +31,14 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_four_argum
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) != 4)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Four arguments expected. %zu arguments were given.",
@@ -46,13 +47,13 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_four_argum
 
     octaspire_dern_value_t *targetEnv = octaspire_container_vector_get_element_at(vec, 0);
 
-    assert(targetEnv && targetEnv->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(targetEnv && targetEnv->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_dern_value_t *name = octaspire_container_vector_get_element_at(vec, 1);
 
     if (name->typeTag != OCTASPIRE_DERN_VALUE_TAG_SYMBOL)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Special 'define': (define [optional-target-env] symbol...) name to be defined should be symbol. Type '%s' was given.",
@@ -63,7 +64,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_four_argum
 
     if (docstr->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Special 'define': (define [optional-target-env] symbol docstring...) docstring must be string. Type '%s' was given.",
@@ -93,12 +94,12 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_four_argum
 
     if (valueToBeDefined->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return valueToBeDefined;
     }
     else if (valueToBeDefined->typeTag == OCTASPIRE_DERN_VALUE_TAG_FUNCTION)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "At definition of function '%s': functions cannot be defined with "
@@ -113,7 +114,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_four_argum
         name,
         valueToBeDefined);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, status);
 }
 
@@ -124,14 +125,14 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) != 5)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Special 'define' expects five arguments. %zu arguments were given.",
@@ -141,13 +142,13 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
 
     octaspire_dern_value_t *targetEnv = octaspire_container_vector_get_element_at(vec, 0);
 
-    assert(targetEnv && targetEnv->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(targetEnv && targetEnv->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_dern_value_t *name = octaspire_container_vector_get_element_at(vec, 1);
 
     if (name->typeTag != OCTASPIRE_DERN_VALUE_TAG_SYMBOL)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Special 'define': (define [optional-target-env] name...) Name must be symbol. Type '%s' was given.",
@@ -158,7 +159,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
 
     if (docstr->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Special 'define': (define [optional-target-env) name docstring...) docstring must be stringy. Type '%s' was given.",
@@ -177,7 +178,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
 
     if (docVec->typeTag != OCTASPIRE_DERN_VALUE_TAG_VECTOR)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
 
         if (docVec->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
         {
@@ -209,7 +210,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
 
     if (valueToBeDefined->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return valueToBeDefined;
     }
     else if (valueToBeDefined->typeTag == OCTASPIRE_DERN_VALUE_TAG_FUNCTION)
@@ -219,11 +220,11 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
                 valueToBeDefined->value.function,
                 docVec);
 
-        assert(errorMessage);
+        octaspire_helpers_verify(errorMessage);
 
         if (!octaspire_container_utf8_string_is_empty(errorMessage))
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error(vm, errorMessage);
         }
         else
@@ -256,7 +257,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
                         OCTASPIRE_DERN_VALUE_TAG_SYMBOL,
                         i);
 
-                assert(formalSym);
+                octaspire_helpers_verify(formalSym);
 
                 octaspire_dern_value_t const * const formalDocStr =
                     octaspire_dern_value_as_vector_get_element_of_type_at_const(
@@ -264,7 +265,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
                         OCTASPIRE_DERN_VALUE_TAG_STRING,
                         i + 1);
 
-                assert(formalDocStr);
+                octaspire_helpers_verify(formalDocStr);
 
                 if (!octaspire_container_utf8_string_concatenate_format(
                     strToModify,
@@ -279,7 +280,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
     }
     else
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Four/Five argument 'define' must be used to define functions. Definition of type '%s' was tried.",
@@ -294,7 +295,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
         name,
         valueToBeDefined);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, status);
 }
 
@@ -305,8 +306,8 @@ octaspire_dern_value_t *octaspire_dern_vm_special_define(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
@@ -314,7 +315,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_define(
 
     if (numArgs != 3 && numArgs != 4 && numArgs != 5)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Special 'define' expects three, four, or five arguments. %zu arguments were given.",
@@ -325,9 +326,9 @@ octaspire_dern_value_t *octaspire_dern_vm_special_define(
     octaspire_dern_vm_push_value(vm, arguments);
 
     octaspire_dern_value_t *firstArg = octaspire_container_vector_get_element_at(vec, 0);
-    assert(firstArg);
+    octaspire_helpers_verify(firstArg);
     octaspire_dern_value_t *evaluatedFirstArg = octaspire_dern_vm_eval(vm, firstArg, environment);
-    assert(evaluatedFirstArg);
+    octaspire_helpers_verify(evaluatedFirstArg);
 
     if (evaluatedFirstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT)
     {
@@ -344,7 +345,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_define(
                 environment);
 
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return result;
         }
         else if (numArgs == 4)
@@ -355,7 +356,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_define(
                 environment);
 
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return result;
         }
         else
@@ -381,7 +382,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_define(
                 environment);
 
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return result;
         }
         else if (numArgs == 5)
@@ -392,7 +393,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_define(
                 environment);
 
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return result;
         }
         else
@@ -402,7 +403,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_define(
     }
 
     octaspire_dern_vm_pop_value(vm, arguments);
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_special_quote(
@@ -412,14 +413,14 @@ octaspire_dern_value_t *octaspire_dern_vm_special_quote(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) != 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Special 'quote' expects one argument. %zu arguments were given.",
@@ -428,9 +429,9 @@ octaspire_dern_value_t *octaspire_dern_vm_special_quote(
 
     octaspire_dern_value_t *quotedValue = octaspire_container_vector_get_element_at(vec, 0);
 
-    assert(quotedValue);
+    octaspire_helpers_verify(quotedValue);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return quotedValue;
 }
 
@@ -441,14 +442,14 @@ octaspire_dern_value_t *octaspire_dern_vm_special_if(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs != 2 && numArgs != 3)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Special 'if' expects two or three arguments. %zu arguments were given.",
@@ -462,7 +463,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_if(
         octaspire_dern_value_as_vector_get_element_at(arguments, 0),
         environment);
 
-    assert(testResult);
+    octaspire_helpers_verify(testResult);
     octaspire_dern_vm_push_value(vm, testResult);
 
     if (testResult->typeTag == OCTASPIRE_DERN_VALUE_TAG_FUNCTION)
@@ -488,7 +489,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_if(
         octaspire_dern_vm_pop_value(vm, testResult);
     }
 
-    assert(testResult);
+    octaspire_helpers_verify(testResult);
 
     if (testResult->typeTag != OCTASPIRE_DERN_VALUE_TAG_BOOLEAN)
     {
@@ -496,11 +497,11 @@ octaspire_dern_value_t *octaspire_dern_vm_special_if(
 
         if (testResult->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return testResult;
         }
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "First argument to special 'if' must evaluate into boolean value. "
@@ -534,9 +535,9 @@ octaspire_dern_value_t *octaspire_dern_vm_special_if(
 
     octaspire_dern_vm_pop_value(vm, arguments);
 
-    assert(result);
+    octaspire_helpers_verify(result);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
 }
 
@@ -547,14 +548,14 @@ octaspire_dern_value_t *octaspire_dern_vm_special_while(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs < 2)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Special 'while' expects at least two arguments. %zu arguments were given.",
@@ -573,7 +574,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_while(
             octaspire_dern_value_as_vector_get_element_at(arguments, 0),
             environment);
 
-        assert(testResult);
+        octaspire_helpers_verify(testResult);
 
         if (testResult->typeTag != OCTASPIRE_DERN_VALUE_TAG_BOOLEAN)
         {
@@ -581,11 +582,11 @@ octaspire_dern_value_t *octaspire_dern_vm_special_while(
 
             if (testResult->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
             {
-                assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return testResult;
             }
 
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "First argument to special 'while' must evaluate into boolean value. "
@@ -607,12 +608,12 @@ octaspire_dern_value_t *octaspire_dern_vm_special_while(
                 octaspire_dern_value_as_vector_get_element_at(arguments, i),
                 environment);
 
-            assert(result);
+            octaspire_helpers_verify(result);
 
             if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
             {
                 octaspire_dern_vm_pop_value(vm, arguments);
-                assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return result;
 
             }
@@ -622,7 +623,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_while(
                 result = octaspire_dern_vm_get_function_return(vm);
                 //octaspire_dern_vm_set_function_return(vm, 0);
                 octaspire_dern_vm_pop_value(vm, arguments);
-                assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return result;
             }
         }
@@ -632,7 +633,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_while(
 
     octaspire_dern_vm_pop_value(vm, arguments);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_integer(vm, counter);
 }
 
@@ -643,8 +644,8 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_dern_vm_push_value(vm, arguments);
 
@@ -654,7 +655,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
     {
         octaspire_dern_vm_pop_value(vm, arguments);
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Special 'for' expects at least four (for iterating container) or five (for iterating numeric range) arguments. %zu arguments were given.",
@@ -665,13 +666,13 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
     octaspire_dern_value_t *counterSymbol =
         octaspire_dern_value_as_vector_get_element_at(arguments, 0);
 
-    assert(counterSymbol);
+    octaspire_helpers_verify(counterSymbol);
 
     if (counterSymbol->typeTag != OCTASPIRE_DERN_VALUE_TAG_SYMBOL)
     {
         octaspire_dern_vm_pop_value(vm, arguments);
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "First argument to special 'for' must be symbol value. "
@@ -683,13 +684,13 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
     octaspire_dern_value_t const * const inOrFromSymbol =
         octaspire_dern_value_as_vector_get_element_at(arguments, 1);
 
-    assert(inOrFromSymbol);
+    octaspire_helpers_verify(inOrFromSymbol);
 
     if (inOrFromSymbol->typeTag != OCTASPIRE_DERN_VALUE_TAG_SYMBOL)
     {
         octaspire_dern_vm_pop_value(vm, arguments);
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Second argument to special 'for' must be symbol 'in' or 'from'. "
@@ -707,11 +708,11 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
         octaspire_dern_value_t *container =
             octaspire_dern_value_as_vector_get_element_at(arguments, 2);
 
-        assert(container);
+        octaspire_helpers_verify(container);
 
         container = octaspire_dern_vm_eval(vm, container, environment);
 
-        assert(container);
+        octaspire_helpers_verify(container);
 
         octaspire_dern_vm_push_value(vm, container);
 
@@ -730,7 +731,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
             octaspire_dern_vm_pop_value(vm, container);
             octaspire_dern_vm_pop_value(vm, arguments);
 
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return result;
         }
 
@@ -742,12 +743,12 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                 vm,
                 octaspire_dern_vm_get_allocator(vm));
 
-        assert(extendedEnvironment);
+        octaspire_helpers_verify(extendedEnvironment);
 
         octaspire_dern_value_t *extendedEnvVal =
             octaspire_dern_vm_create_new_value_environment_from_environment(vm, extendedEnvironment);
 
-        assert(extendedEnvVal);
+        octaspire_helpers_verify(extendedEnvVal);
 
         octaspire_dern_vm_push_value(vm, extendedEnvVal);
 
@@ -784,14 +785,14 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_value_as_vector_get_element_at(arguments, j),
                         extendedEnvVal);
 
-                    assert(result);
+                    octaspire_helpers_verify(result);
 
                     if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                     {
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
 
@@ -802,7 +803,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
 
@@ -813,7 +814,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
             octaspire_dern_vm_pop_value(vm, extendedEnvVal);
             octaspire_dern_vm_pop_value(vm, container);
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_integer(vm, counter);
         }
         else if (container->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR)
@@ -837,14 +838,14 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_value_as_vector_get_element_at(arguments, j),
                         extendedEnvVal);
 
-                    assert(result);
+                    octaspire_helpers_verify(result);
 
                     if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                     {
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
 
@@ -855,7 +856,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
 
@@ -866,7 +867,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
             octaspire_dern_vm_pop_value(vm, extendedEnvVal);
             octaspire_dern_vm_pop_value(vm, container);
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_integer(vm, counter);
         }
         else if (container->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT)
@@ -897,14 +898,14 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_value_as_vector_get_element_at(arguments, j),
                         extendedEnvVal);
 
-                    assert(result);
+                    octaspire_helpers_verify(result);
 
                     if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                     {
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
 
@@ -915,7 +916,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
 
@@ -926,7 +927,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
             octaspire_dern_vm_pop_value(vm, extendedEnvVal);
             octaspire_dern_vm_pop_value(vm, container);
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_integer(vm, counter);
         }
         else if(container->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP)
@@ -957,14 +958,14 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_value_as_vector_get_element_at(arguments, j),
                         extendedEnvVal);
 
-                    assert(result);
+                    octaspire_helpers_verify(result);
 
                     if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                     {
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
 
@@ -975,7 +976,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
 
@@ -986,7 +987,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
             octaspire_dern_vm_pop_value(vm, extendedEnvVal);
             octaspire_dern_vm_pop_value(vm, container);
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_integer(vm, counter);
         }
         else
@@ -1005,11 +1006,11 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
         octaspire_dern_value_t *fromValue =
             octaspire_dern_value_as_vector_get_element_at(arguments, 2);
 
-        assert(fromValue);
+        octaspire_helpers_verify(fromValue);
 
         fromValue = octaspire_dern_vm_eval(vm, fromValue, environment);
 
-        assert(fromValue);
+        octaspire_helpers_verify(fromValue);
 
         octaspire_dern_vm_push_value(vm, fromValue);
 
@@ -1024,7 +1025,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
             octaspire_dern_vm_pop_value(vm, fromValue);
             octaspire_dern_vm_pop_value(vm, arguments);
 
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return result;
         }
 
@@ -1035,11 +1036,11 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
         octaspire_dern_value_t *toValue =
             octaspire_dern_value_as_vector_get_element_at(arguments, 4);
 
-        assert(toValue);
+        octaspire_helpers_verify(toValue);
 
         toValue = octaspire_dern_vm_eval(vm, toValue, environment);
 
-        assert(toValue);
+        octaspire_helpers_verify(toValue);
 
         octaspire_dern_vm_push_value(vm, toValue);
 
@@ -1056,7 +1057,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
             octaspire_dern_vm_pop_value(vm, fromValue);
             octaspire_dern_vm_pop_value(vm, arguments);
 
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return result;
         }
 
@@ -1072,12 +1073,12 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                 vm,
                 octaspire_dern_vm_get_allocator(vm));
 
-        assert(extendedEnvironment);
+        octaspire_helpers_verify(extendedEnvironment);
 
         octaspire_dern_value_t *extendedEnvVal =
             octaspire_dern_vm_create_new_value_environment_from_environment(vm, extendedEnvironment);
 
-        assert(extendedEnvVal);
+        octaspire_helpers_verify(extendedEnvVal);
 
         octaspire_dern_vm_push_value(vm, extendedEnvVal);
 
@@ -1108,7 +1109,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_value_as_vector_get_element_at(arguments, j),
                         extendedEnvVal);
 
-                    assert(result);
+                    octaspire_helpers_verify(result);
 
                     if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                     {
@@ -1116,7 +1117,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, toValue);
                         octaspire_dern_vm_pop_value(vm, fromValue);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
 
@@ -1128,7 +1129,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, toValue);
                         octaspire_dern_vm_pop_value(vm, fromValue);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
                 }
@@ -1140,7 +1141,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
             octaspire_dern_vm_pop_value(vm, toValue);
             octaspire_dern_vm_pop_value(vm, fromValue);
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_integer(vm, counter);
         }
         else
@@ -1168,7 +1169,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_value_as_vector_get_element_at(arguments, j),
                         extendedEnvVal);
 
-                    assert(result);
+                    octaspire_helpers_verify(result);
 
                     if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                     {
@@ -1176,7 +1177,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, toValue);
                         octaspire_dern_vm_pop_value(vm, fromValue);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
 
@@ -1188,7 +1189,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, toValue);
                         octaspire_dern_vm_pop_value(vm, fromValue);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
                 }
@@ -1200,7 +1201,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
             octaspire_dern_vm_pop_value(vm, toValue);
             octaspire_dern_vm_pop_value(vm, fromValue);
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_integer(vm, counter);
         }
     }
@@ -1216,14 +1217,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_starts_with_question_mark(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs != 2)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'starts-with?' expects two arguments.");
@@ -1232,15 +1233,15 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_starts_with_question_mark(
     octaspire_dern_vm_push_value(vm, arguments);
 
     octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
-    assert(firstArg);
+    octaspire_helpers_verify(firstArg);
 
     octaspire_dern_value_t *secondArg = octaspire_dern_value_as_vector_get_element_at(arguments, 1);
-    assert(secondArg);
+    octaspire_helpers_verify(secondArg);
 
     if (firstArg->typeTag != secondArg->typeTag)
     {
         octaspire_dern_vm_pop_value(vm, arguments);
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_get_value_false(vm);
     }
 
@@ -1255,7 +1256,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_starts_with_question_mark(
         secondArg->value.string);
 
     octaspire_dern_vm_pop_value(vm, arguments);
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
@@ -1272,14 +1273,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_equals(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs < 2 || numArgs > 3)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin '=' expects two or three arguments.");
@@ -1288,43 +1289,43 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_equals(
     octaspire_dern_vm_push_value(vm, arguments);
 
     octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
-    assert(firstArg);
+    octaspire_helpers_verify(firstArg);
 
     if (numArgs == 2)
     {
         octaspire_dern_value_t *secondArg = octaspire_dern_value_as_vector_get_element_at(arguments, 1);
-        assert(secondArg);
+        octaspire_helpers_verify(secondArg);
 
         if (octaspire_dern_value_set(firstArg, secondArg))
         {
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             //return octaspire_dern_vm_get_value_true(vm);
             return firstArg;
         }
 
         octaspire_dern_vm_pop_value(vm, arguments);
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_get_value_false(vm);
     }
     else
     {
         octaspire_dern_value_t *secondArg = octaspire_dern_value_as_vector_get_element_at(arguments, 1);
-        assert(secondArg);
+        octaspire_helpers_verify(secondArg);
 
         octaspire_dern_value_t *thirdArg = octaspire_dern_value_as_vector_get_element_at(arguments, 2);
-        assert(thirdArg);
+        octaspire_helpers_verify(thirdArg);
 
         if (octaspire_dern_value_set_collection(firstArg, secondArg, thirdArg))
         {
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             //return octaspire_dern_vm_get_value_true(vm);
             return firstArg;
         }
 
         octaspire_dern_vm_pop_value(vm, arguments);
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_get_value_false(vm);
     }
 }
@@ -1337,14 +1338,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_equals_equals(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs < 2)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin '==' expects at least two arguments.");
@@ -1370,7 +1371,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_equals_equals(
         {
             octaspire_dern_vm_pop_value(vm, firstValue);
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_get_value_false(vm);
         }
     }
@@ -1378,7 +1379,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_equals_equals(
     octaspire_dern_vm_pop_value(vm, firstValue);
     octaspire_dern_vm_pop_value(vm, arguments);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_get_value_true(vm);
 }
 
@@ -1411,14 +1412,14 @@ octaspire_dern_value_t *octaspire_dern_vm_special_less_than_or_equal(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs < 2)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin '<=' expects at least two arguments.");
@@ -1444,7 +1445,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_less_than_or_equal(
         {
             octaspire_dern_vm_pop_value(vm, firstValue);
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_get_value_false(vm);
         }
     }
@@ -1452,7 +1453,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_less_than_or_equal(
     octaspire_dern_vm_pop_value(vm, firstValue);
     octaspire_dern_vm_pop_value(vm, arguments);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_get_value_true(vm);
 }
 
@@ -1463,14 +1464,14 @@ octaspire_dern_value_t *octaspire_dern_vm_special_less_than(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs < 2)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin '<' expects at least two arguments.");
@@ -1496,7 +1497,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_less_than(
         {
             octaspire_dern_vm_pop_value(vm, firstValue);
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_get_value_false(vm);
         }
     }
@@ -1504,7 +1505,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_less_than(
     octaspire_dern_vm_pop_value(vm, firstValue);
     octaspire_dern_vm_pop_value(vm, arguments);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_get_value_true(vm);
 }
 
@@ -1515,14 +1516,14 @@ octaspire_dern_value_t *octaspire_dern_vm_special_greater_than(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs < 2)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin '>' expects at least two arguments.");
@@ -1548,7 +1549,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_greater_than(
         {
             octaspire_dern_vm_pop_value(vm, firstValue);
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_get_value_false(vm);
         }
     }
@@ -1556,7 +1557,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_greater_than(
     octaspire_dern_vm_pop_value(vm, firstValue);
     octaspire_dern_vm_pop_value(vm, arguments);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_get_value_true(vm);
 }
 
@@ -1567,14 +1568,14 @@ octaspire_dern_value_t *octaspire_dern_vm_special_greater_than_or_equal(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs < 2)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin '>=' expects at least two arguments.");
@@ -1600,7 +1601,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_greater_than_or_equal(
         {
             octaspire_dern_vm_pop_value(vm, firstValue);
             octaspire_dern_vm_pop_value(vm, arguments);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_get_value_false(vm);
         }
     }
@@ -1608,7 +1609,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_greater_than_or_equal(
     octaspire_dern_vm_pop_value(vm, firstValue);
     octaspire_dern_vm_pop_value(vm, arguments);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_get_value_true(vm);
 }
 
@@ -1618,14 +1619,14 @@ octaspire_dern_value_t *octaspire_dern_stdlib_private_validate_function(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(function);
-    assert(function->formals);
-    assert(function->formals->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(function->body);
-    assert(function->body->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(function->definitionEnvironment);
-    assert(function->definitionEnvironment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
-    assert(function->allocator);
+    octaspire_helpers_verify(function);
+    octaspire_helpers_verify(function->formals);
+    octaspire_helpers_verify(function->formals->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(function->body);
+    octaspire_helpers_verify(function->body->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(function->definitionEnvironment);
+    octaspire_helpers_verify(function->definitionEnvironment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(function->allocator);
 
     size_t const numFormalArgs = octaspire_container_vector_get_length(
         function->formals->value.vector);
@@ -1640,7 +1641,7 @@ octaspire_dern_value_t *octaspire_dern_stdlib_private_validate_function(
             function->formals->value.vector,
             i);
 
-        assert(formal->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+        octaspire_helpers_verify(formal->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
 
         octaspire_container_utf8_string_t const * const formalAsStr = formal->value.string;
 
@@ -1663,7 +1664,7 @@ octaspire_dern_value_t *octaspire_dern_stdlib_private_validate_function(
 
     if (numDotArgs > 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Function can have only one formal . for varargs. Now %zu dots were given.",
@@ -1672,7 +1673,7 @@ octaspire_dern_value_t *octaspire_dern_stdlib_private_validate_function(
 
     if (numNormalArgsAfterDot > 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Function can have only one formal argument after . "
@@ -1682,7 +1683,7 @@ octaspire_dern_value_t *octaspire_dern_stdlib_private_validate_function(
 
     if (numDotArgs == 0 && numNormalArgs != numFormalArgs)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Number of formal and actual arguments must be equal for functions without "
@@ -1691,7 +1692,7 @@ octaspire_dern_value_t *octaspire_dern_stdlib_private_validate_function(
             numNormalArgs);
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return 0;
 }
 
@@ -1702,8 +1703,8 @@ octaspire_dern_value_t *octaspire_dern_vm_special_fn(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_dern_vm_push_value(vm, arguments);
     octaspire_dern_vm_push_value(vm, environment);
@@ -1715,7 +1716,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_fn(
         octaspire_dern_vm_pop_value(vm, environment);
         octaspire_dern_vm_pop_value(vm, arguments);
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Special 'fn' expects at least two arguments. %zu arguments were given.",
@@ -1729,7 +1730,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_fn(
         octaspire_dern_vm_pop_value(vm, environment);
         octaspire_dern_vm_pop_value(vm, arguments);
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "First argument to special 'fn' must be vector (formals). Type '%s' was given.",
@@ -1750,7 +1751,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_fn(
             octaspire_dern_vm_pop_value(vm, environment);
             octaspire_dern_vm_pop_value(vm, arguments);
 
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return tmpPtr;
         }
 
@@ -1774,7 +1775,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_fn(
         octaspire_dern_vm_pop_value(vm, environment);
         octaspire_dern_vm_pop_value(vm, arguments);
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Allocation failure when creating function.");
@@ -1788,7 +1789,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_fn(
         octaspire_dern_vm_pop_value(vm, environment);
         octaspire_dern_vm_pop_value(vm, arguments);
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return error;
     }
 
@@ -1799,7 +1800,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_fn(
     octaspire_dern_vm_pop_value(vm, environment);
     octaspire_dern_vm_pop_value(vm, arguments);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
 }
 
@@ -1810,8 +1811,8 @@ octaspire_dern_value_t *octaspire_dern_vm_special_uid(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_dern_vm_push_value(vm, arguments);
     octaspire_dern_vm_push_value(vm, environment);
@@ -1823,7 +1824,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_uid(
         octaspire_dern_vm_pop_value(vm, environment);
         octaspire_dern_vm_pop_value(vm, arguments);
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Special 'uid' expects exactly one argument. %zu arguments were given.",
@@ -1844,7 +1845,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_uid(
     octaspire_dern_vm_pop_value(vm, environment);
     octaspire_dern_vm_pop_value(vm, arguments);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
 }
 
@@ -1855,14 +1856,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_abort(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs != 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'abort' expects one argument.");
@@ -1871,12 +1872,12 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_abort(
     octaspire_dern_vm_push_value(vm, arguments);
 
     octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
-    assert(firstArg);
+    octaspire_helpers_verify(firstArg);
 
     octaspire_dern_value_print(firstArg, octaspire_dern_vm_get_allocator(vm));
 
     octaspire_dern_vm_pop_value(vm, arguments);
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     abort();
 }
 
@@ -1887,14 +1888,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_not(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs != 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'not' expects one argument.");
@@ -1903,11 +1904,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_not(
     octaspire_dern_vm_push_value(vm, arguments);
 
     octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
-    assert(firstArg);
+    octaspire_helpers_verify(firstArg);
 
     if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_BOOLEAN)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'not' expects boolean argument.");
@@ -1916,7 +1917,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_not(
     bool const given = firstArg->value.boolean;
 
     octaspire_dern_vm_pop_value(vm, arguments);
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, !given);
 }
 
@@ -1927,14 +1928,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_return(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs != 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'return' expects one argument.");
@@ -1943,11 +1944,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_return(
     octaspire_dern_vm_push_value(vm, arguments);
 
     octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
-    assert(firstArg);
+    octaspire_helpers_verify(firstArg);
 
     octaspire_dern_vm_pop_value(vm, arguments);
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
-    assert(octaspire_dern_vm_get_function_return(vm) == 0);
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(octaspire_dern_vm_get_function_return(vm) == 0);
 
     octaspire_dern_vm_set_function_return(vm, firstArg);
 
@@ -1961,8 +1962,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_vector(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_vector(vm);
 
@@ -1976,7 +1977,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_vector(
         octaspire_dern_value_as_vector_push_back_element(result, &arg);
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
 }
 
@@ -1988,12 +1989,12 @@ octaspire_dern_value_t *octaspire_dern_vm_special_do(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     if (octaspire_dern_value_as_vector_get_length(arguments) == 0)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Special 'do' expects at least one argument.");
@@ -2008,7 +2009,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_do(
                 arguments,
                 i);
 
-        assert(arg);
+        octaspire_helpers_verify(arg);
 
         result = octaspire_dern_vm_eval(vm, arg, environment);
 
@@ -2020,7 +2021,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_do(
         }
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
 }
 
@@ -2031,12 +2032,12 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_nth(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     if (octaspire_dern_value_as_vector_get_length(arguments) != 2)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'nth' expects two arguments.");
@@ -2047,11 +2048,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_nth(
             arguments,
             0);
 
-    assert(firstArg);
+    octaspire_helpers_verify(firstArg);
 
     if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_INTEGER)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "First argument to builtin 'nth' must be integer. Type '%s' was given.",
@@ -2063,13 +2064,13 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_nth(
     octaspire_dern_value_t * const secondArg =
         octaspire_dern_value_as_vector_get_element_at(arguments, 1);
 
-    assert(secondArg);
+    octaspire_helpers_verify(secondArg);
 
     if (secondArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING)
     {
         if (index >= octaspire_container_utf8_string_get_length_in_ucs_characters(secondArg->value.string))
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'nth' cannot index string of length %zu from index %zu.",
@@ -2077,7 +2078,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_nth(
                 index);
         }
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_character_from_uint32t(
             vm, octaspire_container_utf8_string_get_ucs_character_at_index(secondArg->value.string, index));
     }
@@ -2085,7 +2086,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_nth(
     {
         if (index >= octaspire_container_vector_get_length(secondArg->value.vector))
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'nth' cannot index vector of length %zu from index %zu.",
@@ -2093,14 +2094,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_nth(
                 index);
         }
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_container_vector_get_element_at(secondArg->value.vector, index);
     }
     else if (secondArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP)
     {
         if (index >= octaspire_container_hash_map_get_number_of_elements(secondArg->value.hashMap))
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'nth' cannot index hash map of length %zu from index %zu.",
@@ -2108,18 +2109,18 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_nth(
                 index);
         }
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
 
         octaspire_container_hash_map_element_t *element =
             octaspire_container_hash_map_get_at_index(secondArg->value.hashMap, index);
 
-        assert(element);
+        octaspire_helpers_verify(element);
 
         return octaspire_container_hash_map_element_get_value(element);
     }
     else
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Second argument to builtin 'nth' must be one of the collection types. Type '%s' was given.",
@@ -2134,14 +2135,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_exit(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) > 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'exit' expects zero or one argument.");
@@ -2153,7 +2154,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_exit(
 
         if (value->typeTag != OCTASPIRE_DERN_VALUE_TAG_INTEGER)
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'exit' expects integer argument. Type %s was given.",
@@ -2165,7 +2166,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_exit(
 
     octaspire_dern_vm_quit(vm);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_get_value_true(vm);
 }
 
@@ -2177,14 +2178,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_doc(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) < 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'doc' expects at least one argument.");
@@ -2196,11 +2197,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_doc(
 
         if (value->docstr)
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return value->docstr;
         }
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_get_value_nil(vm);
     }
     else
@@ -2232,11 +2233,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_doc(
 
         octaspire_dern_vm_pop_value(vm, resultVal);
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return resultVal;
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_mutable(
@@ -2246,14 +2247,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_mutable(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) < 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'mutable' expects at least one argument.");
@@ -2265,7 +2266,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_mutable(
 
         value->mutableCounter = -1;
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_get_value_true(vm);
     }
     else if (octaspire_container_vector_get_length(vec) == 2)
@@ -2275,7 +2276,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_mutable(
 
         if (count->typeTag != OCTASPIRE_DERN_VALUE_TAG_INTEGER)
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Second argument to builtin 'mutable' must be integer (mutable count). Type '%s' was given.",
@@ -2284,12 +2285,12 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_mutable(
 
         value->mutableCounter = count->value.integer;
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_get_value_true(vm);
     }
     else
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'mutable' expects zero or one arguments.");
@@ -2304,14 +2305,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_len(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) < 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'len' expects at least one argument.");
@@ -2322,7 +2323,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_len(
         octaspire_dern_value_t *value = octaspire_container_vector_get_element_at(vec, 0);
 
         // TODO XXX check number ranges for too large size_t value for int32_t?
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_integer(vm, (int32_t)octaspire_dern_value_get_length(value));
     }
     else
@@ -2351,11 +2352,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_len(
 
         octaspire_dern_vm_pop_value(vm, resultVal);
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return resultVal;
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_read_and_eval_path(
@@ -2365,14 +2366,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_read_and_eval_path(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) != 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'read-and-eval-path' expects one argument. %zu arguments were given.",
@@ -2383,7 +2384,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_read_and_eval_path(
 
     if (path->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "First argument to builtin 'read-and-eval-path' must be string (path). Type '%s' was given.",
@@ -2394,7 +2395,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_read_and_eval_path(
         vm,
         octaspire_container_utf8_string_get_c_string(path->value.string));
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
 }
 
@@ -2405,14 +2406,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_read_and_eval_string(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) != 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'read-and-eval-string' expects one argument. %zu arguments were given.",
@@ -2423,7 +2424,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_read_and_eval_string(
 
     if (stringToEval->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "First argument to builtin 'read-and-eval-string' must be string (to be evaluated). Type '%s' was given.",
@@ -2434,7 +2435,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_read_and_eval_string(
         vm,
         octaspire_container_utf8_string_get_c_string(stringToEval->value.string));
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
 }
 
@@ -2445,14 +2446,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_string_format(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
 
     if (numArgs == 0)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'string-format' expects one or more arguments.");
@@ -2461,7 +2462,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_string_format(
     octaspire_dern_value_t const * const fmtStr =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
 
-    assert(fmtStr);
+    octaspire_helpers_verify(fmtStr);
 
     octaspire_container_utf8_string_t *resultStr = 0;
 
@@ -2472,14 +2473,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_string_format(
 
         octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_string(vm, str);
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return result;
     }
     else
     {
         if (fmtStr->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "First argument to builtin 'string-format' must be format string if there are more "
@@ -2524,7 +2525,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_string_format(
                 {
                     if (fmtValueIndex >= numArgs)
                     {
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return octaspire_dern_vm_create_new_value_error_from_c_string(
                             vm,
                             "Not enough arguments for the format string of 'string-format'.");
@@ -2558,7 +2559,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_string_format(
         }
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_string(vm, resultStr);
 }
 
@@ -2569,14 +2570,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_string(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
 
     if (numArgs == 0)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'to-string' expects one or more arguments.");
@@ -2604,14 +2605,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
 
     if (numArgs == 0)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'to-integer' expects one or more arguments.");
@@ -2626,7 +2627,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
         // TODO other types
         if (value->typeTag != OCTASPIRE_DERN_VALUE_TAG_REAL)
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_from_c_string(
                 vm,
                 "First argument to 'to-integer' is not real number.");
@@ -2648,14 +2649,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_print(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
 
     if (numArgs == 0)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'println' one or more arguments.");
@@ -2664,13 +2665,13 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_print(
     octaspire_dern_value_t const * const fmtStr =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
 
-    assert(fmtStr);
+    octaspire_helpers_verify(fmtStr);
 
     if (fmtStr->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
     {
         octaspire_dern_value_print(fmtStr, octaspire_dern_vm_get_allocator(vm));
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_get_value_true(vm);
     }
 
@@ -2712,7 +2713,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_print(
                 {
                     if (fmtValueIndex >= numArgs)
                     {
-                        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return octaspire_dern_vm_create_new_value_error_from_c_string(
                             vm,
                             "Not enough arguments for the format string of 'println'.");
@@ -2746,7 +2747,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_print(
         }
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_get_value_true(vm);
 }
 
@@ -2768,36 +2769,36 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_env_new(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) == 0)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_environment(vm, 0);
     }
     else if (octaspire_container_vector_get_length(vec) == 1)
     {
         octaspire_dern_value_t *value = octaspire_container_vector_get_element_at(vec, 0);
-        assert(value);
+        octaspire_helpers_verify(value);
 
         if (value->typeTag != OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT)
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Argument to builtin 'env-new' must be an environment. Now argument has type '%s'.",
                 octaspire_dern_value_helper_get_type_as_c_string(value->typeTag));
         }
 
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_environment(vm, value);
     }
     else
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'env-new' expects zero or one arguments.");
@@ -2811,14 +2812,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_env_current(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) != 0)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'env-current' expects zero arguments.");
@@ -2834,14 +2835,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_env_global(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) != 0)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'env-global' expects zero arguments.");
@@ -2857,14 +2858,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_equals(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) < 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin '-=' expects at least one argument.");
@@ -2952,7 +2953,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_equals(
 
                 if (!octaspire_dern_value_as_string_remove_all_substrings(firstArg, anotherArg))
                 {
-                    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                     return octaspire_dern_vm_create_new_value_error_from_c_string(
                         vm,
                         "Builtin '-=' failed");
@@ -2970,7 +2971,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_equals(
 
                 if (!octaspire_dern_value_as_hash_map_remove(firstArg, anotherArg))
                 {
-                    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                     return octaspire_dern_vm_create_new_value_error_from_c_string(
                         vm,
                         "Builtin '-=' failed");
@@ -2981,13 +2982,13 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_equals(
 
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return firstArg;
         }
 
         default:
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "First argument to builtin '-=' cannot be of type '%s'.",
@@ -2995,7 +2996,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_equals(
         }
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return firstArg;
 }
 
@@ -3006,14 +3007,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) < 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin '+=' expects at least one argument.");
@@ -3106,7 +3107,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
                         octaspire_container_vector_get_element_at(vec, 1),
                         0))
                 {
-                    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                     return octaspire_dern_vm_create_new_value_error_from_c_string(
                         vm,
                         "Builtin '+=' failed");
@@ -3119,7 +3120,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
                         octaspire_container_vector_get_element_at(vec, 1),
                         octaspire_container_vector_get_element_at(vec, 2)))
                 {
-                    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                     return octaspire_dern_vm_create_new_value_error_from_c_string(
                         vm,
                         "Builtin '+=' failed");
@@ -3127,7 +3128,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
             }
             else
             {
-                assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_from_c_string(
                     vm,
                     "Builtin '+=' expects one or two additional arguments for hash map");
@@ -3137,13 +3138,13 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
 
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return firstArg;
         }
 
         default:
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "First argument to builtin '+=' cannot be of type '%s'.",
@@ -3151,7 +3152,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
         }
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return firstArg;
 }
 
@@ -3162,14 +3163,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_plus(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) < 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin '++' expects at least one argument.");
@@ -3183,7 +3184,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_plus(
 
         if (!octaspire_dern_value_is_number(value))
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Arguments to builtin '++' must be numbers. %zuth argument has type '%s'.",
@@ -3201,7 +3202,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_plus(
         }
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return value;
 }
 
@@ -3212,14 +3213,14 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_minus(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
     if (octaspire_container_vector_get_length(vec) < 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin '--' expects at least one argument.");
@@ -3233,7 +3234,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_minus(
 
         if (!octaspire_dern_value_is_number(value))
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Arguments to builtin '--' must be numbers. %zuth argument has type '%s'.",
@@ -3247,7 +3248,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_minus(
         }
         else if (value->mutableCounter == 0)
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin '--' tried to modify a constant value at %zuth argument.",
@@ -3264,7 +3265,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_minus(
         }
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return value;
 }
 
@@ -3275,12 +3276,12 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_pop_front(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     if (octaspire_dern_value_as_vector_get_length(arguments) != 1)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'pop_front' expects exactly one argument.");
@@ -3290,7 +3291,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_pop_front(
 
     if (value->typeTag != OCTASPIRE_DERN_VALUE_TAG_VECTOR)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'pop_front' expects vector argument.");
@@ -3298,11 +3299,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_pop_front(
 
     octaspire_container_vector_t *vec = value->value.vector;
 
-    assert(vec);
+    octaspire_helpers_verify(vec);
 
     bool const result = octaspire_container_vector_pop_front_element(vec);
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
@@ -3313,8 +3314,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_times(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
@@ -3327,7 +3328,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_times(
         octaspire_dern_value_t *currentArg =
             octaspire_dern_value_as_vector_get_element_at(arguments, i);
 
-        assert(currentArg);
+        octaspire_helpers_verify(currentArg);
 
         switch (currentArg->typeTag)
         {
@@ -3351,11 +3352,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_times(
             {
                 if (currentArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                 {
-                    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                     return currentArg;
                 }
 
-                assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
                     "Builtin '*' expects numeric arguments (integer or real). %zuth argument has type %s.",
@@ -3368,11 +3369,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_times(
 
     if (allArgsAreIntegers)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_integer(vm, integerResult);
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_real(vm, realResult);
 }
 
@@ -3383,8 +3384,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_numerical(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
@@ -3397,7 +3398,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_numerical(
         octaspire_dern_value_t *currentArg =
             octaspire_dern_value_as_vector_get_element_at(arguments, i);
 
-        assert(currentArg);
+        octaspire_helpers_verify(currentArg);
 
         switch (currentArg->typeTag)
         {
@@ -3421,11 +3422,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_numerical(
             {
                 if (currentArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                 {
-                    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                     return currentArg;
                 }
 
-                assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
                     "Builtin '+' expects numeric arguments (integer or real). %zuth argument has type %s.",
@@ -3438,11 +3439,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_numerical(
 
     if (allArgsAreIntegers)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_integer(vm, integerResult);
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_real(vm, realResult);
 }
 
@@ -3453,23 +3454,23 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_textual(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     octaspire_dern_value_t *firstArg =
         octaspire_dern_value_as_vector_get_element_at(arguments, 0);
 
-    assert(firstArg);
-    assert(firstArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
+    octaspire_helpers_verify(firstArg);
+    octaspire_helpers_verify(firstArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
 
     for (size_t i = 1; i < numArgs; ++i)
     {
         octaspire_dern_value_t *currentArg =
             octaspire_dern_value_as_vector_get_element_at(arguments, i);
 
-        assert(currentArg);
+        octaspire_helpers_verify(currentArg);
 
         switch (currentArg->typeTag)
         {
@@ -3493,7 +3494,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_textual(
 
             default:
             {
-                assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
                     "Builtin '+' expects textual arguments if the first argument is textual. %zuth argument has type %s.",
@@ -3504,7 +3505,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_textual(
         }
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     // TODO what to return? Count of removals or the modified string-value?
     return firstArg;
 }
@@ -3516,8 +3517,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_minus_numerical(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
@@ -3530,7 +3531,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_minus_numerical(
         octaspire_dern_value_t *currentArg =
             octaspire_dern_value_as_vector_get_element_at(arguments, i);
 
-        assert(currentArg);
+        octaspire_helpers_verify(currentArg);
 
         switch (currentArg->typeTag)
         {
@@ -3586,11 +3587,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_minus_numerical(
             {
                 if (currentArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                 {
-                    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                     return currentArg;
                 }
 
-                assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
                     "Builtin '-' expects numeric arguments (integer or real). %zuth argument has type %s.",
@@ -3603,11 +3604,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_minus_numerical(
 
     if (allArgsAreIntegers)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_integer(vm, integerResult);
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_real(vm, realResult);
 }
 
@@ -3618,23 +3619,23 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_minus_textual(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     octaspire_dern_value_t *firstArg =
         octaspire_dern_value_as_vector_get_element_at(arguments, 0);
 
-    assert(firstArg);
-    assert(firstArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
+    octaspire_helpers_verify(firstArg);
+    octaspire_helpers_verify(firstArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
 
     for (size_t i = 1; i < numArgs; ++i)
     {
         octaspire_dern_value_t *currentArg =
             octaspire_dern_value_as_vector_get_element_at(arguments, i);
 
-        assert(currentArg);
+        octaspire_helpers_verify(currentArg);
 
         switch (currentArg->typeTag)
         {
@@ -3658,7 +3659,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_minus_textual(
 
             default:
             {
-                assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
                     "Builtin '-' expects textual arguments if the first argument is textual. %zuth argument has type %s.",
@@ -3669,7 +3670,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_minus_textual(
         }
     }
 
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     // TODO what to return? Count of removals or the modified string-value?
     return firstArg;
 }
@@ -3681,34 +3682,34 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs == 0)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_builtin_private_plus_numerical(vm, arguments, environment);
     }
 
     octaspire_dern_value_t *firstArg =
         octaspire_dern_value_as_vector_get_element_at(arguments, 0);
 
-    assert(firstArg);
+    octaspire_helpers_verify(firstArg);
 
     switch (firstArg->typeTag)
     {
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_builtin_private_plus_textual(vm, arguments, environment);
         }
         break;
 
         default:
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_builtin_private_plus_numerical(vm, arguments, environment);
         }
         break;
@@ -3722,34 +3723,34 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
     if (numArgs == 0)
     {
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_builtin_private_minus_numerical(vm, arguments, environment);
     }
 
     octaspire_dern_value_t *firstArg =
         octaspire_dern_value_as_vector_get_element_at(arguments, 0);
 
-    assert(firstArg);
+    octaspire_helpers_verify(firstArg);
 
     switch (firstArg->typeTag)
     {
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_builtin_private_minus_textual(vm, arguments, environment);
         }
         break;
 
         default:
         {
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_builtin_private_minus_numerical(vm, arguments, environment);
         }
         break;
@@ -3763,8 +3764,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_find(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_dern_vm_push_value(vm, arguments);
     octaspire_dern_vm_push_value(vm, environment);
@@ -3775,7 +3776,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_find(
     {
         octaspire_dern_vm_pop_value(vm, environment);
         octaspire_dern_vm_pop_value(vm, arguments);
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'find' expects at least two arguments. %zu arguments was given.",
@@ -3784,7 +3785,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_find(
 
     octaspire_dern_value_t *container = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
 
-    assert(container);
+    octaspire_helpers_verify(container);
 
     octaspire_dern_value_t *result = 0;
 
@@ -3798,7 +3799,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_find(
             octaspire_dern_value_t *keyArg =
                 octaspire_dern_value_as_vector_get_element_at(arguments, i);
 
-            assert(keyArg);
+            octaspire_helpers_verify(keyArg);
 
             octaspire_dern_value_t *tmpVal = octaspire_dern_vm_find_from_value(vm, container, keyArg);
             octaspire_dern_value_as_vector_push_back_element(
@@ -3809,7 +3810,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_find(
         octaspire_dern_vm_pop_value(vm, result);
         octaspire_dern_vm_pop_value(vm, environment);
         octaspire_dern_vm_pop_value(vm, arguments);
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return result;
     }
     else
@@ -3817,13 +3818,13 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_find(
         octaspire_dern_value_t *keyArg =
             octaspire_dern_value_as_vector_get_element_at(arguments, 1);
 
-        assert(keyArg);
+        octaspire_helpers_verify(keyArg);
 
         result = octaspire_dern_vm_find_from_value(vm, container, keyArg);
 
         octaspire_dern_vm_pop_value(vm, environment);
         octaspire_dern_vm_pop_value(vm, arguments);
-        assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return result;
     }
 }
@@ -3835,8 +3836,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_hash_map(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    assert(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    assert(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
@@ -3851,7 +3852,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_hash_map(
         if (!keyArg)
         {
             octaspire_dern_vm_pop_value(vm, result);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_from_c_string(
                 vm,
                 "Builtin 'hash-map' expects key here.");
@@ -3863,7 +3864,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_hash_map(
         if (!valArg)
         {
             octaspire_dern_vm_pop_value(vm, result);
-            assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_from_c_string(
                 vm,
                 "Builtin 'hash-map' expects key here.");
@@ -3880,7 +3881,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_hash_map(
     }
 
     octaspire_dern_vm_pop_value(vm, result);
-    assert(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
 }
 
