@@ -7,9 +7,14 @@ compiler:
 before_script:
     - mkdir build
     - cd build
-    - cmake ..
+    - cmake -DCMAKE_BUILD_TYPE=Debug -DOCTASPIRE_DERN_COVERAGE:BOOL=ON ..
 
 script:
     - make
     - test/octaspire-dern-test-runner
+    - cd test/CMakeFiles/octaspire-dern-test-runner.dir
+    - gcov *.gcno
+
+after_success:
+      - bash <(curl -s https://codecov.io/bash)
 
