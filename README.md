@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/octaspire/dern.svg?branch=master)](https://travis-ci.org/octaspire/dern)
-
-[![Coverage Status](https://coveralls.io/repos/github/octaspire/dern/badge.svg?branch=master)](https://coveralls.io/github/octaspire/dern?branch=master)
+[![Build Status](https://travis-ci.org/octaspire/dern.svg?branch=master)](https://travis-ci.org/octaspire/dern) [![Coverage Status](https://codecov.io/gh/octaspire/dern/coverage.svg?branch=master)](https://codecov.io/gh/octaspire/dern/coverage.svg?branch=master)
 
 Programming language written in standard C99
 
