@@ -6,7 +6,7 @@ To build Dern from source in Raspberry Pi or Debian system:
 
 ```shell
 sudo apt-get install cmake git
-git clone https://gitlab.com/octaspire/dern.git
+git clone https://github.com/octaspire/dern.git
 cd dern/build
 cmake ..
 make
