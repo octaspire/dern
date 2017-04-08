@@ -301,6 +301,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new(
         abort();
     }
 
+    // and
+    if (!octaspire_dern_vm_create_and_register_new_special(
+        self,
+        "and",
+        octaspire_dern_vm_special_and,
+        0,
+        "Evaluate values until false is found. Return the last evaluated value",
+        env))
+    {
+        abort();
+    }
+
     // do
     if (!octaspire_dern_vm_create_and_register_new_special(
         self,
