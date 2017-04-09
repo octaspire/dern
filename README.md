@@ -28,5 +28,5 @@ Language manual can be found from doc/book or from here:
 [http://www.octaspire.com/dern](http://www.octaspire.com/dern)
 
 Video of Dern in action:
-[![asciicast](https://asciinema.org/a/109958.png)](https://asciinema.org/a/109958)
+[![asciicast](https://asciinema.org/a/112216.png)](https://asciinema.org/a/112216)
 

@@ -33,6 +33,13 @@ is currently also just a tree walker, and not a faster bytecode vm.
 Also, English in not my native language, so please bear with me, especially
 when this first piece/draft of documentation is written in a hurry.
 
+See Dern in action in the video below. Dern is build from source in Raspberry Pi and some example
+programs are run:
+
+++++
+<script type="text/javascript" src="https://asciinema.org/a/112216.js" id="asciicast-112216" async></script>
+++++
+
 == Building from source
 
 To build Dern from source in Raspberry Pi or Debian system:
@@ -43,10 +50,8 @@ To build Dern from source in Raspberry Pi or Debian system:
 [source,bash]
 ----
 sudo apt-get install cmake git
-git clone https://gitlab.com/octaspire/dern.git
-cd dern
-mkdir build
-cd build
+git clone https://github.com/octaspire/dern.git
+cd dern/build
 cmake ..
 make
 ----
