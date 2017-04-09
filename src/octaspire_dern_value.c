@@ -918,7 +918,14 @@ bool octaspire_dern_value_is_greater_than_or_equal(
     octaspire_helpers_verify(self);
     octaspire_helpers_verify(other);
 
-    if (self->typeTag != other->typeTag)
+    if (octaspire_dern_value_is_number(self))
+    {
+        if (!octaspire_dern_value_is_number(other))
+        {
+            return false;
+        }
+    }
+    else if (self->typeTag != other->typeTag)
     {
         return false;
     }
@@ -933,8 +940,25 @@ bool octaspire_dern_value_is_greater_than_or_equal(
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:         return true;
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     return self->value.boolean >= other->value.boolean;
-        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:     return self->value.integer >= other->value.integer;
-        case OCTASPIRE_DERN_VALUE_TAG_REAL:        return self->value.real    >= other->value.real;
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        {
+            if (other->typeTag == self->typeTag)
+            {
+                return self->value.integer >= other->value.integer;
+            }
+
+            return self->value.integer >= other->value.real;
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        {
+            if (other->typeTag == self->typeTag)
+            {
+                return self->value.real >= other->value.real;
+            }
+
+            return self->value.real >= other->value.integer;
+        }
 
         // TODO XXX implement below
         /*
