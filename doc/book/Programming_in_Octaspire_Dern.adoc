@@ -41,7 +41,7 @@ programs are run:
 ++++
 
 You can also see Dern in "real" use at:
-https://github.com/octaspire/maze.git[https://github.com/octaspire/maze.git]
+https://github.com/octaspire/maze[https://github.com/octaspire/maze]
 
 Octaspire Maze is a game (work in progress) that is being written using Dern and C99.
 
@@ -418,7 +418,7 @@ TODO
 === Embedding in C programs
 
 This section is not ready yet. In the meantime you can see Dern in "real" use at:
-https://github.com/octaspire/maze.git[https://github.com/octaspire/maze.git]
+https://github.com/octaspire/maze[https://github.com/octaspire/maze]
 
 
 Octaspire Maze is a game (work in progress) that is being written using Dern and C99.

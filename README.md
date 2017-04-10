@@ -30,3 +30,6 @@ Language manual can be found from doc/book or from here:
 Video of Dern in action:
 [![asciicast](https://asciinema.org/a/112216.png)](https://asciinema.org/a/112216)
 
+For a game (work in progress) being written with Dern and C99 see:
+[https://github.com/octaspire/maze](https://github.com/octaspire/maze)
+
