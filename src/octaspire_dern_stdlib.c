@@ -1804,7 +1804,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_fn(
     return result;
 }
 
-octaspire_dern_value_t *octaspire_dern_vm_special_uid(
+octaspire_dern_value_t *octaspire_dern_vm_builtin_uid(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment)
@@ -1979,6 +1979,47 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_vector(
 
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_special_alias(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    if (octaspire_dern_value_as_vector_get_length(arguments) != 2)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Special 'alias' expects two arguments.");
+    }
+
+    octaspire_dern_value_t * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_dern_value_t * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 1);
+
+    octaspire_dern_vm_push_value(vm, environment); // TODO is this necessary?
+
+    octaspire_dern_value_t * const secondArgEvaluated = octaspire_dern_vm_eval(vm, secondArg, environment);
+
+    octaspire_dern_vm_push_value(vm, secondArgEvaluated);
+
+    octaspire_helpers_verify(octaspire_dern_environment_set(
+        environment->value.environment,
+        firstArg,
+        secondArgEvaluated));
+
+    octaspire_dern_vm_pop_value(vm, secondArgEvaluated);
+    octaspire_dern_vm_pop_value(vm, environment);
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return firstArg;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_special_and(

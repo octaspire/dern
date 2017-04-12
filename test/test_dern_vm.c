@@ -5426,12 +5426,139 @@ TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_real_9dot9_and_int
     PASS();
 }
 
+TEST octaspire_dern_vm_special_alias_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
 
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define target [target] 1)");
 
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
 
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define pointer [pointer] nil)");
 
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
 
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(alias pointer target)");
 
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("pointer", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(== (uid pointer) (uid target))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(= pointer 2)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(2,                                evaluatedValue->value.integer);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "target");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(2,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_alias_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define target [target] 1)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define pointer [pointer] nil)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(alias pointer target 1)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "Special 'alias' expects two arguments. At form:\n"
+        "(alias pointer target 1)",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(!= (uid pointer) (uid target))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(alias pointer)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "Special 'alias' expects two arguments. At form:\n"
+        "(alias pointer)",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(!= (uid pointer) (uid target))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
 
 static size_t octaspireDernVmSuiteNumTimesRun = 0;
 
@@ -5628,6 +5755,8 @@ second_run:
     RUN_TEST(octaspire_dern_vm_builtin_exclamation_equals_called_with_integer_10_and_real_9dot9_test);
     RUN_TEST(octaspire_dern_vm_builtin_exclamation_equals_called_with_real_10dot1_and_integer_10_test);
     RUN_TEST(octaspire_dern_vm_builtin_exclamation_equals_called_with_real_9dot9_and_integer_10_test);
+    RUN_TEST(octaspire_dern_vm_special_alias_test);
+    RUN_TEST(octaspire_dern_vm_special_alias_failure_test);
 
     octaspire_stdio_release(stdio);
     stdio = 0;
