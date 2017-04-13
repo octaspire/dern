@@ -1991,16 +1991,16 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                     {
                         result = (operator->value.special->cFunction)(self, arguments, environment);
 
-                        // TODO XXX add this error annoation to other places to
+                        // TODO XXX add this error annotation to other places too
                         // (for example builtin and function calls)
                         if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                         {
                             octaspire_container_utf8_string_t *tmpStr =
                                 octaspire_dern_value_to_string(value, self->allocator);
-                            
+
                             octaspire_container_utf8_string_concatenate_format(
                                 result->value.string,
-                                " At form:\n%s",
+                                "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
                                 octaspire_container_utf8_string_get_c_string(tmpStr));
 
                             octaspire_container_utf8_string_release(tmpStr);
@@ -2037,6 +2037,22 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                         if (evaluated->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                         {
                             result = evaluated;
+
+
+                            // TODO XXX add this error annotation to other places too
+                            // (for example builtin and function calls)
+                            octaspire_container_utf8_string_t *tmpStr =
+                                octaspire_dern_value_to_string(value, self->allocator);
+
+                            octaspire_container_utf8_string_concatenate_format(
+                                result->value.string,
+                                "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
+                                octaspire_container_utf8_string_get_c_string(tmpStr));
+
+                            octaspire_container_utf8_string_release(tmpStr);
+                            tmpStr = 0;
+
+
                             break;
                         }
 
@@ -2046,6 +2062,24 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                     if (!result)
                     {
                         result = (operator->value.builtin->cFunction)(self, arguments, environment);
+
+
+                        // TODO XXX add this error annotation to other places too
+                        // (for example builtin and function calls)
+                        if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+                        {
+                            octaspire_container_utf8_string_t *tmpStr =
+                                octaspire_dern_value_to_string(value, self->allocator);
+
+                            octaspire_container_utf8_string_concatenate_format(
+                                result->value.string,
+                                "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
+                                octaspire_container_utf8_string_get_c_string(tmpStr));
+
+                            octaspire_container_utf8_string_release(tmpStr);
+                            tmpStr = 0;
+                        }
+
 
                         if (operator->value.builtin->cFunction == octaspire_dern_vm_builtin_return)
                         {
@@ -2084,6 +2118,22 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                         if (evaluated->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                         {
                             result = evaluated;
+
+
+                            // TODO XXX add this error annotation to other places too
+                            // (for example builtin and function calls)
+                            octaspire_container_utf8_string_t *tmpStr =
+                                octaspire_dern_value_to_string(value, self->allocator);
+
+                            octaspire_container_utf8_string_concatenate_format(
+                                result->value.string,
+                                "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
+                                octaspire_container_utf8_string_get_c_string(tmpStr));
+
+                            octaspire_container_utf8_string_release(tmpStr);
+                            tmpStr = 0;
+
+
                             break;
                         }
 
@@ -2150,6 +2200,22 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
 
                                 if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                                 {
+
+
+                                    // TODO XXX add this error annotation to other places too
+                                    // (for example builtin and function calls)
+                                    octaspire_container_utf8_string_t *tmpStr =
+                                        octaspire_dern_value_to_string(value, self->allocator);
+
+                                    octaspire_container_utf8_string_concatenate_format(
+                                        result->value.string,
+                                        "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
+                                        octaspire_container_utf8_string_get_c_string(tmpStr));
+
+                                    octaspire_container_utf8_string_release(tmpStr);
+                                    tmpStr = 0;
+
+
                                     octaspire_dern_vm_pop_value(self, toBeEvaluated);
                                     break;
                                 }

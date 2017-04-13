@@ -3295,7 +3295,8 @@ TEST octaspire_dern_vm_error_in_function_body_is_reported_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     // TODO type of 'error' or 'vector'?
     ASSERT_STR_EQ(
-        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')",
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
+        "\tAt form: >>>>>>>>>>(f 1)<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -3383,7 +3384,8 @@ TEST octaspire_dern_vm_builtin_nth_called_with_3_and_string_abc_failure_test(voi
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Builtin 'nth' cannot index string of length 3 from index 3.",
+        "Builtin 'nth' cannot index string of length 3 from index 3.\n"
+        "\tAt form: >>>>>>>>>>(nth 3 [abc])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -3462,7 +3464,8 @@ TEST octaspire_dern_vm_builtin_nth_called_with_3_and_vector_1_2_3_failure_test(v
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Builtin 'nth' cannot index vector of length 3 from index 3.",
+        "Builtin 'nth' cannot index vector of length 3 from index 3.\n"
+        "\tAt form: >>>>>>>>>>(nth 3 (quote (1 2 3)))<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -3550,7 +3553,8 @@ TEST octaspire_dern_vm_builtin_nth_called_with_3_and_hash_map_1a_2b_3c_failure_t
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Builtin 'nth' cannot index hash map of length 3 from index 3.",
+        "Builtin 'nth' cannot index hash map of length 3 from index 3.\n"
+        "\tAt form: >>>>>>>>>>(nth 3 (hash-map 1 |a| 2 |b| 3 |c|))<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -5520,8 +5524,8 @@ TEST octaspire_dern_vm_special_alias_failure_test(void)
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "Special 'alias' expects two arguments. At form:\n"
-        "(alias pointer target 1)",
+        "Special 'alias' expects two arguments.\n"
+        "\tAt form: >>>>>>>>>>(alias pointer target 1)<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
 
     evaluatedValue =
@@ -5541,8 +5545,8 @@ TEST octaspire_dern_vm_special_alias_failure_test(void)
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "Special 'alias' expects two arguments. At form:\n"
-        "(alias pointer)",
+        "Special 'alias' expects two arguments.\n"
+        "\tAt form: >>>>>>>>>>(alias pointer)<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
 
     evaluatedValue =
@@ -5553,6 +5557,110 @@ TEST octaspire_dern_vm_special_alias_failure_test(void)
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_error_during_user_function_call_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f [my function] '() (fn () (NoSuchFunction)))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(f)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
+        "\tAt form: >>>>>>>>>>(f)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_error_during_builtin_call_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(++)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "Builtin '++' expects at least one argument.\n"
+        "\tAt form: >>>>>>>>>>(++)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_error_during_special_call_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(<)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "Special '<' expects at least two arguments.\n"
+        "\tAt form: >>>>>>>>>>(<)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_error_during_special_call_during_user_function_call_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f [f] '() (fn () (<)))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(f)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "Special '<' expects at least two arguments.\n"
+        "\tAt form: >>>>>>>>>>(<)<<<<<<<<<<\n"
+        "\n"
+        "\tAt form: >>>>>>>>>>(f)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5757,6 +5865,10 @@ second_run:
     RUN_TEST(octaspire_dern_vm_builtin_exclamation_equals_called_with_real_9dot9_and_integer_10_test);
     RUN_TEST(octaspire_dern_vm_special_alias_test);
     RUN_TEST(octaspire_dern_vm_special_alias_failure_test);
+    RUN_TEST(octaspire_dern_vm_error_during_user_function_call_test);
+    RUN_TEST(octaspire_dern_vm_error_during_builtin_call_test);
+    RUN_TEST(octaspire_dern_vm_error_during_special_call_test);
+    RUN_TEST(octaspire_dern_vm_error_during_special_call_during_user_function_call_test);
 
     octaspire_stdio_release(stdio);
     stdio = 0;

@@ -1422,7 +1422,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_less_than_or_equal(
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
-            "Builtin '<=' expects at least two arguments.");
+            "Special '<=' expects at least two arguments.");
     }
 
     octaspire_dern_vm_push_value(vm, arguments);
@@ -1474,7 +1474,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_less_than(
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
-            "Builtin '<' expects at least two arguments.");
+            "Special '<' expects at least two arguments.");
     }
 
     octaspire_dern_vm_push_value(vm, arguments);
@@ -1526,7 +1526,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_greater_than(
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
-            "Builtin '>' expects at least two arguments.");
+            "Special '>' expects at least two arguments.");
     }
 
     octaspire_dern_vm_push_value(vm, arguments);
@@ -1578,7 +1578,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_greater_than_or_equal(
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
-            "Builtin '>=' expects at least two arguments.");
+            "Special '>=' expects at least two arguments.");
     }
 
     octaspire_dern_vm_push_value(vm, arguments);
