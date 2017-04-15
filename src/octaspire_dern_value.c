@@ -323,18 +323,6 @@ bool octaspire_dern_value_set(
 
     self->typeTag = value->typeTag;
 
-    if (value->docstr)
-    {
-        // GC releases old if created
-        self->docstr = octaspire_dern_vm_create_new_value_copy(self->vm, value->docstr);
-    }
-
-    if (value->docvec)
-    {
-        // GC releases old if created
-        self->docvec = octaspire_dern_vm_create_new_value_copy(self->vm, value->docvec);
-    }
-
     switch (value->typeTag)
     {
         case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
@@ -516,6 +504,18 @@ bool octaspire_dern_value_set(
             abort();
         }
         break;
+    }
+
+    if (value->docstr)
+    {
+        // GC releases old if created
+        self->docstr = octaspire_dern_vm_create_new_value_copy(self->vm, value->docstr);
+    }
+
+    if (value->docvec)
+    {
+        // GC releases old if created
+        self->docvec = octaspire_dern_vm_create_new_value_copy(self->vm, value->docvec);
     }
 
     return true;
