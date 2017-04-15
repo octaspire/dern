@@ -138,7 +138,11 @@ octaspire_container_utf8_string_t *octaspire_dern_function_private_is_string_in_
             octaspire_dern_value_t const * const docstr =
                 octaspire_container_vector_get_element_at_const(vec, i + 1);
 
-            if (!docstr || docstr->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
+            if (!docstr)
+            {
+                abort();
+            }
+            else if (docstr->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
             {
                 return octaspire_container_utf8_string_new_format(
                     allocator,
