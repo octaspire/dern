@@ -5668,6 +5668,61 @@ TEST octaspire_dern_vm_error_during_special_call_during_user_function_call_test(
     PASS();
 }
 
+TEST octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_values_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t * const originalVal = octaspire_dern_vm_create_new_value_vector(vm);
+
+    octaspire_dern_vm_push_value(vm, originalVal);
+
+    for (int32_t i = 0; i < 10; ++i)
+    {
+        octaspire_dern_value_t *tmpVal = octaspire_dern_vm_create_new_value_integer(vm, i);
+
+        ASSERT(octaspire_dern_value_as_vector_push_back_element(originalVal, &tmpVal));
+    }
+
+    octaspire_dern_value_t * const copiedVal =
+        octaspire_dern_vm_create_new_value_copy(vm, originalVal);
+
+    octaspire_dern_vm_push_value(vm, copiedVal);
+
+    ASSERT(copiedVal);
+    ASSERT(originalVal != copiedVal);
+
+    ASSERT_EQ(
+        octaspire_dern_value_as_vector_get_length(originalVal),
+        octaspire_dern_value_as_vector_get_length(copiedVal));
+
+    for (size_t i = 0; i < octaspire_dern_value_as_vector_get_length(copiedVal); ++i)
+    {
+        octaspire_dern_value_t const * const original =
+            octaspire_dern_value_as_vector_get_element_of_type_at_const(
+                originalVal,
+                OCTASPIRE_DERN_VALUE_TAG_INTEGER,
+                0);
+
+        octaspire_dern_value_t const * const copied =
+            octaspire_dern_value_as_vector_get_element_of_type_at_const(
+                copiedVal,
+                OCTASPIRE_DERN_VALUE_TAG_INTEGER,
+                0);
+
+        ASSERT(original && copied);
+        ASSERT(original != copied);
+        ASSERT_EQ(original->value.integer, copied->value.integer);
+    }
+
+    octaspire_dern_vm_pop_value(vm, copiedVal);
+    octaspire_dern_vm_pop_value(vm, originalVal);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 static size_t octaspireDernVmSuiteNumTimesRun = 0;
 
 GREATEST_SUITE(octaspire_dern_vm_suite)
@@ -5869,6 +5924,8 @@ second_run:
     RUN_TEST(octaspire_dern_vm_error_during_builtin_call_test);
     RUN_TEST(octaspire_dern_vm_error_during_special_call_test);
     RUN_TEST(octaspire_dern_vm_error_during_special_call_during_user_function_call_test);
+
+    RUN_TEST(octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_values_test);
 
     octaspire_stdio_release(stdio);
     stdio = 0;

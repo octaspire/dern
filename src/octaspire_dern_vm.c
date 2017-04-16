@@ -956,16 +956,6 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
 
     octaspire_dern_vm_push_value(self, result);
 
-    if (valueToBeCopied->docstr)
-    {
-        result->docstr = octaspire_dern_vm_create_new_value_copy(self, valueToBeCopied->docstr);
-    }
-
-    if (valueToBeCopied->docvec)
-    {
-        result->docvec = octaspire_dern_vm_create_new_value_copy(self, valueToBeCopied->docvec);
-    }
-
     switch (result->typeTag)
     {
         case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
@@ -1036,11 +1026,17 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
 
             for (size_t i = 0; i < octaspire_container_vector_get_length(valueToBeCopied->value.vector); ++i)
             {
+                octaspire_dern_value_t * const tmpValToCopy =
+                    octaspire_container_vector_get_element_at(valueToBeCopied->value.vector, i);
+
+                assert(tmpValToCopy);
+
+                octaspire_dern_value_t * const tmpValCopied =
+                    octaspire_dern_vm_create_new_value_copy(self, tmpValToCopy);
+
                 if (!octaspire_container_vector_push_back_element(
                     result->value.vector,
-                    octaspire_dern_vm_create_new_value_copy(
-                        self,
-                        octaspire_container_vector_get_element_at(valueToBeCopied->value.vector, i))))
+                    &tmpValCopied))
                 {
                     abort();
                 }
@@ -1077,6 +1073,16 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
             abort();
         }
         break;
+    }
+
+    if (valueToBeCopied->docstr)
+    {
+        result->docstr = octaspire_dern_vm_create_new_value_copy(self, valueToBeCopied->docstr);
+    }
+
+    if (valueToBeCopied->docvec)
+    {
+        result->docvec = octaspire_dern_vm_create_new_value_copy(self, valueToBeCopied->docvec);
     }
 
     octaspire_dern_vm_pop_value(self, result);
