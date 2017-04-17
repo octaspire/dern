@@ -17,7 +17,7 @@
 cmake_minimum_required(VERSION 2.8.7)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 5)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 6)
 set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
 
 set(OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/resource/")
@@ -51,6 +51,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/octaspire_core/include
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
 add_library(octaspire_dern STATIC  ${SOURCES})
+target_include_directories(octaspire_dern PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/include")
 set_property(TARGET octaspire_dern PROPERTY C_STANDARD 99)
 set_property(TARGET octaspire_dern PROPERTY C_EXTENSIONS OFF)
 
