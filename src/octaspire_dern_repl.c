@@ -119,11 +119,18 @@ void octaspire_dern_repl_print_banner(bool const useColors)
             putchar(octaspire_dern_banner_white[i]);
         }
     }
+
+    octaspire_dern_repl_print_message_c_str(
+        "Licensed under the Apache License, Version 2.0\n"
+        "Distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES\n"
+        "OR CONDITIONS OF ANY KIND.\n\n",
+        OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
 }
 
-void octaspire_dern_repl_print_usage(char const * const binaryName)
+void octaspire_dern_repl_print_usage(char const * const binaryName, bool const useColors)
 {
-    octaspire_dern_repl_print_version(false);
+    octaspire_dern_repl_print_banner(useColors);
+    octaspire_dern_repl_print_version(useColors);
     printf("\nusage: %s [option] ... [file] ...\n", binaryName);
     printf("\nwhere [option] is one of the values listen below\n");
     printf("and every [file] is loaded and evaluated on entering the REPL\n\n");
@@ -160,12 +167,12 @@ int main(int argc, char *argv[])
             }
             else if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--version") == 0)
             {
-                octaspire_dern_repl_print_version(false);
+                octaspire_dern_repl_print_version(useColors);
                 return EXIT_SUCCESS;
             }
             else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
             {
-                octaspire_dern_repl_print_usage(argv[0]);
+                octaspire_dern_repl_print_usage(argv[0], useColors);
                 return EXIT_SUCCESS;
             }
             else
@@ -173,7 +180,7 @@ int main(int argc, char *argv[])
                 if (argv[i][0] == '-')
                 {
                     printf("Unknown argument %s\n\n", argv[i]);
-                    octaspire_dern_repl_print_usage(argv[0]);
+                    octaspire_dern_repl_print_usage(argv[0], useColors);
                     return EXIT_FAILURE;
                 }
                 else
@@ -261,10 +268,7 @@ int main(int argc, char *argv[])
     octaspire_dern_repl_print_version(useColors);
 
     octaspire_dern_repl_print_message_c_str(
-        "Licensed under the Apache License, Version 2.0\n"
-        "Distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES\n"
-        "OR CONDITIONS OF ANY KIND. Quit by pressing CTRL-d\n"
-        "on empty line or by writing (exit) and then enter.\n\n",
+        "\nQuit by pressing CTRL-d on empty line or by writing (exit) and then enter.\n\n",
         OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
 
     do
