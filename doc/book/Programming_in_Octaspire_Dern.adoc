@@ -47,7 +47,7 @@ Octaspire Maze is a game (work in progress) that is being written using Dern and
 
 == Building from source
 
-To build Dern from source in Raspberry Pi or Debian system:
+To build Dern from source in Raspberry Pi, Debian or Ubuntu (16.04 LTS) system:
 
 :source-highlighter: pygments
 :pygments-style: colorful
