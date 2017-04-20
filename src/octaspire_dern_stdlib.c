@@ -51,19 +51,44 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_four_argum
 
     octaspire_dern_value_t *name = octaspire_container_vector_get_element_at(vec, 1);
 
+    bool nameIsEvaluated = false;
+
     if (name->typeTag != OCTASPIRE_DERN_VALUE_TAG_SYMBOL)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Special 'define': (define [optional-target-env] symbol...) name to be defined should be symbol. Type '%s' was given.",
-            octaspire_dern_value_helper_get_type_as_c_string(name->typeTag));
+        nameIsEvaluated = true;
+
+        if (name->typeTag != OCTASPIRE_DERN_VALUE_TAG_VECTOR)
+        {
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Special 'define': (define [optional-target-env] symbol...) name to be defined should be symbol or vector to be evaluated. Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(name->typeTag));
+        }
+
+        name = octaspire_dern_vm_eval(vm, name, environment);
+
+        if (name->typeTag != OCTASPIRE_DERN_VALUE_TAG_SYMBOL)
+        {
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Special 'define': (define [optional-target-env] symbol...) vector for name to be defined should evaluate into symbol. Type '%s' was result of evaluation.",
+                octaspire_dern_value_helper_get_type_as_c_string(name->typeTag));
+        }
+
+        octaspire_dern_vm_push_value(vm, name);
     }
 
     octaspire_dern_value_t *docstr = octaspire_container_vector_get_element_at(vec, 2);
 
     if (docstr->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
     {
+        if (nameIsEvaluated)
+        {
+            octaspire_dern_vm_pop_value(vm, name);
+        }
+
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
@@ -94,11 +119,21 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_four_argum
 
     if (valueToBeDefined->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
     {
+        if (nameIsEvaluated)
+        {
+            octaspire_dern_vm_pop_value(vm, name);
+        }
+
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return valueToBeDefined;
     }
     else if (valueToBeDefined->typeTag == OCTASPIRE_DERN_VALUE_TAG_FUNCTION)
     {
+        if (nameIsEvaluated)
+        {
+            octaspire_dern_vm_pop_value(vm, name);
+        }
+
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
@@ -113,6 +148,11 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_four_argum
         targetEnv->value.environment,
         name,
         valueToBeDefined);
+
+    if (nameIsEvaluated)
+    {
+        octaspire_dern_vm_pop_value(vm, name);
+    }
 
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, status);
@@ -146,19 +186,45 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
 
     octaspire_dern_value_t *name = octaspire_container_vector_get_element_at(vec, 1);
 
+    bool nameIsEvaluated = false;
+
     if (name->typeTag != OCTASPIRE_DERN_VALUE_TAG_SYMBOL)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Special 'define': (define [optional-target-env] name...) Name must be symbol. Type '%s' was given.",
-            octaspire_dern_value_helper_get_type_as_c_string(name->typeTag));
+        nameIsEvaluated = true;
+
+        if (name->typeTag != OCTASPIRE_DERN_VALUE_TAG_VECTOR)
+        {
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Special 'define': (define [optional-target-env] name...) Name must be symbol or vector to be evaluated. Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(name->typeTag));
+        }
+
+        name = octaspire_dern_vm_eval(vm, name, environment);
+
+
+        if (name->typeTag != OCTASPIRE_DERN_VALUE_TAG_SYMBOL)
+        {
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Special 'define': (define [optional-target-env] name...) Vector for name must evaluate into symbol. Now it evaluated into type '%s'.",
+                octaspire_dern_value_helper_get_type_as_c_string(name->typeTag));
+        }
+
+        octaspire_dern_vm_push_value(vm, name);
     }
 
     octaspire_dern_value_t *docstr = octaspire_container_vector_get_element_at(vec, 2);
 
     if (docstr->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
     {
+        if (nameIsEvaluated)
+        {
+            octaspire_dern_vm_pop_value(vm, name);
+        }
+
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
@@ -178,6 +244,11 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
 
     if (docVec->typeTag != OCTASPIRE_DERN_VALUE_TAG_VECTOR)
     {
+        if (nameIsEvaluated)
+        {
+            octaspire_dern_vm_pop_value(vm, name);
+        }
+
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
 
         if (docVec->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
@@ -210,6 +281,11 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
 
     if (valueToBeDefined->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
     {
+        if (nameIsEvaluated)
+        {
+            octaspire_dern_vm_pop_value(vm, name);
+        }
+
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return valueToBeDefined;
     }
@@ -224,6 +300,11 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
 
         if (!octaspire_container_utf8_string_is_empty(errorMessage))
         {
+            if (nameIsEvaluated)
+            {
+                octaspire_dern_vm_pop_value(vm, name);
+            }
+
             octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error(vm, errorMessage);
         }
@@ -280,6 +361,11 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
     }
     else
     {
+        if (nameIsEvaluated)
+        {
+            octaspire_dern_vm_pop_value(vm, name);
+        }
+
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
@@ -294,6 +380,11 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
         targetEnv->value.environment,
         name,
         valueToBeDefined);
+
+    if (nameIsEvaluated)
+    {
+        octaspire_dern_vm_pop_value(vm, name);
+    }
 
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, status);
@@ -647,6 +738,8 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
     octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
     octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
+    size_t stepSize = 1; // Used for containers and numerical iteration.
+
     octaspire_dern_vm_push_value(vm, arguments);
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
@@ -736,6 +829,62 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
         }
 
 
+
+
+        // Check if there are optional 'step' and then integer
+        size_t currentArgIdx = 3;
+
+        // Optional 3 and 4. arguments: step integer
+        octaspire_dern_value_t const * const optionalStep =
+            octaspire_dern_value_as_vector_get_element_at(arguments, currentArgIdx);
+
+        octaspire_helpers_verify(optionalStep);
+
+        if (optionalStep->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL &&
+            octaspire_container_utf8_string_is_equal_to_c_string(optionalStep->value.symbol, "step"))
+        {
+            if (numArgs < 5)
+            {
+                octaspire_dern_vm_pop_value(vm, container);
+                octaspire_dern_vm_pop_value(vm, arguments);
+
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Special 'for' expects at least five arguments for iterating containers with "
+                    "a given step size. %zu arguments were given.",
+                    numArgs);
+            }
+
+            // There is 'step'. Now an integer is required next
+            ++currentArgIdx;
+
+            octaspire_dern_value_t const * const requiredStepSize =
+                octaspire_dern_value_as_vector_get_element_at(arguments, currentArgIdx);
+
+            octaspire_helpers_verify(requiredStepSize);
+
+            if (requiredStepSize->typeTag != OCTASPIRE_DERN_VALUE_TAG_INTEGER)
+            {
+                octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Fifth argument to special 'for' using 'step' with containers must be "
+                    "an integer step size. Now it has type %s.",
+                    octaspire_dern_value_helper_get_type_as_c_string(requiredStepSize->typeTag));
+
+                octaspire_dern_vm_pop_value(vm, container);
+                octaspire_dern_vm_pop_value(vm, arguments);
+
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return result;
+            }
+
+            stepSize = requiredStepSize->value.integer;
+        }
+
+
+
+
         // Extend env for the counter variable
         octaspire_dern_environment_t *extendedEnvironment =
             octaspire_dern_environment_new(
@@ -763,7 +912,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
 
             int32_t counter = 0;
 
-            for (size_t i = 0; i < strLen; ++i)
+            for (size_t i = 0; i < strLen; i += stepSize)
             {
                 octaspire_container_utf8_string_t *charStr = octaspire_container_utf8_string_new(
                     "",
@@ -778,7 +927,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                     counterSymbol,
                     octaspire_dern_vm_create_new_value_character(vm, charStr));
 
-                for (size_t j = 3; j < numArgs; ++j)
+                for (size_t j = currentArgIdx; j < numArgs; ++j)
                 {
                     octaspire_dern_value_t *result = octaspire_dern_vm_eval(
                         vm,
@@ -806,9 +955,9 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
-
-                    ++counter;
                 }
+
+                ++counter;
             }
 
             octaspire_dern_vm_pop_value(vm, extendedEnvVal);
@@ -824,14 +973,14 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
 
             int32_t counter = 0;
 
-            for (size_t i = 0; i < vecLen; ++i)
+            for (size_t i = 0; i < vecLen; i += stepSize)
             {
                 octaspire_dern_environment_set(
                     extendedEnvironment,
                     counterSymbol,
                     octaspire_container_vector_get_element_at(vec, i));
 
-                for (size_t j = 3; j < numArgs; ++j)
+                for (size_t j = currentArgIdx; j < numArgs; ++j)
                 {
                     octaspire_dern_value_t *result = octaspire_dern_vm_eval(
                         vm,
@@ -859,9 +1008,9 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
-
-                    ++counter;
                 }
+
+                ++counter;
             }
 
             octaspire_dern_vm_pop_value(vm, extendedEnvVal);
@@ -877,7 +1026,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
 
             int32_t counter = 0;
 
-            for (size_t i = 0; i < envLen; ++i)
+            for (size_t i = 0; i < envLen; i += stepSize)
             {
                 octaspire_container_hash_map_element_t *element =
                     octaspire_dern_environment_get_at_index(env, i);
@@ -891,7 +1040,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_container_hash_map_element_get_key(element),
                         octaspire_container_hash_map_element_get_value(element)));
 
-                for (size_t j = 3; j < numArgs; ++j)
+                for (size_t j = currentArgIdx; j < numArgs; ++j)
                 {
                     octaspire_dern_value_t *result = octaspire_dern_vm_eval(
                         vm,
@@ -919,9 +1068,9 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
-
-                    ++counter;
                 }
+
+                ++counter;
             }
 
             octaspire_dern_vm_pop_value(vm, extendedEnvVal);
@@ -937,7 +1086,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
 
             int32_t counter = 0;
 
-            for (size_t i = 0; i < hashMapLen; ++i)
+            for (size_t i = 0; i < hashMapLen; i += stepSize)
             {
                 octaspire_container_hash_map_element_t *element =
                     octaspire_container_hash_map_get_at_index(hashMap, i);
@@ -951,7 +1100,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_container_hash_map_element_get_key(element),
                         octaspire_container_hash_map_element_get_value(element)));
 
-                for (size_t j = 3; j < numArgs; ++j)
+                for (size_t j = currentArgIdx; j < numArgs; ++j)
                 {
                     octaspire_dern_value_t *result = octaspire_dern_vm_eval(
                         vm,
@@ -979,9 +1128,9 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                         return result;
                     }
-
-                    ++counter;
                 }
+
+                ++counter;
             }
 
             octaspire_dern_vm_pop_value(vm, extendedEnvVal);
@@ -1064,6 +1213,65 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
 
 
 
+        // Check if there are optional 'step' and then integer
+        size_t currentArgIdx = 5;
+
+        // Optional 5. and 6. arguments: step integer
+        octaspire_dern_value_t const * const optionalStep =
+            octaspire_dern_value_as_vector_get_element_at(arguments, currentArgIdx);
+
+        octaspire_helpers_verify(optionalStep);
+
+        if (optionalStep->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL &&
+            octaspire_container_utf8_string_is_equal_to_c_string(optionalStep->value.symbol, "step"))
+        {
+            if (numArgs < 7)
+            {
+                octaspire_dern_vm_pop_value(vm, toValue);
+                octaspire_dern_vm_pop_value(vm, fromValue);
+                octaspire_dern_vm_pop_value(vm, arguments);
+
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Special 'for' expects at least seven arguments in numeric form with "
+                    "a given step size. %zu arguments were given.",
+                    numArgs);
+            }
+
+            // There is 'step'. Now an integer is required next
+            ++currentArgIdx;
+
+            octaspire_dern_value_t const * const requiredStepSize =
+                octaspire_dern_value_as_vector_get_element_at(arguments, currentArgIdx);
+
+            octaspire_helpers_verify(requiredStepSize);
+
+            if (requiredStepSize->typeTag != OCTASPIRE_DERN_VALUE_TAG_INTEGER)
+            {
+                octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Seventh argument to special 'for' using 'step' with numeric iteration must be "
+                    "an integer step size. Now it has type %s.",
+                    octaspire_dern_value_helper_get_type_as_c_string(requiredStepSize->typeTag));
+
+                octaspire_dern_vm_pop_value(vm, toValue);
+                octaspire_dern_vm_pop_value(vm, fromValue);
+                octaspire_dern_vm_pop_value(vm, arguments);
+
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return result;
+            }
+
+            stepSize = requiredStepSize->value.integer;
+        }
+
+
+
+
+
+
+
 
 
         // Extend env for the counter variable
@@ -1090,7 +1298,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
 
             int32_t counter = 0;
 
-            for (size_t i = 0; i < numIterations; ++i)
+            for (size_t i = 0; i < numIterations; i += stepSize)
             {
                 octaspire_dern_value_t *iterator =
                     octaspire_dern_vm_create_new_value_copy(vm, fromValue);
@@ -1102,7 +1310,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                     counterSymbol,
                     iterator);
 
-                for (size_t j = 5; j < numArgs; ++j)
+                for (size_t j = currentArgIdx; j < numArgs; ++j)
                 {
                     octaspire_dern_value_t *result = octaspire_dern_vm_eval(
                         vm,
@@ -1150,7 +1358,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
 
             int32_t counter = 0;
 
-            for (size_t i = 0; i < numIterations; ++i)
+            for (size_t i = 0; i < numIterations; i += stepSize)
             {
                 octaspire_dern_value_t *iterator =
                     octaspire_dern_vm_create_new_value_copy(vm, fromValue);
@@ -1162,7 +1370,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                     counterSymbol,
                     iterator);
 
-                for (size_t j = 5; j < numArgs; ++j)
+                for (size_t j = currentArgIdx; j < numArgs; ++j)
                 {
                     octaspire_dern_value_t *result = octaspire_dern_vm_eval(
                         vm,

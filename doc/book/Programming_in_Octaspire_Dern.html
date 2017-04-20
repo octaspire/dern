@@ -960,6 +960,14 @@ container (vector, string, hash-map, etc.) Below is couple of examples:</p></div
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">names</span> <span class="s">[names list]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">John</span> <span class="nv">Mark</span> <span class="nv">Lisa</span><span class="p">))</span>
 <span class="p">(</span><span class="nf">for</span> <span class="nv">i</span> <span class="nv">in</span> <span class="nv">names</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
 </pre></div></div></div>
+<div class="paragraph"><p>Both the <strong>numerical for</strong> and <strong>container for</strong> support the use of optional <strong>step</strong> to change the
+way the iterator is incremented:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">for</span> <span class="nv">i</span> <span class="nv">from</span> <span class="mi">0</span> <span class="nv">to</span> <span class="mi">10</span> <span class="nv">step</span> <span class="mi">3</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">define </span><span class="nv">names</span> <span class="s">[names list]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">John</span> <span class="nv">Mark</span> <span class="nv">Lisa</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">for</span> <span class="nv">i</span> <span class="nv">in</span> <span class="nv">names</span> <span class="nv">step</span> <span class="mi">2</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
+</pre></div></div></div>
 </div>
 <div class="sect2">
 <h3 id="_comparing_and_changing_values_predicates">Comparing and changing values, predicates</h3>
@@ -1133,7 +1141,7 @@ Small example:</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-04-19 13:22:32 EEST
+ 2017-04-20 20:20:41 EEST
 </div>
 </div>
 </body>

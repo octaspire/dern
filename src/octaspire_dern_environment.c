@@ -381,11 +381,10 @@ static octaspire_container_utf8_string_t *octaspire_dern_environment_private_to_
 
         octaspire_container_utf8_string_concatenate_format(
             result,
-            "%s%-*s (%p) -> %s\n",
+            "%s%-*s -> %s\n",
             octaspire_container_utf8_string_get_c_string(indent),
             (int)numCharsInLongestKey,
             octaspire_container_utf8_string_get_c_string(keyAsStr),
-            (void*)value,
             octaspire_container_utf8_string_get_c_string(valueAsStr));
 
         octaspire_container_utf8_string_release(keyAsStr);
