@@ -61,6 +61,20 @@ cmake ..
 make
 ----
 
+To build on Arch Linux (Arch Linux ARM) system:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+sudo pacman -S cmake git gcc make
+git clone https://github.com/octaspire/dern.git
+cd dern/build
+cmake ..
+make
+----
+
 On different systems the required commands can vary. In any case, You should install
 a *C compiler*, *cmake* and *git*.
 
