@@ -313,18 +313,6 @@ octaspire_dern_vm_t *octaspire_dern_vm_new(
         abort();
     }
 
-    // alias
-    if (!octaspire_dern_vm_create_and_register_new_special(
-        self,
-        "alias",
-        octaspire_dern_vm_special_alias,
-        0,
-        "Make first argument alias to the second one",
-        env))
-    {
-        abort();
-    }
-
     // do
     if (!octaspire_dern_vm_create_and_register_new_special(
         self,
