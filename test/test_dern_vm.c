@@ -3224,6 +3224,38 @@ TEST octaspire_dern_vm_special_for_from_0_to_10_with_step_2_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_special_for_from_0_to_10_with_step_minus_2_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define v [v] '())");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(for i from 0 to 10 step -2 (+= v i))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
+        "\tAt form: >>>>>>>>>>(for i from 0 to 10 step -2 (+= v i))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_special_for_from_10_to_0_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -3321,6 +3353,39 @@ TEST octaspire_dern_vm_special_for_from_10_to_0_with_step_2_test(void)
 
     PASS();
 }
+
+TEST octaspire_dern_vm_special_for_from_10_to_0_with_step_minus_2_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define v [v] '())");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(for i from 10 to 0 step -2 (+= v i))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
+        "\tAt form: >>>>>>>>>>(for i from 10 to 0 step -2 (+= v i))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 
 TEST octaspire_dern_vm_special_for_in_with_string_test(void)
 {
@@ -3420,6 +3485,47 @@ TEST octaspire_dern_vm_special_for_in_with_string_step_2_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_special_for_in_with_string_step_minus_2_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [s] [])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define n [n] [abc])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(for i in n step -2 (+= s i))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
+        "\tAt form: >>>>>>>>>>(for i in n step -2 (+= s i))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -3511,6 +3617,46 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_step_2_test(void)
     ASSERT_STR_EQ(
         "John Ellie ",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_step_minus_2_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [s] [])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define n [n] '([John] [Mike] [Ellie]))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(for i in n step -2 (+= s i [ ]))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
+        "\tAt form: >>>>>>>>>>(for i in n step -2 (+= s i [ ]))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3679,6 +3825,80 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_2_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_special_for_in_with_environment_step_minus_2_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define e [e] (env-new))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define e2 [e2] (env-new))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+
+
+    // a is 1
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define e a [a] 1)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    // b is 2
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define e b [b] 2)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    // c is 3
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define e c [c] 3)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(for i in e step -2 (define e2 (nth 0 i) [-] (nth 1 i)))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
+        "\tAt form: >>>>>>>>>>(for i in e step -2 (define e2 (nth 0 i) [-] (nth 1 i)))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_special_for_in_with_hash_map_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -3765,6 +3985,47 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_2_test(void)
 
     // octaspire_container_hash_map_t is not ordered map, so we cannot know for sure which
     // two values are the first ones in the map.
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_for_in_with_hash_map_step_minus_2_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define h [h] (hash-map 'a 1 'b 2 'c 3))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define e [e] (env-new))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(for i in h step -2 (define e (nth 0 i) [-] (nth 1 i)))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
+        "\tAt form: >>>>>>>>>>(for i in h step -2 (define e (nth 0 i) [-] (nth 1 i)))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6344,16 +6605,22 @@ second_run:
     RUN_TEST(octaspire_dern_vm_run_user_factorial_function_test);
     RUN_TEST(octaspire_dern_vm_special_for_from_0_to_10_test);
     RUN_TEST(octaspire_dern_vm_special_for_from_0_to_10_with_step_2_test);
+    RUN_TEST(octaspire_dern_vm_special_for_from_0_to_10_with_step_minus_2_failure_test);
     RUN_TEST(octaspire_dern_vm_special_for_from_10_to_0_test);
     RUN_TEST(octaspire_dern_vm_special_for_from_10_to_0_with_step_2_test);
+    RUN_TEST(octaspire_dern_vm_special_for_from_10_to_0_with_step_minus_2_failure_test);
     RUN_TEST(octaspire_dern_vm_special_for_in_with_string_test);
     RUN_TEST(octaspire_dern_vm_special_for_in_with_string_step_2_test);
+    RUN_TEST(octaspire_dern_vm_special_for_in_with_string_step_minus_2_failure_test);
     RUN_TEST(octaspire_dern_vm_special_for_in_with_vector_of_strings_test);
     RUN_TEST(octaspire_dern_vm_special_for_in_with_vector_of_strings_step_2_test);
+    RUN_TEST(octaspire_dern_vm_special_for_in_with_vector_of_strings_step_minus_2_failure_test);
     RUN_TEST(octaspire_dern_vm_special_for_in_with_environment_test);
     RUN_TEST(octaspire_dern_vm_special_for_in_with_environment_step_2_test);
+    RUN_TEST(octaspire_dern_vm_special_for_in_with_environment_step_minus_2_failure_test);
     RUN_TEST(octaspire_dern_vm_special_for_in_with_hash_map_test);
     RUN_TEST(octaspire_dern_vm_special_for_in_with_hash_map_step_2_test);
+    RUN_TEST(octaspire_dern_vm_special_for_in_with_hash_map_step_minus_2_failure_test);
     RUN_TEST(octaspire_dern_vm_error_in_function_body_is_reported_test);
     RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_0_and_string_abc_test);
     RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_1_and_string_abc_test);

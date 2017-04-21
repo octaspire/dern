@@ -879,6 +879,21 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                 return result;
             }
 
+            if (requiredStepSize->value.integer <= 0)
+            {
+                octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "The 'step' of special 'for' must be larger than zero. "
+                    "Now it is %" PRId32 ".",
+                    requiredStepSize->value.integer);
+
+                octaspire_dern_vm_pop_value(vm, container);
+                octaspire_dern_vm_pop_value(vm, arguments);
+
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return result;
+            }
+
             stepSize = requiredStepSize->value.integer;
         }
 
@@ -1262,6 +1277,23 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                 octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return result;
             }
+
+            if (requiredStepSize->value.integer <= 0)
+            {
+                octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "The 'step' of special 'for' must be larger than zero. "
+                    "Now it is %" PRId32 ".",
+                    requiredStepSize->value.integer);
+
+                octaspire_dern_vm_pop_value(vm, toValue);
+                octaspire_dern_vm_pop_value(vm, fromValue);
+                octaspire_dern_vm_pop_value(vm, arguments);
+
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return result;
+            }
+
 
             stepSize = requiredStepSize->value.integer;
         }
