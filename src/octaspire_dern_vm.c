@@ -531,6 +531,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new(
         abort();
     }
 
+    // /
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "/",
+        octaspire_dern_vm_builtin_slash,
+        1,
+        "Divide number arguments",
+        env))
+    {
+        abort();
+    }
+
     // *
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,

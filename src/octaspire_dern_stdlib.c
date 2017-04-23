@@ -3667,6 +3667,160 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_mod(
         firstArgVal->value.integer % secondArgVal->value.integer);
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_slash(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs < 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin '/' expects at least one numeric argument (integer or real).");
+    }
+
+    if (numArgs == 1)
+    {
+        octaspire_dern_value_t *currentArg =
+            octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+        octaspire_helpers_verify(currentArg);
+
+        switch (currentArg->typeTag)
+        {
+            case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+            {
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                double const currentArgAsReal = currentArg->value.integer;
+
+                if (currentArgAsReal == 0)
+                {
+                    return octaspire_dern_vm_create_new_value_error_from_c_string(
+                        vm,
+                        "First argument to builtin '/' cannot be zero. "
+                        "It would cause division by zero.");
+                }
+                else
+                {
+                    return octaspire_dern_vm_create_new_value_real(vm, 1.0 / currentArgAsReal);
+                }
+            }
+            break;
+
+            case OCTASPIRE_DERN_VALUE_TAG_REAL:
+            {
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                double const currentArgAsReal = currentArg->value.real;
+
+                if (currentArgAsReal == 0)
+                {
+                    return octaspire_dern_vm_create_new_value_error_from_c_string(
+                        vm,
+                        "First argument to builtin '/' cannot be zero. "
+                        "It would cause division by zero.");
+                }
+                else
+                {
+                    return octaspire_dern_vm_create_new_value_real(vm, 1.0 / currentArgAsReal);
+                }
+            }
+            break;
+
+            default:
+            {
+                if (currentArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+                {
+                    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    return currentArg;
+                }
+
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin '/' expects numeric arguments (integer or real). First argument has type %s.",
+                    octaspire_dern_value_helper_get_type_as_c_string(currentArg->typeTag));
+            }
+            break;
+        }
+    }
+
+    double realResult = 1;
+
+    for (size_t i = 0; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t *currentArg =
+            octaspire_dern_value_as_vector_get_element_at(arguments, i);
+
+        octaspire_helpers_verify(currentArg);
+
+        double currentValueAsNumber = 0;
+
+        switch (currentArg->typeTag)
+        {
+            case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+            {
+                currentValueAsNumber = currentArg->value.integer;
+            }
+            break;
+
+            case OCTASPIRE_DERN_VALUE_TAG_REAL:
+            {
+                currentValueAsNumber = currentArg->value.real;
+            }
+            break;
+
+            default:
+            {
+                if (currentArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+                {
+                    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    return currentArg;
+                }
+
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin '/' expects numeric arguments (integer or real). %zuth argument has type %s.",
+                    i + 1,
+                    octaspire_dern_value_helper_get_type_as_c_string(currentArg->typeTag));
+            }
+            break;
+        }
+
+        if (i == 0)
+        {
+            realResult = currentValueAsNumber;
+        }
+        else
+        {
+            if (currentValueAsNumber == 0)
+            {
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Argument number %zu to builtin '/' cannot be zero. "
+                    "It would cause division by zero.",
+                    i + 1);
+            }
+
+            realResult /= currentValueAsNumber;
+        }
+    }
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_real(vm, realResult);
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_times(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

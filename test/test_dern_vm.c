@@ -591,6 +591,202 @@ TEST octaspire_dern_vm_builtin_read_and_eval_string_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_slash_1_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(/ 1)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_REAL, evaluatedValue->typeTag);
+    ASSERT_IN_RANGE(1, evaluatedValue->value.real, 0.000001);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_slash_10_2_2_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(/ 10 2 2)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_REAL, evaluatedValue->typeTag);
+    ASSERT_IN_RANGE(2.5, evaluatedValue->value.real, 0.000001);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_slash_0_2_2_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(/ 0 2 2)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_REAL, evaluatedValue->typeTag);
+    ASSERT_IN_RANGE(0, evaluatedValue->value.real, 0.000001);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_slash_100_10_0dot5_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(/ 100 10 0.5)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_REAL, evaluatedValue->typeTag);
+    ASSERT_IN_RANGE(20, evaluatedValue->value.real, 0.000001);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_slash_100_minus10_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(/ 100 -10)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_REAL, evaluatedValue->typeTag);
+    ASSERT_IN_RANGE(-10, evaluatedValue->value.real, 0.000001);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_slash_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(/)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin '/' expects at least one numeric argument (integer or real).\n"
+        "\tAt form: >>>>>>>>>>(/)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_slash_0_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(/ 0)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "First argument to builtin '/' cannot be zero. It would cause division by zero.\n"
+        "\tAt form: >>>>>>>>>>(/ 0)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_slash_10_2_0_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(/ 10 2 0)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Argument number 3 to builtin '/' cannot be zero. It would cause division by zero.\n"
+        "\tAt form: >>>>>>>>>>(/ 10 2 0)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_slash_10_2_character_a_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(/ 10 2 |a|)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin '/' expects numeric arguments (integer or real). 3th argument has type character.\n"
+        "\tAt form: >>>>>>>>>>(/ 10 2 |a|)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_mod_5_mod_3_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -6490,6 +6686,15 @@ second_run:
     RUN_TEST(octaspire_dern_vm_builtin_doc_for_integer_value_test);
     RUN_TEST(octaspire_dern_vm_builtin_read_and_eval_path_test);
     RUN_TEST(octaspire_dern_vm_builtin_read_and_eval_string_test);
+    RUN_TEST(octaspire_dern_vm_builtin_slash_1_test);
+    RUN_TEST(octaspire_dern_vm_builtin_slash_10_2_2_test);
+    RUN_TEST(octaspire_dern_vm_builtin_slash_0_2_2_test);
+    RUN_TEST(octaspire_dern_vm_builtin_slash_100_10_0dot5_test);
+    RUN_TEST(octaspire_dern_vm_builtin_slash_100_minus10_test);
+    RUN_TEST(octaspire_dern_vm_builtin_slash_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_slash_0_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_slash_10_2_0_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_slash_10_2_character_a_failure_test);
     RUN_TEST(octaspire_dern_vm_builtin_mod_5_mod_3_test);
     RUN_TEST(octaspire_dern_vm_builtin_mod_0_mod_3_test);
     RUN_TEST(octaspire_dern_vm_builtin_mod_3_mod_3_test);
