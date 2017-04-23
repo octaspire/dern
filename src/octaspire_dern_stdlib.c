@@ -3594,6 +3594,79 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_pop_front(
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_mod(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'mod' expects two arguments (integers). %zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t * const firstArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    if (firstArgVal->typeTag != OCTASPIRE_DERN_VALUE_TAG_INTEGER)
+    {
+        if (firstArgVal->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+        {
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return firstArgVal;
+        }
+
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The first argument to builtin 'mod' must be integer. Type %s was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArgVal->typeTag));
+    }
+
+    octaspire_dern_value_t * const secondArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 1);
+
+    if (secondArgVal->typeTag != OCTASPIRE_DERN_VALUE_TAG_INTEGER)
+    {
+        if (secondArgVal->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+        {
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return secondArgVal;
+        }
+
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The second argument to builtin 'mod' must be integer. Type %s was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArgVal->typeTag));
+    }
+
+    if (secondArgVal->value.integer == 0)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "The second argument to builtin 'mod' cannot be zero. "
+            "It would cause division by zero.");
+    }
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_integer(
+        vm,
+        firstArgVal->value.integer % secondArgVal->value.integer);
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_times(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

@@ -519,6 +519,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new(
         abort();
     }
 
+    // mod
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "mod",
+        octaspire_dern_vm_builtin_mod,
+        1,
+        "Calculate modulo of two integers",
+        env))
+    {
+        abort();
+    }
+
     // *
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,

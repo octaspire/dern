@@ -591,6 +591,111 @@ TEST octaspire_dern_vm_builtin_read_and_eval_string_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_mod_5_mod_3_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(mod 5 3)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(2,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_mod_0_mod_3_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(mod 0 3)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_mod_3_mod_3_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(mod 3 3)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_mod_4_mod_3_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(mod 4 3)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(1,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_mod_4_mod_0_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(mod 4 0)");
+
+    ASSERT(evaluatedValue);
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "The second argument to builtin 'mod' cannot be zero. "
+        "It would cause division by zero.\n"
+        "\tAt form: >>>>>>>>>>(mod 4 0)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_plus_1_2_3_4_minus_2_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -6385,6 +6490,11 @@ second_run:
     RUN_TEST(octaspire_dern_vm_builtin_doc_for_integer_value_test);
     RUN_TEST(octaspire_dern_vm_builtin_read_and_eval_path_test);
     RUN_TEST(octaspire_dern_vm_builtin_read_and_eval_string_test);
+    RUN_TEST(octaspire_dern_vm_builtin_mod_5_mod_3_test);
+    RUN_TEST(octaspire_dern_vm_builtin_mod_0_mod_3_test);
+    RUN_TEST(octaspire_dern_vm_builtin_mod_3_mod_3_test);
+    RUN_TEST(octaspire_dern_vm_builtin_mod_4_mod_3_test);
+    RUN_TEST(octaspire_dern_vm_builtin_mod_4_mod_0_failure_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_1_2_3_4_minus_2_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_1_2_3_4_minus_2_2dot5_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_string_cat_dog_and_string_space_and_string_zebra_test);
