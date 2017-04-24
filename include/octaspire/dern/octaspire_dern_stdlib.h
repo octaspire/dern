@@ -48,6 +48,11 @@ octaspire_dern_value_t *octaspire_dern_vm_special_and(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
+octaspire_dern_value_t *octaspire_dern_vm_special_or(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
 octaspire_dern_value_t *octaspire_dern_vm_special_do(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

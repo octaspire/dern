@@ -2269,6 +2269,54 @@ octaspire_dern_value_t *octaspire_dern_vm_special_and(
     return result;
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_special_or(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    if (octaspire_dern_value_as_vector_get_length(arguments) == 0)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_boolean(vm, false);
+    }
+
+    octaspire_dern_value_t *result = 0;
+
+    for (size_t i = 0; i < octaspire_dern_value_as_vector_get_length(arguments); ++i)
+    {
+        octaspire_dern_value_t * const arg =
+            octaspire_dern_value_as_vector_get_element_at(
+                arguments,
+                i);
+
+        octaspire_helpers_verify(arg);
+
+        result = octaspire_dern_vm_eval(vm, arg, environment);
+
+        if (octaspire_dern_vm_get_function_return(vm))
+        {
+            result = octaspire_dern_vm_get_function_return(vm);
+            break;
+        }
+
+        if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_BOOLEAN)
+        {
+            if (result->value.boolean)
+            {
+                break;
+            }
+        }
+    }
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_special_do(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

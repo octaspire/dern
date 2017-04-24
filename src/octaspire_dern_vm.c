@@ -307,7 +307,23 @@ octaspire_dern_vm_t *octaspire_dern_vm_new(
         "and",
         octaspire_dern_vm_special_and,
         0,
-        "Evaluate values until false is found. Return the last evaluated value",
+        "Evaluate values until 'false' is found. Any remaining values are not evaluated. "
+        "Return the last evaluated value. "
+        "If there are no values, then 'true' is returned.",
+        env))
+    {
+        abort();
+    }
+
+    // or
+    if (!octaspire_dern_vm_create_and_register_new_special(
+        self,
+        "or",
+        octaspire_dern_vm_special_or,
+        0,
+        "Evaluate values until 'true' is found. Any remaining values are not evaluated. "
+        "Return the last evaluated value. "
+        "If there are no values, then 'false' is returned.",
         env))
     {
         abort();
