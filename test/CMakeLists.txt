@@ -33,6 +33,6 @@ if(OCTASPIRE_DERN_COVERAGE)
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} --coverage")
 endif(OCTASPIRE_DERN_COVERAGE)
 
-target_link_libraries(octaspire-dern-test-runner octaspire_dern)
+target_link_libraries(octaspire-dern-test-runner octaspire-dern)
 
 add_test(octaspire-dern-test-runner octaspire-dern-test-runner)
