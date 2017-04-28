@@ -17,7 +17,7 @@
 cmake_minimum_required(VERSION 2.8.12)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 19)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 20)
 set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
 
 set(OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/resource/")
@@ -74,7 +74,7 @@ if(OCTASPIRE_DERN_COVERAGE)
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} --coverage")
 endif(OCTASPIRE_DERN_COVERAGE)
 
-target_link_libraries(octaspire_dern octaspire_core m)
+target_link_libraries(octaspire_dern octaspire-core m)
 add_executable(octaspire-dern-repl "src/octaspire_dern_repl.c")
 target_link_libraries(octaspire-dern-repl octaspire_dern)
 set_property(TARGET octaspire-dern-repl PROPERTY C_STANDARD 99)
