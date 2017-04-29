@@ -23,6 +23,16 @@ cmake ..
 make
 ```
 
+To build on Haiku (Version Walter (Revision hrev51127) x86_gcc2):
+
+```shell
+pkgman install gcc_x86 cmake_x86
+git clone https://github.com/octaspire/dern.git
+cd dern/build
+CC=gcc-x86 cmake ..
+make
+```
+
 To run the unit tests:
 
 ```shell
@@ -41,6 +51,7 @@ Language manual can be found from doc/book or from here:
 Video of Dern in action:
 [![asciicast](https://asciinema.org/a/112216.png)](https://asciinema.org/a/112216)
 
-For a game (work in progress) being written with Dern and C99 see:
-[https://github.com/octaspire/maze](https://github.com/octaspire/maze)
+For games (work in progress) being written with Dern and C99 see:
+[http://www.octaspire.com/maze](http://www.octaspire.com/maze)
+[http://www.octaspire.com/lightboard](http://www.octaspire.com/lightboard)
 
