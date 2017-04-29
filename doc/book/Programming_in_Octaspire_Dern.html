@@ -836,8 +836,8 @@ when this first piece/draft of documentation is written in a hurry.</td>
 programs are run:</p></div>
 <script type="text/javascript" src="https://asciinema.org/a/112216.js" id="asciicast-112216" async></script>
 <div class="paragraph"><p>You can also see Dern in "real" use at:
-<a href="https://github.com/octaspire/maze">https://github.com/octaspire/maze</a></p></div>
-<div class="paragraph"><p>Octaspire Maze is a game (work in progress) that is being written using Dern and C99.</p></div>
+<a href="http://www.octaspire.com/maze">Maze</a> and <a href="http://www.octaspire.com/lightboard">Lightboard</a>.</p></div>
+<div class="paragraph"><p>Octaspire Maze and Lightboard are games (work in progress) that are being written using Dern and C99.</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -857,6 +857,14 @@ make
 git clone https://github.com/octaspire/dern.git
 <span class="nb">cd</span> dern/build
 cmake ..
+make
+</pre></div></div></div>
+<div class="paragraph"><p>To build on Haiku (Version Walter (Revision hrev51127) x86_gcc2):</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>pkgman install gcc_x86 cmake_x86
+git clone https://github.com/octaspire/dern.git
+<span class="nb">cd</span> dern/build
+<span class="nv">CC</span><span class="o">=</span>gcc-x86 cmake ..
 make
 </pre></div></div></div>
 <div class="paragraph"><p>On different systems the required commands can vary. In any case, You should install
@@ -1139,8 +1147,8 @@ Small example:</p></div>
 <div class="sect2">
 <h3 id="_embedding_in_c_programs">Embedding in C programs</h3>
 <div class="paragraph"><p>This section is not ready yet. In the meantime you can see Dern in "real" use at:
-<a href="https://github.com/octaspire/maze">https://github.com/octaspire/maze</a></p></div>
-<div class="paragraph"><p>Octaspire Maze is a game (work in progress) that is being written using Dern and C99.</p></div>
+<a href="http://www.octaspire.com/maze">Maze</a> and <a href="http://www.octaspire.com/lightboard">Lightboard</a>.</p></div>
+<div class="paragraph"><p>Octaspire Maze and Lightboard are games (work in progress) that are being written using Dern and C99.</p></div>
 </div>
 </div>
 </div>
@@ -1149,7 +1157,7 @@ Small example:</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-04-21 21:04:04 EEST
+ 2017-04-30 00:19:01 EEST
 </div>
 </div>
 </body>

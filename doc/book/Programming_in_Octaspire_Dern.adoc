@@ -41,9 +41,9 @@ programs are run:
 ++++
 
 You can also see Dern in "real" use at:
-https://github.com/octaspire/maze[https://github.com/octaspire/maze]
+http://www.octaspire.com/maze[Maze] and http://www.octaspire.com/lightboard[Lightboard].
 
-Octaspire Maze is a game (work in progress) that is being written using Dern and C99.
+Octaspire Maze and Lightboard are games (work in progress) that are being written using Dern and C99.
 
 == Building from source
 
@@ -72,6 +72,20 @@ sudo pacman -S cmake git gcc make
 git clone https://github.com/octaspire/dern.git
 cd dern/build
 cmake ..
+make
+----
+
+To build on Haiku (Version Walter (Revision hrev51127) x86_gcc2):
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+pkgman install gcc_x86 cmake_x86
+git clone https://github.com/octaspire/dern.git
+cd dern/build
+CC=gcc-x86 cmake ..
 make
 ----
 
@@ -446,8 +460,7 @@ TODO
 === Embedding in C programs
 
 This section is not ready yet. In the meantime you can see Dern in "real" use at:
-https://github.com/octaspire/maze[https://github.com/octaspire/maze]
+http://www.octaspire.com/maze[Maze] and http://www.octaspire.com/lightboard[Lightboard].
 
-
-Octaspire Maze is a game (work in progress) that is being written using Dern and C99.
+Octaspire Maze and Lightboard are games (work in progress) that are being written using Dern and C99.
 
