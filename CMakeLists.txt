@@ -17,7 +17,7 @@
 cmake_minimum_required(VERSION 2.8.12)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 25)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 26)
 set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
 
 set(OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/resource/")
@@ -35,10 +35,13 @@ message("== Build type of ${PROJECT_NAME} is ${CMAKE_BUILD_TYPE}")
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/.gitmodules")
     message("== Updating git submodules of ${PROJECT_NAME}...")
+    message("-----------------------------------------------")
     execute_process(
         COMMAND git submodule update --init --recursive --remote
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
+    message("== Submodules of ${PROJECT_NAME} updated")
+    message("-----------------------------------------------")
 endif()
 
 if(NOT TARGET octaspire-core)
