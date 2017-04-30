@@ -15,10 +15,13 @@
 # limitations under the License.
 #******************************************************************************/
 cmake_minimum_required(VERSION 2.8.12)
+project(octaspire-dern C)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 26)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 27)
 set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
+
+message("== Building ${PROJECT_NAME} ${OCTASPIRE_DERN_CONFIG_VERSION_MAJOR}.${OCTASPIRE_DERN_CONFIG_VERSION_MINOR}.${OCTASPIRE_DERN_CONFIG_VERSION_PATCH}")
 
 set(OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/resource/")
 
@@ -30,7 +33,6 @@ if(NOT CMAKE_BUILD_TYPE)
         "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel. " FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
-project(octaspire-dern C)
 message("== Build type of ${PROJECT_NAME} is ${CMAKE_BUILD_TYPE}")
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/.gitmodules")
