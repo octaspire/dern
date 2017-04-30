@@ -4716,6 +4716,57 @@ TEST octaspire_dern_vm_builtin_return_in_special_do_inside_function_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_special_do_error_stops_evaluation_and_is_reported_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define counter [counter] 0)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(do (++ counter))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(1,                                evaluatedValue->value.integer);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(do (++ counter) (NoSuchFunction) (++ counter))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
+        "\tAt form: >>>>>>>>>>(NoSuchFunction)<<<<<<<<<<\n\n"
+        "\tAt form: >>>>>>>>>>(do (++ counter) (NoSuchFunction) (++ counter))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "counter");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(2,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_return_inside_function_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -6968,6 +7019,7 @@ second_run:
     RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_3_and_hash_map_1a_2b_3c_failure_test);
     RUN_TEST(octaspire_dern_vm_changing_atom_doesnt_change_another_defined_from_it_test);
     RUN_TEST(octaspire_dern_vm_builtin_return_in_special_do_inside_function_test);
+    RUN_TEST(octaspire_dern_vm_special_do_error_stops_evaluation_and_is_reported_test);
     RUN_TEST(octaspire_dern_vm_builtin_return_inside_function_test);
     RUN_TEST(octaspire_dern_vm_builtin_return_in_special_for_with_numeric_range_inside_function_test);
     RUN_TEST(octaspire_dern_vm_builtin_return_in_special_for_with_collection_inside_function_test);

@@ -2354,6 +2354,22 @@ octaspire_dern_value_t *octaspire_dern_vm_special_do(
             //octaspire_dern_vm_set_function_return(vm, 0);
             break;
         }
+
+        if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+        {
+            octaspire_container_utf8_string_t *tmpStr =
+                octaspire_dern_value_to_string(arg, octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_container_utf8_string_concatenate_format(
+                result->value.string,
+                "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
+                octaspire_container_utf8_string_get_c_string(tmpStr));
+
+            octaspire_container_utf8_string_release(tmpStr);
+            tmpStr = 0;
+
+            break;
+        }
     }
 
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
