@@ -15,6 +15,7 @@
 # limitations under the License.
 #******************************************************************************/
 cmake_minimum_required(VERSION 2.8.12)
+project(octaspire-dern-test-runner C)
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/resource" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/")
 file(GLOB SOURCES "*.c")
 include_directories(${OCTASPIRE_DERN_INCLUDE_DIR})
@@ -32,6 +33,11 @@ endif(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
 if(OCTASPIRE_DERN_COVERAGE)
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} --coverage")
 endif(OCTASPIRE_DERN_COVERAGE)
+
+if(NOT WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE GREATEST_ENABLE_ANSI_COLORS=1)
+    message("== Enabled ANSI colors for ${PROJECT_NAME}")
+endif(NOT WIN32)
 
 target_link_libraries(octaspire-dern-test-runner octaspire-dern)
 

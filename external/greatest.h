@@ -41,17 +41,24 @@
 extern "C" {
 #endif
 
-#define ANSI_COLOR_RED    "\x1B[31m"
-#define ANSI_COLOR_GREEN  "\x1B[32m"
-#define ANSI_COLOR_YELLOW "\x1B[33m"
-#define ANSI_COLOR_WHITE  "\x1B[37m"
-#define ANSI_COLOR_DGRAY  "\x1B[1;30m"
-#define ANSI_COLOR_RESET  "\x1B[0m"
+#ifdef GREATEST_ENABLE_ANSI_COLORS
+#define GREATEST_ANSI_COLOR_RED    "\x1B[31m"
+#define GREATEST_ANSI_COLOR_GREEN  "\x1B[32m"
+#define GREATEST_ANSI_COLOR_YELLOW "\x1B[33m"
+#define GREATEST_ANSI_COLOR_DGRAY  "\x1B[1;30m"
+#define GREATEST_ANSI_COLOR_RESET  "\x1B[0m"
+#else
+#define GREATEST_ANSI_COLOR_RED    ""
+#define GREATEST_ANSI_COLOR_GREEN  ""
+#define GREATEST_ANSI_COLOR_YELLOW ""
+#define GREATEST_ANSI_COLOR_DGRAY  ""
+#define GREATEST_ANSI_COLOR_RESET  ""
+#endif
 
-/* 1.2.1 */
+/* 1.2.2 */
 #define GREATEST_VERSION_MAJOR 1
 #define GREATEST_VERSION_MINOR 2
-#define GREATEST_VERSION_PATCH 1
+#define GREATEST_VERSION_PATCH 2
 
 /* A unit testing system for C, contained in 1 file.
  * It doesn't use dynamic allocation or depend on anything
@@ -230,9 +237,14 @@ typedef enum {
 
 /* Struct containing all test runner state. */
 typedef struct greatest_run_info {
-    unsigned int flags;
+    unsigned char flags;
     unsigned char verbosity;
+    unsigned char pad_0[2];
+
     unsigned int tests_run;     /* total test count */
+
+    /* currently running test suite */
+    greatest_suite_info suite;
 
     /* overall pass/fail/skip counts */
     unsigned int passed;
@@ -240,12 +252,10 @@ typedef struct greatest_run_info {
     unsigned int skipped;
     unsigned int assertions;
 
-    /* currently running test suite */
-    greatest_suite_info suite;
-
     /* info to print about the most recent failure */
-    const char *fail_file;
     unsigned int fail_line;
+    unsigned int pad_1;
+    const char *fail_file;
     const char *msg;
 
     /* current setup/teardown hooks and userdata */
@@ -269,6 +279,8 @@ typedef struct greatest_run_info {
 #endif
 
 #if GREATEST_USE_LONGJMP
+    int pad_jmp_buf;
+    char octaspire_padding[4];
     jmp_buf jump_dest;
 #endif
 } greatest_run_info;
@@ -459,16 +471,16 @@ typedef enum greatest_test_res {
     } while (0)
 
 /* Fail if EXP != GOT (equality comparison by ==).
- * Warning: EXP and GOT will be evaluated more than once on failure. */
+ * Warning: FMT, EXP, and GOT will be evaluated more
+ * than once on failure. */
 #define GREATEST_ASSERT_EQ_FMTm(MSG, EXP, GOT, FMT)                     \
     do {                                                                \
-        const char *greatest_FMT = ( FMT );                             \
         greatest_info.assertions++;                                     \
         if ((EXP) != (GOT)) {                                           \
             fprintf(GREATEST_STDOUT, "\nExpected: ");                   \
-            fprintf(GREATEST_STDOUT, greatest_FMT, EXP);                \
+            fprintf(GREATEST_STDOUT, FMT, EXP);                         \
             fprintf(GREATEST_STDOUT, "\n     Got: ");                   \
-            fprintf(GREATEST_STDOUT, greatest_FMT, GOT);                \
+            fprintf(GREATEST_STDOUT, FMT, GOT);                         \
             fprintf(GREATEST_STDOUT, "\n");                             \
             GREATEST_FAILm(MSG);                                        \
         }                                                               \
@@ -607,7 +619,7 @@ typedef enum greatest_test_res {
     }
 
 #define GREATEST_CLOCK_DIFF(C1, C2)                                     \
-    fprintf(GREATEST_STDOUT, ANSI_COLOR_DGRAY " (%lu ticks, %.3f sec)" ANSI_COLOR_RESET,                  \
+    fprintf(GREATEST_STDOUT, GREATEST_ANSI_COLOR_DGRAY " (%lu ticks, %.3f sec)" GREATEST_ANSI_COLOR_RESET, \
         (long unsigned int) (C2) - (long unsigned int)(C1),             \
         (double)((C2) - (C1)) / (1.0 * (double)CLOCKS_PER_SEC))
 #else
@@ -685,7 +697,7 @@ void greatest_post_test(const char *name, int res) {                    \
         fprintf(GREATEST_STDOUT, "\n");                                 \
         greatest_info.col = 0;                                          \
     }                                                                   \
-    if (GREATEST_STDOUT == stdout) fflush(stdout);                      \
+    fflush(GREATEST_STDOUT);                                            \
 }                                                                       \
                                                                         \
 static void report_suite(void) {                                        \
@@ -724,7 +736,7 @@ static void greatest_run_suite(greatest_suite_cb *suite_cb,             \
     }                                                                   \
     update_counts_and_reset_suite();                                    \
     if (GREATEST_FIRST_FAIL() && greatest_info.failed > 0) { return; }  \
-    fprintf(GREATEST_STDOUT, "\n" ANSI_COLOR_YELLOW "* Suite %s:" ANSI_COLOR_RESET "\n", suite_name);            \
+    fprintf(GREATEST_STDOUT, "\n" GREATEST_ANSI_COLOR_YELLOW "* Suite %s:" GREATEST_ANSI_COLOR_RESET "\n", suite_name);  \
     GREATEST_SET_TIME(greatest_info.suite.pre_suite);                   \
     suite_cb();                                                         \
     GREATEST_SET_TIME(greatest_info.suite.post_suite);                  \
@@ -736,7 +748,7 @@ void greatest_do_pass(const char *name) {                               \
         fprintf(GREATEST_STDOUT, "PASS %s: %s",                         \
             name, greatest_info.msg ? greatest_info.msg : "");          \
     } else {                                                            \
-        fprintf(GREATEST_STDOUT, ANSI_COLOR_GREEN "." ANSI_COLOR_RESET);                                  \
+        fprintf(GREATEST_STDOUT, GREATEST_ANSI_COLOR_GREEN "." GREATEST_ANSI_COLOR_RESET);  \
     }                                                                   \
     greatest_info.suite.passed++;                                       \
 }                                                                       \
@@ -748,14 +760,14 @@ void greatest_do_fail(const char *name) {                               \
             name, greatest_info.msg ? greatest_info.msg : "",           \
             greatest_info.fail_file, greatest_info.fail_line);          \
     } else {                                                            \
-        fprintf(GREATEST_STDOUT, ANSI_COLOR_RED "F" ANSI_COLOR_RESET);                                  \
+        fprintf(GREATEST_STDOUT, GREATEST_ANSI_COLOR_RED "F" GREATEST_ANSI_COLOR_RESET);    \
         greatest_info.col++;                                            \
         /* add linebreak if in line of '.'s */                          \
         if (greatest_info.col != 0) {                                   \
             fprintf(GREATEST_STDOUT, "\n");                             \
             greatest_info.col = 0;                                      \
         }                                                               \
-        fprintf(GREATEST_STDOUT, ANSI_COLOR_RED "FAIL" ANSI_COLOR_RESET " %s: %s (%s:%u)\n",               \
+        fprintf(GREATEST_STDOUT, GREATEST_ANSI_COLOR_RED "FAIL" GREATEST_ANSI_COLOR_RESET " %s: %s (%s:%u)\n",  \
             name,                                                       \
             greatest_info.msg ? greatest_info.msg : "",                 \
             greatest_info.fail_file, greatest_info.fail_line);          \
@@ -917,7 +929,7 @@ static int greatest_memory_equal_cb(const void *exp, const void *got,   \
                                                                         \
 static int greatest_memory_printf_cb(const void *t, void *udata) {      \
     greatest_memory_cmp_env *env = (greatest_memory_cmp_env *)udata;    \
-    unsigned char const *buf = (unsigned char const *)t;                \
+    const unsigned char *buf = (const unsigned char *)t;                \
     unsigned char diff_mark = ' ';                                      \
     FILE *out = GREATEST_STDOUT;                                        \
     size_t i, line_i, line_len = 0;                                     \
@@ -990,28 +1002,7 @@ greatest_run_info greatest_info
                 greatest_info.assertions,                               \
                 greatest_info.assertions == 1 ? "" : "s");              \
             fprintf(GREATEST_STDOUT,                                    \
-                ANSI_COLOR_GREEN "Pass: %u, fail: %u, skip: %u.\n" ANSI_COLOR_RESET,                      \
-                greatest_info.passed,                                   \
-                greatest_info.failed, greatest_info.skipped);           \
-        }                                                               \
-    } while (0)
-
-#define GREATEST_PRINT_REPORT_ERRORS()                                         \
-    do {                                                                \
-        if (!GREATEST_LIST_ONLY()) {                                    \
-            update_counts_and_reset_suite();                            \
-            GREATEST_SET_TIME(greatest_info.end);                       \
-            fprintf(GREATEST_STDOUT,                                    \
-                "\nTotal: %u test%s",                                   \
-                greatest_info.tests_run,                                \
-                greatest_info.tests_run == 1 ? "" : "s");               \
-            GREATEST_CLOCK_DIFF(greatest_info.begin,                    \
-                greatest_info.end);                                     \
-            fprintf(GREATEST_STDOUT, ", %u assertion%s\n",              \
-                greatest_info.assertions,                               \
-                greatest_info.assertions == 1 ? "" : "s");              \
-            fprintf(GREATEST_STDOUT,                                    \
-                ANSI_COLOR_RED "Pass: %u, fail: %u, skip: %u.\n" ANSI_COLOR_RESET,                      \
+                GREATEST_ANSI_COLOR_GREEN "Pass: %u, fail: %u, skip: %u.\n" GREATEST_ANSI_COLOR_RESET,  \
                 greatest_info.passed,                                   \
                 greatest_info.failed, greatest_info.skipped);           \
         }                                                               \
@@ -1020,15 +1011,7 @@ greatest_run_info greatest_info
 /* Report results, exit with exit status based on results. */
 #define GREATEST_MAIN_END()                                             \
     do {                                                                \
-        update_counts_and_reset_suite();                            \
-        if (greatest_all_passed()) \
-        {\
-            GREATEST_PRINT_REPORT();\
-        }\
-        else\
-        {\
-            GREATEST_PRINT_REPORT_ERRORS();\
-        }\
+        GREATEST_PRINT_REPORT();                                        \
         return (greatest_all_passed() ? EXIT_SUCCESS : EXIT_FAILURE);   \
     } while (0)
 

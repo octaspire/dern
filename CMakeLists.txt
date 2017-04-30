@@ -17,7 +17,7 @@
 cmake_minimum_required(VERSION 2.8.12)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 24)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 25)
 set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
 
 set(OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/resource/")
@@ -31,17 +31,23 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 project(octaspire-dern C)
-message("== Build type is ${CMAKE_BUILD_TYPE}")
+message("== Build type of ${PROJECT_NAME} is ${CMAKE_BUILD_TYPE}")
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/.gitmodules")
-    message("== Updating git submodules...")
+    message("== Updating git submodules of ${PROJECT_NAME}...")
     execute_process(
         COMMAND git submodule update --init --recursive --remote
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
 endif()
 
-add_subdirectory(external/octaspire_core)
+if(NOT TARGET octaspire-core)
+    message("== Project ${PROJECT_NAME} adding subdirectory:")
+    message("-----------------------------------------------")
+    add_subdirectory(external/octaspire_core)
+    message("-----------------------------------------------")
+endif(NOT TARGET octaspire-core)
+
 file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
 file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/octaspire/dern/*.h")
 file(GLOB MANUAL1 "${CMAKE_CURRENT_SOURCE_DIR}/doc/man/man1/octaspire-dern-repl.1")
@@ -67,12 +73,19 @@ if(CMAKE_C_COMPILER_ID MATCHES "Clang")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fcolor-diagnostics")
 endif(CMAKE_C_COMPILER_ID MATCHES "Clang")
 
-option(OCTASPIRE_DERN_COVERAGE "OCTASPIRE_DERN_COVERAGE" OFF)
+option(OCTASPIRE_DERN_COVERAGE  "OCTASPIRE_DERN_COVERAGE"  OFF)
+option(OCTASPIRE_DERN_UNIT_TEST "OCTASPIRE_DERN_UNIT_TEST" ON)
 
 if(OCTASPIRE_DERN_COVERAGE)
-    message("== Code coverage enabled")
+    message("== Code coverage enabled for ${PROJECT_NAME}")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} --coverage")
 endif(OCTASPIRE_DERN_COVERAGE)
+
+if(OCTASPIRE_DERN_UNIT_TEST)
+    message("== Unit testing enabled for ${PROJECT_NAME}")
+else()
+    message("== Unit testing disabled for ${PROJECT_NAME}")
+endif(OCTASPIRE_DERN_UNIT_TEST)
 
 target_link_libraries(octaspire-dern octaspire-core m)
 add_executable(octaspire-dern-repl "src/octaspire_dern_repl.c")
@@ -98,7 +111,10 @@ add_custom_target(
     COMMAND asciidoc -a source-highlighter=pygments -a max-width=55em --backend=html5 "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc")
     #COMMAND asciidoc -a source-highlighter=pygments --theme=flask --backend=html5 "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc")
 
-enable_testing()
-include(CTest)
-add_subdirectory(test)
+if(NOT TARGET octaspire-dern-test-runner AND OCTASPIRE_DERN_UNIT_TEST)
+    message("== Building of unit tests enabled for ${PROJECT_NAME}")
+    enable_testing()
+    include(CTest)
+    add_subdirectory(test)
+endif(NOT TARGET octaspire-dern-test-runner AND OCTASPIRE_DERN_UNIT_TEST)
 
