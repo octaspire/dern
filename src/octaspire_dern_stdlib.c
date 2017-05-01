@@ -534,18 +534,30 @@ octaspire_dern_value_t *octaspire_dern_vm_special_eval(
         if (envVal->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT)
         {
             result = octaspire_dern_vm_eval(vm, valueToBeEvaluated, envVal);
+            octaspire_dern_vm_push_value(vm, result);
+            octaspire_dern_value_t *tmpResult = octaspire_dern_vm_eval(vm, result, envVal);
+            octaspire_dern_vm_pop_value(vm, result);
+            result = tmpResult;
         }
         else
         {
             envVal = octaspire_dern_vm_eval(vm, envVal, environment);
             octaspire_dern_vm_push_value(vm, envVal);
             result = octaspire_dern_vm_eval(vm, valueToBeEvaluated, envVal);
+            octaspire_dern_vm_push_value(vm, result);
+            octaspire_dern_value_t *tmpResult = octaspire_dern_vm_eval(vm, result, envVal);
+            octaspire_dern_vm_pop_value(vm, result);
             octaspire_dern_vm_pop_value(vm, envVal);
+            result = tmpResult;
         }
     }
     else
     {
         result = octaspire_dern_vm_eval(vm, valueToBeEvaluated, environment);
+        octaspire_dern_vm_push_value(vm, result);
+        octaspire_dern_value_t *tmpResult = octaspire_dern_vm_eval(vm, result, environment);
+        octaspire_dern_vm_pop_value(vm, result);
+        result = tmpResult;
     }
 
     octaspire_helpers_verify(result);
