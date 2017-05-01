@@ -708,6 +708,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new(
         abort();
     }
 
+    // eval
+    if (!octaspire_dern_vm_create_and_register_new_special(
+        self,
+        "eval",
+        octaspire_dern_vm_special_eval,
+        1,
+        "Evaluate a value (first argument) in global environment or, if given, in then given environment",
+        env))
+    {
+        abort();
+    }
+
     // quote
     if (!octaspire_dern_vm_create_and_register_new_special(
         self,

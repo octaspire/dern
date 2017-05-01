@@ -198,6 +198,11 @@ octaspire_dern_value_t *octaspire_dern_vm_special_define(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
+octaspire_dern_value_t *octaspire_dern_vm_special_eval(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
 octaspire_dern_value_t *octaspire_dern_vm_special_quote(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

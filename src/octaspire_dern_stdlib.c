@@ -497,6 +497,64 @@ octaspire_dern_value_t *octaspire_dern_vm_special_define(
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_special_eval(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    octaspire_container_vector_t * const vec = arguments->value.vector;
+
+    if (octaspire_container_vector_get_length(vec) != 1 &&
+        octaspire_container_vector_get_length(vec) != 2)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special 'eval' expects one or two arguments. %zu arguments were given.",
+            octaspire_container_vector_get_length(vec));
+    }
+
+    octaspire_dern_value_t *valueToBeEvaluated = octaspire_container_vector_get_element_at(vec, 0);
+    octaspire_helpers_verify(valueToBeEvaluated);
+
+    octaspire_dern_vm_push_value(vm, arguments);
+
+    octaspire_dern_value_t *result = 0;
+
+    if (octaspire_container_vector_get_length(vec) == 2)
+    {
+        octaspire_dern_value_t *envVal = octaspire_container_vector_get_element_at(vec, 1);
+        octaspire_helpers_verify(envVal);
+
+        if (envVal->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT)
+        {
+            result = octaspire_dern_vm_eval(vm, valueToBeEvaluated, envVal);
+        }
+        else
+        {
+            envVal = octaspire_dern_vm_eval(vm, envVal, environment);
+            octaspire_dern_vm_push_value(vm, envVal);
+            result = octaspire_dern_vm_eval(vm, valueToBeEvaluated, envVal);
+            octaspire_dern_vm_pop_value(vm, envVal);
+        }
+    }
+    else
+    {
+        result = octaspire_dern_vm_eval(vm, valueToBeEvaluated, environment);
+    }
+
+    octaspire_helpers_verify(result);
+
+    octaspire_dern_vm_pop_value(vm, arguments);
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_special_quote(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
