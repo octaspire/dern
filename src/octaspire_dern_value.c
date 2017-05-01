@@ -1867,6 +1867,70 @@ bool octaspire_dern_value_as_string_push_back(
     }
 }
 
+bool octaspire_dern_value_as_symbol_push_back(
+    octaspire_dern_value_t * const self,
+    octaspire_dern_value_t * const value)
+{
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+
+    switch (value->typeTag)
+    {
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            return octaspire_container_utf8_string_concatenate(
+                self->value.symbol,
+                value->value.string);
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            return octaspire_container_utf8_string_concatenate(
+                self->value.symbol,
+                value->value.symbol);
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        {
+            return octaspire_container_utf8_string_concatenate(
+                self->value.symbol,
+                value->value.character);
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        {
+            bool result = true;
+            for (size_t i = 0; i < octaspire_dern_value_as_vector_get_length(value); ++i)
+            {
+                if (!octaspire_dern_value_as_symbol_push_back(
+                        self,
+                        octaspire_dern_value_as_vector_get_element_at(value, i)))
+                {
+                    result = false;
+                }
+            }
+
+            return result;
+        }
+        break;
+
+        default:
+        {
+            octaspire_container_utf8_string_t *tmpStr =
+                octaspire_dern_value_to_string(value, octaspire_dern_vm_get_allocator(self->vm));
+
+            bool result = octaspire_container_utf8_string_concatenate(self->value.symbol, tmpStr);
+
+            octaspire_container_utf8_string_release(tmpStr);
+            tmpStr = 0;
+
+            return result;
+        }
+    }
+}
+
 bool octaspire_dern_value_as_string_pop_back_ucs_character(
     octaspire_dern_value_t * const self)
 {

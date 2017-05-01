@@ -3385,6 +3385,739 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_vector_1_2_3_and_4_5_6_test(void
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_string_def_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target string] [abc])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s [def])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    char const * const expected = "abcdef";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_symbol_def_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target string] [abc])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s 'def)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    char const * const expected = "abcdef";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_character_d_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target string] [abc])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s |d|)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    char const * const expected = "abcd";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_vector_of_strings_def_ghi_jkl_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target string] [abc])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s '([def] [ghi] [jkl]))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    char const * const expected = "abcdefghijkl";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_nil_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target string] [abc])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s nil)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    char const * const expected = "abcnil";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_booleans_true_and_false_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target string] [abc])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s true false)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    char const * const expected = "abctruefalse";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_integer_128_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target string] [abc])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s 128)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    char const * const expected = "abc128";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_real_3dot14_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target string] [abc])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s 3.14)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    char const * const expected = "abc3.14";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+
+
+
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_string_def_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target symbol] 'abc)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s [def])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    char const * const expected = "abcdef";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_symbol_def_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target symbol] 'abc)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s 'def)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    char const * const expected = "abcdef";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_character_d_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target symbol] 'abc)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s |d|)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    char const * const expected = "abcd";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_vector_of_strings_def_ghi_jkl_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target symbol] 'abc)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s '([def] [ghi] [jkl]))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    char const * const expected = "abcdefghijkl";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_nil_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target symbol] 'abc)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s nil)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    char const * const expected = "abcnil";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_booleans_true_and_false_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target symbol] 'abc)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s true false)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    char const * const expected = "abctruefalse";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_integer_128_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target symbol] 'abc)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s 128)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    char const * const expected = "abc128";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_real_3dot14_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [target symbol] 'abc)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= s 3.14)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    char const * const expected = "abc3.14";
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        expected,
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+
+
+
+
+
+
+
+
+
 TEST octaspire_dern_vm_builtin_plus_equals_with_bad_input_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -6984,6 +7717,26 @@ second_run:
     RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_1_a_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_list_1_a_2_b_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_vector_1_2_3_and_4_5_6_test);
+
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_string_def_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_symbol_def_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_character_d_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_vector_of_strings_def_ghi_jkl_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_nil_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_booleans_true_and_false_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_integer_128_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_real_3dot14_test);
+
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_string_def_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_symbol_def_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_character_d_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_vector_of_strings_def_ghi_jkl_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_nil_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_booleans_true_and_false_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_integer_128_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_real_3dot14_test);
+
+
     RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_bad_input_test);
     RUN_TEST(octaspire_dern_vm_run_user_factorial_function_test);
     RUN_TEST(octaspire_dern_vm_special_for_from_0_to_10_test);

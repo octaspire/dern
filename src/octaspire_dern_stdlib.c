@@ -3449,6 +3449,24 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
         }
         break;
 
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            //bool success = true;
+            for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
+            {
+                octaspire_dern_value_t * const anotherArg =
+                    octaspire_container_vector_get_element_at(vec, i);
+
+                if (!octaspire_dern_value_as_symbol_push_back(firstArg, anotherArg))
+                {
+                    //success = false;
+                }
+            }
+
+            // TODO report possible error?
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         {
             if (octaspire_container_vector_get_length(vec) == 2)
