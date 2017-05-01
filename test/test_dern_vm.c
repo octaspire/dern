@@ -7605,6 +7605,34 @@ TEST octaspire_dern_vm_special_eval_value_from_given_local_env_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_special_eval_eval_eval_f_1_2_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define myFn [myFn] +)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(eval ((eval myFn) 1 2))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(3,                              evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_values_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -7922,6 +7950,7 @@ second_run:
     RUN_TEST(octaspire_dern_vm_special_eval_plus_1_2_test);
     RUN_TEST(octaspire_dern_vm_special_eval_plus_1_2_in_given_global_env_test);
     RUN_TEST(octaspire_dern_vm_special_eval_value_from_given_local_env_test);
+    RUN_TEST(octaspire_dern_vm_special_eval_eval_eval_f_1_2_test);
 
     RUN_TEST(octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_values_test);
 
