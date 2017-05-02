@@ -132,15 +132,47 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
     octaspire_dern_repl_print_banner(useColors);
     octaspire_dern_repl_print_version(useColors);
     printf("\nusage: %s [option] ... [file] ...\n", binaryName);
-    printf("\nwhere [option] is one of the values listen below\n");
-    printf("and every [file] is loaded and evaluated on entering the REPL\n\n");
-    printf("-n  --no-region-allocator : use regular malloc/free instead of region allocator\n");
-    printf("-c  --color-diagnostics   : use colors on unix like systems\n");
-    printf("-e  --enter-repl-always   : start REPL after any given files are evaluated\n");
-    printf("-v  --version             : print version information and exit\n");
-    printf("-h  --help                : print this help message and exit\n");
+    printf("\nwhere [option] is one of the values listed below and every\n");
+    printf("[file] is loaded and evaluated before the REPL is started or closed.\n");
+    printf("If any of -e string or [file] is used, REPL is not started unless -i is used.\n\n");
+    printf("-n        --no-region-allocator : use regular malloc/free instead of region allocator\n");
+    printf("-c        --color-diagnostics   : use colors on unix like systems\n");
+    printf("-i        --interactive         : start REPL after any -e string or [file]s are evaluated\n");
+    printf("-e string --evaluate string     : evaluate a string without entering the REPL (unless -i is given)\n");
+    printf("-v        --version             : print version information and exit\n");
+    printf("-h        --help                : print this help message and exit\n");
 }
 
+
+// Globals for the REPL. ////////////////////////////
+octaspire_container_vector_t      *stringsToBeEvaluated = 0;
+octaspire_memory_allocator_t      *allocatorBootOnly    = 0;
+octaspire_container_utf8_string_t *line                 = 0;
+octaspire_stdio_t                 *stdio                = 0;
+octaspire_input_t                 *input                = 0;
+octaspire_dern_vm_t               *vm                   = 0;
+octaspire_memory_allocator_t      *allocator            = 0;
+
+static void octaspire_dern_repl_private_cleanup(void)
+{
+    octaspire_container_vector_release(stringsToBeEvaluated);
+    stringsToBeEvaluated = 0;
+
+    octaspire_memory_allocator_release(allocatorBootOnly);
+    allocatorBootOnly = 0;
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    octaspire_stdio_release(stdio);
+    stdio = 0;
+
+    octaspire_memory_allocator_release(allocator);
+    allocator = 0;
+}
 
 int main(int argc, char *argv[])
 {
@@ -148,12 +180,71 @@ int main(int argc, char *argv[])
     bool useRegionAllocator = true;
     int  userFilesStartIdx  = -1;
     bool enterReplAlways    = false;
+    bool evaluate           = false;
+
+    if (atexit(octaspire_dern_repl_private_cleanup) != 0)
+    {
+        octaspire_dern_repl_print_message_c_str(
+            "Cannot register the 'atexit' function",
+            OCTASPIRE_DERN_REPL_MESSAGE_FATAL,
+            useColors);
+
+        exit(EXIT_FAILURE);
+    }
+
+    allocatorBootOnly = octaspire_memory_allocator_new(0);
+
+    if (!allocatorBootOnly)
+    {
+        octaspire_dern_repl_print_message_c_str(
+            "Cannot create boot allocator",
+            OCTASPIRE_DERN_REPL_MESSAGE_FATAL,
+            useColors);
+
+        exit(EXIT_FAILURE);
+    }
+
+    stringsToBeEvaluated = octaspire_container_vector_new(
+        sizeof(octaspire_container_utf8_string_t*),
+        true,
+        (octaspire_container_vector_element_callback_t)octaspire_container_utf8_string_release,
+        allocatorBootOnly);
+
+    if (!stringsToBeEvaluated)
+    {
+        octaspire_dern_repl_print_message_c_str(
+            "Cannot create evaluation vector",
+            OCTASPIRE_DERN_REPL_MESSAGE_FATAL,
+            useColors);
+
+        exit(EXIT_FAILURE);
+    }
 
     if (argc > 1)
     {
         for (int i = 1; i < argc; ++i)
         {
-            if (strcmp(argv[i], "-n") == 0 || strcmp(argv[i], "--no-region-allocator") == 0)
+            if (evaluate)
+            {
+                evaluate = false;
+
+                octaspire_container_utf8_string_t *tmp = octaspire_container_utf8_string_new(
+                    argv[i],
+                    allocatorBootOnly);
+
+                if (!tmp)
+                {
+                    octaspire_dern_repl_print_message_c_str(
+                        "Cannot create string to be evaluated",
+                        OCTASPIRE_DERN_REPL_MESSAGE_FATAL,
+                        useColors);
+
+                    exit(EXIT_FAILURE);
+                }
+
+                octaspire_container_vector_push_back_element(stringsToBeEvaluated, &tmp);
+            }
+            else if (strcmp(argv[i], "-n") == 0 || strcmp(argv[i], "--no-region-allocator") == 0)
             {
                 useRegionAllocator = false;
             }
@@ -161,19 +252,23 @@ int main(int argc, char *argv[])
             {
                 useColors = true;
             }
-            else if (strcmp(argv[i], "-e") == 0 || strcmp(argv[i], "--enter-repl-always") == 0)
+            else if (strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "--interactive") == 0)
             {
                 enterReplAlways = true;
+            }
+            else if (strcmp(argv[i], "-e") == 0 || strcmp(argv[i], "--evaluate") == 0)
+            {
+                evaluate = true;
             }
             else if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--version") == 0)
             {
                 octaspire_dern_repl_print_version(useColors);
-                return EXIT_SUCCESS;
+                exit(EXIT_SUCCESS);
             }
             else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
             {
                 octaspire_dern_repl_print_usage(argv[0], useColors);
-                return EXIT_SUCCESS;
+                exit(EXIT_SUCCESS);
             }
             else
             {
@@ -181,7 +276,7 @@ int main(int argc, char *argv[])
                 {
                     printf("Unknown argument %s\n\n", argv[i]);
                     octaspire_dern_repl_print_usage(argv[0], useColors);
-                    return EXIT_FAILURE;
+                    exit(EXIT_FAILURE);
                 }
                 else
                 {
@@ -194,7 +289,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    octaspire_memory_allocator_t *allocator = 0;
+    allocator = 0;
 
     if (useRegionAllocator)
     {
@@ -228,12 +323,39 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    octaspire_container_utf8_string_t *line = 0;
-    octaspire_stdio_t *stdio = octaspire_stdio_new(allocator);
-    octaspire_input_t *input = octaspire_input_new_from_c_string("", allocator);
-    octaspire_dern_vm_t *vm  = octaspire_dern_vm_new(allocator, stdio);
+    line  = 0;
+    stdio = octaspire_stdio_new(allocator);
+    input = octaspire_input_new_from_c_string("", allocator);
+    vm    = octaspire_dern_vm_new(allocator, stdio);
 
     // Eval all files given as cmdline args
+    for (size_t i = 0; i < octaspire_container_vector_get_length(stringsToBeEvaluated); ++i)
+    {
+        octaspire_container_utf8_string_t const * const str =
+            octaspire_container_vector_get_element_at_const(stringsToBeEvaluated, i);
+
+        octaspire_dern_value_t *value =
+            octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+                vm,
+                octaspire_container_utf8_string_get_c_string(str));
+
+        assert(value);
+
+        if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+        {
+            octaspire_container_utf8_string_t *str = octaspire_dern_value_to_string(value, allocator);
+
+            octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
+
+            printf("\n");
+
+            octaspire_container_utf8_string_release(str);
+            str = 0;
+
+            exit(EXIT_FAILURE);
+        }
+    }
+
     if (userFilesStartIdx >= 0)
     {
         for (int i = userFilesStartIdx; i < argc; ++i)
@@ -254,10 +376,14 @@ int main(int argc, char *argv[])
                 octaspire_container_utf8_string_release(str);
                 str = 0;
 
-                return EXIT_FAILURE;
+                exit(EXIT_FAILURE);
             }
         }
 
+    }
+
+    if (octaspire_container_vector_get_length(stringsToBeEvaluated) > 0 || userFilesStartIdx >= 0)
+    {
         if (!enterReplAlways)
         {
             goto octaspire_dern_repl_cleanup;
@@ -370,24 +496,19 @@ moreInput:
 
 
 octaspire_dern_repl_cleanup:
+    // A label can only be part of a statement
     for (size_t i = 0; i < 1; ++i)
     {
     }
 
-    int32_t const exitCode = octaspire_dern_vm_get_exit_code(vm);
+    int32_t exitCode = EXIT_FAILURE;
 
-    octaspire_dern_vm_release(vm);
-    vm = 0;
+    if (vm)
+    {
+        exitCode = octaspire_dern_vm_get_exit_code(vm);
+    }
 
-    octaspire_input_release(input);
-    input = 0;
-
-    octaspire_stdio_release(stdio);
-    stdio = 0;
-
-    octaspire_memory_allocator_release(allocator);
-    allocator = 0;
+    octaspire_dern_repl_private_cleanup();
 
     return exitCode;
 }
-
