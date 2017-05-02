@@ -5825,6 +5825,105 @@ TEST octaspire_dern_vm_builtin_return_in_special_while_inside_function_test(void
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_return_called_without_argument_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define counter [counter] 0)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f [f] '() (fn () (while (< counter 100) (++ counter) (return))))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(f)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_NIL, evaluatedValue->typeTag);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "counter");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(1,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_return_called_with_two_arguments_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define counter [counter] 0)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f [f] '() (fn () (while (< counter 100) (++ counter) (return 1 2))))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(f)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'return' expects zero or one arguments. 2 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(return 1 2)<<<<<<<<<<\n"
+        "\n"
+        "\tAt form: >>>>>>>>>>(while (< counter 100) (++ counter) (return 1 2))<<<<<<<<<<\n"
+        "\n"
+        "\tAt form: >>>>>>>>>>(f)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "counter");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(1,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_four_arguments_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -7883,6 +7982,8 @@ second_run:
     RUN_TEST(octaspire_dern_vm_builtin_return_in_special_for_with_environment_inside_function_test);
     RUN_TEST(octaspire_dern_vm_builtin_return_in_special_for_with_hash_map_inside_function_test);
     RUN_TEST(octaspire_dern_vm_builtin_return_in_special_while_inside_function_test);
+    RUN_TEST(octaspire_dern_vm_builtin_return_called_without_argument_test);
+    RUN_TEST(octaspire_dern_vm_builtin_return_called_with_two_arguments_failure_test);
     RUN_TEST(octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_four_arguments_test);
     RUN_TEST(octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_one_argument_test);
     RUN_TEST(octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_zero_arguments_test);

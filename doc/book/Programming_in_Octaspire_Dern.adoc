@@ -440,6 +440,44 @@ Small example:
     ; .... Start the engine here...))
 ----
 
+*Return* can be called with zero or one argument. If no arguments are given, then *return*
+will return the value *nil*. Short example:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+((fn () (return nil)))   ; Evaluates into 'nil'.
+((fn () (return)))       ; Evaluates into 'nil'.
+----
+
+
+=== Evaluating values
+
+Special *eval* can be used to evaluate a given value. It can be called with one or two arguments.
+The second argument, if present, must be an environment that is used while evaluating. If no
+environment is given, the global environment is used instead.
+
+*Eval* is useful, for example, in situations where you build the name of the function to be
+called at runtime. Small example:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(define level-next [next level] '() (fn ()
+    (level-reset)
+
+    (define lnum [level number] (+ level-current-number 1))
+
+    (if (> lnum number-of-levels) (= lnum 1))
+
+    (define name-of-fn-to-call [name of the level builder function to call] 'level-)
+    (+= name-of-fn-to-call lnum)
+    (eval ((eval name-of-fn-to-call)))))
+----
 
 
 === Mutability and how many times a value can be changed

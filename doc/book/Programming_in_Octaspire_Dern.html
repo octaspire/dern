@@ -1131,6 +1131,32 @@ Small example:</p></div>
     <span class="p">(</span><span class="nb">if </span><span class="p">(</span><span class="nf">!=</span> <span class="nv">errorCode</span> <span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="nf">return</span> <span class="s">[Cannot start the engine]</span><span class="p">))</span>
     <span class="c c-Singleline">; .... Start the engine here...))</span>
 </pre></div></div></div>
+<div class="paragraph"><p><strong>Return</strong> can be called with zero or one argument. If no arguments are given, then <strong>return</strong>
+will return the value <strong>nil</strong>. Short example:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="p">((</span><span class="nf">fn</span> <span class="p">()</span> <span class="p">(</span><span class="nf">return</span> <span class="no">nil</span><span class="p">)))</span>   <span class="c c-Singleline">; Evaluates into &#39;nil&#39;.</span>
+<span class="p">((</span><span class="nf">fn</span> <span class="p">()</span> <span class="p">(</span><span class="nf">return</span><span class="p">)))</span>       <span class="c c-Singleline">; Evaluates into &#39;nil&#39;.</span>
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_evaluating_values">Evaluating values</h3>
+<div class="paragraph"><p>Special <strong>eval</strong> can be used to evaluate a given value. It can be called with one or two arguments.
+The second argument, if present, must be an environment that is used while evaluating. If no
+environment is given, the global environment is used instead.</p></div>
+<div class="paragraph"><p><strong>Eval</strong> is useful, for example, in situations where you build the name of the function to be
+called at runtime. Small example:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">level-next</span> <span class="s">[next level]</span> <span class="o">&#39;</span><span class="p">()</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">()</span>
+    <span class="p">(</span><span class="nf">level-reset</span><span class="p">)</span>
+
+    <span class="p">(</span><span class="nb">define </span><span class="nv">lnum</span> <span class="s">[level number]</span> <span class="p">(</span><span class="nf">+</span> <span class="nv">level-current-number</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="nb">if </span><span class="p">(</span><span class="nf">&gt;</span> <span class="nv">lnum</span> <span class="nv">number-of-levels</span><span class="p">)</span> <span class="p">(</span><span class="nf">=</span> <span class="nv">lnum</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="nb">define </span><span class="nv">name-of-fn-to-call</span> <span class="s">[name of the level builder function to call]</span> <span class="ss">&#39;level-</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">+=</span> <span class="nv">name-of-fn-to-call</span> <span class="nv">lnum</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">eval</span> <span class="p">((</span><span class="nf">eval</span> <span class="nv">name-of-fn-to-call</span><span class="p">)))))</span>
+</pre></div></div></div>
 </div>
 <div class="sect2">
 <h3 id="_mutability_and_how_many_times_a_value_can_be_changed">Mutability and how many times a value can be changed</h3>
@@ -1157,7 +1183,7 @@ Small example:</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-04-30 00:19:01 EEST
+ 2017-05-02 16:00:09 EEST
 </div>
 </div>
 </body>

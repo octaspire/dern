@@ -2243,26 +2243,37 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_return(
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
-    if (numArgs != 1)
+    if (numArgs > 1)
     {
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
+        return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Builtin 'return' expects one argument.");
+            "Builtin 'return' expects zero or one arguments. %zu arguments were given.",
+            numArgs);
     }
 
-    octaspire_dern_vm_push_value(vm, arguments);
+    if (numArgs == 1)
+    {
+        octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+        octaspire_helpers_verify(firstArg);
 
-    octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
-    octaspire_helpers_verify(firstArg);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(octaspire_dern_vm_get_function_return(vm) == 0);
 
-    octaspire_dern_vm_pop_value(vm, arguments);
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-    octaspire_helpers_verify(octaspire_dern_vm_get_function_return(vm) == 0);
+        octaspire_dern_vm_set_function_return(vm, firstArg);
+        return firstArg;
+    }
+    else
+    {
+        octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_nil(vm);
+        octaspire_helpers_verify(result);
 
-    octaspire_dern_vm_set_function_return(vm, firstArg);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify(octaspire_dern_vm_get_function_return(vm) == 0);
 
-    return firstArg;
+        octaspire_dern_vm_set_function_return(vm, result);
+        return result;
+    }
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_vector(
