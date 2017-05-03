@@ -14,7 +14,19 @@ function test-case {
 
     if [ "$DIFF" != "" ]; then
         echo "$(tput setaf 1)----- [$1] FAILED TO PRODUCE CORRECT OUTPUT-----$(tput sgr 0)"
-        colordiff --strip-trailing-cr $RFILE E$1
+        #colordiff --strip-trailing-cr $RFILE E$1
+        ls
+        echo "------------------------------ EFILE --------------------------------"
+        cat E$1
+        echo "------------------------------------------------------------------"
+        echo " "
+        echo "------------------------------ RFILE --------------------------------"
+        cat $RFILE
+        echo "------------------------------------------------------------------"
+        echo " "
+        echo "------------------------------ diff --------------------------------"
+        diff $RFILE E$1
+        echo "------------------------------------------------------------------"
         exit 1
     fi
 
