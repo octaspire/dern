@@ -19,7 +19,7 @@ script:
     - cd CMakeFiles/octaspire-dern.dir/src
     - gcov octaspire_dern_environment.c.gcno octaspire_dern_repl.c.gcno octaspire_dern_value.c.gcno octaspire_dern_lexer.c.gcno octaspire_dern_stdlib.c.gcno octaspire_dern_vm.c.gcno
     - cd ../../../../test/REPL
-    - test-REPL-runner.sh
+    - ./test-REPL-runner.sh
 
 after_success:
       - bash <(curl -s https://codecov.io/bash)
