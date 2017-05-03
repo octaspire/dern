@@ -10,23 +10,11 @@ function test-case {
         exit 1
     fi
 
-    DIFF=$(diff --strip-trailing-cr $RFILE E$1)
+    DIFF=$(diff $RFILE E$1)
 
     if [ "$DIFF" != "" ]; then
         echo "$(tput setaf 1)----- [$1] FAILED TO PRODUCE CORRECT OUTPUT-----$(tput sgr 0)"
-        #colordiff --strip-trailing-cr $RFILE E$1
-        ls
-        echo "------------------------------ EFILE --------------------------------"
-        cat E$1
-        echo "------------------------------------------------------------------"
-        echo " "
-        echo "------------------------------ RFILE --------------------------------"
-        cat $RFILE
-        echo "------------------------------------------------------------------"
-        echo " "
-        echo "------------------------------ diff --------------------------------"
-        diff $RFILE E$1
-        echo "------------------------------------------------------------------"
+        colordiff $RFILE E$1
         exit 1
     fi
 
