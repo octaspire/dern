@@ -1,0 +1,2 @@
+(println [Hello world from file-b.dern])
+(define file-b [file-b] 129)

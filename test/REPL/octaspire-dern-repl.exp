@@ -1,0 +1,143 @@
+#!expect -f
+set timeout 4
+
+spawn ../../build/octaspire-dern-repl -v
+expect {
+    "Octaspire Dern version 0.34.6"
+    {puts "\n\x1B\[32m---------- TEST PASS ----------\x1B\[0m\n"         }
+
+    default
+    {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+}
+close $spawn_id
+
+spawn ../../build/octaspire-dern-repl -e "(println \[{}\] (+ 3 3))"
+expect {
+    "6"
+    {puts "\n\x1B\[32m---------- TEST PASS ----------\x1B\[0m\n"         }
+
+    default
+    {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+}
+close $spawn_id
+
+spawn ../../build/octaspire-dern-repl -e "(print \[{}\] (+ 3 3))" -e "(println \[{}\] (* 5 5))"
+expect {
+    "625"
+    {puts "\n\x1B\[32m---------- TEST PASS ----------\x1B\[0m\n"         }
+
+    default
+    {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+}
+close $spawn_id
+
+spawn ../../build/octaspire-dern-repl file-a.dern
+expect {
+    "Hello world from file-a.dern"
+    {puts "\n\x1B\[32m---------- TEST PASS ----------\x1B\[0m\n"         }
+
+    default
+    {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+}
+close $spawn_id
+
+spawn ../../build/octaspire-dern-repl file-b.dern
+expect {
+    "Hello world from file-b.dern"
+    {puts "\n\x1B\[32m---------- TEST PASS ----------\x1B\[0m\n"         }
+
+    default
+    {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+}
+close $spawn_id
+
+spawn ../../build/octaspire-dern-repl file-a.dern file-b.dern
+expect {
+    -re "Hello world from file-a.dern.*Hello world from file-b.dern"
+    {puts "\n\x1B\[32m---------- TEST PASS ----------\x1B\[0m\n"         }
+
+    default
+    {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+}
+close $spawn_id
+
+spawn ../../build/octaspire-dern-repl -i file-a.dern
+expect {
+    "Hello world from file-a.dern"
+    {
+        send "file-a\r";
+        expect {
+            "128"
+            {send "(exit)\r"; puts "\n\x1B\[32m---------- TEST PASS ----------\x1B\[0m\n"}
+
+            default
+            {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+        }
+    }
+
+    default
+    {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+}
+close $spawn_id
+
+spawn ../../build/octaspire-dern-repl -i file-b.dern
+expect {
+    "Hello world from file-b.dern"
+    {
+        send "file-b\r";
+        expect {
+            "129"
+            {send "(exit)\r"; puts "\n\x1B\[32m---------- TEST PASS ----------\x1B\[0m\n"}
+
+            default
+            {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+        }
+    }
+
+    default
+    {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+}
+close $spawn_id
+
+spawn ../../build/octaspire-dern-repl -i file-a.dern file-b.dern
+expect {
+    -re "Hello world from file-a.dern.*Hello world from file-b.dern"
+    {
+        send "file-a\r";
+        expect {
+            "128"
+            { send "file-b\r";
+              expect {
+                "129"
+                {send "(exit)\r"; puts "\n\x1B\[32m---------- TEST PASS ----------\x1B\[0m\n"}
+
+                default
+                {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+                }
+              }
+            default
+            {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+        }
+    }
+
+    default
+    {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+}
+close $spawn_id
+
+spawn ../../build/octaspire-dern-repl -i -e "(println \[{}\] (+ 3 3))" file-a.dern
+expect {
+    "6"
+    {send "file-a\r";
+         expect {
+            "128"
+            {send "(exit)\r"; puts "\n\x1B\[32m---------- TEST PASS ----------\x1B\[0m\n"}
+
+            default
+            {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+        }
+    }
+
+    default
+    {puts "\n\x1B\[31m---------- TEST FAIL ----------\x1B\[0m\n"; puts $expect_out(buffer); exit 1 }
+}
