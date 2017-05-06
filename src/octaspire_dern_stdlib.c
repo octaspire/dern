@@ -596,6 +596,107 @@ octaspire_dern_value_t *octaspire_dern_vm_special_quote(
     return quotedValue;
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_special_select(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs < 2 || numArgs % 2 != 0)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special 'select' expects at least two arguments and the number of arguments must be "
+            "multiple of two. Now %zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_vm_push_value(vm, arguments);
+
+    for (size_t i = 0; i < numArgs; i += 2)
+    {
+        octaspire_dern_value_t * testResult =
+            octaspire_dern_value_as_vector_get_element_at(arguments, i);
+
+        octaspire_helpers_verify(testResult);
+
+        if (testResult->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL &&
+            octaspire_container_utf8_string_is_equal_to_c_string(testResult->value.symbol, "default"))
+        {
+            if (i != (numArgs-2))
+            {
+                octaspire_dern_vm_pop_value(vm, arguments);
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_from_c_string(
+                    vm,
+                    "'default' must be the last selector in special 'select'.");
+            }
+            else
+            {
+                octaspire_dern_value_t * result = octaspire_dern_vm_eval(
+                    vm,
+                    octaspire_dern_value_as_vector_get_element_at(arguments, i + 1),
+                    environment);
+
+                octaspire_dern_vm_pop_value(vm, arguments);
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return result;
+            }
+        }
+        else
+        {
+            testResult = octaspire_dern_vm_eval(
+                vm,
+                octaspire_dern_value_as_vector_get_element_at(arguments, i),
+                environment);
+
+            octaspire_helpers_verify(testResult);
+
+            if (testResult->typeTag != OCTASPIRE_DERN_VALUE_TAG_BOOLEAN)
+            {
+                if (testResult->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+                {
+                    octaspire_dern_vm_pop_value(vm, arguments);
+                    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    return testResult;
+                }
+                else
+                {
+                    octaspire_dern_vm_pop_value(vm, arguments);
+                    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    return octaspire_dern_vm_create_new_value_error_format(
+                        vm,
+                        "Selectors of special 'select' must evaluate into booleans. Type '%s' was given.",
+                        octaspire_dern_value_helper_get_type_as_c_string(testResult->typeTag));
+                }
+            }
+
+            if (testResult->value.boolean)
+            {
+                octaspire_dern_value_t * result = octaspire_dern_vm_eval(
+                    vm,
+                    octaspire_dern_value_as_vector_get_element_at(arguments, i + 1),
+                    environment);
+
+                octaspire_dern_vm_pop_value(vm, arguments);
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return result;
+            }
+        }
+    }
+
+    octaspire_dern_vm_pop_value(vm, arguments);
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_nil(vm);
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_special_if(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

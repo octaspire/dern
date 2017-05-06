@@ -266,7 +266,292 @@ TEST octaspire_dern_vm_special_if_three_elements_with_function_call_resulting_tr
     octaspire_dern_vm_release(vm);
     vm = 0;
 
-    
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_select_one_true_selector_to_string_a_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(select true [a])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_select_one_false_selector_to_string_a_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(select false [a])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_NIL, evaluatedValue->typeTag);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_select_one_default_selector_to_string_a_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(select default [a])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_select_one_false_and_one_default_selectors_to_string_a_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(select false [p] default [a])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_select_one_false_and_one_true_and_one_default_selectors_to_string_a_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(select false [p] true [a] default [b])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_select_one_false_and_one_true_selectors_to_string_a_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(select false [p] true [a])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_select_function_selectors_evaluating_into_false_and_true_to_string_a_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f1 [f1] '() (fn () false))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define t1 [t1] '() (fn () true))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(select (f1) [p] (t1) [a])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_select_function_selectors_failure_on_unknown_symbol_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f1 [f1] '() (fn () false))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define t1 [t1] '() (fn () true))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(select (f1) [p] (f2) [a])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'f2')\n"
+        "\tAt form: >>>>>>>>>>(select (f1) [p] (f2) [a])<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_select_called_with_zero_arguments_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(select)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'select' expects at least two arguments and the number of arguments must be "
+        "multiple of two. Now 0 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(select)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_select_called_with_one_argument_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(select true)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'select' expects at least two arguments and the number of arguments must be "
+        "multiple of two. Now 1 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(select true)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_select_called_with_three_arguments_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(select true [a] default)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'select' expects at least two arguments and the number of arguments must be "
+        "multiple of two. Now 3 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(select true [a] default)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_select_called_non_boolean_selector_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(select 1 [a] 2 [b])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Selectors of special 'select' must evaluate into booleans. Type 'integer' was given.\n"
+        "\tAt form: >>>>>>>>>>(select 1 [a] 2 [b])<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
     PASS();
 }
 
@@ -7808,12 +8093,27 @@ second_run:
     RUN_TEST(octaspire_dern_vm_create_new_value_integer_test);
     RUN_TEST(octaspire_dern_vm_create_new_value_boolean_and_push_one_test);
     RUN_TEST(octaspire_dern_vm_vm_parse_and_eval_true_amid_whitespace_test);
+
     RUN_TEST(octaspire_dern_vm_special_if_two_elements_false_test);
     RUN_TEST(octaspire_dern_vm_special_if_two_elements_true_test);
     RUN_TEST(octaspire_dern_vm_special_if_three_elements_false_test);
     RUN_TEST(octaspire_dern_vm_special_if_three_elements_true_test);
     RUN_TEST(octaspire_dern_vm_special_if_three_elements_with_function_resulting_true_test);
     RUN_TEST(octaspire_dern_vm_special_if_three_elements_with_function_call_resulting_true_test);
+
+    RUN_TEST(octaspire_dern_vm_special_select_one_true_selector_to_string_a_test);
+    RUN_TEST(octaspire_dern_vm_special_select_one_false_selector_to_string_a_test);
+    RUN_TEST(octaspire_dern_vm_special_select_one_default_selector_to_string_a_test);
+    RUN_TEST(octaspire_dern_vm_special_select_one_false_and_one_default_selectors_to_string_a_test);
+    RUN_TEST(octaspire_dern_vm_special_select_one_false_and_one_true_and_one_default_selectors_to_string_a_test);
+    RUN_TEST(octaspire_dern_vm_special_select_one_false_and_one_true_selectors_to_string_a_test);
+    RUN_TEST(octaspire_dern_vm_special_select_function_selectors_evaluating_into_false_and_true_to_string_a_test);
+    RUN_TEST(octaspire_dern_vm_special_select_function_selectors_failure_on_unknown_symbol_test);
+    RUN_TEST(octaspire_dern_vm_special_select_called_with_zero_arguments_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_select_called_with_one_argument_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_select_called_with_three_arguments_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_select_called_non_boolean_selector_failure_test);
+
     RUN_TEST(octaspire_dern_vm_special_define_integer_value_test);
     RUN_TEST(octaspire_dern_vm_special_define_integer_value_with_explicit_target_global_env_test);
     RUN_TEST(octaspire_dern_vm_special_define_my_inc_function_test);

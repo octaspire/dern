@@ -1051,7 +1051,7 @@ for the above operators should be implemented in the standard library eventually
 </div>
 <div class="sect2">
 <h3 id="_branching_and_selection">Branching and selection</h3>
-<div class="paragraph"><p>Here are few examples:</p></div>
+<div class="paragraph"><p>Here are some examples using <strong>if</strong>:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">if </span><span class="no">true</span>  <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; Yes</span>
 <span class="p">(</span><span class="nb">if </span><span class="no">false</span> <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; nil</span>
@@ -1061,15 +1061,40 @@ for the above operators should be implemented in the standard library eventually
 
 <span class="p">(</span><span class="nb">if </span><span class="no">true</span>  <span class="p">(</span><span class="nf">do</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Yes]</span><span class="p">)</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[OK]</span><span class="p">)))</span>    <span class="c c-Singleline">; Prints Yes|newline|OK</span>
 </pre></div></div></div>
-<div class="admonitionblock">
-<table><tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">Dern should have at some point <strong>select</strong> function that allows
-selection of one of many values.</td>
-</tr></table>
-</div>
+<div class="paragraph"><p>Here are some examples using <strong>select</strong>:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">select</span> <span class="no">true</span> <span class="s">[Yes]</span><span class="p">)</span>            <span class="c c-Singleline">; Yes</span>
+
+<span class="p">(</span><span class="nf">select</span> <span class="no">false</span> <span class="s">[No]</span>
+        <span class="no">true</span>  <span class="s">[Yes]</span><span class="p">)</span>           <span class="c c-Singleline">; Yes</span>
+
+<span class="p">(</span><span class="nf">select</span> <span class="nv">default</span> <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; Yes</span>
+
+<span class="p">(</span><span class="nf">select</span> <span class="no">false</span>   <span class="s">[No]</span>
+        <span class="nv">default</span> <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; Yes</span>
+
+<span class="p">(</span><span class="nf">select</span> <span class="no">false</span>   <span class="s">[No]</span>
+        <span class="no">true</span>    <span class="s">[Maybe]</span>
+        <span class="nv">default</span> <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; Maybe</span>
+
+<span class="p">(</span><span class="nf">select</span> <span class="no">false</span> <span class="s">[Yes]</span><span class="p">)</span>           <span class="c c-Singleline">; nil</span>
+
+
+<span class="p">(</span><span class="nb">define </span><span class="nv">f1</span> <span class="s">[f1]</span> <span class="o">&#39;</span><span class="p">()</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">()</span> <span class="no">true</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">define </span><span class="nv">f2</span> <span class="s">[f2]</span> <span class="o">&#39;</span><span class="p">()</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">()</span> <span class="no">false</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">select</span> <span class="p">(</span><span class="nf">f1</span><span class="p">)</span>  <span class="s">[Yes]</span>
+        <span class="p">(</span><span class="nf">f2</span><span class="p">)</span>  <span class="s">[No]</span>
+        <span class="no">false</span> <span class="s">[Maybe]</span><span class="p">)</span>                      <span class="c c-Singleline">; Yes</span>
+
+<span class="p">(</span><span class="nf">select</span> <span class="p">(</span><span class="nf">f1</span><span class="p">)</span>  <span class="p">(</span><span class="nf">println</span> <span class="s">[Sun is shining]</span><span class="p">)</span>
+        <span class="p">(</span><span class="nf">f2</span><span class="p">)</span>  <span class="p">(</span><span class="nf">println</span> <span class="s">[It rains]</span><span class="p">)</span>
+        <span class="no">false</span> <span class="s">[Maybe]</span>
+        <span class="no">false</span> <span class="mi">2</span>
+        <span class="no">false</span> <span class="mf">3.14</span>
+        <span class="no">false</span> <span class="sc">|a|</span>
+        <span class="no">false</span> <span class="s">[There can be as many selectors as needed]</span><span class="p">)</span>   <span class="c c-Singleline">; Prints: Sun is shining</span>
+</pre></div></div></div>
 </div>
 <div class="sect2">
 <h3 id="_formatted_and_regular_printing">Formatted and regular printing</h3>
@@ -1183,7 +1208,7 @@ called at runtime. Small example:</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-02 16:00:09 EEST
+ 2017-05-06 15:44:22 EEST
 </div>
 </div>
 </body>

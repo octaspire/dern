@@ -331,7 +331,7 @@ for the above operators should be implemented in the standard library eventually
 
 === Branching and selection
 
-Here are few examples:
+Here are some examples using *if*:
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -347,9 +347,47 @@ Here are few examples:
 (if true  (do (println [Yes]) (println [OK])))    ; Prints Yes|newline|OK
 ----
 
-[NOTE]
-Dern should have at some point *select* function that allows
-selection of one of many values.
+
+Here are some examples using *select*:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(select true [Yes])            ; Yes
+
+(select false [No]
+        true  [Yes])           ; Yes
+
+(select default [Yes])         ; Yes
+
+(select false   [No]
+        default [Yes])         ; Yes
+
+(select false   [No]
+        true    [Maybe]
+        default [Yes])         ; Maybe
+
+(select false [Yes])           ; nil
+
+
+(define f1 [f1] '() (fn () true))
+(define f2 [f2] '() (fn () false))
+
+(select (f1)  [Yes]
+        (f2)  [No]
+        false [Maybe])                      ; Yes
+
+(select (f1)  (println [Sun is shining])
+        (f2)  (println [It rains])
+        false [Maybe]
+        false 2
+        false 3.14
+        false |a|
+        false [There can be as many selectors as needed])   ; Prints: Sun is shining
+----
+
 
 
 === Formatted and regular printing

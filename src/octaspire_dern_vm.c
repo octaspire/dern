@@ -732,6 +732,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new(
         abort();
     }
 
+    // select
+    if (!octaspire_dern_vm_create_and_register_new_special(
+        self,
+        "select",
+        octaspire_dern_vm_special_select,
+        1,
+        "Select one of values, default, or no value and evaluate it according to boolean test",
+        env))
+    {
+        abort();
+    }
+
     // if
     if (!octaspire_dern_vm_create_and_register_new_special(
         self,
