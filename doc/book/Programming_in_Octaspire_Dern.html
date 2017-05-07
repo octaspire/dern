@@ -802,6 +802,11 @@ asciidoc.install(2);
 </div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.37.0</p></div>
+</div>
+</div>
 <div class="sect1">
 <h2 id="_about">About</h2>
 <div class="sectionbody">
@@ -832,7 +837,16 @@ Also, English in not my native language, so please bear with me, especially
 when this first piece/draft of documentation is written in a hurry.</td>
 </tr></table>
 </div>
-<div class="paragraph"><p>See Dern in action in the video below. Dern is build from source in Raspberry Pi and some example
+<div class="paragraph"><p>Dern uses
+<a href="http://semver.org">Semantic Versioning 2.0.0</a> version numbering scheme.
+As long as the MAJOR version number is zero anything can change at any time,
+even in backwards incompatible manner.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_see_dern_in_action">See Dern in action</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>See Dern in action the video below. Dern is build from source in Raspberry Pi and some example
 programs are run:</p></div>
 <script type="text/javascript" src="https://asciinema.org/a/112216.js" id="asciicast-112216" async></script>
 <div class="paragraph"><p>You can also see Dern in "real" use at:
@@ -843,7 +857,11 @@ programs are run:</p></div>
 <div class="sect1">
 <h2 id="_building_from_source">Building from source</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>To build Dern from source in Raspberry Pi, Debian or Ubuntu (16.04 LTS) system:</p></div>
+<div class="paragraph"><p>To build Dern without the unit tests, replace <strong>cmake ..</strong> with
+<strong>cmake -DOCTASPIRE_DERN_UNIT_TEST=OFF ..</strong> in the instructions that follow.</p></div>
+<div class="sect2">
+<h3 id="_raspberry_pi_debian_and_ubuntu">Raspberry Pi, Debian and Ubuntu</h3>
+<div class="paragraph"><p>To build Dern from source in Raspberry Pi (Raspbian), Debian or Ubuntu (16.04 LTS) system:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span>sudo apt-get install cmake git
 git clone https://github.com/octaspire/dern.git
@@ -851,6 +869,9 @@ git clone https://github.com/octaspire/dern.git
 cmake ..
 make
 </pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_arch_linux">Arch Linux</h3>
 <div class="paragraph"><p>To build on Arch Linux (Arch Linux ARM) system:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span>sudo pacman -S cmake git gcc make
@@ -859,6 +880,9 @@ git clone https://github.com/octaspire/dern.git
 cmake ..
 make
 </pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_haiku">Haiku</h3>
 <div class="paragraph"><p>To build on Haiku (Version Walter (Revision hrev51127) x86_gcc2):</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span>pkgman install gcc_x86 cmake_x86
@@ -867,11 +891,18 @@ git clone https://github.com/octaspire/dern.git
 <span class="nv">CC</span><span class="o">=</span>gcc-x86 cmake ..
 make
 </pre></div></div></div>
-<div class="paragraph"><p>On different systems the required commands can vary. In any case, You should install
-a <strong>C compiler</strong>, <strong>cmake</strong> and <strong>git</strong>.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_other_systems">Other systems</h3>
+<div class="paragraph"><p>On different systems the required commands can vary. In any case, you should install
+a <strong>C compiler</strong>, <strong>cmake</strong> and <strong>git</strong>. Depending on the system, you might need to install
+also either <strong>make</strong> or <strong>ninja</strong>.</p></div>
 <div class="paragraph"><p>This is all there should be to it; <strong>octaspire core</strong> is included as a git submodule
 and it should be updated and be build automatically, so when make finishes, everything
 should be ready.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_running_dern">Running Dern</h3>
 <div class="paragraph"><p>To run the unit tests:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span>test/octaspire-dern-test-runner
@@ -891,6 +922,7 @@ should be ready.</p></div>
 </td>
 <td class="content">Man pages are not ready yet.</td>
 </tr></table>
+</div>
 </div>
 </div>
 </div>
@@ -916,22 +948,41 @@ should be ready.</p></div>
 <span class="no">nil</span>               <span class="c c-Singleline">; Nil</span>
 <span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">2</span> <span class="sc">|a|</span> <span class="s">[cat]</span><span class="p">)</span>                                   <span class="c c-Singleline">; These are vectors</span>
 <span class="o">&#39;</span><span class="p">()</span>
-<span class="p">(</span><span class="nf">hash-map</span> <span class="ss">&#39;John</span> <span class="s">[likes cats]</span>                       <span class="c c-Singleline">; This is hash map</span>
+<span class="p">(</span><span class="nb">hash-map </span><span class="ss">&#39;John</span> <span class="s">[likes cats]</span>                       <span class="c c-Singleline">; This is hash map</span>
           <span class="ss">&#39;Lisa</span> <span class="s">[likes dogs]</span>
           <span class="ss">&#39;Mike</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">[likes numbers]</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span><span class="p">)</span>
            <span class="mi">1</span>    <span class="sc">|a|</span>
            <span class="s">[Hi]</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div></div></div>
-<div class="paragraph"><p>The text after character <strong>;</strong> is a <strong>comment</strong>. Comments run until the end of the line. Dern
-doesn&#8217;t have multiline comments. Note that string delimiters in Dern are <strong>[</strong> and <strong>]</strong> and not <strong>"</strong>;
+<div class="paragraph"><p>The text after character <strong>;</strong> is a <strong>single line comment</strong>. Single line comments run until the end
+of the line. Dern has also <strong>multiline comments</strong> that are written between <strong>#!</strong> and <strong>!#</strong>.
+Note that string delimiters in Dern are <strong>[</strong> and <strong>]</strong> and not <strong>"</strong>;
 this way dern code can be written inside C-programs without escaping.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_single_and_multiline_comments_making_script_files_executable">Single and multiline comments, making script files executable</h3>
+<div class="paragraph"><p>Below are examples of single and multiline comments:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="c c-Singleline">; This is single line comment.</span>
+
+<span class="cm">#! This is multiline comment.</span>
+<span class="cm">   It can contain multiple lines...</span>
+<span class="cm">   ... !#</span>
+</pre></div></div></div>
+<div class="paragraph"><p>Multiline comments can be used to make script files executable in UNIX-like systems:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="cm">#!/usr/bin/env octaspire-dern-repl</span>
+<span class="cm">!#</span>
+
+<span class="p">(</span><span class="nb">println </span><span class="s">[Hello World]</span><span class="p">)</span>
+</pre></div></div></div>
 </div>
 <div class="sect2">
 <h3 id="_binding_names_to_values_with_define">Binding names to values with define</h3>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">pi</span> <span class="s">[value for pi]</span> <span class="mf">3.14</span><span class="p">)</span>
 <span class="p">(</span><span class="nb">define </span><span class="nv">names</span> <span class="s">[names list]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">John</span> <span class="nv">Lisa</span> <span class="nv">Mark</span><span class="p">))</span>
-<span class="p">(</span><span class="nb">define </span><span class="nv">double</span> <span class="s">[doubles numbers]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">x</span> <span class="s">[this is doubled]</span><span class="p">)</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">(</span><span class="nf">x</span><span class="p">)</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">2</span> <span class="nv">x</span><span class="p">)))</span>
+<span class="p">(</span><span class="nb">define </span><span class="nv">double</span> <span class="s">[doubles numbers]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">x</span> <span class="s">[this is doubled]</span><span class="p">)</span> <span class="p">(</span><span class="nb">fn </span><span class="p">(</span><span class="nf">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">* </span><span class="mi">2</span> <span class="nv">x</span><span class="p">)))</span>
 </pre></div></div></div>
 <div class="paragraph"><p>Here we bind three values to a name: one real, one vector and one function taking one argument.
 Here is an example of using those names:</p></div>
@@ -942,9 +993,9 @@ Here is an example of using those names:</p></div>
 </pre></div></div></div>
 <div class="paragraph"><p>And to see the documentation for these values:</p></div>
 <div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">doc</span> <span class="nv">pi</span><span class="p">)</span>
-<span class="p">(</span><span class="nf">doc</span> <span class="nv">names</span><span class="p">)</span>
-<span class="p">(</span><span class="nf">doc</span> <span class="nv">double</span><span class="p">)</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">doc </span><span class="nv">pi</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">doc </span><span class="nv">names</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">doc </span><span class="nv">double</span><span class="p">)</span>
 </pre></div></div></div>
 <div class="paragraph"><p>The documentation of the function contains also documentation for the parameters.</p></div>
 <div class="paragraph"><p>Function <span class="monospaced">doc</span> can also be used with builtins and specials defined by the standard
@@ -965,75 +1016,75 @@ in Dern&#8217;s standard library are not yet documented properly. This is a work
 container (vector, string, hash-map, etc.) Below is couple of examples:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">i</span> <span class="s">[my counter]</span> <span class="mi">0</span><span class="p">)</span>
-<span class="p">(</span><span class="nf">while</span> <span class="p">(</span><span class="nf">&lt;=</span> <span class="nv">i</span> <span class="mi">10</span><span class="p">)</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Counting at {}...]</span> <span class="nv">i</span><span class="p">)</span> <span class="p">(</span><span class="nf">++</span> <span class="nv">i</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">while </span><span class="p">(</span><span class="nb">&lt;= </span><span class="nv">i</span> <span class="mi">10</span><span class="p">)</span> <span class="p">(</span><span class="nb">println </span><span class="s">[Counting at {}...]</span> <span class="nv">i</span><span class="p">)</span> <span class="p">(</span><span class="nb">++ </span><span class="nv">i</span><span class="p">))</span>
 </pre></div></div></div>
 <div class="paragraph"><p>Numerical for:</p></div>
 <div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">for</span> <span class="nv">i</span> <span class="nv">from</span> <span class="mi">0</span> <span class="nv">to</span> <span class="mi">10</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">from</span> <span class="mi">0</span> <span class="nv">to</span> <span class="mi">10</span> <span class="p">(</span><span class="nb">println </span><span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
 </pre></div></div></div>
 <div class="paragraph"><p>Container for:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">names</span> <span class="s">[names list]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">John</span> <span class="nv">Mark</span> <span class="nv">Lisa</span><span class="p">))</span>
-<span class="p">(</span><span class="nf">for</span> <span class="nv">i</span> <span class="nv">in</span> <span class="nv">names</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">in</span> <span class="nv">names</span> <span class="p">(</span><span class="nb">println </span><span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
 </pre></div></div></div>
 <div class="paragraph"><p>Both the <strong>numerical for</strong> and <strong>container for</strong> support the use of optional <strong>step</strong> to change the
 way the iterator is incremented:</p></div>
 <div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">for</span> <span class="nv">i</span> <span class="nv">from</span> <span class="mi">0</span> <span class="nv">to</span> <span class="mi">10</span> <span class="nv">step</span> <span class="mi">3</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">from</span> <span class="mi">0</span> <span class="nv">to</span> <span class="mi">10</span> <span class="nv">step</span> <span class="mi">3</span> <span class="p">(</span><span class="nb">println </span><span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
 
 <span class="p">(</span><span class="nb">define </span><span class="nv">names</span> <span class="s">[names list]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">John</span> <span class="nv">Mark</span> <span class="nv">Lisa</span><span class="p">))</span>
-<span class="p">(</span><span class="nf">for</span> <span class="nv">i</span> <span class="nv">in</span> <span class="nv">names</span> <span class="nv">step</span> <span class="mi">2</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">in</span> <span class="nv">names</span> <span class="nv">step</span> <span class="mi">2</span> <span class="p">(</span><span class="nb">println </span><span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
 </pre></div></div></div>
 </div>
 <div class="sect2">
 <h3 id="_comparing_and_changing_values_predicates">Comparing and changing values, predicates</h3>
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">&lt;</span>  <span class="mi">1</span> <span class="mi">2</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
-<span class="p">(</span><span class="nf">&lt;</span>  <span class="mi">2</span> <span class="mi">2</span><span class="p">)</span>   <span class="c c-Singleline">; false</span>
-<span class="p">(</span><span class="nf">&gt;</span>  <span class="mi">2</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
-<span class="p">(</span><span class="nf">&lt;=</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
-<span class="p">(</span><span class="nf">&gt;=</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
-<span class="p">(</span><span class="nf">==</span> <span class="mi">3</span> <span class="mi">3</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
-<span class="p">(</span><span class="nf">==</span> <span class="mi">3</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; false</span>
-<span class="p">(</span><span class="nf">!=</span> <span class="mi">3</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
-<span class="p">(</span><span class="nf">+</span> <span class="mi">1</span><span class="p">)</span>      <span class="c c-Singleline">;  1</span>
-<span class="p">(</span><span class="nf">+</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">)</span>    <span class="c c-Singleline">;  2</span>
-<span class="p">(</span><span class="nf">-</span> <span class="mi">1</span><span class="p">)</span>      <span class="c c-Singleline">; -1</span>
-<span class="p">(</span><span class="nf">-</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>  <span class="c c-Singleline">; -4</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">&lt; </span> <span class="mi">1</span> <span class="mi">2</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
+<span class="p">(</span><span class="nb">&lt; </span> <span class="mi">2</span> <span class="mi">2</span><span class="p">)</span>   <span class="c c-Singleline">; false</span>
+<span class="p">(</span><span class="nb">&gt; </span> <span class="mi">2</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
+<span class="p">(</span><span class="nb">&lt;= </span><span class="mi">1</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
+<span class="p">(</span><span class="nb">&gt;= </span><span class="mi">1</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
+<span class="p">(</span><span class="nb">== </span><span class="mi">3</span> <span class="mi">3</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
+<span class="p">(</span><span class="nb">== </span><span class="mi">3</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; false</span>
+<span class="p">(</span><span class="nb">!= </span><span class="mi">3</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
+<span class="p">(</span><span class="nb">+ </span><span class="mi">1</span><span class="p">)</span>      <span class="c c-Singleline">;  1</span>
+<span class="p">(</span><span class="nb">+ </span><span class="mi">1</span> <span class="mi">1</span><span class="p">)</span>    <span class="c c-Singleline">;  2</span>
+<span class="p">(</span><span class="nb">- </span><span class="mi">1</span><span class="p">)</span>      <span class="c c-Singleline">; -1</span>
+<span class="p">(</span><span class="nb">- </span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>  <span class="c c-Singleline">; -4</span>
 
-<span class="p">(</span><span class="nf">not</span> <span class="no">true</span><span class="p">)</span>     <span class="c c-Singleline">; false</span>
+<span class="p">(</span><span class="nb">not </span><span class="no">true</span><span class="p">)</span>     <span class="c c-Singleline">; false</span>
 
-<span class="p">(</span><span class="nf">uid</span> <span class="nv">+</span><span class="p">)</span>        <span class="c c-Singleline">; unique id of +</span>
+<span class="p">(</span><span class="nb">uid </span><span class="nv">+</span><span class="p">)</span>        <span class="c c-Singleline">; unique id of +</span>
 
-<span class="p">(</span><span class="nf">len</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">))</span>          <span class="c c-Singleline">; length of vector:   3</span>
-<span class="p">(</span><span class="nf">len</span> <span class="s">[abc]</span><span class="p">)</span>             <span class="c c-Singleline">; length of string:   3</span>
-<span class="p">(</span><span class="nf">len</span> <span class="p">(</span><span class="nf">hash-map</span> <span class="mi">1</span> <span class="sc">|a|</span><span class="p">))</span>  <span class="c c-Singleline">; length of hash-map: 1</span>
+<span class="p">(</span><span class="nb">len </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">))</span>          <span class="c c-Singleline">; length of vector:   3</span>
+<span class="p">(</span><span class="nb">len </span><span class="s">[abc]</span><span class="p">)</span>             <span class="c c-Singleline">; length of string:   3</span>
+<span class="p">(</span><span class="nb">len </span><span class="p">(</span><span class="nb">hash-map </span><span class="mi">1</span> <span class="sc">|a|</span><span class="p">))</span>  <span class="c c-Singleline">; length of hash-map: 1</span>
 
 <span class="p">(</span><span class="nb">define </span><span class="nv">number</span> <span class="s">[my number]</span> <span class="mi">1</span><span class="p">)</span>
-<span class="p">(</span><span class="nf">++</span> <span class="nv">number</span><span class="p">)</span>                      <span class="c c-Singleline">; number is 2</span>
-<span class="p">(</span><span class="nf">--</span> <span class="nv">number</span><span class="p">)</span>                      <span class="c c-Singleline">; number is 1</span>
-<span class="p">(</span><span class="nf">+=</span> <span class="nv">number</span> <span class="mi">2</span><span class="p">)</span>                    <span class="c c-Singleline">; number is 3</span>
+<span class="p">(</span><span class="nb">++ </span><span class="nv">number</span><span class="p">)</span>                      <span class="c c-Singleline">; number is 2</span>
+<span class="p">(</span><span class="nb">-- </span><span class="nv">number</span><span class="p">)</span>                      <span class="c c-Singleline">; number is 1</span>
+<span class="p">(</span><span class="nb">+= </span><span class="nv">number</span> <span class="mi">2</span><span class="p">)</span>                    <span class="c c-Singleline">; number is 3</span>
 
-<span class="p">(</span><span class="nf">+</span> <span class="s">[Hello]</span> <span class="s">[ ]</span> <span class="s">[World.]</span> <span class="s">[ Bye.]</span><span class="p">)</span> <span class="c c-Singleline">; Hello World. Bye.</span>
+<span class="p">(</span><span class="nb">+ </span><span class="s">[Hello]</span> <span class="s">[ ]</span> <span class="s">[World.]</span> <span class="s">[ Bye.]</span><span class="p">)</span> <span class="c c-Singleline">; Hello World. Bye.</span>
 
 <span class="p">(</span><span class="nb">define </span><span class="nv">greeting</span> <span class="s">[my greeting]</span> <span class="s">[Hello]</span><span class="p">)</span>
-<span class="p">(</span><span class="nf">+=</span> <span class="nv">greeting</span> <span class="s">[ World!]</span><span class="p">)</span>                 <span class="c c-Singleline">; Hello World!</span>
-<span class="p">(</span><span class="nf">+=</span> <span class="nv">greeting</span> <span class="sc">|!|</span><span class="p">)</span>                       <span class="c c-Singleline">; Hello World!!</span>
+<span class="p">(</span><span class="nb">+= </span><span class="nv">greeting</span> <span class="s">[ World!]</span><span class="p">)</span>                 <span class="c c-Singleline">; Hello World!</span>
+<span class="p">(</span><span class="nb">+= </span><span class="nv">greeting</span> <span class="sc">|!|</span><span class="p">)</span>                       <span class="c c-Singleline">; Hello World!!</span>
 
-<span class="p">(</span><span class="nf">+=</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">4</span> <span class="mi">5</span> <span class="mi">6</span><span class="p">))</span>                  <span class="c c-Singleline">; (1 2 3 (4 5 6))</span>
+<span class="p">(</span><span class="nb">+= </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">4</span> <span class="mi">5</span> <span class="mi">6</span><span class="p">))</span>                  <span class="c c-Singleline">; (1 2 3 (4 5 6))</span>
 
-<span class="p">(</span><span class="nb">define </span><span class="nv">capitals</span> <span class="s">[country -&gt; capital]</span> <span class="p">(</span><span class="nf">hash-map</span> <span class="s">[United Kingdom]</span> <span class="s">[London]</span> <span class="s">[Spain]</span> <span class="s">[Madrid]</span><span class="p">))</span>
-<span class="p">(</span><span class="nf">+=</span> <span class="nv">capitals</span> <span class="s">[Nepal]</span> <span class="s">[Kathmandu]</span><span class="p">)</span>
-<span class="p">(</span><span class="nf">+=</span> <span class="nv">capitals</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">[Norway]</span> <span class="s">[Oslo]</span> <span class="s">[Poland]</span> <span class="s">[Warsaw]</span><span class="p">))</span>
-<span class="p">(</span><span class="nf">+=</span> <span class="nv">capitals</span> <span class="p">(</span><span class="nf">hash-map</span> <span class="s">[Peru]</span> <span class="s">[Lima]</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">define </span><span class="nv">capitals</span> <span class="s">[country -&gt; capital]</span> <span class="p">(</span><span class="nb">hash-map </span><span class="s">[United Kingdom]</span> <span class="s">[London]</span> <span class="s">[Spain]</span> <span class="s">[Madrid]</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">+= </span><span class="nv">capitals</span> <span class="s">[Nepal]</span> <span class="s">[Kathmandu]</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">+= </span><span class="nv">capitals</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">[Norway]</span> <span class="s">[Oslo]</span> <span class="s">[Poland]</span> <span class="s">[Warsaw]</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">+= </span><span class="nv">capitals</span> <span class="p">(</span><span class="nb">hash-map </span><span class="s">[Peru]</span> <span class="s">[Lima]</span><span class="p">))</span>
 
-<span class="p">(</span><span class="nf">-=</span> <span class="mi">10</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>                 <span class="c c-Singleline">; 4</span>
-<span class="p">(</span><span class="nf">-=</span> <span class="sc">|x|</span> <span class="mi">2</span><span class="p">)</span>                    <span class="c c-Singleline">; |v|</span>
-<span class="p">(</span><span class="nf">-=</span> <span class="sc">|x|</span> <span class="sc">|!|</span><span class="p">)</span>                  <span class="c c-Singleline">; |W|</span>
-<span class="p">(</span><span class="nf">-=</span> <span class="s">[abba]</span> <span class="sc">|a|</span><span class="p">)</span>               <span class="c c-Singleline">; [bb]</span>
-<span class="p">(</span><span class="nf">-=</span> <span class="p">(</span><span class="nf">hash-map</span> <span class="mi">1</span> <span class="sc">|a|</span> <span class="mi">2</span> <span class="sc">|b|</span><span class="p">)</span> <span class="mi">1</span><span class="p">)</span> <span class="c c-Singleline">; (hash-map 2 |b|)</span>
-<span class="p">(</span><span class="nf">-=</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span> <span class="mi">1</span> <span class="mi">2</span><span class="p">)</span>         <span class="c c-Singleline">; (3)</span>
+<span class="p">(</span><span class="nb">-= </span><span class="mi">10</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>                 <span class="c c-Singleline">; 4</span>
+<span class="p">(</span><span class="nb">-= </span><span class="sc">|x|</span> <span class="mi">2</span><span class="p">)</span>                    <span class="c c-Singleline">; |v|</span>
+<span class="p">(</span><span class="nb">-= </span><span class="sc">|x|</span> <span class="sc">|!|</span><span class="p">)</span>                  <span class="c c-Singleline">; |W|</span>
+<span class="p">(</span><span class="nb">-= </span><span class="s">[abba]</span> <span class="sc">|a|</span><span class="p">)</span>               <span class="c c-Singleline">; [bb]</span>
+<span class="p">(</span><span class="nb">-= </span><span class="p">(</span><span class="nb">hash-map </span><span class="mi">1</span> <span class="sc">|a|</span> <span class="mi">2</span> <span class="sc">|b|</span><span class="p">)</span> <span class="mi">1</span><span class="p">)</span> <span class="c c-Singleline">; (hash-map 2 |b|)</span>
+<span class="p">(</span><span class="nb">-= </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span> <span class="mi">1</span> <span class="mi">2</span><span class="p">)</span>         <span class="c c-Singleline">; (3)</span>
 </pre></div></div></div>
 <div class="paragraph"><p>Operators <strong><span class="monospaced">+</strong>, <strong>--</strong>, <strong></span>=</strong>, <strong>-=</strong>, <strong>==</strong> and <strong>!=</strong> are similar to those in C. Note also that
 <strong>the operands need not to be numbers</strong>.</p></div>
@@ -1057,38 +1108,38 @@ for the above operators should be implemented in the standard library eventually
 <span class="p">(</span><span class="nb">if </span><span class="no">false</span> <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; nil</span>
 <span class="p">(</span><span class="nb">if </span><span class="no">false</span> <span class="s">[Yes]</span> <span class="s">[No]</span><span class="p">)</span>    <span class="c c-Singleline">; No</span>
 
-<span class="p">(</span><span class="nb">if </span><span class="no">true</span>  <span class="p">(</span><span class="nf">println</span> <span class="s">[Yes]</span><span class="p">)</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[No]</span><span class="p">))</span>         <span class="c c-Singleline">; Prints Yes</span>
+<span class="p">(</span><span class="nb">if </span><span class="no">true</span>  <span class="p">(</span><span class="nb">println </span><span class="s">[Yes]</span><span class="p">)</span> <span class="p">(</span><span class="nb">println </span><span class="s">[No]</span><span class="p">))</span>         <span class="c c-Singleline">; Prints Yes</span>
 
-<span class="p">(</span><span class="nb">if </span><span class="no">true</span>  <span class="p">(</span><span class="nf">do</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[Yes]</span><span class="p">)</span> <span class="p">(</span><span class="nf">println</span> <span class="s">[OK]</span><span class="p">)))</span>    <span class="c c-Singleline">; Prints Yes|newline|OK</span>
+<span class="p">(</span><span class="nb">if </span><span class="no">true</span>  <span class="p">(</span><span class="nb">do </span><span class="p">(</span><span class="nb">println </span><span class="s">[Yes]</span><span class="p">)</span> <span class="p">(</span><span class="nb">println </span><span class="s">[OK]</span><span class="p">)))</span>    <span class="c c-Singleline">; Prints Yes|newline|OK</span>
 </pre></div></div></div>
 <div class="paragraph"><p>Here are some examples using <strong>select</strong>:</p></div>
 <div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">select</span> <span class="no">true</span> <span class="s">[Yes]</span><span class="p">)</span>            <span class="c c-Singleline">; Yes</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">select </span><span class="no">true</span> <span class="s">[Yes]</span><span class="p">)</span>            <span class="c c-Singleline">; Yes</span>
 
-<span class="p">(</span><span class="nf">select</span> <span class="no">false</span> <span class="s">[No]</span>
+<span class="p">(</span><span class="nb">select </span><span class="no">false</span> <span class="s">[No]</span>
         <span class="no">true</span>  <span class="s">[Yes]</span><span class="p">)</span>           <span class="c c-Singleline">; Yes</span>
 
-<span class="p">(</span><span class="nf">select</span> <span class="nv">default</span> <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; Yes</span>
+<span class="p">(</span><span class="nb">select </span><span class="nv">default</span> <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; Yes</span>
 
-<span class="p">(</span><span class="nf">select</span> <span class="no">false</span>   <span class="s">[No]</span>
+<span class="p">(</span><span class="nb">select </span><span class="no">false</span>   <span class="s">[No]</span>
         <span class="nv">default</span> <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; Yes</span>
 
-<span class="p">(</span><span class="nf">select</span> <span class="no">false</span>   <span class="s">[No]</span>
+<span class="p">(</span><span class="nb">select </span><span class="no">false</span>   <span class="s">[No]</span>
         <span class="no">true</span>    <span class="s">[Maybe]</span>
         <span class="nv">default</span> <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; Maybe</span>
 
-<span class="p">(</span><span class="nf">select</span> <span class="no">false</span> <span class="s">[Yes]</span><span class="p">)</span>           <span class="c c-Singleline">; nil</span>
+<span class="p">(</span><span class="nb">select </span><span class="no">false</span> <span class="s">[Yes]</span><span class="p">)</span>           <span class="c c-Singleline">; nil</span>
 
 
-<span class="p">(</span><span class="nb">define </span><span class="nv">f1</span> <span class="s">[f1]</span> <span class="o">&#39;</span><span class="p">()</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">()</span> <span class="no">true</span><span class="p">))</span>
-<span class="p">(</span><span class="nb">define </span><span class="nv">f2</span> <span class="s">[f2]</span> <span class="o">&#39;</span><span class="p">()</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">()</span> <span class="no">false</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">define </span><span class="nv">f1</span> <span class="s">[f1]</span> <span class="o">&#39;</span><span class="p">()</span> <span class="p">(</span><span class="nb">fn </span><span class="p">()</span> <span class="no">true</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">define </span><span class="nv">f2</span> <span class="s">[f2]</span> <span class="o">&#39;</span><span class="p">()</span> <span class="p">(</span><span class="nb">fn </span><span class="p">()</span> <span class="no">false</span><span class="p">))</span>
 
-<span class="p">(</span><span class="nf">select</span> <span class="p">(</span><span class="nf">f1</span><span class="p">)</span>  <span class="s">[Yes]</span>
+<span class="p">(</span><span class="nb">select </span><span class="p">(</span><span class="nf">f1</span><span class="p">)</span>  <span class="s">[Yes]</span>
         <span class="p">(</span><span class="nf">f2</span><span class="p">)</span>  <span class="s">[No]</span>
         <span class="no">false</span> <span class="s">[Maybe]</span><span class="p">)</span>                      <span class="c c-Singleline">; Yes</span>
 
-<span class="p">(</span><span class="nf">select</span> <span class="p">(</span><span class="nf">f1</span><span class="p">)</span>  <span class="p">(</span><span class="nf">println</span> <span class="s">[Sun is shining]</span><span class="p">)</span>
-        <span class="p">(</span><span class="nf">f2</span><span class="p">)</span>  <span class="p">(</span><span class="nf">println</span> <span class="s">[It rains]</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">select </span><span class="p">(</span><span class="nf">f1</span><span class="p">)</span>  <span class="p">(</span><span class="nb">println </span><span class="s">[Sun is shining]</span><span class="p">)</span>
+        <span class="p">(</span><span class="nf">f2</span><span class="p">)</span>  <span class="p">(</span><span class="nb">println </span><span class="s">[It rains]</span><span class="p">)</span>
         <span class="no">false</span> <span class="s">[Maybe]</span>
         <span class="no">false</span> <span class="mi">2</span>
         <span class="no">false</span> <span class="mf">3.14</span>
@@ -1100,14 +1151,14 @@ for the above operators should be implemented in the standard library eventually
 <h3 id="_formatted_and_regular_printing">Formatted and regular printing</h3>
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">print</span>   <span class="s">[Hi]</span><span class="p">)</span>   <span class="c c-Singleline">; Prints Hi without newline</span>
-<span class="p">(</span><span class="nf">println</span> <span class="s">[Hi]</span><span class="p">)</span>   <span class="c c-Singleline">; Prints Hi and newline</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">print </span>  <span class="s">[Hi]</span><span class="p">)</span>   <span class="c c-Singleline">; Prints Hi without newline</span>
+<span class="p">(</span><span class="nb">println </span><span class="s">[Hi]</span><span class="p">)</span>   <span class="c c-Singleline">; Prints Hi and newline</span>
 
 <span class="p">(</span><span class="nb">define </span><span class="nv">name1</span>  <span class="s">[some name 1]</span> <span class="ss">&#39;Jim</span><span class="p">)</span>
 <span class="p">(</span><span class="nb">define </span><span class="nv">name2</span>  <span class="s">[some name 2]</span> <span class="ss">&#39;Alice</span><span class="p">)</span>
 <span class="p">(</span><span class="nb">define </span><span class="nv">number</span> <span class="s">[some number]</span> <span class="mi">30</span><span class="p">)</span>
 
-<span class="p">(</span><span class="nf">println</span> <span class="s">[Hi {} and {}! It is {} degrees outside.]</span> <span class="nv">name1</span> <span class="nv">name2</span> <span class="nv">number</span><span class="p">)</span>  <span class="c c-Singleline">; Prints Hi Jim and Alice! It is 30 degrees outside.</span>
+<span class="p">(</span><span class="nb">println </span><span class="s">[Hi {} and {}! It is {} degrees outside.]</span> <span class="nv">name1</span> <span class="nv">name2</span> <span class="nv">number</span><span class="p">)</span>  <span class="c c-Singleline">; Prints Hi Jim and Alice! It is 30 degrees outside.</span>
 </pre></div></div></div>
 </div>
 <div class="sect2">
@@ -1118,19 +1169,19 @@ for the above operators should be implemented in the standard library eventually
 <span class="p">(</span><span class="nb">define </span><span class="nv">name2</span>  <span class="s">[some name 2]</span> <span class="ss">&#39;Alice</span><span class="p">)</span>
 <span class="p">(</span><span class="nb">define </span><span class="nv">number</span> <span class="s">[some number]</span> <span class="mi">30</span><span class="p">)</span>
 
-<span class="p">(</span><span class="nf">string-format</span> <span class="s">[Hi {} and {}! It is {} degrees outside.]</span> <span class="nv">name1</span> <span class="nv">name2</span> <span class="nv">number</span><span class="p">)</span>  <span class="c c-Singleline">; Creates a sting [Hi Jim and Alice! It is 30 degrees outside.]</span>
+<span class="p">(</span><span class="nb">string-format </span><span class="s">[Hi {} and {}! It is {} degrees outside.]</span> <span class="nv">name1</span> <span class="nv">name2</span> <span class="nv">number</span><span class="p">)</span>  <span class="c c-Singleline">; Creates a sting [Hi Jim and Alice! It is 30 degrees outside.]</span>
 </pre></div></div></div>
 </div>
 <div class="sect2">
 <h3 id="_functions_with_variable_number_of_arguments">Functions with variable number of arguments</h3>
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">x</span> <span class="s">[x]</span> <span class="nv">...</span> <span class="s">[varargs]</span><span class="p">)</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">(</span><span class="nf">x</span> <span class="nv">...</span><span class="p">)</span> <span class="nv">x</span><span class="p">))</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">x</span> <span class="s">[x]</span> <span class="nv">...</span> <span class="s">[varargs]</span><span class="p">)</span> <span class="p">(</span><span class="nb">fn </span><span class="p">(</span><span class="nf">x</span> <span class="nv">...</span><span class="p">)</span> <span class="nv">x</span><span class="p">))</span>
 
 <span class="p">(</span><span class="nf">f</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>   <span class="c c-Singleline">; (1 2 3)</span>
 
 
-<span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">x</span> <span class="s">[x]</span> <span class="nv">y</span> <span class="s">[rest of the args]</span> <span class="nv">...</span> <span class="s">[varargs]</span><span class="p">)</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">(</span><span class="nf">x</span> <span class="nv">y</span> <span class="nv">...</span><span class="p">)</span> <span class="p">(</span><span class="nf">println</span> <span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="nf">println</span> <span class="nv">y</span><span class="p">)))</span>
+<span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">x</span> <span class="s">[x]</span> <span class="nv">y</span> <span class="s">[rest of the args]</span> <span class="nv">...</span> <span class="s">[varargs]</span><span class="p">)</span> <span class="p">(</span><span class="nb">fn </span><span class="p">(</span><span class="nf">x</span> <span class="nv">y</span> <span class="nv">...</span><span class="p">)</span> <span class="p">(</span><span class="nb">println </span><span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">println </span><span class="nv">y</span><span class="p">)))</span>
 
 <span class="p">(</span><span class="nf">f</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>   <span class="c c-Singleline">; Prints 1|newline|(2 3)</span>
 </pre></div></div></div>
@@ -1152,15 +1203,15 @@ Small example:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">errorCode</span> <span class="s">[0 means no error.]</span> <span class="mi">1</span><span class="p">)</span>
 
-<span class="p">(</span><span class="nb">define </span><span class="nv">start-engine</span> <span class="s">[Start engine if all OK]</span> <span class="o">&#39;</span><span class="p">()</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">()</span>
-    <span class="p">(</span><span class="nb">if </span><span class="p">(</span><span class="nf">!=</span> <span class="nv">errorCode</span> <span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="nf">return</span> <span class="s">[Cannot start the engine]</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">define </span><span class="nv">start-engine</span> <span class="s">[Start engine if all OK]</span> <span class="o">&#39;</span><span class="p">()</span> <span class="p">(</span><span class="nb">fn </span><span class="p">()</span>
+    <span class="p">(</span><span class="nb">if </span><span class="p">(</span><span class="nb">!= </span><span class="nv">errorCode</span> <span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="nb">return </span><span class="s">[Cannot start the engine]</span><span class="p">))</span>
     <span class="c c-Singleline">; .... Start the engine here...))</span>
 </pre></div></div></div>
 <div class="paragraph"><p><strong>Return</strong> can be called with zero or one argument. If no arguments are given, then <strong>return</strong>
 will return the value <strong>nil</strong>. Short example:</p></div>
 <div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span><span class="p">((</span><span class="nf">fn</span> <span class="p">()</span> <span class="p">(</span><span class="nf">return</span> <span class="no">nil</span><span class="p">)))</span>   <span class="c c-Singleline">; Evaluates into &#39;nil&#39;.</span>
-<span class="p">((</span><span class="nf">fn</span> <span class="p">()</span> <span class="p">(</span><span class="nf">return</span><span class="p">)))</span>       <span class="c c-Singleline">; Evaluates into &#39;nil&#39;.</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">((</span><span class="nb">fn </span><span class="p">()</span> <span class="p">(</span><span class="nb">return </span><span class="no">nil</span><span class="p">)))</span>   <span class="c c-Singleline">; Evaluates into &#39;nil&#39;.</span>
+<span class="p">((</span><span class="nb">fn </span><span class="p">()</span> <span class="p">(</span><span class="nf">return</span><span class="p">)))</span>       <span class="c c-Singleline">; Evaluates into &#39;nil&#39;.</span>
 </pre></div></div></div>
 </div>
 <div class="sect2">
@@ -1171,16 +1222,16 @@ environment is given, the global environment is used instead.</p></div>
 <div class="paragraph"><p><strong>Eval</strong> is useful, for example, in situations where you build the name of the function to be
 called at runtime. Small example:</p></div>
 <div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">level-next</span> <span class="s">[next level]</span> <span class="o">&#39;</span><span class="p">()</span> <span class="p">(</span><span class="nf">fn</span> <span class="p">()</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">level-next</span> <span class="s">[next level]</span> <span class="o">&#39;</span><span class="p">()</span> <span class="p">(</span><span class="nb">fn </span><span class="p">()</span>
     <span class="p">(</span><span class="nf">level-reset</span><span class="p">)</span>
 
-    <span class="p">(</span><span class="nb">define </span><span class="nv">lnum</span> <span class="s">[level number]</span> <span class="p">(</span><span class="nf">+</span> <span class="nv">level-current-number</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="p">(</span><span class="nb">define </span><span class="nv">lnum</span> <span class="s">[level number]</span> <span class="p">(</span><span class="nb">+ </span><span class="nv">level-current-number</span> <span class="mi">1</span><span class="p">))</span>
 
-    <span class="p">(</span><span class="nb">if </span><span class="p">(</span><span class="nf">&gt;</span> <span class="nv">lnum</span> <span class="nv">number-of-levels</span><span class="p">)</span> <span class="p">(</span><span class="nf">=</span> <span class="nv">lnum</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="p">(</span><span class="nb">if </span><span class="p">(</span><span class="nb">&gt; </span><span class="nv">lnum</span> <span class="nv">number-of-levels</span><span class="p">)</span> <span class="p">(</span><span class="nb">= </span><span class="nv">lnum</span> <span class="mi">1</span><span class="p">))</span>
 
     <span class="p">(</span><span class="nb">define </span><span class="nv">name-of-fn-to-call</span> <span class="s">[name of the level builder function to call]</span> <span class="ss">&#39;level-</span><span class="p">)</span>
-    <span class="p">(</span><span class="nf">+=</span> <span class="nv">name-of-fn-to-call</span> <span class="nv">lnum</span><span class="p">)</span>
-    <span class="p">(</span><span class="nf">eval</span> <span class="p">((</span><span class="nf">eval</span> <span class="nv">name-of-fn-to-call</span><span class="p">)))))</span>
+    <span class="p">(</span><span class="nb">+= </span><span class="nv">name-of-fn-to-call</span> <span class="nv">lnum</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">eval </span><span class="p">((</span><span class="nb">eval </span><span class="nv">name-of-fn-to-call</span><span class="p">)))))</span>
 </pre></div></div></div>
 </div>
 <div class="sect2">
@@ -1208,7 +1259,7 @@ called at runtime. Small example:</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-06 15:44:22 EEST
+ 2017-05-07 20:49:35 EEST
 </div>
 </div>
 </body>

@@ -8072,6 +8072,50 @@ TEST octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_val
     PASS();
 }
 
+TEST octaspire_dern_vm_multiline_comment_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "#!/bin/octaspire-dern-repl\n!#");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "/bin/octaspire-dern-repl\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.comment));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_multiline_comment_missing_chars_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "#!/bin/octaspire-dern-repl\n!");
+
+    ASSERT_EQ(0, evaluatedValue);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "#!/bin/octaspire-dern-repl\n");
+
+    ASSERT_EQ(0, evaluatedValue);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 static size_t octaspireDernVmSuiteNumTimesRun = 0;
 
 GREATEST_SUITE(octaspire_dern_vm_suite)
@@ -8354,6 +8398,9 @@ second_run:
     RUN_TEST(octaspire_dern_vm_special_eval_eval_eval_f_1_2_test);
 
     RUN_TEST(octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_values_test);
+
+    RUN_TEST(octaspire_dern_vm_multiline_comment_test);
+    RUN_TEST(octaspire_dern_vm_multiline_comment_missing_chars_test);
 
     octaspire_stdio_release(stdio);
     stdio = 0;

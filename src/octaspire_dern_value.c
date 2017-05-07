@@ -32,6 +32,7 @@ static char const * const octaspire_dern_value_helper_type_tags_as_c_strings[] =
     "integer",
     "real",
     "string",
+    "multiline comment",
     "character",
     "symbol",
     "error",
@@ -364,6 +365,15 @@ bool octaspire_dern_value_set(
         }
         break;
 
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        {
+            self->value.comment =
+                octaspire_container_utf8_string_new_copy(
+                    value->value.comment,
+                    octaspire_dern_vm_get_allocator(self->vm));
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
             self->value.character =
@@ -649,6 +659,7 @@ uint32_t octaspire_dern_value_get_hash(
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:     return octaspire_helpers_calculate_murmur3_hash_for_int32_t_argument(self->value.integer);
         case OCTASPIRE_DERN_VALUE_TAG_REAL:        return octaspire_helpers_calculate_murmur3_hash_for_double_argument(self->value.real);
         case OCTASPIRE_DERN_VALUE_TAG_STRING:      return octaspire_container_utf8_string_get_hash(self->value.string);
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:      return octaspire_container_utf8_string_get_hash(self->value.comment);
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:   return octaspire_container_utf8_string_get_hash(self->value.character);
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:      return octaspire_container_utf8_string_get_hash(self->value.symbol);
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_get_hash(self->value.error);
@@ -714,6 +725,7 @@ bool octaspire_dern_value_is_equal(
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_STRING:      return octaspire_container_utf8_string_is_equal(self->value.string, other->value.string);
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:      return octaspire_container_utf8_string_is_equal(self->value.comment, other->value.comment);
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:   return octaspire_container_utf8_string_is_equal(self->value.character, other->value.character);
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:      return octaspire_container_utf8_string_is_equal(self->value.symbol, other->value.symbol);
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_is_equal(self->value.error, other->value.error);
@@ -1055,6 +1067,13 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
             {
                 return octaspire_container_utf8_string_new_format(allocator, plain ? "%s" :"[%s]",
                     octaspire_container_utf8_string_get_c_string(self->value.string));
+            }
+            break;
+
+            case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+            {
+                return octaspire_container_utf8_string_new_format(allocator, "#!\n%s\n!#",
+                    octaspire_container_utf8_string_get_c_string(self->value.comment));
             }
             break;
 
@@ -2137,6 +2156,7 @@ size_t octaspire_dern_value_get_length(
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:     return 1;
         case OCTASPIRE_DERN_VALUE_TAG_REAL:        return 1;
         case OCTASPIRE_DERN_VALUE_TAG_STRING:      return octaspire_container_utf8_string_get_length_in_ucs_characters(self->value.string);
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:      return octaspire_container_utf8_string_get_length_in_ucs_characters(self->value.comment);
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:   return 1;
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:      return octaspire_container_utf8_string_get_length_in_ucs_characters(self->value.symbol);
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_get_length_in_ucs_characters(self->value.error);
@@ -2298,6 +2318,12 @@ int octaspire_dern_value_compare(
                 octaspire_container_utf8_string_get_c_string(self->value.string),
                 octaspire_container_utf8_string_get_c_string(other->value.string));
         }
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        {
+            return strcmp(
+                octaspire_container_utf8_string_get_c_string(self->value.comment),
+                octaspire_container_utf8_string_get_c_string(other->value.comment));
+        }
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
             return strcmp(
@@ -2342,6 +2368,7 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:

@@ -35,6 +35,7 @@ typedef enum
     OCTASPIRE_DERN_VALUE_TAG_INTEGER,
     OCTASPIRE_DERN_VALUE_TAG_REAL,
     OCTASPIRE_DERN_VALUE_TAG_STRING,
+    OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT,
     OCTASPIRE_DERN_VALUE_TAG_CHARACTER,
     OCTASPIRE_DERN_VALUE_TAG_SYMBOL,
     OCTASPIRE_DERN_VALUE_TAG_ERROR,
@@ -137,6 +138,7 @@ struct octaspire_dern_value_t
         int32_t                             integer;
         double                              real;
         octaspire_container_utf8_string_t   *string;
+        octaspire_container_utf8_string_t   *comment;
         octaspire_container_utf8_string_t   *character;
         octaspire_container_utf8_string_t   *symbol;
         octaspire_container_utf8_string_t   *error;

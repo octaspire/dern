@@ -1000,6 +1000,111 @@ TEST octaspire_dern_lexer_pop_next_token_real_759_dot_2_amid_whitespace_test(voi
     PASS();
 }
 
+TEST octaspire_dern_lexer_pop_next_token_multiline_comment_test(void)
+{
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "  \n  #! here is comment\n 1024!#  ",
+        allocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(input, allocator);
+    ASSERT(token);
+
+    octaspire_dern_lexer_token_position_t  const expectedLine     = {2, 3};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {3, 7};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {5, 30};
+
+    ASSERT_EQ(allocator,                              token->allocator);
+
+    ASSERT        (octaspire_dern_lexer_token_position_is_equal(&expectedLine,     token->line));
+    ASSERT        (octaspire_dern_lexer_token_position_is_equal(&expectedColumn,   token->column));
+    ASSERT        (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
+
+    ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT, token->typeTag);
+    ASSERT_STR_EQ(
+        " here is comment\n 1024",
+        octaspire_container_utf8_string_get_c_string(token->value.comment));
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_multiline_comment_more_input_required_two_chars_missing_test(void)
+{
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "  \n  #! here is comment\n 1024",
+        allocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(input, allocator);
+    ASSERT(token);
+
+    octaspire_dern_lexer_token_position_t  const expectedLine     = {2, 3};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {3, 5};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {5, 28};
+
+    ASSERT_EQ(allocator,                              token->allocator);
+
+    ASSERT        (octaspire_dern_lexer_token_position_is_equal(&expectedLine,     token->line));
+    ASSERT        (octaspire_dern_lexer_token_position_is_equal(&expectedColumn,   token->column));
+    ASSERT        (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
+
+    ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED, token->typeTag);
+    ASSERT_STR_EQ(
+        "Multiline comment that is not closed with !#",
+        octaspire_container_utf8_string_get_c_string(token->value.moreInputRequired));
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_multiline_comment_more_input_required_one_char_missing_test(void)
+{
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "  \n  #! here is comment\n 1024!",
+        allocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(input, allocator);
+    ASSERT(token);
+
+    octaspire_dern_lexer_token_position_t  const expectedLine     = {2, 3};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {3, 6};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {5, 29};
+
+    ASSERT_EQ(allocator,                              token->allocator);
+
+    ASSERT        (octaspire_dern_lexer_token_position_is_equal(&expectedLine,     token->line));
+    ASSERT        (octaspire_dern_lexer_token_position_is_equal(&expectedColumn,   token->column));
+    ASSERT        (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
+
+    ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED, token->typeTag);
+    ASSERT_STR_EQ(
+        "Number sign '#' expected after '!' to close multiline comment",
+        octaspire_container_utf8_string_get_c_string(token->value.moreInputRequired));
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_lexer_pop_next_token_integer_1024_after_whitespace_and_comment_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
@@ -2189,6 +2294,11 @@ second_run:
     RUN_TEST(octaspire_dern_lexer_pop_next_token_real_759_dot_2_after_whitespace_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_759_amid_whitespace_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_real_759_dot_2_amid_whitespace_test);
+
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_multiline_comment_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_multiline_comment_more_input_required_two_chars_missing_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_multiline_comment_more_input_required_one_char_missing_test);
+
     RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_1024_after_whitespace_and_comment_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_real_1024_dot_987_after_whitespace_and_comment_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_0_after_whitespace_and_comment_test);

@@ -15,7 +15,12 @@ class DernLexer(RegexLexer):
     flags = re.MULTILINE | re.DOTALL
 
     builtins = (
-            'if', 'define'
+        '!=', '*', '+', '++', '+=', '-', '--', '-=', '/', '<', '<=', '=', '==', '>', '>=', 'abort',
+        'and', 'define', 'do', 'doc', 'env-current', 'env-global', 'env-new', 'eval', 'exit',
+        'find', 'fn', 'for', 'hash-map', 'if', 'len', 'mod', 'mutable', 'not', 'nth', 'or',
+        'pop-front', 'print', 'println', 'quote', 'read-and-eval-path', 'read-and-eval-string',
+        'return', 'select', 'starts-with?', 'string-format', 'to-integer', 'to-string', 'uid',
+        'vector', 'while'
     )
 
     valid_name = r'[\w!$%&*+-/\:;,.<=>?@^~]+'
@@ -32,6 +37,7 @@ class DernLexer(RegexLexer):
                 (valid_name, Name.Variable),
                 (r'(\(|\))', Punctuation), #Parentheses
                 ('\[', String, 'string'),
+                ('\#\!', Comment.Multiline, 'comment_multiline'),
                 (r"'" + valid_name, String.Symbol),
                 (r"('|\.)", Operator),
                 (r'(\|.?\||\|bar\||\|newline\||\|tab\|)', String.Char),
@@ -39,5 +45,9 @@ class DernLexer(RegexLexer):
                 'string' : [
                     ('[^\]]+', String),
                     ('\]', String, '#pop'),
+                    ],
+                'comment_multiline' : [
+                    ('[^\!\#]+', Comment.Multiline),
+                    ('\!\#', Comment.Multiline, '#pop'),
                     ]
             }

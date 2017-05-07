@@ -4,6 +4,8 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
+Documentation for Octaspire Dern programming language version 0.37.0
+
 == About
 
 Octaspire Dern is a programming language. It is a dialect of Lisp, having taken influences from
@@ -33,7 +35,14 @@ is currently also just a tree walker, and not a faster bytecode vm.
 Also, English in not my native language, so please bear with me, especially
 when this first piece/draft of documentation is written in a hurry.
 
-See Dern in action in the video below. Dern is build from source in Raspberry Pi and some example
+Dern uses
+http://semver.org[Semantic Versioning 2.0.0] version numbering scheme.
+As long as the MAJOR version number is zero anything can change at any time,
+even in backwards incompatible manner.
+
+== See Dern in action
+
+See Dern in action the video below. Dern is build from source in Raspberry Pi and some example
 programs are run:
 
 ++++
@@ -47,7 +56,12 @@ Octaspire Maze and Lightboard are games (work in progress) that are being writte
 
 == Building from source
 
-To build Dern from source in Raspberry Pi, Debian or Ubuntu (16.04 LTS) system:
+To build Dern without the unit tests, replace *cmake ..* with
+*cmake -DOCTASPIRE_DERN_UNIT_TEST=OFF ..* in the instructions that follow.
+
+=== Raspberry Pi, Debian and Ubuntu
+
+To build Dern from source in Raspberry Pi (Raspbian), Debian or Ubuntu (16.04 LTS) system:
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -60,6 +74,8 @@ cd dern/build
 cmake ..
 make
 ----
+
+=== Arch Linux
 
 To build on Arch Linux (Arch Linux ARM) system:
 
@@ -75,6 +91,8 @@ cmake ..
 make
 ----
 
+=== Haiku
+
 To build on Haiku (Version Walter (Revision hrev51127) x86_gcc2):
 
 :source-highlighter: pygments
@@ -89,12 +107,17 @@ CC=gcc-x86 cmake ..
 make
 ----
 
-On different systems the required commands can vary. In any case, You should install
-a *C compiler*, *cmake* and *git*.
+=== Other systems
+
+On different systems the required commands can vary. In any case, you should install
+a *C compiler*, *cmake* and *git*. Depending on the system, you might need to install
+also either *make* or *ninja*.
 
 This is all there should be to it; *octaspire core* is included as a git submodule
 and it should be updated and be build automatically, so when make finishes, everything
 should be ready.
+
+=== Running Dern
 
 To run the unit tests:
 
@@ -162,9 +185,41 @@ nil               ; Nil
            [Hi] 2)
 ----
 
-The text after character *;* is a *comment*. Comments run until the end of the line. Dern
-doesn't have multiline comments. Note that string delimiters in Dern are *[* and *]* and not *"*;
+The text after character *;* is a *single line comment*. Single line comments run until the end
+of the line. Dern has also *multiline comments* that are written between *\#!* and *!#*.
+Note that string delimiters in Dern are *[* and *]* and not *"*;
 this way dern code can be written inside C-programs without escaping.
+
+
+=== Single and multiline comments, making script files executable
+
+Below are examples of single and multiline comments:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+; This is single line comment.
+
+#! This is multiline comment.
+   It can contain multiple lines...
+   ... !#
+----
+
+Multiline comments can be used to make script files executable in UNIX-like systems:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+#!/usr/bin/env octaspire-dern-repl
+!#
+
+(println [Hello World])
+----
+
 
 === Binding names to values with define
 

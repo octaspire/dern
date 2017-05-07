@@ -40,6 +40,8 @@ typedef enum
     OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER,
     OCTASPIRE_DERN_LEXER_TOKEN_TAG_SYMBOL,
     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED,
+    OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT
 }
 octaspire_dern_lexer_token_tag_t;
 
@@ -103,6 +105,8 @@ char const *octaspire_dern_lexer_token_get_symbol_value_as_c_string(
 char const *octaspire_dern_lexer_token_get_error_value_as_c_string(
     octaspire_dern_lexer_token_t const * const self);
 
+char const *octaspire_dern_lexer_token_get_multiline_comment_value_as_c_string(
+    octaspire_dern_lexer_token_t const * const self);
 
 
 

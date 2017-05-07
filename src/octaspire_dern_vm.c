@@ -1047,6 +1047,13 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
         }
         break;
 
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        {
+            result->value.comment =
+                octaspire_container_utf8_string_new_copy(valueToBeCopied->value.comment, self->allocator);
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
             result->value.character =
@@ -1173,6 +1180,13 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_string    (octaspire_
 {
     octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_STRING);
     result->value.string = value;
+    return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_multiline_comment    (octaspire_dern_vm_t *self, octaspire_container_utf8_string_t * const value)
+{
+    octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT);
+    result->value.comment = value;
     return result;
 }
 
@@ -1466,6 +1480,13 @@ void octaspire_dern_vm_clear_value_to_nil(
         {
             octaspire_container_utf8_string_release(value->value.string);
             value->value.string = 0;
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        {
+            octaspire_container_utf8_string_release(value->value.comment);
+            value->value.comment = 0;
         }
         break;
 
@@ -1887,6 +1908,22 @@ octaspire_dern_value_t *octaspire_dern_vm_private_parse_token(
         }
         break;
 
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED:
+        {
+            return 0;
+        }
+        break;
+
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT:
+        {
+            result = octaspire_dern_vm_create_new_value_multiline_comment(
+                self,
+                octaspire_container_utf8_string_new(
+                    octaspire_dern_lexer_token_get_multiline_comment_value_as_c_string(token),
+                    self->allocator));
+        }
+        break;
+
         // TODO XXX add rest of types
         default:
             octaspire_helpers_verify(false);
@@ -1956,6 +1993,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         {
             result = value;
         }

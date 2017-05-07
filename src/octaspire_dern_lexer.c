@@ -37,8 +37,10 @@ struct octaspire_dern_lexer_token_t
     {
         octaspire_container_utf8_string_t *string;
         octaspire_container_utf8_string_t *character;
+        octaspire_container_utf8_string_t *comment;
         octaspire_container_utf8_string_t *symbol;
         octaspire_container_utf8_string_t *error;
+        octaspire_container_utf8_string_t *moreInputRequired;
         int32_t                            integer;
         double                             real;
     }
@@ -59,6 +61,8 @@ static char const * const octaspire_dern_lexer_private_token_tag_types_as_c_stri
     "OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER",
     "OCTASPIRE_DERN_LEXER_TOKEN_TAG_SYMBOL",
     "OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR",
+    "OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED",
+    "OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT"
 };
 
 void octaspire_dern_lexer_private_pop_whitespace(
@@ -66,6 +70,13 @@ void octaspire_dern_lexer_private_pop_whitespace(
 
 void octaspire_dern_lexer_private_pop_rest_of_line(
     octaspire_input_t *input);
+
+octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_multiline_comment(
+    octaspire_input_t *input,
+    octaspire_memory_allocator_t *allocator,
+    size_t const startLine,
+    size_t const startColumn,
+    size_t const startIndexInInput);
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_left_parenthesis(
     octaspire_input_t *input,
@@ -224,6 +235,39 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
         }
         break;
 
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT:
+        {
+            self->value.comment = octaspire_container_utf8_string_new(
+                (char const * const)value,
+                allocator);
+
+            if (!self->value.comment)
+            {
+                octaspire_dern_lexer_token_release(self);
+                self = 0;
+                return 0;
+            }
+
+            assert(octaspire_container_utf8_string_get_error_status(self->value.comment) == OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
+        }
+        break;
+
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED:
+        {
+            self->value.moreInputRequired = octaspire_container_utf8_string_new(
+                (char const * const)value,
+                allocator);
+
+            if (!self->value.moreInputRequired)
+            {
+                octaspire_dern_lexer_token_release(self);
+                self = 0;
+                return 0;
+            }
+
+            assert(octaspire_container_utf8_string_get_error_status(self->value.moreInputRequired) == OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
+        }
+
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER:
         {
             self->value.character = octaspire_container_utf8_string_new(
@@ -358,6 +402,18 @@ void octaspire_dern_lexer_token_release(
         }
         break;
 
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED:
+        {
+            octaspire_container_utf8_string_release(self->value.moreInputRequired);
+        }
+        break;
+
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT:
+        {
+            octaspire_container_utf8_string_release(self->value.comment);
+        }
+        break;
+
         default:
         {
             // Nothing to be done here
@@ -433,6 +489,11 @@ char const *octaspire_dern_lexer_token_get_error_value_as_c_string(
     return octaspire_container_utf8_string_get_c_string(self->value.error);
 }
 
+char const *octaspire_dern_lexer_token_get_multiline_comment_value_as_c_string(
+    octaspire_dern_lexer_token_t const * const self)
+{
+    return octaspire_container_utf8_string_get_c_string(self->value.comment);
+}
 
 octaspire_dern_lexer_token_position_t *octaspire_dern_lexer_token_get_position_line(
     octaspire_dern_lexer_token_t const * const self)
@@ -507,6 +568,14 @@ bool octaspire_dern_lexer_token_is_equal(
         }
         break;
 
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED:
+        {
+            return octaspire_container_utf8_string_is_equal(
+                self->value.moreInputRequired,
+                other->value.moreInputRequired);
+        }
+        break;
+
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER:
         {
             return self->value.integer == other->value.integer;
@@ -516,6 +585,12 @@ bool octaspire_dern_lexer_token_is_equal(
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_REAL:
         {
             return self->value.real == other->value.real;
+        }
+        break;
+
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT:
+        {
+            return octaspire_container_utf8_string_is_equal(self->value.comment, other->value.comment);
         }
         break;
 
@@ -714,6 +789,34 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
             return result;
         }
         break;
+
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT:
+        {
+            if (!octaspire_container_utf8_string_concatenate_format(
+                result,
+                "%s",
+                octaspire_container_utf8_string_get_c_string(self->value.comment)))
+            {
+                return 0;
+            }
+
+            return result;
+        }
+        break;
+
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED:
+        {
+            if (!octaspire_container_utf8_string_concatenate_format(
+                result,
+                "more input required: %s",
+                octaspire_container_utf8_string_get_c_string(self->value.moreInputRequired)))
+            {
+                return 0;
+            }
+
+            return result;
+        }
+        break;
     }
 
     if (!octaspire_container_utf8_string_concatenate_format(
@@ -775,6 +878,145 @@ void octaspire_dern_lexer_private_pop_rest_of_line(
             abort();
         }
     }
+}
+
+octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_multiline_comment(
+    octaspire_input_t *input,
+    octaspire_memory_allocator_t *allocator,
+    size_t const startLine,
+    size_t const startColumn,
+    size_t const startIndexInInput)
+{
+    if (octaspire_input_peek_next_ucs_character(input) != '#')
+    {
+        size_t const endIndexInInput  = octaspire_input_get_ucs_character_index(input);
+        return octaspire_dern_lexer_token_new(
+            OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+            "Number sign '#' expected to start multiline comment",
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                octaspire_input_get_column_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startIndexInInput,
+                endIndexInInput),
+            allocator);
+    }
+
+    if (!octaspire_input_pop_next_ucs_character(input))
+    {
+        abort();
+    }
+
+    if (octaspire_input_peek_next_ucs_character(input) != '!')
+    {
+        size_t const endIndexInInput  = octaspire_input_get_ucs_character_index(input);
+        return octaspire_dern_lexer_token_new(
+            OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+            "Exclamation mark '!' expected after '#' to start multiline comment",
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                octaspire_input_get_column_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startIndexInInput,
+                endIndexInInput),
+            allocator);
+    }
+
+    if (!octaspire_input_pop_next_ucs_character(input))
+    {
+        abort();
+    }
+
+    octaspire_container_utf8_string_t *commentStr =
+        octaspire_container_utf8_string_new("", allocator);
+
+    while (octaspire_input_is_good(input))
+    {
+        uint32_t currentChar = octaspire_input_peek_next_ucs_character(input);
+
+        if (!octaspire_input_pop_next_ucs_character(input))
+        {
+            abort();
+        }
+
+        if (currentChar == '!')
+        {
+            if (!octaspire_input_is_good(input))
+            {
+                size_t const endIndexInInput  = octaspire_input_get_ucs_character_index(input) - 1;
+                return octaspire_dern_lexer_token_new(
+                    OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED,
+                    "Number sign '#' expected after '!' to close multiline comment",
+                    octaspire_dern_lexer_token_position_init(
+                        startLine,
+                        octaspire_input_get_line_number(input)),
+                    octaspire_dern_lexer_token_position_init(
+                        startColumn,
+                        octaspire_input_get_column_number(input)),
+                    octaspire_dern_lexer_token_position_init(
+                        startIndexInInput,
+                        endIndexInInput),
+                    allocator);
+            }
+
+            currentChar = octaspire_input_peek_next_ucs_character(input);
+
+            if (currentChar == '#')
+            {
+                size_t const endIndexInInput  = octaspire_input_get_ucs_character_index(input);
+                octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new(
+                    OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT,
+                    octaspire_container_utf8_string_get_c_string(commentStr),
+                    octaspire_dern_lexer_token_position_init(
+                        startLine,
+                        octaspire_input_get_line_number(input)),
+                    octaspire_dern_lexer_token_position_init(
+                        startColumn,
+                        //octaspire_input_get_column_number(input) - (endsInDelimiter ? 1 : 0)),
+                        octaspire_input_get_column_number(input)),
+                    octaspire_dern_lexer_token_position_init(
+                        startIndexInInput,
+                        endIndexInInput),
+                    allocator);
+
+                if (!octaspire_input_pop_next_ucs_character(input))
+                {
+                    abort();
+                }
+
+                return result;
+            }
+            else
+            {
+                octaspire_container_utf8_string_push_back_ucs_character(commentStr, currentChar);
+            }
+        }
+        else
+        {
+            octaspire_container_utf8_string_push_back_ucs_character(commentStr, currentChar);
+        }
+    }
+
+    size_t const endIndexInInput  = octaspire_input_get_ucs_character_index(input) - 1;
+    return octaspire_dern_lexer_token_new(
+        OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED,
+        "Multiline comment that is not closed with !#",
+        octaspire_dern_lexer_token_position_init(
+            startLine,
+            octaspire_input_get_line_number(input)),
+        octaspire_dern_lexer_token_position_init(
+            startColumn,
+            octaspire_input_get_column_number(input)),
+        octaspire_dern_lexer_token_position_init(
+            startIndexInInput,
+            endIndexInInput),
+        allocator);
 }
 
 bool octaspire_dern_lexer_private_is_delimeter(uint32_t const c)
@@ -1970,6 +2212,35 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
             case ';':
             {
                 octaspire_dern_lexer_private_pop_rest_of_line(input);
+            }
+            break;
+
+            case '#':
+            {
+                switch (octaspire_input_peek_next_next_ucs_character(input))
+                {
+                    case '!':
+                    {
+                        return octaspire_dern_lexer_private_pop_multiline_comment(
+                            input,
+                            allocator,
+                            startLine,
+                            startColumn,
+                            startIndexInInput);
+                    }
+                    break;
+
+                    default:
+                    {
+                        return octaspire_dern_lexer_private_pop_true_or_false_or_nil_or_symbol(
+                            input,
+                            allocator,
+                            startLine,
+                            startColumn,
+                            startIndexInInput);
+                    }
+                    break;
+                }
             }
             break;
 
