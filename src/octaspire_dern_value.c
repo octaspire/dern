@@ -306,7 +306,9 @@ size_t octaspire_dern_builtin_get_number_of_required_arguments(
 
 char const * octaspire_dern_value_helper_get_type_as_c_string(octaspire_dern_value_tag_t const typeTag)
 {
-    octaspire_helpers_verify(typeTag < (sizeof(octaspire_dern_value_helper_type_tags_as_c_strings) / sizeof(octaspire_dern_value_helper_type_tags_as_c_strings[0])));
+    octaspire_helpers_verify(typeTag <
+        (octaspire_dern_value_tag_t)(sizeof(octaspire_dern_value_helper_type_tags_as_c_strings) /
+         sizeof(octaspire_dern_value_helper_type_tags_as_c_strings[0])));
 
     return octaspire_dern_value_helper_type_tags_as_c_strings[typeTag];
 }
