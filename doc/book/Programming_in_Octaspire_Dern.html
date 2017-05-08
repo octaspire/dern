@@ -804,7 +804,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.38.0</p></div>
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.39.0</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -889,6 +889,17 @@ make
 git clone https://github.com/octaspire/dern.git
 <span class="nb">cd</span> dern/build
 <span class="nv">CC</span><span class="o">=</span>gcc-x86 cmake ..
+make
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_freebsd">FreeBSD</h3>
+<div class="paragraph"><p>To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>sudo pkg install git cmake
+git clone https://github.com/octaspire/dern.git
+<span class="nb">cd</span> dern/build
+cmake ..
 make
 </pre></div></div></div>
 </div>
@@ -1330,7 +1341,7 @@ called at runtime. Small example:</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-08 15:07:10 EEST
+ 2017-05-09 10:45:06 EEST
 </div>
 </div>
 </body>

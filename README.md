@@ -33,6 +33,16 @@ CC=gcc-x86 cmake ..
 make
 ```
 
+To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:
+
+```shell
+sudo pkg install git cmake
+git clone https://github.com/octaspire/dern.git
+cd dern/build
+cmake ..
+make
+```
+
 To run the unit tests:
 
 ```shell

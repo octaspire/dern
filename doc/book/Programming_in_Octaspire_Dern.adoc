@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.38.0
+Documentation for Octaspire Dern programming language version 0.39.0
 
 == About
 
@@ -104,6 +104,22 @@ pkgman install gcc_x86 cmake_x86
 git clone https://github.com/octaspire/dern.git
 cd dern/build
 CC=gcc-x86 cmake ..
+make
+----
+
+=== FreeBSD
+
+To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+sudo pkg install git cmake
+git clone https://github.com/octaspire/dern.git
+cd dern/build
+cmake ..
 make
 ----
 
