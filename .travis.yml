@@ -5,7 +5,7 @@ compiler:
     - gcc
 
 before_install:
-    - sudo apt-get install expect -y
+    - sudo apt-get install expect valgrind -y
     - sudo add-apt-repository -y ppa:george-edison55/precise-backports
     - sudo apt-get update -qq
     - sudo apt-get install cmake cmake-data -y
@@ -16,6 +16,7 @@ before_script:
 
 script:
     - make
+    - valgrind --leak-check=full --error-exitcode=1 test/octaspire-dern-test-runner
     - test/octaspire-dern-test-runner
     - cd CMakeFiles/octaspire-dern.dir/src
     - gcov octaspire_dern_environment.c.gcno octaspire_dern_repl.c.gcno octaspire_dern_value.c.gcno octaspire_dern_lexer.c.gcno octaspire_dern_stdlib.c.gcno octaspire_dern_vm.c.gcno

@@ -1476,6 +1476,7 @@ void octaspire_dern_vm_clear_value_to_nil(
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     break;
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:     break;
         case OCTASPIRE_DERN_VALUE_TAG_REAL:        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
             octaspire_container_utf8_string_release(value->value.string);

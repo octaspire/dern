@@ -1,0 +1,52 @@
+#!/usr/bin/env octaspire-dern-repl
+This is a multiline comment.    !#
+
+; 1. Print once 'Hello, World!' and newline
+(println [Hello, World!])
+(println)
+
+; 2. Print 11 times 'Hello x World!' where x goes from 0 to 10
+(for i from 0 to 10 (println [Hello {} World!] i))
+(println)
+
+; 3. Print greetings to everybody on the vector
+(define names [Christmas card list] '(John Alice Mark))
+(for i in names (println [Happy holidays, {}!] i))
+(println)
+
+; 4. Add new name, 'Lola', to the names to be greeted
+(+= names 'Lola)
+(for i in names (println [Happy holidays, {}!] i))
+(println)
+
+; 5. Remove one name 'Mark', from the names to be greeted
+(-= names 'Mark)
+(for i in names (println [Happy holidays, {}!] i))
+(println)
+
+; 6. Define new function to greet people and use it
+(define greeter [My greeter function] '(greeting [the greeting] name [who to greet]) (fn (greeting name)
+    (println [{}, {}!] greeting name)))
+
+(greeter 'Hi 'Alice)
+
+; 7. Redefine greeter-function with early exit using 'return'
+(define grumpy [is our hero grumpy, or not] true)
+
+(define greeter [My greeter function] '(greeting [the greeting] name [who to greet]) (fn (greeting name)
+    (if grumpy (return [I am grumpy and will not greet anyone. Hmpfh!]))
+    (println [{}, {}!] greeting name)
+    (string-format [I greeted "{}", as requested] name)))
+
+(println (greeter 'Hi 'Alice))
+(= grumpy false)
+(println (greeter 'Hi 'Alice))
+(println)
+
+; 8. Add names and custom greetings into a hash map and use it to greet people
+(define names [My custom greetings] (hash-map 'John 'Hi
+                                              'Lola 'Hello
+                                              'Mike 'Bonjour))
+
+(for i in names (greeter (nth 1 i) (nth 0 i)))
+

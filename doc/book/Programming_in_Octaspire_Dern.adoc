@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.37.1
+Documentation for Octaspire Dern programming language version 0.38.0
 
 == About
 
@@ -151,6 +151,77 @@ To see the allowed options run:
 
 [NOTE]
 Man pages are not ready yet.
+
+
+== Hello world
+
+Here we have a version of the classic 'Hello World'-program in Octaspire Dern.
+Instead of just printing 'Hello, World!', it is a bit more complex to give
+you some feeling for the language. If you are in Unix-like system and
+have *octaspire-dern-repl* in somewhere on your PATH, you can make the
+script executable using the shebang. You can also run the file by
+`octaspire-dern-repl hello-world.dern` or by writing it or parts
+of it directly to the interactive REPL.
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+.hello-world.dern
+----
+#!/usr/bin/env octaspire-dern-repl
+This is a multiline comment.    !#
+
+; 1. Print once 'Hello, World!' and newline
+(println [Hello, World!])
+(println)
+
+; 2. Print 11 times 'Hello x World!' where x goes from 0 to 10
+(for i from 0 to 10 (println [Hello {} World!] i))
+(println)
+
+; 3. Print greetings to everybody on the vector
+(define names [Christmas card list] '(John Alice Mark))
+(for i in names (println [Happy holidays, {}!] i))
+(println)
+
+; 4. Add new name, 'Lola', to the names to be greeted
+(+= names 'Lola)
+(for i in names (println [Happy holidays, {}!] i))
+(println)
+
+; 5. Remove one name 'Mark', from the names to be greeted
+(-= names 'Mark)
+(for i in names (println [Happy holidays, {}!] i))
+(println)
+
+; 6. Define new function to greet people and use it
+(define greeter [My greeter function] '(greeting [the greeting] name [who to greet]) (fn (greeting name)
+    (println [{}, {}!] greeting name)))
+
+(greeter 'Hi 'Alice)
+
+; 7. Redefine greeter-function with early exit using 'return'
+(define grumpy [is our hero grumpy, or not] true)
+
+(define greeter [My greeter function] '(greeting [the greeting] name [who to greet]) (fn (greeting name)
+    (if grumpy (return [I am grumpy and will not greet anyone. Hmpfh!]))
+    (println [{}, {}!] greeting name)
+    (string-format [I greeted "{}", as requested] name)))
+
+(println (greeter 'Hi 'Alice))
+(= grumpy false)
+(println (greeter 'Hi 'Alice))
+(println)
+
+; 8. Add names and custom greetings into a hash map and use it to greet people
+(define names [My custom greetings] (hash-map 'John 'Hi
+                                              'Lola 'Hello
+                                              'Mike 'Bonjour))
+
+(for i in names (greeter (nth 1 i) (nth 0 i)))
+----
+
 
 == Quick tour of language features
 
@@ -594,4 +665,9 @@ This section is not ready yet. In the meantime you can see Dern in "real" use at
 http://www.octaspire.com/maze[Maze] and http://www.octaspire.com/lightboard[Lightboard].
 
 Octaspire Maze and Lightboard are games (work in progress) that are being written using Dern and C99.
+
+=== Tool support
+
+*etc*-directory of the source distribution contains syntax files for *vim*, *emacs* and
+*pygments*.
 

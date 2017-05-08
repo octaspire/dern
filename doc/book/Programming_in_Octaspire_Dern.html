@@ -804,7 +804,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.37.1</p></div>
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.38.0</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -924,6 +924,72 @@ should be ready.</p></div>
 </tr></table>
 </div>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_hello_world">Hello world</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Here we have a version of the classic <em>Hello World</em>-program in Octaspire Dern.
+Instead of just printing <em>Hello, World!</em>, it is a bit more complex to give
+you some feeling for the language. If you are in Unix-like system and
+have <strong>octaspire-dern-repl</strong> in somewhere on your PATH, you can make the
+script executable using the shebang. You can also run the file by
+<span class="monospaced">octaspire-dern-repl hello-world.dern</span> or by writing it or parts
+of it directly to the interactive REPL.</p></div>
+<div class="listingblock">
+<div class="title">hello-world.dern</div>
+<div class="content"><div class="highlight"><pre><span></span><span class="cm">#!/usr/bin/env octaspire-dern-repl</span>
+<span class="cm">This is a multiline comment.    !#</span>
+
+<span class="c c-Singleline">; 1. Print once &#39;Hello, World!&#39; and newline</span>
+<span class="p">(</span><span class="nb">println </span><span class="s">[Hello, World!]</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">println</span><span class="p">)</span>
+
+<span class="c c-Singleline">; 2. Print 11 times &#39;Hello x World!&#39; where x goes from 0 to 10</span>
+<span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">from</span> <span class="mi">0</span> <span class="nv">to</span> <span class="mi">10</span> <span class="p">(</span><span class="nb">println </span><span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">println</span><span class="p">)</span>
+
+<span class="c c-Singleline">; 3. Print greetings to everybody on the vector</span>
+<span class="p">(</span><span class="nb">define </span><span class="nv">names</span> <span class="s">[Christmas card list]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">John</span> <span class="nv">Alice</span> <span class="nv">Mark</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">in</span> <span class="nv">names</span> <span class="p">(</span><span class="nb">println </span><span class="s">[Happy holidays, {}!]</span> <span class="nv">i</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">println</span><span class="p">)</span>
+
+<span class="c c-Singleline">; 4. Add new name, &#39;Lola&#39;, to the names to be greeted</span>
+<span class="p">(</span><span class="nb">+= </span><span class="nv">names</span> <span class="ss">&#39;Lola</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">in</span> <span class="nv">names</span> <span class="p">(</span><span class="nb">println </span><span class="s">[Happy holidays, {}!]</span> <span class="nv">i</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">println</span><span class="p">)</span>
+
+<span class="c c-Singleline">; 5. Remove one name &#39;Mark&#39;, from the names to be greeted</span>
+<span class="p">(</span><span class="nb">-= </span><span class="nv">names</span> <span class="ss">&#39;Mark</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">in</span> <span class="nv">names</span> <span class="p">(</span><span class="nb">println </span><span class="s">[Happy holidays, {}!]</span> <span class="nv">i</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">println</span><span class="p">)</span>
+
+<span class="c c-Singleline">; 6. Define new function to greet people and use it</span>
+<span class="p">(</span><span class="nb">define </span><span class="nv">greeter</span> <span class="s">[My greeter function]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">greeting</span> <span class="s">[the greeting]</span> <span class="nv">name</span> <span class="s">[who to greet]</span><span class="p">)</span> <span class="p">(</span><span class="nb">fn </span><span class="p">(</span><span class="nf">greeting</span> <span class="nv">name</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">println </span><span class="s">[{}, {}!]</span> <span class="nv">greeting</span> <span class="nv">name</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="nf">greeter</span> <span class="ss">&#39;Hi</span> <span class="ss">&#39;Alice</span><span class="p">)</span>
+
+<span class="c c-Singleline">; 7. Redefine greeter-function with early exit using &#39;return&#39;</span>
+<span class="p">(</span><span class="nb">define </span><span class="nv">grumpy</span> <span class="s">[is our hero grumpy, or not]</span> <span class="no">true</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">define </span><span class="nv">greeter</span> <span class="s">[My greeter function]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">greeting</span> <span class="s">[the greeting]</span> <span class="nv">name</span> <span class="s">[who to greet]</span><span class="p">)</span> <span class="p">(</span><span class="nb">fn </span><span class="p">(</span><span class="nf">greeting</span> <span class="nv">name</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">if </span><span class="nv">grumpy</span> <span class="p">(</span><span class="nb">return </span><span class="s">[I am grumpy and will not greet anyone. Hmpfh!]</span><span class="p">))</span>
+    <span class="p">(</span><span class="nb">println </span><span class="s">[{}, {}!]</span> <span class="nv">greeting</span> <span class="nv">name</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">string-format </span><span class="s">[I greeted &quot;{}&quot;, as requested]</span> <span class="nv">name</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nf">greeter</span> <span class="ss">&#39;Hi</span> <span class="ss">&#39;Alice</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">= </span><span class="nv">grumpy</span> <span class="no">false</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nf">greeter</span> <span class="ss">&#39;Hi</span> <span class="ss">&#39;Alice</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">println</span><span class="p">)</span>
+
+<span class="c c-Singleline">; 8. Add names and custom greetings into a hash map and use it to greet people</span>
+<span class="p">(</span><span class="nb">define </span><span class="nv">names</span> <span class="s">[My custom greetings]</span> <span class="p">(</span><span class="nb">hash-map </span><span class="ss">&#39;John</span> <span class="ss">&#39;Hi</span>
+                                              <span class="ss">&#39;Lola</span> <span class="ss">&#39;Hello</span>
+                                              <span class="ss">&#39;Mike</span> <span class="ss">&#39;Bonjour</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">in</span> <span class="nv">names</span> <span class="p">(</span><span class="nf">greeter</span> <span class="p">(</span><span class="nb">nth </span><span class="mi">1</span> <span class="nv">i</span><span class="p">)</span> <span class="p">(</span><span class="nb">nth </span><span class="mi">0</span> <span class="nv">i</span><span class="p">)))</span>
+</pre></div></div></div>
 </div>
 </div>
 <div class="sect1">
@@ -1252,6 +1318,11 @@ called at runtime. Small example:</p></div>
 <a href="http://www.octaspire.com/maze">Maze</a> and <a href="http://www.octaspire.com/lightboard">Lightboard</a>.</p></div>
 <div class="paragraph"><p>Octaspire Maze and Lightboard are games (work in progress) that are being written using Dern and C99.</p></div>
 </div>
+<div class="sect2">
+<h3 id="_tool_support">Tool support</h3>
+<div class="paragraph"><p><strong>etc</strong>-directory of the source distribution contains syntax files for <strong>vim</strong>, <strong>emacs</strong> and
+<strong>pygments</strong>.</p></div>
+</div>
 </div>
 </div>
 </div>
@@ -1259,7 +1330,7 @@ called at runtime. Small example:</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-07 23:37:25 EEST
+ 2017-05-08 15:07:10 EEST
 </div>
 </div>
 </body>

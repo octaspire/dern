@@ -42,5 +42,8 @@ hi link dernSexpr Delimiter
 syn match dernComment "\v;.*\n"
 hi link dernComment Comment
 
+syn region dernMultilineComment start="\#\!" end="\!\#"
+hi link dernMultilineComment Comment
+
 let b:current_syntax = "dern"
 

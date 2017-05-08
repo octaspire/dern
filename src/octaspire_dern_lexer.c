@@ -267,6 +267,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
 
             assert(octaspire_container_utf8_string_get_error_status(self->value.moreInputRequired) == OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
         }
+        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER:
         {
@@ -949,6 +950,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_multiline_comment
         {
             if (!octaspire_input_is_good(input))
             {
+                octaspire_container_utf8_string_release(commentStr);
+                commentStr = 0;
+
                 size_t const endIndexInInput  = octaspire_input_get_ucs_character_index(input) - 1;
                 return octaspire_dern_lexer_token_new(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED,
@@ -990,6 +994,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_multiline_comment
                     abort();
                 }
 
+                octaspire_container_utf8_string_release(commentStr);
+                commentStr = 0;
+
                 return result;
             }
             else
@@ -1002,6 +1009,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_multiline_comment
             octaspire_container_utf8_string_push_back_ucs_character(commentStr, currentChar);
         }
     }
+
+    octaspire_container_utf8_string_release(commentStr);
+    commentStr = 0;
 
     size_t const endIndexInInput  = octaspire_input_get_ucs_character_index(input) - 1;
     return octaspire_dern_lexer_token_new(

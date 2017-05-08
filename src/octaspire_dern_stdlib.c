@@ -3290,9 +3290,17 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_println(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment)
 {
-    octaspire_dern_value_t *result = octaspire_dern_vm_builtin_print(vm, arguments, environment);
-    printf("\n");
-    return result;
+    if (octaspire_dern_value_as_vector_get_length(arguments) == 0)
+    {
+        printf("\n");
+        return octaspire_dern_vm_get_value_true(vm);
+    }
+    else
+    {
+        octaspire_dern_value_t *result = octaspire_dern_vm_builtin_print(vm, arguments, environment);
+        printf("\n");
+        return result;
+    }
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_env_new(
