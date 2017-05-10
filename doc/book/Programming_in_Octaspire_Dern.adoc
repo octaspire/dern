@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.40.0
+Documentation for Octaspire Dern programming language version 0.41.0
 
 == About
 
@@ -118,6 +118,23 @@ To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:
 ----
 sudo pkg install git cmake
 git clone https://github.com/octaspire/dern.git
+cd dern/build
+cmake ..
+make
+----
+
+=== MINIX 3
+To build on MINIX 3 (minix_R3.3.0-588a35b) system:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+su root
+pkgin install cmake clang binutils git-base
+exit
+git clone git://github.com/octaspire/dern
 cd dern/build
 cmake ..
 make

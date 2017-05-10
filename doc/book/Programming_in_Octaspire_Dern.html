@@ -804,7 +804,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.40.0</p></div>
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.41.0</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -898,6 +898,19 @@ make
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span>sudo pkg install git cmake
 git clone https://github.com/octaspire/dern.git
+<span class="nb">cd</span> dern/build
+cmake ..
+make
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_minix_3">MINIX 3</h3>
+<div class="paragraph"><p>To build on MINIX 3 (minix_R3.3.0-588a35b) system:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>su root
+pkgin install cmake clang binutils git-base
+<span class="nb">exit</span>
+git clone git://github.com/octaspire/dern
 <span class="nb">cd</span> dern/build
 cmake ..
 make
@@ -1341,7 +1354,7 @@ called at runtime. Small example:</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-09 13:31:09 EEST
+ 2017-05-10 08:06:40 EEST
 </div>
 </div>
 </body>
