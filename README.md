@@ -50,7 +50,9 @@ su root
 pkgin install cmake clang binutils git-base
 exit
 git clone git://github.com/octaspire/dern
-cd dern/build
+cd dern
+perl -pi -e 's/https/git/' .gitmodules
+cd build
 cmake ..
 make
 ```

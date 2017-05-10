@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.41.0
+Documentation for Octaspire Dern programming language version 0.41.1
 
 == About
 
@@ -135,7 +135,9 @@ su root
 pkgin install cmake clang binutils git-base
 exit
 git clone git://github.com/octaspire/dern
-cd dern/build
+cd dern
+perl -pi -e 's/https/git/' .gitmodules
+cd build
 cmake ..
 make
 ----
