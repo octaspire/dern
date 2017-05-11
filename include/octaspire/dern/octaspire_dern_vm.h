@@ -29,6 +29,14 @@ limitations under the License.
 extern "C" {
 #endif
 
+typedef struct octaspire_dern_vm_config_t
+{
+    bool fileSystemAccessAllowed;
+}
+octaspire_dern_vm_config_t;
+
+octaspire_dern_vm_config_t octaspire_dern_vm_config_default(void);
+
 typedef struct octaspire_dern_vm_t octaspire_dern_vm_t;
 struct octaspire_dern_value_t;
 
@@ -36,11 +44,20 @@ octaspire_dern_vm_t *octaspire_dern_vm_new(
     octaspire_memory_allocator_t *allocator,
     octaspire_stdio_t *octaspireStdio);
 
+octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
+    octaspire_memory_allocator_t *allocator,
+    octaspire_stdio_t *octaspireStdio,
+    octaspire_dern_vm_config_t const config);
+
 void octaspire_dern_vm_release(octaspire_dern_vm_t *self);
 
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
     octaspire_dern_vm_t *self,
     octaspire_dern_value_t *valueToBeCopied);
+
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_io_file(
+    octaspire_dern_vm_t *self,
+    char const * const path);
 
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_nil       (octaspire_dern_vm_t *self);
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_boolean   (octaspire_dern_vm_t *self, bool    const value);
@@ -219,6 +236,8 @@ void octaspire_dern_vm_set_prevent_gc(octaspire_dern_vm_t * const self, bool con
 void octaspire_dern_vm_set_gc_trigger_limit(
     octaspire_dern_vm_t * const self,
     size_t const numAllocs);
+
+bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self);
 
 #ifdef __cplusplus
 }

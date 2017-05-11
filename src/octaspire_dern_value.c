@@ -23,6 +23,7 @@ limitations under the License.
 #include <octaspire/core/octaspire_helpers.h>
 #include "octaspire/dern/octaspire_dern_environment.h"
 #include "octaspire/dern/octaspire_dern_vm.h"
+#include "octaspire/dern/octaspire_dern_port.h"
 
 static char const * const octaspire_dern_value_helper_type_tags_as_c_strings[] =
 {
@@ -41,7 +42,8 @@ static char const * const octaspire_dern_value_helper_type_tags_as_c_strings[] =
     "environment",
     "function",
     "special",
-    "builtin"
+    "builtin",
+    "port"
 };
 
 octaspire_dern_function_t *octaspire_dern_function_new(
@@ -516,6 +518,12 @@ bool octaspire_dern_value_set(
             abort();
         }
         break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        {
+            abort();
+        }
+        break;
     }
 
     if (value->docstr)
@@ -671,6 +679,7 @@ uint32_t octaspire_dern_value_get_hash(
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.function);
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.special);
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.builtin);
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:        return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.port);
     }
 
     abort();
@@ -737,6 +746,7 @@ bool octaspire_dern_value_is_equal(
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return self->value.function == other->value.function;
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special == other->value.special;
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin == other->value.builtin;
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:        return self->value.port    == other->value.port;
     }
 
     abort();
@@ -1245,6 +1255,12 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             {
                 return octaspire_container_utf8_string_new("<builtin>", allocator);
+            }
+            break;
+
+            case OCTASPIRE_DERN_VALUE_TAG_PORT:
+            {
+                return octaspire_dern_port_to_string(self->value.port, allocator);
             }
             break;
 
@@ -2168,6 +2184,7 @@ size_t octaspire_dern_value_get_length(
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return octaspire_dern_function_get_number_of_required_arguments(self->value.function);
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special->numRequiredActualArguments;
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin->numRequiredActualArguments;
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:        return (size_t)octaspire_dern_port_get_length_in_octets(self->value.port);
     }
 
     abort();
@@ -2350,6 +2367,7 @@ int octaspire_dern_value_compare(
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return (ptrdiff_t)self->value.function - (ptrdiff_t)other->value.function;
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return (ptrdiff_t)self->value.special - (ptrdiff_t)other->value.special;
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return (ptrdiff_t)self->value.builtin - (ptrdiff_t)other->value.builtin;
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:        return (ptrdiff_t)self->value.port - (ptrdiff_t)other->value.port;
     }
 
     abort();
@@ -2374,6 +2392,7 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT: // TODO XXX atom or not? Also, think about renaming this func.
         {
             return true;
         }

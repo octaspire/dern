@@ -2292,6 +2292,328 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_abort(
     abort();
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_io_file_open(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    if (!octaspire_dern_vm_is_file_system_access_allowed(vm))
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'io-file-open' cannot be executed; file system access is denied by VM. "
+            "Enable file system access in VM before trying to run this code.");
+    }
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'io-file-open' expects one argument.");
+    }
+
+    octaspire_dern_vm_push_value(vm, arguments);
+
+    octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+    octaspire_helpers_verify(firstArg);
+
+    if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'io-file-open' expects string argument.");
+    }
+
+    octaspire_dern_value_t * const result = octaspire_dern_vm_create_new_value_io_file(
+        vm,
+        octaspire_dern_value_as_string_get_c_string(firstArg));
+
+    octaspire_dern_vm_pop_value(vm, arguments);
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_port_close(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'port-close' expects one argument.");
+    }
+
+    octaspire_dern_vm_push_value(vm, arguments);
+
+    octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+    octaspire_helpers_verify(firstArg);
+
+    if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_PORT)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'port-close' expects port argument.");
+    }
+
+    bool const wasClosed = octaspire_dern_port_close(firstArg->value.port);
+
+    octaspire_dern_vm_pop_value(vm, arguments);
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, wasClosed);
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_port_read(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 1 && numArgs != 2)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'port-read' expects one or two arguments.");
+    }
+
+    octaspire_dern_vm_push_value(vm, arguments);
+
+    octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+    octaspire_helpers_verify(firstArg);
+
+    if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_PORT)
+    {
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The first argument to builtin 'port-read' must be a port. Now type %s was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_value_t *result = 0;
+
+    if (numArgs == 2)
+    {
+        octaspire_dern_value_t *secondArg =
+            octaspire_dern_value_as_vector_get_element_at(arguments, 1);
+
+        octaspire_helpers_verify(secondArg);
+
+        if (secondArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_INTEGER)
+        {
+            octaspire_dern_vm_pop_value(vm, arguments);
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "The second argument to builtin 'port-read' must be an integer. Now type %s was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+        }
+
+        result = octaspire_dern_vm_create_new_value_vector(vm);
+
+        octaspire_helpers_verify(result);
+
+        octaspire_dern_vm_push_value(vm, result);
+
+        // TODO better implementation
+        for (ptrdiff_t i = 0; i < secondArg->value.integer; ++i)
+        {
+            char buffer[1];
+
+            ptrdiff_t const numOctetsRead =
+                octaspire_dern_port_read(firstArg->value.port, buffer, sizeof(buffer));
+
+            if (numOctetsRead != 1)
+            {
+                break;
+            }
+
+            octaspire_dern_value_t *elem =
+                octaspire_dern_vm_create_new_value_integer(vm, (int32_t)buffer[0]);
+
+            octaspire_helpers_verify(elem);
+
+            octaspire_dern_vm_push_value(vm, elem);
+            octaspire_dern_value_as_vector_push_back_element(result, &elem);
+            octaspire_dern_vm_pop_value(vm, elem);
+        }
+
+        octaspire_helpers_verify(result);
+
+        octaspire_dern_vm_pop_value(vm, result);
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return result;
+    }
+    else
+    {
+        char buffer[1];
+
+        ptrdiff_t const numOctetsRead =
+            octaspire_dern_port_read(firstArg->value.port, buffer, sizeof(buffer));
+
+        if (numOctetsRead != 1)
+        {
+            octaspire_dern_vm_pop_value(vm, arguments);
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "Builtin 'port-read' failed to read the requested one octet.");
+        }
+
+        result = octaspire_dern_vm_create_new_value_integer(vm, (int32_t)buffer[0]);
+
+        octaspire_helpers_verify(result);
+
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return result;
+    }
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_port_write(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'port-write' expects exactly two arguments.");
+    }
+
+    octaspire_dern_vm_push_value(vm, arguments);
+
+    octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+    octaspire_helpers_verify(firstArg);
+
+    if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_PORT)
+    {
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The first argument to builtin 'port-write' must be a port. Now type %s was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_value_t *secondArg = octaspire_dern_value_as_vector_get_element_at(arguments, 1);
+    octaspire_helpers_verify(secondArg);
+
+    if (secondArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_INTEGER)
+    {
+        // TODO XXX check that value fits into one octet and report
+        // error otherwise
+        char buffer[1];
+        buffer[0] = (char)secondArg->value.integer;
+
+        ptrdiff_t const numWritten =
+            octaspire_dern_port_write(firstArg->value.port, buffer, sizeof(buffer));
+
+        octaspire_helpers_verify(numWritten >= 0);
+
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_integer(vm, (int32_t)numWritten);
+    }
+    else if (secondArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR)
+    {
+        int32_t counter = 0;
+        for (size_t i = 0; i < octaspire_dern_value_as_vector_get_length(secondArg); ++i)
+        {
+            octaspire_dern_value_t * const elem =
+                octaspire_dern_value_as_vector_get_element_at(secondArg, i);
+
+            octaspire_helpers_verify(elem);
+
+            if (elem->typeTag == OCTASPIRE_DERN_VALUE_TAG_INTEGER)
+            {
+                // TODO XXX check that value fits into one octet and report
+                // error otherwise
+                char buffer[1];
+                buffer[0] = (char)elem->value.integer;
+
+                ptrdiff_t const numWritten =
+                    octaspire_dern_port_write(firstArg->value.port, buffer, sizeof(buffer));
+
+                if (numWritten == 1)
+                {
+                    ++counter;
+                }
+                else
+                {
+                    octaspire_dern_vm_pop_value(vm, arguments);
+                    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    return octaspire_dern_vm_create_new_value_integer(vm, counter);
+                }
+            }
+            else
+            {
+                octaspire_dern_vm_pop_value(vm, arguments);
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "The %zu. element in the vector argument to builtin 'port-write' must be an integer. "
+                    "Now type %s was given.",
+                    i,
+                    octaspire_dern_value_helper_get_type_as_c_string(elem->typeTag));
+            }
+        }
+
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_integer(vm, counter);
+    }
+    else
+    {
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The second argument to builtin 'port-write' must be an integer or a vector. "
+            "Now type %s was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_not(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

@@ -22,6 +22,7 @@ limitations under the License.
 #include <octaspire/core/octaspire_container_vector.h>
 #include <octaspire/core/octaspire_container_hash_map.h>
 #include <octaspire/core/octaspire_container_utf8_string.h>
+#include "octaspire/dern/octaspire_dern_port.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,7 +45,8 @@ typedef enum
     OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT,
     OCTASPIRE_DERN_VALUE_TAG_FUNCTION,
     OCTASPIRE_DERN_VALUE_TAG_SPECIAL,
-    OCTASPIRE_DERN_VALUE_TAG_BUILTIN
+    OCTASPIRE_DERN_VALUE_TAG_BUILTIN,
+    OCTASPIRE_DERN_VALUE_TAG_PORT
 }
 octaspire_dern_value_tag_t;
 
@@ -148,6 +150,7 @@ struct octaspire_dern_value_t
         octaspire_dern_function_t           *function;
         octaspire_dern_special_t            *special;
         octaspire_dern_builtin_t            *builtin;
+        octaspire_dern_port_t               *port;
     }
     value;
 };

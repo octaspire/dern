@@ -8116,6 +8116,69 @@ TEST octaspire_dern_vm_multiline_comment_missing_chars_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_io_file_open_failure_because_file_system_access_is_denied_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "Builtin 'io-file-open' cannot be executed; file system access is denied by VM. "
+        "Enable file system access in VM before trying to run this code.\n"
+        "\tAt form: >>>>>>>>>>(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowed_test(void)
+{
+    octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
+    config.fileSystemAccessAllowed = true;
+
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    for (size_t i = 0; i < 3; ++i)
+    {
+        evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(port-read f)");
+
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+        ASSERT_EQ((int32_t)(65 + i),                evaluatedValue->value.integer);
+    }
+
+    for (size_t i = 0; i < 3; ++i)
+    {
+        evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(port-read f)");
+
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+        ASSERT_EQ((int32_t)(65 + i),                evaluatedValue->value.integer);
+    }
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 static size_t octaspireDernVmSuiteNumTimesRun = 0;
 
 GREATEST_SUITE(octaspire_dern_vm_suite)
@@ -8401,6 +8464,9 @@ second_run:
 
     RUN_TEST(octaspire_dern_vm_multiline_comment_test);
     RUN_TEST(octaspire_dern_vm_multiline_comment_missing_chars_test);
+
+    RUN_TEST(octaspire_dern_vm_io_file_open_failure_because_file_system_access_is_denied_test);
+    RUN_TEST(octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowed_test);
 
     octaspire_stdio_release(stdio);
     stdio = 0;

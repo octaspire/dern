@@ -53,6 +53,7 @@ struct octaspire_dern_vm_t
     void                         *userData;
     uintmax_t                     nextFreeUniqueIdForValues;
     octaspire_dern_value_t       *functionReturn;
+    bool                          fileSystemAccessAllowed;
 };
 
 octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(octaspire_dern_vm_t* self, octaspire_dern_value_tag_t const typeTag);
@@ -65,9 +66,30 @@ octaspire_dern_value_t *octaspire_dern_vm_private_parse_token(
     octaspire_dern_lexer_token_t const * const token,
     octaspire_input_t *input);
 
+octaspire_dern_vm_config_t octaspire_dern_vm_config_default(void)
+{
+    octaspire_dern_vm_config_t result =
+    {
+        .fileSystemAccessAllowed = false
+    };
+
+    return result;
+}
+
 octaspire_dern_vm_t *octaspire_dern_vm_new(
     octaspire_memory_allocator_t *allocator,
     octaspire_stdio_t *octaspireStdio)
+{
+    return octaspire_dern_vm_new_with_config(
+        allocator,
+        octaspireStdio,
+        octaspire_dern_vm_config_default());
+}
+
+octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
+    octaspire_memory_allocator_t *allocator,
+    octaspire_stdio_t *octaspireStdio,
+    octaspire_dern_vm_config_t const config)
 {
     octaspire_dern_vm_t *self =
         octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_vm_t));
@@ -87,6 +109,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new(
     self->userData = 0;
     self->nextFreeUniqueIdForValues = 0;
     self->functionReturn = 0;
+    self->fileSystemAccessAllowed = config.fileSystemAccessAllowed;
 
     self->stack = octaspire_container_vector_new_with_preallocated_elements(
         sizeof(octaspire_dern_value_t*),
@@ -252,6 +275,54 @@ octaspire_dern_vm_t *octaspire_dern_vm_new(
 
     //////////////////////////////////////// Builtins ////////////////////////////////////////////
 
+    // io-file-open
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "io-file-open",
+        octaspire_dern_vm_builtin_io_file_open,
+        1,
+        "Open file-port for input and output",
+        env))
+    {
+        abort();
+    }
+
+    // port-close
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "port-close",
+        octaspire_dern_vm_builtin_port_close,
+        1,
+        "Close a port",
+        env))
+    {
+        abort();
+    }
+
+    // port-read
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "port-read",
+        octaspire_dern_vm_builtin_port_read,
+        1,
+        "Read from a port one or a given number of octets",
+        env))
+    {
+        abort();
+    }
+
+    // port-write
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "port-write",
+        octaspire_dern_vm_builtin_port_write,
+        1,
+        "Write one integer or all integers from a vector to a port supporting writing",
+        env))
+    {
+        abort();
+    }
+
     // not
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
@@ -263,7 +334,6 @@ octaspire_dern_vm_t *octaspire_dern_vm_new(
     {
         abort();
     }
-
 
     // abort
     if (!octaspire_dern_vm_create_and_register_new_builtin(
@@ -1132,6 +1202,13 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
             abort();
         }
         break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        {
+            result->value.port =
+                octaspire_dern_port_new_copy(valueToBeCopied->value.port, self->allocator);
+        }
+        break;
     }
 
     if (valueToBeCopied->docstr)
@@ -1146,6 +1223,15 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
 
     octaspire_dern_vm_pop_value(self, result);
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(self));
+    return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_io_file(
+    octaspire_dern_vm_t *self,
+    char const * const path)
+{
+    octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_PORT);
+    result->value.port = octaspire_dern_port_new_io_file(path, self->allocator);
     return result;
 }
 
@@ -1562,6 +1648,13 @@ void octaspire_dern_vm_clear_value_to_nil(
         {
             octaspire_dern_builtin_release(value->value.builtin);
             value->value.builtin = 0;
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        {
+            octaspire_dern_port_release(value->value.port);
+            value->value.port = 0;
         }
         break;
     }
@@ -3090,5 +3183,10 @@ void octaspire_dern_vm_set_prevent_gc(octaspire_dern_vm_t * const self, bool con
 void octaspire_dern_vm_set_gc_trigger_limit(octaspire_dern_vm_t * const self, size_t const numAllocs)
 {
     self->gcTriggerLimit = numAllocs;
+}
+
+bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self)
+{
+    return self->fileSystemAccessAllowed;
 }
 

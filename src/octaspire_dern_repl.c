@@ -135,12 +135,13 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
     printf("\nwhere [option] is one of the values listed below and every\n");
     printf("[file] is loaded and evaluated before the REPL is started or closed.\n");
     printf("If any of -e string or [file] is used, REPL is not started unless -i is used.\n\n");
-    printf("-n        --no-region-allocator : use regular malloc/free instead of region allocator\n");
-    printf("-c        --color-diagnostics   : use colors on unix like systems\n");
-    printf("-i        --interactive         : start REPL after any -e string or [file]s are evaluated\n");
-    printf("-e string --evaluate string     : evaluate a string without entering the REPL (unless -i is given)\n");
-    printf("-v        --version             : print version information and exit\n");
-    printf("-h        --help                : print this help message and exit\n");
+    printf("-n        --no-region-allocator           : use regular malloc/free instead of region allocator\n");
+    printf("-c        --color-diagnostics             : use colors on unix like systems\n");
+    printf("-i        --interactive                   : start REPL after any -e string or [file]s are evaluated\n");
+    printf("-e string --evaluate string               : evaluate a string without entering the REPL (unless -i is given)\n");
+    printf("-f        --allow-file-system-access      : Allow code to access file system (read and write files)\n");
+    printf("-v        --version                       : print version information and exit\n");
+    printf("-h        --help                          : print this help message and exit\n");
 }
 
 
@@ -176,11 +177,13 @@ static void octaspire_dern_repl_private_cleanup(void)
 
 int main(int argc, char *argv[])
 {
-    bool useColors          = false;
-    bool useRegionAllocator = true;
-    int  userFilesStartIdx  = -1;
-    bool enterReplAlways    = false;
-    bool evaluate           = false;
+    bool useColors               = false;
+    bool useRegionAllocator      = true;
+    int  userFilesStartIdx       = -1;
+    bool enterReplAlways         = false;
+    bool evaluate                = false;
+
+    octaspire_dern_vm_config_t vmConfig = octaspire_dern_vm_config_default();
 
     if (atexit(octaspire_dern_repl_private_cleanup) != 0)
     {
@@ -260,6 +263,10 @@ int main(int argc, char *argv[])
             {
                 evaluate = true;
             }
+            else if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--allow-file-system-access") == 0)
+            {
+                vmConfig.fileSystemAccessAllowed = true;
+            }
             else if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--version") == 0)
             {
                 octaspire_dern_repl_print_version(useColors);
@@ -326,7 +333,7 @@ int main(int argc, char *argv[])
     line  = 0;
     stdio = octaspire_stdio_new(allocator);
     input = octaspire_input_new_from_c_string("", allocator);
-    vm    = octaspire_dern_vm_new(allocator, stdio);
+    vm    = octaspire_dern_vm_new_with_config(allocator, stdio, vmConfig);
 
     // Eval all files given as cmdline args
     for (size_t i = 0; i < octaspire_container_vector_get_length(stringsToBeEvaluated); ++i)
