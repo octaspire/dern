@@ -98,6 +98,7 @@ octaspire_dern_port_t *octaspire_dern_port_new_io_file(
     if (self->value.file == 0)
     {
         self->typeTag = OCTASPIRE_DERN_PORT_TAG_NOT_OPEN;
+        return self;
     }
 
     octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_END) == 0);

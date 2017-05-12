@@ -8179,6 +8179,38 @@ TEST octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowe
     PASS();
 }
 
+TEST octaspire_dern_vm_io_file_open_with_file_system_access_allowed_failure_on_missing_file_test(void)
+{
+    octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
+    config.fileSystemAccessAllowed = true;
+
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "no-such-file.nono]))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string f)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "<NOT-OPEN-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "no-such-file.nono (-1 octets)>",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
@@ -8553,6 +8585,7 @@ second_run:
 
     RUN_TEST(octaspire_dern_vm_io_file_open_failure_because_file_system_access_is_denied_test);
     RUN_TEST(octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowed_test);
+    RUN_TEST(octaspire_dern_vm_io_file_open_with_file_system_access_allowed_failure_on_missing_file_test);
     RUN_TEST(octaspire_dern_vm_port_close_called_with_io_file_port_test);
 
     octaspire_stdio_release(stdio);
