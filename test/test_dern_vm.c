@@ -8179,6 +8179,92 @@ TEST octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowe
     PASS();
 }
 
+TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
+{
+    octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
+    config.fileSystemAccessAllowed = true;
+
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    for (size_t i = 0; i < 3; ++i)
+    {
+        evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(port-read f)");
+
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+        ASSERT_EQ((int32_t)(65 + i),                evaluatedValue->value.integer);
+    }
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string f)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "<input-output-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt (7 octets)>",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    // Close port
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(port-close f)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    // Check the closed port
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string f)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "<NOT-OPEN-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt (-1 octets)>",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    // Check that reading from closed file port fails
+    for (size_t i = 0; i < 3; ++i)
+    {
+        evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(port-read f)");
+
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+        ASSERT_STR_EQ(
+            "Builtin 'port-read' failed to read the requested one octet.\n"
+            "\tAt form: >>>>>>>>>>(port-read f)<<<<<<<<<<\n",
+            octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    }
+
+    // Check that closing again fails
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(port-close f)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 static size_t octaspireDernVmSuiteNumTimesRun = 0;
 
 GREATEST_SUITE(octaspire_dern_vm_suite)
@@ -8467,6 +8553,7 @@ second_run:
 
     RUN_TEST(octaspire_dern_vm_io_file_open_failure_because_file_system_access_is_denied_test);
     RUN_TEST(octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowed_test);
+    RUN_TEST(octaspire_dern_vm_port_close_called_with_io_file_port_test);
 
     octaspire_stdio_release(stdio);
     stdio = 0;

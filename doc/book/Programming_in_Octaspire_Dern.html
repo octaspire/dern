@@ -804,7 +804,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.42.0</p></div>
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.43.0</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -814,7 +814,8 @@ asciidoc.install(2);
 languages scheme and emacs lisp. The name of the language means
 an <strong>obscure language</strong>. <span class="footnote"><br>[<a href="https://en.wiktionary.org/wiki/dern">https://en.wiktionary.org/wiki/dern</a>]<br></span></p></div>
 <div class="paragraph"><p>Dern should support imperative and functional programming. It has atomic types
-<strong>integer</strong>, <strong>real</strong>, (utf-8) <strong>string</strong>, (utf-8) <strong>character</strong>, <strong>boolean</strong>, <strong>nil</strong> and <strong>hash-map</strong>.
+<strong>integer</strong>, <strong>real</strong>, (utf-8) <strong>string</strong>, (utf-8) <strong>character</strong>, <strong>boolean</strong>, <strong>nil</strong>,
+(input/output) <strong>port</strong> and <strong>hash-map</strong>.
 As non-atomic type it has <strong>vector</strong>. So, where in scheme <span class="monospaced">'(1 2 3)</span> is a list, in Dern it
 is a vector.</p></div>
 <div class="paragraph"><p>Every variable and function definition in Dern must be documented by a <strong>documentation string</strong>.
@@ -927,8 +928,11 @@ also either <strong>make</strong> or <strong>ninja</strong>.</p></div>
 and it should be updated and be build automatically, so when make finishes, everything
 should be ready.</p></div>
 </div>
-<div class="sect2">
-<h3 id="_running_dern">Running Dern</h3>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_running_dern">Running Dern</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>To run the unit tests:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span>test/octaspire-dern-test-runner
@@ -948,7 +952,6 @@ should be ready.</p></div>
 </td>
 <td class="content">Man pages are not ready yet.</td>
 </tr></table>
-</div>
 </div>
 </div>
 </div>
@@ -1019,11 +1022,8 @@ of it directly to the interactive REPL.</p></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_quick_tour_of_language_features">Quick tour of language features</h2>
+<h2 id="_values">Values</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Here we take a quick look of some of the features of the language.</p></div>
-<div class="sect2">
-<h3 id="_values">Values</h3>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span> <span class="mi">128</span>              <span class="c c-Singleline">; These are integers</span>
 <span class="mi">-100</span>
@@ -1051,8 +1051,10 @@ of the line. Dern has also <strong>multiline comments</strong> that are written 
 Note that string delimiters in Dern are <strong>[</strong> and <strong>]</strong> and not <strong>"</strong>;
 this way dern code can be written inside C-programs without escaping.</p></div>
 </div>
-<div class="sect2">
-<h3 id="_single_and_multiline_comments_making_script_files_executable">Single and multiline comments, making script files executable</h3>
+</div>
+<div class="sect1">
+<h2 id="_single_and_multiline_comments_making_script_files_executable">Single and multiline comments, making script files executable</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>Below are examples of single and multiline comments:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="c c-Singleline">; This is single line comment.</span>
@@ -1069,8 +1071,10 @@ this way dern code can be written inside C-programs without escaping.</p></div>
 <span class="p">(</span><span class="nb">println </span><span class="s">[Hello World]</span><span class="p">)</span>
 </pre></div></div></div>
 </div>
-<div class="sect2">
-<h3 id="_binding_names_to_values_with_define">Binding names to values with define</h3>
+</div>
+<div class="sect1">
+<h2 id="_binding_names_to_values_with_define">Binding names to values with define</h2>
+<div class="sectionbody">
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">pi</span> <span class="s">[value for pi]</span> <span class="mf">3.14</span><span class="p">)</span>
 <span class="p">(</span><span class="nb">define </span><span class="nv">names</span> <span class="s">[names list]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">John</span> <span class="nv">Lisa</span> <span class="nv">Mark</span><span class="p">))</span>
@@ -1102,8 +1106,10 @@ in Dern&#8217;s standard library are not yet documented properly. This is a work
 </tr></table>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_iteration">Iteration</h3>
+</div>
+<div class="sect1">
+<h2 id="_iteration">Iteration</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>Dern has two looping constructs: <strong>while</strong> and <strong>for</strong>. For can be used numerically or with a
 container (vector, string, hash-map, etc.) Below is couple of examples:</p></div>
 <div class="listingblock">
@@ -1128,8 +1134,10 @@ way the iterator is incremented:</p></div>
 <span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">in</span> <span class="nv">names</span> <span class="nv">step</span> <span class="mi">2</span> <span class="p">(</span><span class="nb">println </span><span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
 </pre></div></div></div>
 </div>
-<div class="sect2">
-<h3 id="_comparing_and_changing_values_predicates">Comparing and changing values, predicates</h3>
+</div>
+<div class="sect1">
+<h2 id="_comparing_and_changing_values_predicates">Comparing and changing values, predicates</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">&lt; </span> <span class="mi">1</span> <span class="mi">2</span><span class="p">)</span>   <span class="c c-Singleline">; true</span>
@@ -1192,8 +1200,10 @@ for the above operators should be implemented in the standard library eventually
 </tr></table>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_branching_and_selection">Branching and selection</h3>
+</div>
+<div class="sect1">
+<h2 id="_branching_and_selection">Branching and selection</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>Here are some examples using <strong>if</strong>:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">if </span><span class="no">true</span>  <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; Yes</span>
@@ -1239,8 +1249,10 @@ for the above operators should be implemented in the standard library eventually
         <span class="no">false</span> <span class="s">[There can be as many selectors as needed]</span><span class="p">)</span>   <span class="c c-Singleline">; Prints: Sun is shining</span>
 </pre></div></div></div>
 </div>
-<div class="sect2">
-<h3 id="_formatted_and_regular_printing">Formatted and regular printing</h3>
+</div>
+<div class="sect1">
+<h2 id="_formatted_and_regular_printing">Formatted and regular printing</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">print </span>  <span class="s">[Hi]</span><span class="p">)</span>   <span class="c c-Singleline">; Prints Hi without newline</span>
@@ -1253,8 +1265,10 @@ for the above operators should be implemented in the standard library eventually
 <span class="p">(</span><span class="nb">println </span><span class="s">[Hi {} and {}! It is {} degrees outside.]</span> <span class="nv">name1</span> <span class="nv">name2</span> <span class="nv">number</span><span class="p">)</span>  <span class="c c-Singleline">; Prints Hi Jim and Alice! It is 30 degrees outside.</span>
 </pre></div></div></div>
 </div>
-<div class="sect2">
-<h3 id="_formatted_string_creation">Formatted string creation</h3>
+</div>
+<div class="sect1">
+<h2 id="_formatted_string_creation">Formatted string creation</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">name1</span>  <span class="s">[some name 1]</span> <span class="ss">&#39;Jim</span><span class="p">)</span>
@@ -1264,8 +1278,10 @@ for the above operators should be implemented in the standard library eventually
 <span class="p">(</span><span class="nb">string-format </span><span class="s">[Hi {} and {}! It is {} degrees outside.]</span> <span class="nv">name1</span> <span class="nv">name2</span> <span class="nv">number</span><span class="p">)</span>  <span class="c c-Singleline">; Creates a sting [Hi Jim and Alice! It is 30 degrees outside.]</span>
 </pre></div></div></div>
 </div>
-<div class="sect2">
-<h3 id="_functions_with_variable_number_of_arguments">Functions with variable number of arguments</h3>
+</div>
+<div class="sect1">
+<h2 id="_functions_with_variable_number_of_arguments">Functions with variable number of arguments</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">x</span> <span class="s">[x]</span> <span class="nv">...</span> <span class="s">[varargs]</span><span class="p">)</span> <span class="p">(</span><span class="nb">fn </span><span class="p">(</span><span class="nf">x</span> <span class="nv">...</span><span class="p">)</span> <span class="nv">x</span><span class="p">))</span>
@@ -1278,8 +1294,10 @@ for the above operators should be implemented in the standard library eventually
 <span class="p">(</span><span class="nf">f</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>   <span class="c c-Singleline">; Prints 1|newline|(2 3)</span>
 </pre></div></div></div>
 </div>
-<div class="sect2">
-<h3 id="_environments">Environments</h3>
+</div>
+<div class="sect1">
+<h2 id="_environments">Environments</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>Here are few examples:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">env-global</span><span class="p">)</span>
@@ -1287,8 +1305,10 @@ for the above operators should be implemented in the standard library eventually
 <span class="p">(</span><span class="nf">env-new</span><span class="p">)</span>
 </pre></div></div></div>
 </div>
-<div class="sect2">
-<h3 id="_returning_from_functions_early">Returning from functions early</h3>
+</div>
+<div class="sect1">
+<h2 id="_returning_from_functions_early">Returning from functions early</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>The value of the last expression of function is usually the return value from that function.
 However, by using <strong>return</strong> one can return early and have multiple exit points from a function.
 Small example:</p></div>
@@ -1306,8 +1326,10 @@ will return the value <strong>nil</strong>. Short example:</p></div>
 <span class="p">((</span><span class="nb">fn </span><span class="p">()</span> <span class="p">(</span><span class="nf">return</span><span class="p">)))</span>       <span class="c c-Singleline">; Evaluates into &#39;nil&#39;.</span>
 </pre></div></div></div>
 </div>
-<div class="sect2">
-<h3 id="_evaluating_values">Evaluating values</h3>
+</div>
+<div class="sect1">
+<h2 id="_evaluating_values">Evaluating values</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>Special <strong>eval</strong> can be used to evaluate a given value. It can be called with one or two arguments.
 The second argument, if present, must be an environment that is used while evaluating. If no
 environment is given, the global environment is used instead.</p></div>
@@ -1326,8 +1348,10 @@ called at runtime. Small example:</p></div>
     <span class="p">(</span><span class="nb">eval </span><span class="p">((</span><span class="nb">eval </span><span class="nv">name-of-fn-to-call</span><span class="p">)))))</span>
 </pre></div></div></div>
 </div>
-<div class="sect2">
-<h3 id="_input_and_output_ports">Input and output ports</h3>
+</div>
+<div class="sect1">
+<h2 id="_input_and_output_ports">Input and output ports</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>Input and output can be done through ports. Ports can be created and attached to different
 sources and sinks of data (for example the file system).</p></div>
 <div class="paragraph"><p>VM will prevent access to those resources that are not configured to be allowed.
@@ -1336,38 +1360,68 @@ For example, trying to open a file in the REPL will result in error if the
 <div class="paragraph"><p>TODO: This section is not ready.</p></div>
 <div class="paragraph"><p>Here is small example:</p></div>
 <div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="p">(</span><span class="nf">io-file-open</span> <span class="s">[/path/goes/here.xy]</span><span class="p">))</span>
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="p">(</span><span class="nb">io-file-open </span><span class="s">[/path/goes/here.xy]</span><span class="p">))</span>
 
-<span class="p">(</span><span class="nf">port-read</span> <span class="nv">f</span><span class="p">)</span>
-<span class="p">(</span><span class="nf">port-read</span> <span class="nv">f</span> <span class="mi">3</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">port-read </span><span class="nv">f</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">port-read </span><span class="nv">f</span> <span class="mi">3</span><span class="p">)</span>
 
-<span class="p">(</span><span class="nf">port-write</span> <span class="nv">f</span> <span class="mi">65</span><span class="p">)</span>
-<span class="p">(</span><span class="nf">port-write</span> <span class="nv">f</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">65</span> <span class="mi">66</span> <span class="mi">67</span><span class="p">))</span>
+<span class="p">(</span><span class="nb">port-write </span><span class="nv">f</span> <span class="mi">65</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">port-write </span><span class="nv">f</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">65</span> <span class="mi">66</span> <span class="mi">67</span><span class="p">))</span>
+</pre></div></div></div>
+<div class="paragraph"><p>Ports can be explicitly closed, but it is not required; port will close automatically when the
+garbage collector collects it. Some ports might also support <strong>seeking</strong> and <strong>flushing</strong>.
+Here is another small example:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="p">(</span><span class="nb">io-file-open </span><span class="s">[/path/goes/here.xy]</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">port-seek </span><span class="nv">f</span> <span class="mi">-1</span><span class="p">)</span>  <span class="c c-Singleline">; Seek to the end</span>
+<span class="p">(</span><span class="nb">port-write </span><span class="nv">f</span> <span class="mi">65</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">port-seek </span><span class="nv">f</span> <span class="mi">0</span><span class="p">)</span>   <span class="c c-Singleline">; Seek to the beginning</span>
+<span class="p">(</span><span class="nb">port-write </span><span class="nv">f</span> <span class="mi">65</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">port-seek </span><span class="nv">f</span> <span class="mi">-2</span><span class="p">)</span>  <span class="c c-Singleline">; Seek to one octet from the end</span>
+<span class="p">(</span><span class="nb">port-write </span><span class="nv">f</span> <span class="mi">66</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">port-seek </span><span class="nv">f</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; Seek to one octet from the beginning</span>
+<span class="p">(</span><span class="nb">port-write </span><span class="nv">f</span> <span class="mi">65</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">port-flush </span><span class="nv">f</span><span class="p">)</span>    <span class="c c-Singleline">; Buffer is flushed to disk. Happens also automatically on close.</span>
+<span class="p">(</span><span class="nb">port-close </span><span class="nv">f</span><span class="p">)</span>    <span class="c c-Singleline">; Close port. This happens also automatically.</span>
 </pre></div></div></div>
 </div>
-<div class="sect2">
-<h3 id="_mutability_and_how_many_times_a_value_can_be_changed">Mutability and how many times a value can be changed</h3>
+</div>
+<div class="sect1">
+<h2 id="_mutability_and_how_many_times_a_value_can_be_changed">Mutability and how many times a value can be changed</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>TODO</p></div>
 </div>
-<div class="sect2">
-<h3 id="_converting_between_types">Converting between types</h3>
+</div>
+<div class="sect1">
+<h2 id="_converting_between_types">Converting between types</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>TODO</p></div>
 </div>
-<div class="sect2">
-<h3 id="_searching_and_indexing">Searching and indexing</h3>
+</div>
+<div class="sect1">
+<h2 id="_searching_and_indexing">Searching and indexing</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>TODO</p></div>
 </div>
-<div class="sect2">
-<h3 id="_embedding_in_c_programs">Embedding in C programs</h3>
+</div>
+<div class="sect1">
+<h2 id="_embedding_in_c_programs">Embedding in C programs</h2>
+<div class="sectionbody">
 <div class="paragraph"><p>This section is not ready yet. In the meantime you can see Dern in "real" use at:
 <a href="http://www.octaspire.com/maze">Maze</a> and <a href="http://www.octaspire.com/lightboard">Lightboard</a>.</p></div>
 <div class="paragraph"><p>Octaspire Maze and Lightboard are games (work in progress) that are being written using Dern and C99.</p></div>
 </div>
-<div class="sect2">
-<h3 id="_tool_support">Tool support</h3>
+</div>
+<div class="sect1">
+<h2 id="_tool_support">Tool support</h2>
+<div class="sectionbody">
 <div class="paragraph"><p><strong>etc</strong>-directory of the source distribution contains syntax files for <strong>vim</strong>, <strong>emacs</strong> and
 <strong>pygments</strong>.</p></div>
-</div>
 </div>
 </div>
 </div>
@@ -1375,7 +1429,7 @@ For example, trying to open a file in the REPL will result in error if the
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-12 02:42:16 EEST
+ 2017-05-12 15:16:39 EEST
 </div>
 </div>
 </body>

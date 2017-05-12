@@ -223,3 +223,64 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
     abort();
 }
 
+bool octaspire_dern_port_seek(octaspire_dern_port_t * const self, ptrdiff_t const amount)
+{
+    octaspire_helpers_verify(self);
+
+    switch (self->typeTag)
+    {
+        case OCTASPIRE_DERN_PORT_TAG_FILE:
+        {
+            octaspire_helpers_verify(self->value.file);
+
+            if (amount < 0)
+            {
+                // Seek backwards from the end
+                // TODO XXX check that amount fits into long and report error if it doesn't
+                long const offset = amount + 1;
+                return fseek(self->value.file, offset, SEEK_END) == 0;
+            }
+            else
+            {
+                // Seek forward from the beginning
+                // TODO XXX check that amount fits into long and report error if it doesn't
+                long const offset = amount;
+                return fseek(self->value.file, offset, SEEK_SET) == 0;
+            }
+        }
+        break;
+
+        case OCTASPIRE_DERN_PORT_TAG_NOT_OPEN:
+        {
+            return false;
+        }
+        break;
+    }
+
+    return false;
+}
+
+bool octaspire_dern_port_flush(octaspire_dern_port_t * const self)
+{
+    octaspire_helpers_verify(self);
+
+    switch (self->typeTag)
+    {
+        case OCTASPIRE_DERN_PORT_TAG_FILE:
+        {
+            octaspire_helpers_verify(self->value.file);
+
+            return fflush(self->value.file) == 0;
+        }
+        break;
+
+        case OCTASPIRE_DERN_PORT_TAG_NOT_OPEN:
+        {
+            return false;
+        }
+        break;
+    }
+
+    return false;
+}
+

@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.42.0
+Documentation for Octaspire Dern programming language version 0.43.0
 
 == About
 
@@ -13,7 +13,8 @@ languages scheme and emacs lisp. The name of the language means
 an *obscure language*. footnote:[https://en.wiktionary.org/wiki/dern]
 
 Dern should support imperative and functional programming. It has atomic types
-*integer*, *real*, (utf-8) *string*, (utf-8) *character*, *boolean*, *nil* and *hash-map*.
+*integer*, *real*, (utf-8) *string*, (utf-8) *character*, *boolean*, *nil*,
+(input/output) *port* and *hash-map*.
 As non-atomic type it has *vector*. So, where in scheme `'(1 2 3)` is a list, in Dern it
 is a vector.
 
@@ -152,7 +153,7 @@ This is all there should be to it; *octaspire core* is included as a git submodu
 and it should be updated and be build automatically, so when make finishes, everything
 should be ready.
 
-=== Running Dern
+== Running Dern
 
 To run the unit tests:
 
@@ -258,11 +259,7 @@ This is a multiline comment.    !#
 ----
 
 
-== Quick tour of language features
-
-Here we take a quick look of some of the features of the language.
-
-=== Values
+== Values
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -297,7 +294,7 @@ Note that string delimiters in Dern are *[* and *]* and not *"*;
 this way dern code can be written inside C-programs without escaping.
 
 
-=== Single and multiline comments, making script files executable
+== Single and multiline comments, making script files executable
 
 Below are examples of single and multiline comments:
 
@@ -327,7 +324,7 @@ Multiline comments can be used to make script files executable in UNIX-like syst
 ----
 
 
-=== Binding names to values with define
+== Binding names to values with define
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -374,7 +371,7 @@ Please note that at the time of writing most of the functions
 in Dern's standard library are not yet documented properly. This is a work in progress.
 
 
-=== Iteration
+== Iteration
 
 Dern has two looping constructs: *while* and *for*. For can be used numerically or with a
 container (vector, string, hash-map, etc.) Below is couple of examples:
@@ -424,7 +421,7 @@ way the iterator is incremented:
 ----
 
 
-=== Comparing and changing values, predicates
+== Comparing and changing values, predicates
 
 Here are few examples:
 
@@ -490,7 +487,7 @@ aborts the program or returns error. Complete support for non numeric operands
 for the above operators should be implemented in the standard library eventually.
 
 
-=== Branching and selection
+== Branching and selection
 
 Here are some examples using *if*:
 
@@ -551,7 +548,7 @@ Here are some examples using *select*:
 
 
 
-=== Formatted and regular printing
+== Formatted and regular printing
 
 Here are few examples:
 
@@ -570,7 +567,7 @@ Here are few examples:
 (println [Hi {} and {}! It is {} degrees outside.] name1 name2 number)  ; Prints Hi Jim and Alice! It is 30 degrees outside.
 ----
 
-=== Formatted string creation
+== Formatted string creation
 
 Here are few examples:
 
@@ -587,7 +584,7 @@ Here are few examples:
 ----
 
 
-=== Functions with variable number of arguments
+== Functions with variable number of arguments
 
 Here are few examples:
 
@@ -606,7 +603,7 @@ Here are few examples:
 (f 1 2 3)   ; Prints 1|newline|(2 3)
 ----
 
-=== Environments
+== Environments
 
 Here are few examples:
 
@@ -621,7 +618,7 @@ Here are few examples:
 ----
 
 
-=== Returning from functions early
+== Returning from functions early
 
 The value of the last expression of function is usually the return value from that function.
 However, by using *return* one can return early and have multiple exit points from a function.
@@ -652,7 +649,7 @@ will return the value *nil*. Short example:
 ----
 
 
-=== Evaluating values
+== Evaluating values
 
 Special *eval* can be used to evaluate a given value. It can be called with one or two arguments.
 The second argument, if present, must be an environment that is used while evaluating. If no
@@ -678,7 +675,7 @@ called at runtime. Small example:
     (eval ((eval name-of-fn-to-call)))))
 ----
 
-=== Input and output ports
+== Input and output ports
 
 Input and output can be done through ports. Ports can be created and attached to different
 sources and sinks of data (for example the file system).
@@ -705,30 +702,57 @@ Here is small example:
 (port-write f '(65 66 67))
 ----
 
+Ports can be explicitly closed, but it is not required; port will close automatically when the
+garbage collector collects it. Some ports might also support *seeking* and *flushing*.
+Here is another small example:
 
-=== Mutability and how many times a value can be changed
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(define f [f] (io-file-open [/path/goes/here.xy]))
+
+(port-seek f -1)  ; Seek to the end
+(port-write f 65)
+
+(port-seek f 0)   ; Seek to the beginning
+(port-write f 65)
+
+(port-seek f -2)  ; Seek to one octet from the end
+(port-write f 66)
+
+(port-seek f 1)   ; Seek to one octet from the beginning
+(port-write f 65)
+
+(port-flush f)    ; Buffer is flushed to disk. Happens also automatically on close.
+(port-close f)    ; Close port. This happens also automatically.
+----
+
+
+== Mutability and how many times a value can be changed
 
 TODO
 
 
-=== Converting between types
+== Converting between types
 
 TODO
 
 
-=== Searching and indexing
+== Searching and indexing
 
 TODO
 
 
-=== Embedding in C programs
+== Embedding in C programs
 
 This section is not ready yet. In the meantime you can see Dern in "real" use at:
 http://www.octaspire.com/maze[Maze] and http://www.octaspire.com/lightboard[Lightboard].
 
 Octaspire Maze and Lightboard are games (work in progress) that are being written using Dern and C99.
 
-=== Tool support
+== Tool support
 
 *etc*-directory of the source distribution contains syntax files for *vim*, *emacs* and
 *pygments*.

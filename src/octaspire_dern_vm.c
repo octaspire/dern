@@ -323,6 +323,31 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // port-seek
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "port-seek",
+        octaspire_dern_vm_builtin_port_seek,
+        1,
+        "Seek to a position from the beginning (positive integer) or "
+        "from the end (negative integer) on ports supporting seeking",
+        env))
+    {
+        abort();
+    }
+
+    // port-flush
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "port-flush",
+        octaspire_dern_vm_builtin_port_flush,
+        1,
+        "Flush an output port that supports flushing",
+        env))
+    {
+        abort();
+    }
+
     // not
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
