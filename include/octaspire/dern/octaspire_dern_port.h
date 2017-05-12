@@ -63,8 +63,13 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
     octaspire_dern_port_t const * const self,
     octaspire_memory_allocator_t * const allocator);
 
-bool octaspire_dern_port_seek(octaspire_dern_port_t * const self, ptrdiff_t const amount);
+bool octaspire_dern_port_seek(
+    octaspire_dern_port_t * const self,
+    ptrdiff_t const amount,
+    bool const fromCurrentPos);
+
 bool octaspire_dern_port_flush(octaspire_dern_port_t * const self);
+ptrdiff_t octaspire_dern_port_distance(octaspire_dern_port_t const * const self);
 
 #ifdef __cplusplus
 }

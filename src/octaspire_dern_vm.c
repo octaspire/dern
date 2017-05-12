@@ -336,6 +336,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // port-dist
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "port-dist",
+        octaspire_dern_vm_builtin_port_dist,
+        1,
+        "Get distance from the beginning on ports that support it, or minus one",
+        env))
+    {
+        abort();
+    }
+
     // port-flush
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,

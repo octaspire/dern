@@ -804,7 +804,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.43.0</p></div>
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.44.0</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -1357,7 +1357,6 @@ sources and sinks of data (for example the file system).</p></div>
 <div class="paragraph"><p>VM will prevent access to those resources that are not configured to be allowed.
 For example, trying to open a file in the REPL will result in error if the
 <strong>octaspire-dern-repl</strong> was not started with flag <span class="monospaced">-f</span> or <span class="monospaced">--allow-file-system-access</span>.</p></div>
-<div class="paragraph"><p>TODO: This section is not ready.</p></div>
 <div class="paragraph"><p>Here is small example:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="p">(</span><span class="nb">io-file-open </span><span class="s">[/path/goes/here.xy]</span><span class="p">))</span>
@@ -1369,8 +1368,8 @@ For example, trying to open a file in the REPL will result in error if the
 <span class="p">(</span><span class="nb">port-write </span><span class="nv">f</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">65</span> <span class="mi">66</span> <span class="mi">67</span><span class="p">))</span>
 </pre></div></div></div>
 <div class="paragraph"><p>Ports can be explicitly closed, but it is not required; port will close automatically when the
-garbage collector collects it. Some ports might also support <strong>seeking</strong> and <strong>flushing</strong>.
-Here is another small example:</p></div>
+garbage collector collects it. Some ports might also support <strong>seeking</strong>, <strong>distance measurement</strong>
+and <strong>flushing</strong>. Here is another small example:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="p">(</span><span class="nb">io-file-open </span><span class="s">[/path/goes/here.xy]</span><span class="p">))</span>
 
@@ -1385,6 +1384,11 @@ Here is another small example:</p></div>
 
 <span class="p">(</span><span class="nb">port-seek </span><span class="nv">f</span> <span class="mi">1</span><span class="p">)</span>   <span class="c c-Singleline">; Seek to one octet from the beginning</span>
 <span class="p">(</span><span class="nb">port-write </span><span class="nv">f</span> <span class="mi">65</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">port-seek </span><span class="nv">f</span>  <span class="mi">1</span> <span class="ss">&#39;from-current</span><span class="p">)</span>  <span class="c c-Singleline">; Seek one octet forward  from the current position</span>
+<span class="p">(</span><span class="nb">port-seek </span><span class="nv">f</span> <span class="mi">-1</span> <span class="ss">&#39;from-current</span><span class="p">)</span>  <span class="c c-Singleline">; Seek one octet backward from the current position</span>
+
+<span class="p">(</span><span class="nb">port-dist </span><span class="nv">f</span><span class="p">)</span>     <span class="c c-Singleline">; Tell the distance (in octets) from the beginning of the port</span>
 
 <span class="p">(</span><span class="nb">port-flush </span><span class="nv">f</span><span class="p">)</span>    <span class="c c-Singleline">; Buffer is flushed to disk. Happens also automatically on close.</span>
 <span class="p">(</span><span class="nb">port-close </span><span class="nv">f</span><span class="p">)</span>    <span class="c c-Singleline">; Close port. This happens also automatically.</span>
@@ -1429,7 +1433,7 @@ Here is another small example:</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-12 15:16:39 EEST
+ 2017-05-12 21:24:07 EEST
 </div>
 </div>
 </body>

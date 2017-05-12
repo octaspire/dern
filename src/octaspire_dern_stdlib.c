@@ -2626,12 +2626,12 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_port_seek(
 
     size_t const numArgs = octaspire_dern_value_get_length(arguments);
 
-    if (numArgs != 2)
+    if (numArgs != 2 && numArgs != 3)
     {
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
-            "Builtin 'port-seek' expects exactly two arguments.");
+            "Builtin 'port-seek' expects two or three arguments.");
     }
 
     octaspire_dern_vm_push_value(vm, arguments);
@@ -2662,11 +2662,78 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_port_seek(
             octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
     }
 
-    bool const success = octaspire_dern_port_seek(firstArg->value.port, secondArg->value.integer);
+    bool seekFromCurrentPosition = false;
+
+    if (numArgs == 3)
+    {
+        octaspire_dern_value_t *thirdArg = octaspire_dern_value_as_vector_get_element_at(arguments, 2);
+        octaspire_helpers_verify(thirdArg);
+
+        if (thirdArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_SYMBOL)
+        {
+            octaspire_dern_vm_pop_value(vm, arguments);
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "The third argument to builtin 'port-seek' must be symbol 'from-current'. "
+                "Now type %s was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(thirdArg->typeTag));
+        }
+
+        seekFromCurrentPosition = true;
+    }
+
+    bool const success = octaspire_dern_port_seek(
+        firstArg->value.port,
+        secondArg->value.integer,
+        seekFromCurrentPosition);
 
     octaspire_dern_vm_pop_value(vm, arguments);
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, success);
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_port_dist(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'port-dist' expects exactly one argument.");
+    }
+
+    octaspire_dern_vm_push_value(vm, arguments);
+
+    octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+    octaspire_helpers_verify(firstArg);
+
+    if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_PORT)
+    {
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The first argument to builtin 'port-dist' must be a port. Now type %s was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    ptrdiff_t dist = octaspire_dern_port_distance(firstArg->value.port);
+
+    octaspire_dern_vm_pop_value(vm, arguments);
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    // TODO check that dist fits into int32_t and report error if it doesn'tk
+    return octaspire_dern_vm_create_new_value_integer(vm, (int32_t)dist);
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_port_flush(

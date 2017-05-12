@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.43.1
+Documentation for Octaspire Dern programming language version 0.44.0
 
 == About
 
@@ -684,8 +684,6 @@ VM will prevent access to those resources that are not configured to be allowed.
 For example, trying to open a file in the REPL will result in error if the
 *octaspire-dern-repl* was not started with flag `-f` or `--allow-file-system-access`.
 
-TODO: This section is not ready.
-
 Here is small example:
 
 :source-highlighter: pygments
@@ -703,8 +701,8 @@ Here is small example:
 ----
 
 Ports can be explicitly closed, but it is not required; port will close automatically when the
-garbage collector collects it. Some ports might also support *seeking* and *flushing*.
-Here is another small example:
+garbage collector collects it. Some ports might also support *seeking*, *distance measurement*
+and *flushing*. Here is another small example:
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -724,6 +722,11 @@ Here is another small example:
 
 (port-seek f 1)   ; Seek to one octet from the beginning
 (port-write f 65)
+
+(port-seek f  1 'from-current)  ; Seek one octet forward  from the current position
+(port-seek f -1 'from-current)  ; Seek one octet backward from the current position
+
+(port-dist f)     ; Tell the distance (in octets) from the beginning of the port
 
 (port-flush f)    ; Buffer is flushed to disk. Happens also automatically on close.
 (port-close f)    ; Close port. This happens also automatically.

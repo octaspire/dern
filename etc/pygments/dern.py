@@ -21,7 +21,7 @@ class DernLexer(RegexLexer):
         'pop-front', 'print', 'println', 'quote', 'read-and-eval-path', 'read-and-eval-string',
         'return', 'select', 'starts-with?', 'string-format', 'to-integer', 'to-string', 'uid',
         'vector', 'while', 'io-file-open', 'port-read', 'port-write', 'port-seek', 'port-flush',
-        'port-close'
+        'port-close', 'port-dist'
     )
 
     valid_name = r'[\w!$%&*+-/\:;,.<=>?@^~]+'

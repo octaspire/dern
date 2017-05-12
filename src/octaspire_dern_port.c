@@ -224,7 +224,10 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
     abort();
 }
 
-bool octaspire_dern_port_seek(octaspire_dern_port_t * const self, ptrdiff_t const amount)
+bool octaspire_dern_port_seek(
+    octaspire_dern_port_t * const self,
+    ptrdiff_t const amount,
+    bool const fromCurrentPos)
 {
     octaspire_helpers_verify(self);
 
@@ -238,15 +241,15 @@ bool octaspire_dern_port_seek(octaspire_dern_port_t * const self, ptrdiff_t cons
             {
                 // Seek backwards from the end
                 // TODO XXX check that amount fits into long and report error if it doesn't
-                long const offset = amount + 1;
-                return fseek(self->value.file, offset, SEEK_END) == 0;
+                long const offset = fromCurrentPos ? amount : (amount + 1);
+                return fseek(self->value.file, offset, fromCurrentPos ? SEEK_CUR : SEEK_END) == 0;
             }
             else
             {
                 // Seek forward from the beginning
                 // TODO XXX check that amount fits into long and report error if it doesn't
                 long const offset = amount;
-                return fseek(self->value.file, offset, SEEK_SET) == 0;
+                return fseek(self->value.file, offset, fromCurrentPos ? SEEK_CUR : SEEK_SET) == 0;
             }
         }
         break;
@@ -283,5 +286,29 @@ bool octaspire_dern_port_flush(octaspire_dern_port_t * const self)
     }
 
     return false;
+}
+
+ptrdiff_t octaspire_dern_port_distance(octaspire_dern_port_t const * const self)
+{
+    octaspire_helpers_verify(self);
+
+    switch (self->typeTag)
+    {
+        case OCTASPIRE_DERN_PORT_TAG_FILE:
+        {
+            octaspire_helpers_verify(self->value.file);
+
+            return (ptrdiff_t)ftell(self->value.file);
+        }
+        break;
+
+        case OCTASPIRE_DERN_PORT_TAG_NOT_OPEN:
+        {
+            return -1;
+        }
+        break;
+    }
+
+    return -1;
 }
 
