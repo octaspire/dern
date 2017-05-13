@@ -23,6 +23,11 @@ limitations under the License.
 extern "C" {
 #endif
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_input_file_open(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_io_file_open(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
@@ -49,6 +54,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_port_seek(
     octaspire_dern_value_t *environment);
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_port_dist(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_port_length(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);

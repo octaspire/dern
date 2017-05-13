@@ -804,7 +804,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.44.0</p></div>
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.45.0</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -1110,8 +1110,8 @@ in Dern&#8217;s standard library are not yet documented properly. This is a work
 <div class="sect1">
 <h2 id="_iteration">Iteration</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Dern has two looping constructs: <strong>while</strong> and <strong>for</strong>. For can be used numerically or with a
-container (vector, string, hash-map, etc.) Below is couple of examples:</p></div>
+<div class="paragraph"><p>Dern has two looping constructs: <strong>while</strong> and <strong>for</strong>. For can be used numerically, with a
+container (vector, string, hash-map, etc.) and with (input) <strong>ports</strong>. Below is couple of examples:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">i</span> <span class="s">[my counter]</span> <span class="mi">0</span><span class="p">)</span>
 <span class="p">(</span><span class="nb">while </span><span class="p">(</span><span class="nb">&lt;= </span><span class="nv">i</span> <span class="mi">10</span><span class="p">)</span> <span class="p">(</span><span class="nb">println </span><span class="s">[Counting at {}...]</span> <span class="nv">i</span><span class="p">)</span> <span class="p">(</span><span class="nb">++ </span><span class="nv">i</span><span class="p">))</span>
@@ -1368,8 +1368,8 @@ For example, trying to open a file in the REPL will result in error if the
 <span class="p">(</span><span class="nb">port-write </span><span class="nv">f</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">65</span> <span class="mi">66</span> <span class="mi">67</span><span class="p">))</span>
 </pre></div></div></div>
 <div class="paragraph"><p>Ports can be explicitly closed, but it is not required; port will close automatically when the
-garbage collector collects it. Some ports might also support <strong>seeking</strong>, <strong>distance measurement</strong>
-and <strong>flushing</strong>. Here is another small example:</p></div>
+garbage collector collects it. Some ports might also support <strong>seeking</strong>, <strong>distance measurement</strong>,
+<strong>length measurement</strong> and <strong>flushing</strong>. Here is another small example:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="p">(</span><span class="nb">io-file-open </span><span class="s">[/path/goes/here.xy]</span><span class="p">))</span>
 
@@ -1390,9 +1390,27 @@ and <strong>flushing</strong>. Here is another small example:</p></div>
 
 <span class="p">(</span><span class="nb">port-dist </span><span class="nv">f</span><span class="p">)</span>     <span class="c c-Singleline">; Tell the distance (in octets) from the beginning of the port</span>
 
+<span class="p">(</span><span class="nf">port-length</span> <span class="nv">f</span><span class="p">)</span>   <span class="c c-Singleline">; Tell the size (in octets) of the port</span>
+
 <span class="p">(</span><span class="nb">port-flush </span><span class="nv">f</span><span class="p">)</span>    <span class="c c-Singleline">; Buffer is flushed to disk. Happens also automatically on close.</span>
 <span class="p">(</span><span class="nb">port-close </span><span class="nv">f</span><span class="p">)</span>    <span class="c c-Singleline">; Close port. This happens also automatically.</span>
+
+<span class="p">(</span><span class="nf">port-length</span> <span class="nv">f</span><span class="p">)</span>   <span class="c c-Singleline">; -1</span>
 </pre></div></div></div>
+<div class="paragraph"><p>Input ports can be iterated with <strong>for</strong> in similar way that containers are iterated:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="p">(</span><span class="nb">io-file-open </span><span class="s">[/path/goes/here.xy]</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">in</span> <span class="nv">f</span> <span class="p">(</span><span class="nb">println </span><span class="nv">i</span><span class="p">))</span>           <span class="c c-Singleline">; Print every octet</span>
+
+<span class="p">(</span><span class="nb">port-seek </span><span class="nv">f</span> <span class="mi">0</span><span class="p">)</span>                    <span class="c c-Singleline">; Seek to the beginning</span>
+<span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">in</span> <span class="nv">f</span> <span class="nv">step</span> <span class="mi">2</span> <span class="p">(</span><span class="nb">println </span><span class="nv">i</span><span class="p">))</span>    <span class="c c-Singleline">; Print every other octet</span>
+
+<span class="p">(</span><span class="nb">port-seek </span><span class="nv">f</span> <span class="mi">0</span><span class="p">)</span>                    <span class="c c-Singleline">; Seek to the beginning</span>
+<span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">in</span> <span class="nv">f</span> <span class="nv">step</span> <span class="mi">3</span> <span class="p">(</span><span class="nb">println </span><span class="nv">i</span><span class="p">))</span>    <span class="c c-Singleline">; Print every third octet</span>
+</pre></div></div></div>
+<div class="paragraph"><p><strong>io-file-open</strong> will open a file for reading and writing. <strong>input-file-open</strong> will open a file
+only for reading.</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -1433,7 +1451,7 @@ and <strong>flushing</strong>. Here is another small example:</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-12 21:24:07 EEST
+ 2017-05-13 13:35:16 EEST
 </div>
 </div>
 </body>

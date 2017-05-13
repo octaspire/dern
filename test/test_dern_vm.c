@@ -8179,38 +8179,6 @@ TEST octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowe
     PASS();
 }
 
-TEST octaspire_dern_vm_io_file_open_with_file_system_access_allowed_failure_on_missing_file_test(void)
-{
-    octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
-
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
-
-    octaspire_dern_value_t *evaluatedValue =
-        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
-            vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "no-such-file.nono]))");
-
-    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
-    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
-
-    evaluatedValue =
-        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
-            vm,
-            "(to-string f)");
-
-    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-
-    ASSERT_STR_EQ(
-        "<NOT-OPEN-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "no-such-file.nono (-1 octets)>",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
-
-    octaspire_dern_vm_release(vm);
-    vm = 0;
-
-    PASS();
-}
-
 TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
@@ -8471,6 +8439,154 @@ TEST octaspire_dern_vm_port_seek_called_with_a_file_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(false,                            evaluatedValue->value.boolean);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_i_file_open_with_file_system_access_allowed_failure_on_missing_file_test(void)
+{
+    octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
+    config.fileSystemAccessAllowed = true;
+
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "no-such-file.nono]))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string f)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "<NOT-OPEN-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "no-such-file.nono (-1 octets)>",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_port_write_failure_on_input_file_test(void)
+{
+    octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
+    config.fileSystemAccessAllowed = true;
+
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    for (size_t i = 0; i < 3; ++i)
+    {
+        evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(port-read f)");
+
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+        ASSERT_EQ((int32_t)(65 + i),                evaluatedValue->value.integer);
+    }
+
+    for (size_t i = 0; i < 3; ++i)
+    {
+        evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(port-read f)");
+
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+        ASSERT_EQ((int32_t)(65 + i),                evaluatedValue->value.integer);
+    }
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "f");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_PORT, evaluatedValue->typeTag);
+
+    int32_t const fileLengthInOctets =
+        octaspire_dern_port_get_length_in_octets(evaluatedValue->value.port);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(port-write f 70)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "The first argument to builtin 'port-write' must be a port supporting writing.\n"
+        "\tAt form: >>>>>>>>>>(port-write f 70)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    // Make sure that the file has still the same size as before the write attempt
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "f");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_PORT, evaluatedValue->typeTag);
+
+    ASSERT_EQ(
+        fileLengthInOctets,
+        octaspire_dern_port_get_length_in_octets(evaluatedValue->value.port));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_port_length_test(void)
+{
+    octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
+    config.fileSystemAccessAllowed = true;
+
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(port-length f)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(7,                                evaluatedValue->value.integer);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(port-close f)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(port-length f)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(-1,                               evaluatedValue->value.integer);
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -8766,10 +8882,13 @@ second_run:
 
     RUN_TEST(octaspire_dern_vm_io_file_open_failure_because_file_system_access_is_denied_test);
     RUN_TEST(octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowed_test);
-    RUN_TEST(octaspire_dern_vm_io_file_open_with_file_system_access_allowed_failure_on_missing_file_test);
     RUN_TEST(octaspire_dern_vm_port_close_called_with_io_file_port_test);
     RUN_TEST(octaspire_dern_vm_port_dist_called_with_a_file_test);
     RUN_TEST(octaspire_dern_vm_port_seek_called_with_a_file_test);
+
+    RUN_TEST(octaspire_dern_vm_i_file_open_with_file_system_access_allowed_failure_on_missing_file_test);
+    RUN_TEST(octaspire_dern_vm_port_write_failure_on_input_file_test);
+    RUN_TEST(octaspire_dern_vm_port_length_test);
 
     octaspire_stdio_release(stdio);
     stdio = 0;

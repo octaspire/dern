@@ -51,10 +51,26 @@ octaspire_dern_port_t *octaspire_dern_port_new_copy(
 
     switch (self->typeTag)
     {
-        case OCTASPIRE_DERN_PORT_TAG_FILE:
+        case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         {
             self->value.file =
-                fopen(octaspire_container_utf8_string_get_c_string(self->name), "r+b");
+                fopen(octaspire_container_utf8_string_get_c_string(self->name), "a+b");
+
+            if (self->value.file == 0)
+            {
+                self->typeTag = OCTASPIRE_DERN_PORT_TAG_NOT_OPEN;
+            }
+
+            octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_END) == 0);
+            self->lengthInOctets = ftell(self->value.file);
+            octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_SET) == 0);
+        }
+        break;
+
+        case OCTASPIRE_DERN_PORT_TAG_INPUT_FILE:
+        {
+            self->value.file =
+                fopen(octaspire_container_utf8_string_get_c_string(self->name), "rb");
 
             if (self->value.file == 0)
             {
@@ -77,6 +93,37 @@ octaspire_dern_port_t *octaspire_dern_port_new_copy(
     return self;
 }
 
+octaspire_dern_port_t *octaspire_dern_port_new_input_file(
+    char const * const path,
+    octaspire_memory_allocator_t *allocator)
+{
+    octaspire_dern_port_t *self =
+        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_port_t));
+
+    if (!self)
+    {
+        return self;
+    }
+
+    self->allocator  = allocator;
+    self->name       = octaspire_container_utf8_string_new(path, self->allocator);
+    self->typeTag    = OCTASPIRE_DERN_PORT_TAG_INPUT_FILE;
+    self->lengthInOctets = -1;
+    self->value.file = fopen(path, "rb");
+
+    if (self->value.file == 0)
+    {
+        self->typeTag = OCTASPIRE_DERN_PORT_TAG_NOT_OPEN;
+        return self;
+    }
+
+    octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_END) == 0);
+    self->lengthInOctets = ftell(self->value.file);
+    octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_SET) == 0);
+
+    return self;
+}
+
 octaspire_dern_port_t *octaspire_dern_port_new_io_file(
     char const * const path,
     octaspire_memory_allocator_t *allocator)
@@ -91,9 +138,9 @@ octaspire_dern_port_t *octaspire_dern_port_new_io_file(
 
     self->allocator  = allocator;
     self->name       = octaspire_container_utf8_string_new(path, self->allocator);
-    self->typeTag    = OCTASPIRE_DERN_PORT_TAG_FILE;
+    self->typeTag    = OCTASPIRE_DERN_PORT_TAG_IO_FILE;
     self->lengthInOctets = -1;
-    self->value.file = fopen(path, "r+b");
+    self->value.file = fopen(path, "a+b");
 
     if (self->value.file == 0)
     {
@@ -115,7 +162,8 @@ void octaspire_dern_port_release(octaspire_dern_port_t *self)
         return;
     }
 
-    if (self->typeTag == OCTASPIRE_DERN_PORT_TAG_FILE)
+    if (self->typeTag == OCTASPIRE_DERN_PORT_TAG_INPUT_FILE ||
+        self->typeTag == OCTASPIRE_DERN_PORT_TAG_IO_FILE)
     {
         int const res = fclose(self->value.file);
         self->value.file = 0;
@@ -136,7 +184,7 @@ ptrdiff_t octaspire_dern_port_write(
 {
     octaspire_helpers_verify(self);
 
-    if (self->typeTag == OCTASPIRE_DERN_PORT_TAG_FILE)
+    if (self->typeTag == OCTASPIRE_DERN_PORT_TAG_IO_FILE)
     {
         octaspire_helpers_verify(self->value.file);
         size_t const numItemsWritten = fwrite(buffer, sizeof(char), bufferSizeInOctets, self->value.file);
@@ -153,7 +201,8 @@ ptrdiff_t octaspire_dern_port_read(
 {
     octaspire_helpers_verify(self);
 
-    if (self->typeTag == OCTASPIRE_DERN_PORT_TAG_FILE)
+    if (self->typeTag == OCTASPIRE_DERN_PORT_TAG_INPUT_FILE ||
+        self->typeTag == OCTASPIRE_DERN_PORT_TAG_IO_FILE)
     {
         octaspire_helpers_verify(self->value.file);
         size_t const numItemsRead = fread(buffer, sizeof(char), bufferSizeInOctets, self->value.file);
@@ -168,7 +217,8 @@ bool octaspire_dern_port_close(
 {
     switch (self->typeTag)
     {
-        case OCTASPIRE_DERN_PORT_TAG_FILE:
+        case OCTASPIRE_DERN_PORT_TAG_INPUT_FILE:
+        case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         {
             int const res = fclose(self->value.file);
             self->value.file = 0;
@@ -200,7 +250,17 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
 {
     switch (self->typeTag)
     {
-        case OCTASPIRE_DERN_PORT_TAG_FILE:
+        case OCTASPIRE_DERN_PORT_TAG_INPUT_FILE:
+        {
+            return octaspire_container_utf8_string_new_format(
+                allocator,
+                "<input-port:%s (%td octets)>",
+                octaspire_container_utf8_string_get_c_string(self->name),
+                self->lengthInOctets);
+        }
+        break;
+
+        case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         {
             return octaspire_container_utf8_string_new_format(
                 allocator,
@@ -233,7 +293,8 @@ bool octaspire_dern_port_seek(
 
     switch (self->typeTag)
     {
-        case OCTASPIRE_DERN_PORT_TAG_FILE:
+        case OCTASPIRE_DERN_PORT_TAG_INPUT_FILE:
+        case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         {
             octaspire_helpers_verify(self->value.file);
 
@@ -270,7 +331,8 @@ bool octaspire_dern_port_flush(octaspire_dern_port_t * const self)
 
     switch (self->typeTag)
     {
-        case OCTASPIRE_DERN_PORT_TAG_FILE:
+        case OCTASPIRE_DERN_PORT_TAG_INPUT_FILE:
+        case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         {
             octaspire_helpers_verify(self->value.file);
 
@@ -294,7 +356,8 @@ ptrdiff_t octaspire_dern_port_distance(octaspire_dern_port_t const * const self)
 
     switch (self->typeTag)
     {
-        case OCTASPIRE_DERN_PORT_TAG_FILE:
+        case OCTASPIRE_DERN_PORT_TAG_INPUT_FILE:
+        case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         {
             octaspire_helpers_verify(self->value.file);
 
@@ -310,5 +373,30 @@ ptrdiff_t octaspire_dern_port_distance(octaspire_dern_port_t const * const self)
     }
 
     return -1;
+}
+
+bool octaspire_dern_port_supports_output(
+    octaspire_dern_port_t const * const self)
+{
+    octaspire_helpers_verify(self);
+
+    switch (self->typeTag)
+    {
+        case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
+        {
+            octaspire_helpers_verify(self->value.file);
+            return true;
+        }
+        break;
+
+        case OCTASPIRE_DERN_PORT_TAG_INPUT_FILE:
+        case OCTASPIRE_DERN_PORT_TAG_NOT_OPEN:
+        {
+            return false;
+        }
+        break;
+    }
+
+    return false;
 }
 

@@ -55,6 +55,10 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
     octaspire_dern_vm_t *self,
     octaspire_dern_value_t *valueToBeCopied);
 
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_input_file(
+    octaspire_dern_vm_t *self,
+    char const * const path);
+
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_io_file(
     octaspire_dern_vm_t *self,
     char const * const path);

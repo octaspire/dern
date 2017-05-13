@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.44.0
+Documentation for Octaspire Dern programming language version 0.45.0
 
 == About
 
@@ -373,8 +373,8 @@ in Dern's standard library are not yet documented properly. This is a work in pr
 
 == Iteration
 
-Dern has two looping constructs: *while* and *for*. For can be used numerically or with a
-container (vector, string, hash-map, etc.) Below is couple of examples:
+Dern has two looping constructs: *while* and *for*. For can be used numerically, with a
+container (vector, string, hash-map, etc.) and with (input) *ports*. Below is couple of examples:
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -701,8 +701,8 @@ Here is small example:
 ----
 
 Ports can be explicitly closed, but it is not required; port will close automatically when the
-garbage collector collects it. Some ports might also support *seeking*, *distance measurement*
-and *flushing*. Here is another small example:
+garbage collector collects it. Some ports might also support *seeking*, *distance measurement*,
+*length measurement* and *flushing*. Here is another small example:
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -728,9 +728,34 @@ and *flushing*. Here is another small example:
 
 (port-dist f)     ; Tell the distance (in octets) from the beginning of the port
 
+(port-length f)   ; Tell the size (in octets) of the port
+
 (port-flush f)    ; Buffer is flushed to disk. Happens also automatically on close.
 (port-close f)    ; Close port. This happens also automatically.
+
+(port-length f)   ; -1
 ----
+
+Input ports can be iterated with *for* in similar way that containers are iterated:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(define f [f] (io-file-open [/path/goes/here.xy]))
+
+(for i in f (println i))           ; Print every octet
+
+(port-seek f 0)                    ; Seek to the beginning
+(for i in f step 2 (println i))    ; Print every other octet
+
+(port-seek f 0)                    ; Seek to the beginning
+(for i in f step 3 (println i))    ; Print every third octet
+----
+
+*io-file-open* will open a file for reading and writing. *input-file-open* will open a file
+only for reading.
 
 
 == Mutability and how many times a value can be changed

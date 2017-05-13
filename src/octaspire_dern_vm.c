@@ -275,6 +275,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
 
     //////////////////////////////////////// Builtins ////////////////////////////////////////////
 
+    // input-file-open
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "input-file-open",
+        octaspire_dern_vm_builtin_input_file_open,
+        1,
+        "Open file-port for reading only",
+        env))
+    {
+        abort();
+    }
+
     // io-file-open
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
@@ -343,6 +355,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_port_dist,
         1,
         "Get distance from the beginning on ports that support it, or minus one",
+        env))
+    {
+        abort();
+    }
+
+    // port-length
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "port-length",
+        octaspire_dern_vm_builtin_port_length,
+        1,
+        "Get size of port in octets on ports that support this operation, or minus one",
         env))
     {
         abort();
@@ -1260,6 +1284,15 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
 
     octaspire_dern_vm_pop_value(self, result);
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(self));
+    return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_input_file(
+    octaspire_dern_vm_t *self,
+    char const * const path)
+{
+    octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_PORT);
+    result->value.port = octaspire_dern_port_new_input_file(path, self->allocator);
     return result;
 }
 
