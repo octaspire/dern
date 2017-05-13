@@ -131,7 +131,6 @@ struct octaspire_dern_value_t
     octaspire_dern_value_t      *docstr;
     octaspire_dern_value_t      *docvec;
     struct octaspire_dern_vm_t  *vm;
-    int32_t                      mutableCounter;
     uintmax_t                    uniqueId;
 
     union

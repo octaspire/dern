@@ -3443,64 +3443,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_doc(
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
 }
 
-octaspire_dern_value_t *octaspire_dern_vm_builtin_mutable(
-    octaspire_dern_vm_t *vm,
-    octaspire_dern_value_t *arguments,
-    octaspire_dern_value_t *environment)
-{
-    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
-
-    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
-
-    octaspire_container_vector_t * const vec = arguments->value.vector;
-
-    if (octaspire_container_vector_get_length(vec) < 1)
-    {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
-            vm,
-            "Builtin 'mutable' expects at least one argument.");
-    }
-
-    if (octaspire_container_vector_get_length(vec) == 1)
-    {
-        octaspire_dern_value_t *value = octaspire_container_vector_get_element_at(vec, 0);
-
-        value->mutableCounter = -1;
-
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_get_value_true(vm);
-    }
-    else if (octaspire_container_vector_get_length(vec) == 2)
-    {
-        octaspire_dern_value_t *value = octaspire_container_vector_get_element_at(vec, 0);
-        octaspire_dern_value_t *count = octaspire_container_vector_get_element_at(vec, 1);
-
-        if (count->typeTag != OCTASPIRE_DERN_VALUE_TAG_INTEGER)
-        {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
-                vm,
-                "Second argument to builtin 'mutable' must be integer (mutable count). Type '%s' was given.",
-                octaspire_dern_value_helper_get_type_as_c_string(count->typeTag));
-        }
-
-        value->mutableCounter = count->value.integer;
-
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_get_value_true(vm);
-    }
-    else
-    {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
-            vm,
-            "Builtin 'mutable' expects zero or one arguments.");
-    }
-}
-
-
 octaspire_dern_value_t *octaspire_dern_vm_builtin_len(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
@@ -4469,19 +4411,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_minus(
                 "Arguments to builtin '--' must be numbers. %zuth argument has type '%s'.",
                 i + 1,
                 octaspire_dern_value_helper_get_type_as_c_string(value->typeTag));
-        }
-
-        if (value->mutableCounter > 0)
-        {
-            --(value->mutableCounter);
-        }
-        else if (value->mutableCounter == 0)
-        {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
-                vm,
-                "Builtin '--' tried to modify a constant value at %zuth argument.",
-                i + 1);
         }
 
         if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_INTEGER)

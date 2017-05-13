@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.47.0
+Documentation for Octaspire Dern programming language version 0.48.0
 
 == About
 
@@ -756,11 +756,6 @@ Input ports can be iterated with *for* in similar way that containers are iterat
 
 *io-file-open* will open a file for reading and writing. *input-file-open* will open a file
 only for reading.
-
-
-== Mutability and how many times a value can be changed
-
-TODO
 
 
 == Converting between types

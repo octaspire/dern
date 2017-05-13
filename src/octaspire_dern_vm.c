@@ -762,18 +762,6 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
-    // mutable
-    if (!octaspire_dern_vm_create_and_register_new_builtin(
-        self,
-        "mutable",
-        octaspire_dern_vm_builtin_mutable,
-        1,
-        "Make value mutable for count times, indefinitely or not at all (constant)",
-        env))
-    {
-        abort();
-    }
-
     // doc
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
@@ -1114,7 +1102,6 @@ octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(octasp
     result->containerLengthAtTimeOfMarking = 0;
     result->docstr                         = 0;
     result->vm                             = self;
-    result->mutableCounter                 = -1;
     result->uniqueId                       = self->nextFreeUniqueIdForValues;
 
     if (self->nextFreeUniqueIdForValues == UINTMAX_MAX)

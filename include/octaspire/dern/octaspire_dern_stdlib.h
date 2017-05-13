@@ -118,11 +118,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_doc(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
-octaspire_dern_value_t *octaspire_dern_vm_builtin_mutable(
-    octaspire_dern_vm_t *vm,
-    octaspire_dern_value_t *arguments,
-    octaspire_dern_value_t *environment);
-
 octaspire_dern_value_t *octaspire_dern_vm_builtin_len(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

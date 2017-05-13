@@ -1,4 +1,4 @@
-; Based on tutorial wron emacswiki.org/emacs/ModeTutorial
+; Based on tutorial on emacswiki.org/emacs/ModeTutorial
 
 (defvar octaspire-dern-mode-hook nil)
 
@@ -11,31 +11,26 @@
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.dern\\'" . octaspire-dern-mode))
 
-;(regexp-opt '("println" "env-new" "env-current" "env-global" "\+\+" "--" "\*" "-" "find" "hash-map" "exit" "mutable" "doc" "len" "read-and-eval-path" "read-and-eval-string" "define" "quote" "if" "while" "for" "=" "==" "\<\=" "fn") t)"\\(\\+\\+\\|--\\|<=\\|==\\|d\\(?:efine\\|oc\\)\\|e\\(?:nv-\\(?:current\\|global\\|new\\)\\|xit\\)\\|f\\(?:ind\\|n\\|or\\)\\|hash-map\\|if\\|len\\|mutable\\|println\\|quote\\|read-and-eval-\\(?:path\\|string\\)\\|while\\|[*=-]\\)" 
-
-;(regexp-opt '("nil" "false" "true") t)
-
-;(defconst octaspire-dern-lock-keywords-1
-;  (list
-;   '("\\<\\(\\+\\+\\|--\\|<=\\|==\\|d\\(?:efine\\|oc\\)\\|e\\(?:nv-\\(?:current\\|global\\|new\\)\\|xit\\)\\|f\\(?:alse\\|ind\\|n\\|or\\)\\|hash-map\\|if\\|len\\|mutable\\|nil\\|println\\|quote\\|read-and-eval-\\(?:path\\|string\\)\\|\\(?:tru\\|whil\\)e\\|[*=-]\\)\\>" . font-lock-builtin-face)
-;   '("\\(false\\|nil\\|true\\)" . font-lock-constant-face)
-;   '("\\('\\w*'\\)" . font-lock-variable-name-face))
-;  "Minimal highlighting expressions for octaspire-dern mode")
-
 (defconst octaspire-dern-lock-keywords-1
   (list
-   (cons (regexp-opt '("println" "env-new" "env-current" "env-global" "\+" "\+\+" "--" "\*" "-" "find" "hash-map" "exit" "mutable" "do" "doc" "len" "read-and-eval-path" "read-and-eval-string" "define" "nth" "quote" "if" "while" "for" "\=" "\=\=" ">" ">\=" "<" "<\=" "fn") t) font-lock-builtin-face)
+   (cons (regexp-opt '("\!\=" "\*" "\+" "\+\+" "\+\=" "\-" "\-\-" "\-\=" "\/" "\<" "\<\=" "\="
+                       "\=\=" "\>" "\>\=" "abort" "and" "define" "do" "doc" "env-current"
+                       "env-global" "env-new" "eval" "exit" "find" "fn" "for" "hash-map" "if"
+                       "input-file-open" "io-file-open" "len" "mod" "not" "nth" "or" "pop-front"
+                       "port-close" "port-dist" "port-flush" "port-length" "port-read" "port-seek"
+                       "port-write" "print" "println" "quote" "read-and-eval-path"
+                       "read-and-eval-string" "return" "select" "starts-with\?"
+                       "string-format" "to-integer" "to-string" "uid" "vector" "while"
+                       ) t) font-lock-builtin-face)
    (cons (regexp-opt '("nil" "false" "true") t) font-lock-constant-face)
    (cons "\\('\\w*'\\)" font-lock-variable-name-face)
    (cons "\\('\\d*'\\)" font-lock-constant-face)
    )
    "Minimal highlighting expressions for octaspire-dern mode")
 
-
 (defvar octaspire-dern-font-lock-keywords octaspire-dern-lock-keywords-1
   "Default highlighting expressions for octaspire-dern mode")
 
-;TODO XXX these rules thing, for example, ]cat] as a string.
 (defvar octaspire-dern-mode-syntax-table
   (let ((st (make-syntax-table)))
     (modify-syntax-entry ?\; "<"   st)
@@ -46,7 +41,8 @@
     (modify-syntax-entry ?[  "|"   st)
     (modify-syntax-entry ?]  "|"   st)
     ;(modify-syntax-entry ?\|  "/"   st)
-    (modify-syntax-entry ?|  "/"   st)
+    ;(modify-syntax-entry ?|  "/"   st)
+    (modify-syntax-entry ?|  "\""   st)
     st)
   "Syntax table for octaspire-dern-mode")
 
