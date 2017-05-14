@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.49.0
+Documentation for Octaspire Dern programming language version 0.50.0
 
 == About
 
@@ -478,7 +478,8 @@ Here are few examples:
 ----
 
 Operators `++`, `--`, `+=`, `-=`, `==` and `!=` are similar to those in C. Note also that
-*the operands need not to be numbers*.
+*the operands need not to be numbers*. You can, for example, use `+=` to push values to the
+back of a vector, add characters into a string, write values into a port, etc.
 
 [WARNING]
 All the examples above should work, but support for non-numeric types is not finished
@@ -779,6 +780,22 @@ Below is short example about querying a port for supported operations:
 (port-supports-output? f)          ; false
 (port-supports-input?  f)          ; true
 ----
+
+You can use `port-write` and `+=` to write to a port octets with values `integer`, `character`,
+`string` and `vector` of these types. Example:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(define f [f] (io-file-open [/path/goes/here.xy]))
+
+(+= f |a| |b| [ cat] |!|)  ; ab cat!
+
+(port-write f '(65 |A| [ Hi!])) ; AA Hi!
+----
+
 
 
 == Converting between types

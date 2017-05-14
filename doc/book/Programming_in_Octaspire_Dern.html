@@ -804,7 +804,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.49.0</p></div>
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.50.0</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -1187,7 +1187,8 @@ way the iterator is incremented:</p></div>
 <span class="p">(</span><span class="nb">-= </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span> <span class="mi">1</span> <span class="mi">2</span><span class="p">)</span>         <span class="c c-Singleline">; (3)</span>
 </pre></div></div></div>
 <div class="paragraph"><p>Operators <span class="monospaced">++</span>, <span class="monospaced">--</span>, <span class="monospaced">+=</span>, <span class="monospaced">-=</span>, <span class="monospaced">==</span> and <span class="monospaced">!=</span> are similar to those in C. Note also that
-<strong>the operands need not to be numbers</strong>.</p></div>
+<strong>the operands need not to be numbers</strong>. You can, for example, use <span class="monospaced">+=</span> to push values to the
+back of a vector, add characters into a string, write values into a port, etc.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -1428,6 +1429,15 @@ only for reading and <span class="monospaced">output-file-open</span> will open 
 <span class="p">(</span><span class="nb">port-supports-output? </span><span class="nv">f</span><span class="p">)</span>          <span class="c c-Singleline">; false</span>
 <span class="p">(</span><span class="nb">port-supports-input? </span> <span class="nv">f</span><span class="p">)</span>          <span class="c c-Singleline">; true</span>
 </pre></div></div></div>
+<div class="paragraph"><p>You can use <span class="monospaced">port-write</span> and <span class="monospaced">+=</span> to write to a port octets with values <span class="monospaced">integer</span>, <span class="monospaced">character</span>,
+<span class="monospaced">string</span> and <span class="monospaced">vector</span> of these types. Example:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="p">(</span><span class="nb">io-file-open </span><span class="s">[/path/goes/here.xy]</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">+= </span><span class="nv">f</span> <span class="sc">|a|</span> <span class="sc">|b|</span> <span class="s">[ cat]</span> <span class="sc">|!|</span><span class="p">)</span>  <span class="c c-Singleline">; ab cat!</span>
+
+<span class="p">(</span><span class="nb">port-write </span><span class="nv">f</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">65</span> <span class="sc">|A|</span> <span class="s">[ Hi!]</span><span class="p">))</span> <span class="c c-Singleline">; AA Hi!</span>
+</pre></div></div></div>
 </div>
 </div>
 <div class="sect1">
@@ -1462,7 +1472,7 @@ only for reading and <span class="monospaced">output-file-open</span> will open 
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-14 14:07:30 EEST
+ 2017-05-14 21:15:24 EEST
 </div>
 </div>
 </body>

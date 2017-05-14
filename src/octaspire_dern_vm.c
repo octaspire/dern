@@ -744,7 +744,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         "+",
         octaspire_dern_vm_builtin_plus,
         1,
-        "Add number arguments",
+        "Add arguments to create new value",
         env))
     {
         abort();
