@@ -2424,6 +2424,57 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_input_file_open(
     return result;
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_output_file_open(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    if (!octaspire_dern_vm_is_file_system_access_allowed(vm))
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'output-file-open' cannot be executed; file system access is denied by VM. "
+            "Enable file system access in VM before trying to run this code.");
+    }
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'output-file-open' expects one argument.");
+    }
+
+    octaspire_dern_vm_push_value(vm, arguments);
+
+    octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+    octaspire_helpers_verify(firstArg);
+
+    if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'output-file-open' expects string argument.");
+    }
+
+    octaspire_dern_value_t * const result = octaspire_dern_vm_create_new_value_output_file(
+        vm,
+        octaspire_dern_value_as_string_get_c_string(firstArg));
+
+    octaspire_dern_vm_pop_value(vm, arguments);
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_io_file_open(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
@@ -2473,6 +2524,88 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_io_file_open(
     octaspire_dern_vm_pop_value(vm, arguments);
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_port_supports_output_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'port-supports-output?' expects one argument.");
+    }
+
+    octaspire_dern_vm_push_value(vm, arguments);
+
+    octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+    octaspire_helpers_verify(firstArg);
+
+    if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_PORT)
+    {
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'port-supports-output?' expects port argument.");
+    }
+
+    bool const result = octaspire_dern_port_supports_output(firstArg->value.port);
+
+    octaspire_dern_vm_pop_value(vm, arguments);
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, result);
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_port_supports_input_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'port-supports-input?' expects one argument.");
+    }
+
+    octaspire_dern_vm_push_value(vm, arguments);
+
+    octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+    octaspire_helpers_verify(firstArg);
+
+    if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_PORT)
+    {
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'port-supports-input?' expects port argument.");
+    }
+
+    bool const result = octaspire_dern_port_supports_input(firstArg->value.port);
+
+    octaspire_dern_vm_pop_value(vm, arguments);
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_port_close(

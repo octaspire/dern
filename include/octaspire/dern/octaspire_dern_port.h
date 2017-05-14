@@ -29,6 +29,7 @@ typedef enum
 {
     OCTASPIRE_DERN_PORT_TAG_NOT_OPEN,
     OCTASPIRE_DERN_PORT_TAG_INPUT_FILE,
+    OCTASPIRE_DERN_PORT_TAG_OUTPUT_FILE,
     OCTASPIRE_DERN_PORT_TAG_IO_FILE
 }
 octaspire_dern_port_tag_t;
@@ -40,6 +41,10 @@ octaspire_dern_port_t *octaspire_dern_port_new_copy(
     octaspire_memory_allocator_t *allocator);
 
 octaspire_dern_port_t *octaspire_dern_port_new_input_file(
+    char const * const path,
+    octaspire_memory_allocator_t *allocator);
+
+octaspire_dern_port_t *octaspire_dern_port_new_output_file(
     char const * const path,
     octaspire_memory_allocator_t *allocator);
 
@@ -77,6 +82,9 @@ bool octaspire_dern_port_flush(octaspire_dern_port_t * const self);
 ptrdiff_t octaspire_dern_port_distance(octaspire_dern_port_t const * const self);
 
 bool octaspire_dern_port_supports_output(
+    octaspire_dern_port_t const * const self);
+
+bool octaspire_dern_port_supports_input(
     octaspire_dern_port_t const * const self);
 
 #ifdef __cplusplus

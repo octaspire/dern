@@ -804,7 +804,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.48.0</p></div>
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.49.0</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -1046,9 +1046,9 @@ of it directly to the interactive REPL.</p></div>
            <span class="mi">1</span>    <span class="sc">|a|</span>
            <span class="s">[Hi]</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div></div></div>
-<div class="paragraph"><p>The text after character <strong>;</strong> is a <strong>single line comment</strong>. Single line comments run until the end
-of the line. Dern has also <strong>multiline comments</strong> that are written between <strong>#!</strong> and <strong>!#</strong>.
-Note that string delimiters in Dern are <strong>[</strong> and <strong>]</strong> and not <strong>"</strong>;
+<div class="paragraph"><p>The text after character <span class="monospaced">;</span> is a <strong>single line comment</strong>. Single line comments run until the end
+of the line. Dern has also <strong>multiline comments</strong> that are written between <span class="monospaced">\#!</span> and <span class="monospaced">!#</span>.
+Note that string delimiters in Dern are <span class="monospaced">[</span> and <span class="monospaced">]</span> and not <span class="monospaced">"</span>;
 this way dern code can be written inside C-programs without escaping.</p></div>
 </div>
 </div>
@@ -1110,7 +1110,7 @@ in Dern&#8217;s standard library are not yet documented properly. This is a work
 <div class="sect1">
 <h2 id="_iteration">Iteration</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Dern has two looping constructs: <strong>while</strong> and <strong>for</strong>. For can be used numerically, with a
+<div class="paragraph"><p>Dern has two looping constructs: <span class="monospaced">while</span> and <span class="monospaced">for</span>. For can be used numerically, with a
 container (vector, string, hash-map, etc.) and with (input) <strong>ports</strong>. Below is couple of examples:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">i</span> <span class="s">[my counter]</span> <span class="mi">0</span><span class="p">)</span>
@@ -1125,7 +1125,7 @@ container (vector, string, hash-map, etc.) and with (input) <strong>ports</stron
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">names</span> <span class="s">[names list]</span> <span class="o">&#39;</span><span class="p">(</span><span class="nf">John</span> <span class="nv">Mark</span> <span class="nv">Lisa</span><span class="p">))</span>
 <span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">in</span> <span class="nv">names</span> <span class="p">(</span><span class="nb">println </span><span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
 </pre></div></div></div>
-<div class="paragraph"><p>Both the <strong>numerical for</strong> and <strong>container for</strong> support the use of optional <strong>step</strong> to change the
+<div class="paragraph"><p>Both the <strong>numerical for</strong> and <strong>container for</strong> support the use of optional <span class="monospaced">step</span> to change the
 way the iterator is incremented:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">from</span> <span class="mi">0</span> <span class="nv">to</span> <span class="mi">10</span> <span class="nv">step</span> <span class="mi">3</span> <span class="p">(</span><span class="nb">println </span><span class="s">[Hello {} World!]</span> <span class="nv">i</span><span class="p">))</span>
@@ -1186,7 +1186,7 @@ way the iterator is incremented:</p></div>
 <span class="p">(</span><span class="nb">-= </span><span class="p">(</span><span class="nb">hash-map </span><span class="mi">1</span> <span class="sc">|a|</span> <span class="mi">2</span> <span class="sc">|b|</span><span class="p">)</span> <span class="mi">1</span><span class="p">)</span> <span class="c c-Singleline">; (hash-map 2 |b|)</span>
 <span class="p">(</span><span class="nb">-= </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span> <span class="mi">1</span> <span class="mi">2</span><span class="p">)</span>         <span class="c c-Singleline">; (3)</span>
 </pre></div></div></div>
-<div class="paragraph"><p>Operators <strong><span class="monospaced">+</strong>, <strong>--</strong>, <strong></span>=</strong>, <strong>-=</strong>, <strong>==</strong> and <strong>!=</strong> are similar to those in C. Note also that
+<div class="paragraph"><p>Operators <span class="monospaced">++</span>, <span class="monospaced">--</span>, <span class="monospaced">+=</span>, <span class="monospaced">-=</span>, <span class="monospaced">==</span> and <span class="monospaced">!=</span> are similar to those in C. Note also that
 <strong>the operands need not to be numbers</strong>.</p></div>
 <div class="admonitionblock">
 <table><tr>
@@ -1204,7 +1204,7 @@ for the above operators should be implemented in the standard library eventually
 <div class="sect1">
 <h2 id="_branching_and_selection">Branching and selection</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Here are some examples using <strong>if</strong>:</p></div>
+<div class="paragraph"><p>Here are some examples using <span class="monospaced">if</span>:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">if </span><span class="no">true</span>  <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; Yes</span>
 <span class="p">(</span><span class="nb">if </span><span class="no">false</span> <span class="s">[Yes]</span><span class="p">)</span>         <span class="c c-Singleline">; nil</span>
@@ -1214,7 +1214,7 @@ for the above operators should be implemented in the standard library eventually
 
 <span class="p">(</span><span class="nb">if </span><span class="no">true</span>  <span class="p">(</span><span class="nb">do </span><span class="p">(</span><span class="nb">println </span><span class="s">[Yes]</span><span class="p">)</span> <span class="p">(</span><span class="nb">println </span><span class="s">[OK]</span><span class="p">)))</span>    <span class="c c-Singleline">; Prints Yes|newline|OK</span>
 </pre></div></div></div>
-<div class="paragraph"><p>Here are some examples using <strong>select</strong>:</p></div>
+<div class="paragraph"><p>Here are some examples using <span class="monospaced">select</span>:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">select </span><span class="no">true</span> <span class="s">[Yes]</span><span class="p">)</span>            <span class="c c-Singleline">; Yes</span>
 
@@ -1310,7 +1310,7 @@ for the above operators should be implemented in the standard library eventually
 <h2 id="_returning_from_functions_early">Returning from functions early</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>The value of the last expression of function is usually the return value from that function.
-However, by using <strong>return</strong> one can return early and have multiple exit points from a function.
+However, by using <span class="monospaced">return</span> one can return early and have multiple exit points from a function.
 Small example:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">errorCode</span> <span class="s">[0 means no error.]</span> <span class="mi">1</span><span class="p">)</span>
@@ -1319,8 +1319,8 @@ Small example:</p></div>
     <span class="p">(</span><span class="nb">if </span><span class="p">(</span><span class="nb">!= </span><span class="nv">errorCode</span> <span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="nb">return </span><span class="s">[Cannot start the engine]</span><span class="p">))</span>
     <span class="c c-Singleline">; .... Start the engine here...))</span>
 </pre></div></div></div>
-<div class="paragraph"><p><strong>Return</strong> can be called with zero or one argument. If no arguments are given, then <strong>return</strong>
-will return the value <strong>nil</strong>. Short example:</p></div>
+<div class="paragraph"><p><span class="monospaced">Return</span> can be called with zero or one argument. If no arguments are given, then <span class="monospaced">return</span>
+will return the value <span class="monospaced">nil</span>. Short example:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">((</span><span class="nb">fn </span><span class="p">()</span> <span class="p">(</span><span class="nb">return </span><span class="no">nil</span><span class="p">)))</span>   <span class="c c-Singleline">; Evaluates into &#39;nil&#39;.</span>
 <span class="p">((</span><span class="nb">fn </span><span class="p">()</span> <span class="p">(</span><span class="nf">return</span><span class="p">)))</span>       <span class="c c-Singleline">; Evaluates into &#39;nil&#39;.</span>
@@ -1330,10 +1330,10 @@ will return the value <strong>nil</strong>. Short example:</p></div>
 <div class="sect1">
 <h2 id="_evaluating_values">Evaluating values</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Special <strong>eval</strong> can be used to evaluate a given value. It can be called with one or two arguments.
+<div class="paragraph"><p>Special <span class="monospaced">eval</span> can be used to evaluate a given value. It can be called with one or two arguments.
 The second argument, if present, must be an environment that is used while evaluating. If no
 environment is given, the global environment is used instead.</p></div>
-<div class="paragraph"><p><strong>Eval</strong> is useful, for example, in situations where you build the name of the function to be
+<div class="paragraph"><p><span class="monospaced">Eval</span> is useful, for example, in situations where you build the name of the function to be
 called at runtime. Small example:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">level-next</span> <span class="s">[next level]</span> <span class="o">&#39;</span><span class="p">()</span> <span class="p">(</span><span class="nb">fn </span><span class="p">()</span>
@@ -1397,7 +1397,7 @@ garbage collector collects it. Some ports might also support <strong>seeking</st
 
 <span class="p">(</span><span class="nb">port-length </span><span class="nv">f</span><span class="p">)</span>   <span class="c c-Singleline">; -1</span>
 </pre></div></div></div>
-<div class="paragraph"><p>Input ports can be iterated with <strong>for</strong> in similar way that containers are iterated:</p></div>
+<div class="paragraph"><p>Input ports can be iterated with <span class="monospaced">for</span> in similar way that containers are iterated:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="p">(</span><span class="nb">io-file-open </span><span class="s">[/path/goes/here.xy]</span><span class="p">))</span>
 
@@ -1409,8 +1409,25 @@ garbage collector collects it. Some ports might also support <strong>seeking</st
 <span class="p">(</span><span class="nb">port-seek </span><span class="nv">f</span> <span class="mi">0</span><span class="p">)</span>                    <span class="c c-Singleline">; Seek to the beginning</span>
 <span class="p">(</span><span class="nb">for </span><span class="nv">i</span> <span class="nv">in</span> <span class="nv">f</span> <span class="nv">step</span> <span class="mi">3</span> <span class="p">(</span><span class="nb">println </span><span class="nv">i</span><span class="p">))</span>    <span class="c c-Singleline">; Print every third octet</span>
 </pre></div></div></div>
-<div class="paragraph"><p><strong>io-file-open</strong> will open a file for reading and writing. <strong>input-file-open</strong> will open a file
-only for reading.</p></div>
+<div class="paragraph"><p><span class="monospaced">io-file-open</span> will open a file for reading and writing, <span class="monospaced">input-file-open</span> will open a file
+only for reading and <span class="monospaced">output-file-open</span> will open file only for writing.</p></div>
+<div class="paragraph"><p>Below is short example about querying a port for supported operations:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="p">(</span><span class="nb">io-file-open </span><span class="s">[/path/goes/here.xy]</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">port-supports-output? </span><span class="nv">f</span><span class="p">)</span>          <span class="c c-Singleline">; true</span>
+<span class="p">(</span><span class="nb">port-supports-input? </span> <span class="nv">f</span><span class="p">)</span>          <span class="c c-Singleline">; true</span>
+
+<span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="p">(</span><span class="nb">output-file-open </span><span class="s">[/path/goes/here.xy]</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">port-supports-output? </span><span class="nv">f</span><span class="p">)</span>          <span class="c c-Singleline">; true</span>
+<span class="p">(</span><span class="nb">port-supports-input? </span> <span class="nv">f</span><span class="p">)</span>          <span class="c c-Singleline">; false</span>
+
+<span class="p">(</span><span class="nb">define </span><span class="nv">f</span> <span class="s">[f]</span> <span class="p">(</span><span class="nb">input-file-open </span><span class="s">[/path/goes/here.xy]</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">port-supports-output? </span><span class="nv">f</span><span class="p">)</span>          <span class="c c-Singleline">; false</span>
+<span class="p">(</span><span class="nb">port-supports-input? </span> <span class="nv">f</span><span class="p">)</span>          <span class="c c-Singleline">; true</span>
+</pre></div></div></div>
 </div>
 </div>
 <div class="sect1">
@@ -1445,7 +1462,7 @@ only for reading.</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-13 21:23:38 EEST
+ 2017-05-14 14:07:30 EEST
 </div>
 </div>
 </body>

@@ -287,6 +287,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // output-file-open
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "output-file-open",
+        octaspire_dern_vm_builtin_output_file_open,
+        1,
+        "Open file-port for writing only",
+        env))
+    {
+        abort();
+    }
+
     // io-file-open
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
@@ -294,6 +306,30 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_io_file_open,
         1,
         "Open file-port for input and output",
+        env))
+    {
+        abort();
+    }
+
+    // port-supports-output?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "port-supports-output?",
+        octaspire_dern_vm_builtin_port_supports_output_question_mark,
+        1,
+        "Predicate telling whether the given port supports writing or not",
+        env))
+    {
+        abort();
+    }
+
+    // port-supports-input?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "port-supports-input?",
+        octaspire_dern_vm_builtin_port_supports_input_question_mark,
+        1,
+        "Predicate telling whether the given port supports reading or not",
         env))
     {
         abort();
@@ -1280,6 +1316,15 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_input_file(
 {
     octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_PORT);
     result->value.port = octaspire_dern_port_new_input_file(path, self->allocator);
+    return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_output_file(
+    octaspire_dern_vm_t *self,
+    char const * const path)
+{
+    octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_PORT);
+    result->value.port = octaspire_dern_port_new_output_file(path, self->allocator);
     return result;
 }
 

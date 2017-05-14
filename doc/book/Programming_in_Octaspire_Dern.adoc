@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.48.0
+Documentation for Octaspire Dern programming language version 0.49.0
 
 == About
 
@@ -288,9 +288,9 @@ nil               ; Nil
            [Hi] 2)
 ----
 
-The text after character *;* is a *single line comment*. Single line comments run until the end
-of the line. Dern has also *multiline comments* that are written between *\#!* and *!#*.
-Note that string delimiters in Dern are *[* and *]* and not *"*;
+The text after character `;` is a *single line comment*. Single line comments run until the end
+of the line. Dern has also *multiline comments* that are written between `\#!` and `!#`.
+Note that string delimiters in Dern are `[` and `]` and not `"`;
 this way dern code can be written inside C-programs without escaping.
 
 
@@ -373,7 +373,7 @@ in Dern's standard library are not yet documented properly. This is a work in pr
 
 == Iteration
 
-Dern has two looping constructs: *while* and *for*. For can be used numerically, with a
+Dern has two looping constructs: `while` and `for`. For can be used numerically, with a
 container (vector, string, hash-map, etc.) and with (input) *ports*. Below is couple of examples:
 
 :source-highlighter: pygments
@@ -406,7 +406,7 @@ Container for:
 (for i in names (println [Hello {} World!] i))
 ----
 
-Both the *numerical for* and *container for* support the use of optional *step* to change the
+Both the *numerical for* and *container for* support the use of optional `step` to change the
 way the iterator is incremented:
 
 :source-highlighter: pygments
@@ -477,7 +477,7 @@ Here are few examples:
 (-= '(1 1 2 2 3) 1 2)         ; (3)
 ----
 
-Operators *++*, *--*, *+=*, *-=*, *==* and *!=* are similar to those in C. Note also that
+Operators `++`, `--`, `+=`, `-=`, `==` and `!=` are similar to those in C. Note also that
 *the operands need not to be numbers*.
 
 [WARNING]
@@ -489,7 +489,7 @@ for the above operators should be implemented in the standard library eventually
 
 == Branching and selection
 
-Here are some examples using *if*:
+Here are some examples using `if`:
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -506,7 +506,7 @@ Here are some examples using *if*:
 ----
 
 
-Here are some examples using *select*:
+Here are some examples using `select`:
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -621,7 +621,7 @@ Here are few examples:
 == Returning from functions early
 
 The value of the last expression of function is usually the return value from that function.
-However, by using *return* one can return early and have multiple exit points from a function.
+However, by using `return` one can return early and have multiple exit points from a function.
 Small example:
 
 :source-highlighter: pygments
@@ -636,8 +636,8 @@ Small example:
     ; .... Start the engine here...))
 ----
 
-*Return* can be called with zero or one argument. If no arguments are given, then *return*
-will return the value *nil*. Short example:
+`Return` can be called with zero or one argument. If no arguments are given, then `return`
+will return the value `nil`. Short example:
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -651,11 +651,11 @@ will return the value *nil*. Short example:
 
 == Evaluating values
 
-Special *eval* can be used to evaluate a given value. It can be called with one or two arguments.
+Special `eval` can be used to evaluate a given value. It can be called with one or two arguments.
 The second argument, if present, must be an environment that is used while evaluating. If no
 environment is given, the global environment is used instead.
 
-*Eval* is useful, for example, in situations where you build the name of the function to be
+`Eval` is useful, for example, in situations where you build the name of the function to be
 called at runtime. Small example:
 
 :source-highlighter: pygments
@@ -736,7 +736,7 @@ garbage collector collects it. Some ports might also support *seeking*, *distanc
 (port-length f)   ; -1
 ----
 
-Input ports can be iterated with *for* in similar way that containers are iterated:
+Input ports can be iterated with `for` in similar way that containers are iterated:
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -754,8 +754,31 @@ Input ports can be iterated with *for* in similar way that containers are iterat
 (for i in f step 3 (println i))    ; Print every third octet
 ----
 
-*io-file-open* will open a file for reading and writing. *input-file-open* will open a file
-only for reading.
+`io-file-open` will open a file for reading and writing, `input-file-open` will open a file
+only for reading and `output-file-open` will open file only for writing.
+
+Below is short example about querying a port for supported operations:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(define f [f] (io-file-open [/path/goes/here.xy]))
+
+(port-supports-output? f)          ; true
+(port-supports-input?  f)          ; true
+
+(define f [f] (output-file-open [/path/goes/here.xy]))
+
+(port-supports-output? f)          ; true
+(port-supports-input?  f)          ; false
+
+(define f [f] (input-file-open [/path/goes/here.xy]))
+
+(port-supports-output? f)          ; false
+(port-supports-input?  f)          ; true
+----
 
 
 == Converting between types
