@@ -8333,6 +8333,53 @@ TEST octaspire_dern_vm_special_eval_eval_eval_f_1_2_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_special_eval_failure_on_integer_on_second_argument_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(eval (+ 1 1) 10)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Second argument to special 'eval' must evaluate into environment value.\n"
+        "Now it evaluated into type integer.\n"
+        "\tAt form: >>>>>>>>>>(eval (+ 1 1) 10)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_eval_failure_on_unbound_symbol_on_second_argument_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(eval (+ 1 1) pi)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Unbound symbol 'pi'\n"
+        "\tAt form: >>>>>>>>>>(eval (+ 1 1) pi)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_values_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -9598,6 +9645,8 @@ second_run:
     RUN_TEST(octaspire_dern_vm_special_eval_plus_1_2_in_given_global_env_test);
     RUN_TEST(octaspire_dern_vm_special_eval_value_from_given_local_env_test);
     RUN_TEST(octaspire_dern_vm_special_eval_eval_eval_f_1_2_test);
+    RUN_TEST(octaspire_dern_vm_special_eval_failure_on_integer_on_second_argument_test);
+    RUN_TEST(octaspire_dern_vm_special_eval_failure_on_unbound_symbol_on_second_argument_test);
 
     RUN_TEST(octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_values_test);
 

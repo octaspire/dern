@@ -542,6 +542,29 @@ octaspire_dern_value_t *octaspire_dern_vm_special_eval(
         else
         {
             envVal = octaspire_dern_vm_eval(vm, envVal, environment);
+
+            octaspire_helpers_verify(envVal);
+
+            if (envVal->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+            {
+                octaspire_dern_vm_pop_value(vm, arguments);
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return envVal;
+            }
+
+            if (envVal->typeTag != OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT)
+            {
+                octaspire_dern_vm_pop_value(vm, arguments);
+                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Second argument to special 'eval' must evaluate into environment value.\n"
+                    "Now it evaluated into type %s.",
+                    octaspire_dern_value_helper_get_type_as_c_string(envVal->typeTag));
+            }
+
             octaspire_dern_vm_push_value(vm, envVal);
             result = octaspire_dern_vm_eval(vm, valueToBeEvaluated, envVal);
             octaspire_dern_vm_push_value(vm, result);
