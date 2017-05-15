@@ -774,6 +774,88 @@ TEST octaspire_dern_vm_special_define_factorial_function_with_reals_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_special_define_called_with_two_arguments_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define x 10)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'define' expects three, four, or five arguments. 2 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(define x 10)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_define_called_with_five_arguments_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define myEnv [myEnv] (env-new))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define myEnv f [f] '() (fn () 128))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    // Make sure f is NOT defined in global environment
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "f");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Unbound symbol 'f'",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    // Make sure f IS defined in myEnv-environment
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(eval f myEnv)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_FUNCTION, evaluatedValue->typeTag);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(eval (f) myEnv)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(128,                              evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_plus_plus_integer_value_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -9271,6 +9353,9 @@ second_run:
     RUN_TEST(octaspire_dern_vm_special_define_my_inc_function_test);
     RUN_TEST(octaspire_dern_vm_special_define_factorial_function_with_integers_test);
     RUN_TEST(octaspire_dern_vm_special_define_factorial_function_with_reals_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_two_arguments_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_five_arguments_test);
+
     RUN_TEST(octaspire_dern_vm_builtin_plus_plus_integer_value_test);
     RUN_TEST(octaspire_dern_vm_builtin_doc_for_integer_value_test);
     RUN_TEST(octaspire_dern_vm_builtin_read_and_eval_path_test);

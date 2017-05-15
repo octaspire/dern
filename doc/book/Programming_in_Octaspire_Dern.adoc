@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.51.0
+Documentation for Octaspire Dern programming language version 0.52.0
 
 == About
 
@@ -369,6 +369,28 @@ library or user in C.
 [NOTE]
 Please note that at the time of writing most of the functions
 in Dern's standard library are not yet documented properly. This is a work in progress.
+
+
+=== Binding in other environments than the current one
+
+By using an explicit environment argument as the first argument to `define`, we can bind
+names to values in other environments than the current one. Example:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(define myEnv [my own environment] (env-new))
+(define myEnv pi [value for pi] 3.14)
+
+pi                  ; <error>: Unbound symbol 'pi'
+(eval pi myEnv)     ; 3.14
+----
+
+In the example above, `pi` is undefined in the current (global) environment, but it
+is defined in the `myEnv`-environment. We use special `eval` to evaluate `pi` in the
+`myEnv`-environment.
 
 
 == Iteration
