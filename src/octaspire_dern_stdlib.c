@@ -3166,6 +3166,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_not(
 
     if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_BOOLEAN)
     {
+        octaspire_dern_vm_pop_value(vm, arguments);
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
