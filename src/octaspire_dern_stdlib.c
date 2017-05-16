@@ -36,14 +36,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_four_argum
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
-    if (octaspire_container_vector_get_length(vec) != 4)
-    {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Four arguments expected. %zu arguments were given.",
-            octaspire_container_vector_get_length(vec));
-    }
+    octaspire_helpers_verify(octaspire_container_vector_get_length(vec) == 4);
 
     octaspire_dern_value_t *targetEnv = octaspire_container_vector_get_element_at(vec, 0);
 

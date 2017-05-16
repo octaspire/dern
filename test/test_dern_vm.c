@@ -856,6 +856,63 @@ TEST octaspire_dern_vm_special_define_called_with_five_arguments_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_special_define_called_with_four_arguments_first_being_integer_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define 10 [x] 10)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'define': (define [optional-target-env] symbol...) name to be defined should be "
+        "symbol or vector to be evaluated. Type 'integer' was given.\n"
+        "\tAt form: >>>>>>>>>>(define 10 [x] 10)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_define_called_with_five_arguments_second_being_integer_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define myEnv [myEnv] (env-new))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define myEnv 10 [f] '() (fn () 128))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'define': (define [optional-target-env] name...) Name must be symbol or vector to "
+        "be evaluated. Type 'integer' was given.\n"
+        "\tAt form: >>>>>>>>>>(define myEnv 10 [f] (quote ()) (fn () 128))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_plus_plus_integer_value_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -8380,6 +8437,29 @@ TEST octaspire_dern_vm_special_eval_failure_on_unbound_symbol_on_second_argument
     PASS();
 }
 
+TEST octaspire_dern_vm_special_eval_called_with_three_arguments_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(eval (+ 1 1) (env-global) 10)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'eval' expects one or two arguments. 3 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(eval (+ 1 1) (env-global) 10)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_values_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -9402,6 +9482,8 @@ second_run:
     RUN_TEST(octaspire_dern_vm_special_define_factorial_function_with_reals_test);
     RUN_TEST(octaspire_dern_vm_special_define_called_with_two_arguments_failure_test);
     RUN_TEST(octaspire_dern_vm_special_define_called_with_five_arguments_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_first_being_integer_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_five_arguments_second_being_integer_failure_test);
 
     RUN_TEST(octaspire_dern_vm_builtin_plus_plus_integer_value_test);
     RUN_TEST(octaspire_dern_vm_builtin_doc_for_integer_value_test);
@@ -9647,6 +9729,7 @@ second_run:
     RUN_TEST(octaspire_dern_vm_special_eval_eval_eval_f_1_2_test);
     RUN_TEST(octaspire_dern_vm_special_eval_failure_on_integer_on_second_argument_test);
     RUN_TEST(octaspire_dern_vm_special_eval_failure_on_unbound_symbol_on_second_argument_test);
+    RUN_TEST(octaspire_dern_vm_special_eval_called_with_three_arguments_failure_test);
 
     RUN_TEST(octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_values_test);
 
