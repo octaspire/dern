@@ -1030,6 +1030,149 @@ TEST octaspire_dern_vm_special_define_called_with_three_arguments_docstring_inte
     PASS();
 }
 
+TEST octaspire_dern_vm_special_define_called_with_three_arguments_name_evaluates_into_integer_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define ((fn () 10)) [x] 20)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'define': (define [optional-target-env] symbol...) vector for name to be "
+        "defined should evaluate into symbol. Type 'integer' was result of evaluation.\n"
+        "\tAt form: >>>>>>>>>>(define ((fn () 10)) [x] 20)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_define_called_with_three_arguments_docstring_is_integer_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define ((fn () 'x)) 10 20)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'define': (define [optional-target-env] symbol docstring...) docstring must be "
+        "string. Type 'integer' was given.\n"
+        "\tAt form: >>>>>>>>>>(define ((fn () (quote x))) 10 20)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_define_called_with_three_arguments_error_in_last_argument_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define ((fn () 'x)) [x] (noSuchFuNcTion))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'noSuchFuNcTion')\n"
+        "\tAt form: >>>>>>>>>>(define ((fn () (quote x))) [x] (noSuchFuNcTion))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_define_called_with_three_arguments_trying_to_bind_a_function_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define ((fn () 'f)) [f] (fn () true))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "At definition of function 'f': functions cannot be defined with the three-argument "
+        "function. Use four-argument function.\n"
+        "\tAt form: >>>>>>>>>>(define ((fn () (quote f))) [f] (fn () true))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_first_argument_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define ((fn () 10)) [f] '() (fn () true))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'define': (define [optional-target-env] name...) Vector for name must evaluate "
+        "into symbol. Now it evaluated into type 'integer'.\n"
+        "\tAt form: >>>>>>>>>>(define ((fn () 10)) [f] (quote ()) (fn () true))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_docstring_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define ((fn () 'f)) 10 '() (fn () true))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'define': (define [optional-target-env] name docstring...) docstring must be "
+        "string. Type 'integer' was given.\n"
+        "\tAt form: >>>>>>>>>>(define ((fn () (quote f))) 10 (quote ()) (fn () true))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_special_define_called_with_four_arguments_docstring_integer_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
@@ -9803,6 +9946,12 @@ second_run:
     RUN_TEST(octaspire_dern_vm_special_define_called_with_five_arguments_second_being_integer_failure_test);
     RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_error_at_last_failure_test);
     RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_docstring_integer_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_name_evaluates_into_integer_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_docstring_is_integer_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_error_in_last_argument_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_trying_to_bind_a_function_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_first_argument_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_docstring_failure_test);
     RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_docstring_integer_failure_test);
 
     RUN_TEST(octaspire_dern_vm_special_quote_called_without_arguments_failure_test);
