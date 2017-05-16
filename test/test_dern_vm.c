@@ -246,7 +246,7 @@ TEST octaspire_dern_vm_special_if_three_elements_with_function_resulting_true_te
 
     octaspire_dern_vm_release(vm);
     vm = 0;
-    
+
     PASS();
 }
 
@@ -262,6 +262,53 @@ TEST octaspire_dern_vm_special_if_three_elements_with_function_call_resulting_tr
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, evaluatedValue->typeTag);
     ASSERT_STR_EQ("r", octaspire_dern_value_as_character_get_c_string(evaluatedValue)); 
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_if_called_with_one_argument_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(if true)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'if' expects two or three arguments. 1 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(if true)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_if_called_with_integer_as_the_first_argument_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(if 10 true)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "First argument to special 'if' must evaluate into boolean value. Now it evaluated "
+        "into type integer.\n"
+        "\tAt form: >>>>>>>>>>(if 10 true)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -547,6 +594,29 @@ TEST octaspire_dern_vm_special_select_called_non_boolean_selector_failure_test(v
     ASSERT_STR_EQ(
         "Selectors of special 'select' must evaluate into booleans. Type 'integer' was given.\n"
         "\tAt form: >>>>>>>>>>(select 1 [a] 2 [b])<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_select_called_with_default_as_first_selector_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(select default [a] 2 [b])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "'default' must be the last selector in special 'select'.\n"
+        "\tAt form: >>>>>>>>>>(select default [a] 2 [b])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -905,6 +975,100 @@ TEST octaspire_dern_vm_special_define_called_with_five_arguments_second_being_in
         "Special 'define': (define [optional-target-env] name...) Name must be symbol or vector to "
         "be evaluated. Type 'integer' was given.\n"
         "\tAt form: >>>>>>>>>>(define myEnv 10 [f] (quote ()) (fn () 128))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_define_called_with_three_arguments_error_at_last_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define x [x] (noSuchFuNcTion))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'noSuchFuNcTion')\n"
+        "\tAt form: >>>>>>>>>>(define x [x] (noSuchFuNcTion))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_define_called_with_three_arguments_docstring_integer_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define x 10 20)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'define': (define [optional-target-env] symbol docstring...) docstring must be "
+        "string. Type 'integer' was given.\n"
+        "\tAt form: >>>>>>>>>>(define x 10 20)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_define_called_with_four_arguments_docstring_integer_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f 10 '() (fn () 20))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'define': (define [optional-target-env] name docstring...) docstring must be "
+        "string. Type 'integer' was given.\n"
+        "\tAt form: >>>>>>>>>>(define f 10 (quote ()) (fn () 20))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_quote_called_without_arguments_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(quote)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'quote' expects one argument. 0 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(quote)<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -2603,6 +2767,62 @@ TEST octaspire_dern_vm_special_while_with_two_values_to_repeat_test(void)
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(899,                              evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_while_called_with_one_argument_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(while true)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'while' expects at least two arguments. 1 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(while true)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_while_called_with_integer_as_first_argument_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define x [x] 0)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(while 1 (++ x))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "First argument to special 'while' must evaluate into boolean value. Now it evaluated "
+        "into type integer.\n"
+        "\tAt form: >>>>>>>>>>(while 1 (++ x))<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5484,6 +5704,100 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_minus_2_failure_test(vo
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
         "\tAt form: >>>>>>>>>>(for i in h step -2 (define e (nth 0 i) [-] (nth 1 i)))<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_for_called_without_arguments_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(for)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'for' expects at least four (for iterating container or port) or five (for "
+        "iterating numeric range) arguments. 0 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(for)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_for_called_with_one_argument_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(for i)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Special 'for' expects at least four (for iterating container or port) or five (for "
+        "iterating numeric range) arguments. 1 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(for i)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_for_second_argument_not_symbol_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(for i 10 0 to 20 true)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Second argument to special 'for' must be symbol 'in' or 'from'. Now it has type integer.\n"
+        "\tAt form: >>>>>>>>>>(for i 10 0 to 20 true)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_for_called_with_integer_as_first_argument_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(for 1 from 0 to 10 true)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "First argument to special 'for' must be symbol value. Now it has type integer.\n"
+        "\tAt form: >>>>>>>>>>(for 1 from 0 to 10 true)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -9461,6 +9775,8 @@ second_run:
     RUN_TEST(octaspire_dern_vm_special_if_three_elements_true_test);
     RUN_TEST(octaspire_dern_vm_special_if_three_elements_with_function_resulting_true_test);
     RUN_TEST(octaspire_dern_vm_special_if_three_elements_with_function_call_resulting_true_test);
+    RUN_TEST(octaspire_dern_vm_special_if_called_with_one_argument_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_if_called_with_integer_as_the_first_argument_failure_test);
 
     RUN_TEST(octaspire_dern_vm_special_select_one_true_selector_to_string_a_test);
     RUN_TEST(octaspire_dern_vm_special_select_one_false_selector_to_string_a_test);
@@ -9474,6 +9790,7 @@ second_run:
     RUN_TEST(octaspire_dern_vm_special_select_called_with_one_argument_failure_test);
     RUN_TEST(octaspire_dern_vm_special_select_called_with_three_arguments_failure_test);
     RUN_TEST(octaspire_dern_vm_special_select_called_non_boolean_selector_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_select_called_with_default_as_first_selector_failure_test);
 
     RUN_TEST(octaspire_dern_vm_special_define_integer_value_test);
     RUN_TEST(octaspire_dern_vm_special_define_integer_value_with_explicit_target_global_env_test);
@@ -9484,6 +9801,11 @@ second_run:
     RUN_TEST(octaspire_dern_vm_special_define_called_with_five_arguments_test);
     RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_first_being_integer_failure_test);
     RUN_TEST(octaspire_dern_vm_special_define_called_with_five_arguments_second_being_integer_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_error_at_last_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_docstring_integer_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_docstring_integer_failure_test);
+
+    RUN_TEST(octaspire_dern_vm_special_quote_called_without_arguments_failure_test);
 
     RUN_TEST(octaspire_dern_vm_builtin_plus_plus_integer_value_test);
     RUN_TEST(octaspire_dern_vm_builtin_doc_for_integer_value_test);
@@ -9552,8 +9874,12 @@ second_run:
     RUN_TEST(octaspire_dern_vm_builtin_find_from_global_environment_symbol_find_test);
     RUN_TEST(octaspire_dern_vm_builtin_find_from_global_environment_defined_symbol_xyz_test);
     RUN_TEST(octaspire_dern_vm_builtin_find_from_global_environment_symbol_notfound_test);
+
     RUN_TEST(octaspire_dern_vm_special_while_with_one_value_to_repeat_test);
     RUN_TEST(octaspire_dern_vm_special_while_with_two_values_to_repeat_test);
+    RUN_TEST(octaspire_dern_vm_special_while_called_with_one_argument_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_while_called_with_integer_as_first_argument_failure_test);
+
     RUN_TEST(octaspire_dern_vm_builtin_hash_map_empty_test);
     RUN_TEST(octaspire_dern_vm_builtin_hash_map_one_element_symbol_one_1_test);
     RUN_TEST(octaspire_dern_vm_builtin_hash_map_one_element_1_symbol_one_test);
@@ -9607,6 +9933,7 @@ second_run:
 
     RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_bad_input_test);
     RUN_TEST(octaspire_dern_vm_run_user_factorial_function_test);
+
     RUN_TEST(octaspire_dern_vm_special_for_from_0_to_10_test);
     RUN_TEST(octaspire_dern_vm_special_for_from_0_to_10_with_step_2_test);
     RUN_TEST(octaspire_dern_vm_special_for_from_0_to_10_with_step_minus_2_failure_test);
@@ -9625,6 +9952,12 @@ second_run:
     RUN_TEST(octaspire_dern_vm_special_for_in_with_hash_map_test);
     RUN_TEST(octaspire_dern_vm_special_for_in_with_hash_map_step_2_test);
     RUN_TEST(octaspire_dern_vm_special_for_in_with_hash_map_step_minus_2_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_for_called_without_arguments_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_for_called_with_one_argument_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_for_second_argument_not_symbol_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_for_called_with_integer_as_first_argument_failure_test);
+
+
     RUN_TEST(octaspire_dern_vm_error_in_function_body_is_reported_test);
     RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_0_and_string_abc_test);
     RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_1_and_string_abc_test);

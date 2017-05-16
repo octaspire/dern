@@ -163,15 +163,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
 
     octaspire_container_vector_t * const vec = arguments->value.vector;
 
-    if (octaspire_container_vector_get_length(vec) != 5)
-    {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Special 'define' expects five arguments. %zu arguments were given.",
-            octaspire_container_vector_get_length(vec));
-    }
-
+    octaspire_helpers_verify(octaspire_container_vector_get_length(vec) == 5);
 
     octaspire_dern_value_t *targetEnv = octaspire_container_vector_get_element_at(vec, 0);
 
@@ -221,7 +213,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_special_define_with_five_argum
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Special 'define': (define [optional-target-env) name docstring...) docstring must be stringy. Type '%s' was given.",
+            "Special 'define': (define [optional-target-env] name docstring...) docstring must be string. Type '%s' was given.",
             octaspire_dern_value_helper_get_type_as_c_string(docstr->typeTag));
     }
 
