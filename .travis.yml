@@ -19,7 +19,9 @@ script:
     - valgrind --leak-check=full --error-exitcode=1 test/octaspire-dern-test-runner
     - test/octaspire-dern-test-runner
     - cd CMakeFiles/octaspire-dern.dir/src
-    - gcov octaspire_dern_environment.c.gcno octaspire_dern_repl.c.gcno octaspire_dern_lexer.c.gcno octaspire_dern_stdlib.c.gcno octaspire_dern_port.c.gcno octaspire_dern_value.c.gcno ../../../test/CMakeFiles/octaspire-dern-test-runner.dir/test_dern_vm.c.gcno
+    - gcov octaspire_dern_environment.c.gcno octaspire_dern_repl.c.gcno octaspire_dern_lexer.c.gcno octaspire_dern_stdlib.c.gcno octaspire_dern_port.c.gcno octaspire_dern_value.c.gcno
+    - cd ../../../test/CMakeFiles/octaspire-dern-test-runner.dir/
+    - gcov test_dern_vm.c.gcno
     - cd ../../../../test/REPL
     - ./octaspire-dern-repl.exp
 
