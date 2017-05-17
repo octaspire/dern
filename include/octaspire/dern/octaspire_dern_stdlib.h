@@ -19,6 +19,10 @@ limitations under the License.
 
 #include "octaspire/dern/octaspire_dern_vm.h"
 
+#ifdef OCTASPIRE_DERN_CONFIG_PLUGINS
+#include <dlfcn.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -333,6 +337,11 @@ octaspire_dern_value_t *octaspire_dern_vm_special_fn(
     octaspire_dern_value_t *environment);
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_uid(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_require(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);

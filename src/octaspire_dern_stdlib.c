@@ -19,6 +19,11 @@ limitations under the License.
 #include <inttypes.h>
 #include <octaspire/core/octaspire_helpers.h>
 #include "octaspire/dern/octaspire_dern_vm.h"
+#include "octaspire/dern/octaspire_dern_config.h"
+
+#ifdef OCTASPIRE_DERN_CONFIG_PLUGINS
+#include <dlfcn.h>
+#endif
 
 octaspire_dern_value_t *octaspire_dern_stdlib_private_validate_function(
     octaspire_dern_vm_t* vm,
@@ -5475,5 +5480,247 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_hash_map(
     octaspire_dern_vm_pop_value(vm, result);
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_is_already_loaded(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    octaspire_container_hash_map_get(vm->
+
+    octaspire_dern_value_t *result =
+        octaspire_dern_vm_builtin_private_require_is_already_loaded(
+            vm,
+            arguments,
+            environment);
+
+    if (result)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return result;
+    }
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_source_file(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+}
+
+#ifdef OCTASPIRE_DERN_CONFIG_PLUGINS
+octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_binary_file(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs == 0)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'require' expects exactly one argument.");
+    }
+
+    octaspire_dern_vm_push_value(vm, arguments);
+
+    octaspire_dern_value_t *firstArg =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify(firstArg);
+
+    if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_SYMBOL)
+    {
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The first argument to builtin 'require' must be a symbol. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    char const * const libName = octaspire_dern_value_as_symbol_get_c_string(firstArg);
+
+    // Clear any old errors
+    dlerror();
+
+    void *libHandle = dlopen(libName, RTLD_LAZY);
+
+    if (!libHandle)
+    {
+        octaspire_container_utf8_string_t *errorMsg = octaspire_container_utf8_string_new_format(
+            octaspire_dern_vm_get_allocator(vm),
+            "Plugin '%s' cannot be loaded: %s",
+            libName,
+            dlerror());
+
+        octaspire_helpers_verify(errorMsg);
+
+        octaspire_dern_value_t *errorValue =
+            octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                octaspire_container_utf8_string_get_c_string(errorMsg));
+
+        octaspire_helpers_verify(errorValue);
+
+        octaspire_container_utf8_string_release(errorMsg);
+        errorMsg = 0;
+
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return errorValue;
+    }
+
+    bool (*libInitFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const);
+
+    octaspire_container_utf8_string_t *libInitFuncName =
+        octaspire_container_utf8_string_new_format(
+            octaspire_dern_vm_get_allocator(vm),
+            "%s_init",
+            libName);
+
+    octaspire_helpers_verify(libInitFuncName);
+
+    libInitFunc =
+        (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))dlsym(
+            libHandle,
+            octaspire_container_utf8_string_get_c_string(libInitFuncName));
+
+    octaspire_container_utf8_string_release(libInitFuncName);
+    libInitFuncName = 0;
+
+    char *error = dlerror();
+
+    if (error)
+    {
+        octaspire_container_utf8_string_t *errorMsg = octaspire_container_utf8_string_new_format(
+            octaspire_dern_vm_get_allocator(vm),
+            "Plugin '%s' cannot be loaded: %s",
+            libName,
+            error);
+
+        octaspire_helpers_verify(errorMsg);
+
+        octaspire_dern_value_t *errorValue =
+            octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                octaspire_container_utf8_string_get_c_string(errorMsg));
+
+        octaspire_helpers_verify(errorValue);
+
+        octaspire_container_utf8_string_release(errorMsg);
+        errorMsg = 0;
+
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        dlclose(libHandle);
+        libHandle = 0;
+
+        return errorValue;
+    }
+
+    if (!(*libInitFunc)(vm, environment->value.environment))
+    {
+        octaspire_dern_value_t *errorValue = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Plugin '%s' cannot be loaded because init function failed",
+            libName);
+
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        dlclose(libHandle);
+        libHandle = 0;
+
+        return errorValue;
+    }
+
+    octaspire_dern_vm_pop_value(vm, arguments);
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+#else
+octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_binary_file(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(arguments);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Dern is compiled without support for binary plugins. Binary plugins cannot be used.");
+}
+#endif
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_require(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    octaspire_dern_value_t *result =
+        octaspire_dern_vm_builtin_private_require_is_already_loaded(
+            vm,
+            arguments,
+            environment);
+
+    if (result)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return result;
+    }
+
+    result =
+        octaspire_dern_vm_builtin_private_require_source_file(
+            vm,
+            arguments,
+            environment);
+
+    if (result)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return result;
+    }
+
+    result =
+        octaspire_dern_vm_builtin_private_require_binary_file(
+            vm,
+            arguments,
+            environment);
+
+    if (result)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return result;
+    }
+
+    octaspire_dern_value_t * const nameVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_format(
+        vm,
+        "Builtin 'require': '%s' could not be loaded.",
+        octaspire_dern_value_as_symbol_get_c_string(nameVal));
 }
 

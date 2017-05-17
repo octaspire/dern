@@ -247,6 +247,8 @@ void octaspire_dern_vm_set_gc_trigger_limit(
 
 bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self);
 
+void *octaspire_dern_vm_find_plugin(octaspire_dern_vm_t *self, char const * const name);
+
 #ifdef __cplusplus
 }
 #endif

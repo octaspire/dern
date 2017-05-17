@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.59.0
+Documentation for Octaspire Dern programming language version 0.60.0
 
 == About
 

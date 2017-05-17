@@ -18,12 +18,21 @@ cmake_minimum_required(VERSION 2.8.12)
 project(octaspire-dern C)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 59)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 60)
 set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
 
 message("== Building ${PROJECT_NAME} ${OCTASPIRE_DERN_CONFIG_VERSION_MAJOR}.${OCTASPIRE_DERN_CONFIG_VERSION_MINOR}.${OCTASPIRE_DERN_CONFIG_VERSION_PATCH}")
 
 set(OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/resource/")
+
+option(OCTASPIRE_DERN_PLUGINS   "OCTASPIRE_DERN_PLUGINS"   ON)
+
+if(OCTASPIRE_DERN_PLUGINS)
+    message("== Plugin system enabled for ${PROJECT_NAME}")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -rdynamic")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -rdynamic")
+    set(OCTASPIRE_DERN_CONFIG_PLUGINS 1)
+endif(OCTASPIRE_DERN_PLUGINS)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/octaspire/dern/octaspire_dern_config.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/include/octaspire/dern/octaspire_dern_config.h")
@@ -68,8 +77,8 @@ set_property(TARGET octaspire-dern PROPERTY C_STANDARD 99)
 set_property(TARGET octaspire-dern PROPERTY C_EXTENSIONS OFF)
 
 if(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra -pedantic")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c99 -fno-omit-frame-pointer -Wall -Wextra -pedantic -Werror")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c99 -fno-omit-frame-pointer -Wall -Wextra -Werror")
 endif(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
 
 if(CMAKE_C_COMPILER_ID MATCHES "Clang")
@@ -93,6 +102,11 @@ else()
 endif(OCTASPIRE_DERN_UNIT_TEST)
 
 target_link_libraries(octaspire-dern octaspire-core m)
+
+if(OCTASPIRE_DERN_PLUGINS)
+    target_link_libraries(octaspire-dern dl)
+endif(OCTASPIRE_DERN_PLUGINS)
+
 add_executable(octaspire-dern-repl "src/octaspire_dern_repl.c")
 target_link_libraries(octaspire-dern-repl octaspire-dern)
 set_property(TARGET octaspire-dern-repl PROPERTY C_STANDARD 99)

@@ -51,9 +51,10 @@ struct octaspire_dern_vm_t
     int32_t                       exitCode;
     bool                          quit;
     void                         *userData;
-    uintmax_t                     nextFreeUniqueIdForValues;
-    octaspire_dern_value_t       *functionReturn;
-    bool                          fileSystemAccessAllowed;
+    uintmax_t                       nextFreeUniqueIdForValues;
+    octaspire_dern_value_t         *functionReturn;
+    bool                            fileSystemAccessAllowed;
+    octaspire_container_hash_map_t *plugins;
 };
 
 octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(octaspire_dern_vm_t* self, octaspire_dern_value_tag_t const typeTag);
@@ -110,6 +111,8 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
     self->nextFreeUniqueIdForValues = 0;
     self->functionReturn = 0;
     self->fileSystemAccessAllowed = config.fileSystemAccessAllowed;
+
+    self->plugins = octaspire_container_hash_map_new();
 
     self->stack = octaspire_container_vector_new_with_preallocated_elements(
         sizeof(octaspire_dern_value_t*),
@@ -274,6 +277,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
 
 
     //////////////////////////////////////// Builtins ////////////////////////////////////////////
+
+    // require
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "require",
+        octaspire_dern_vm_builtin_require,
+        1,
+        "Ensure that plugin is loaded (if dern is compiled with plugin support)",
+        env))
+    {
+        abort();
+    }
 
     // input-file-open
     if (!octaspire_dern_vm_create_and_register_new_builtin(
@@ -3290,5 +3305,9 @@ void octaspire_dern_vm_set_gc_trigger_limit(octaspire_dern_vm_t * const self, si
 bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self)
 {
     return self->fileSystemAccessAllowed;
+}
+
+void *octaspire_dern_vm_find_plugin(octaspire_dern_vm_t *self, char const * const name)
+{
 }
 
