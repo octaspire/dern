@@ -1,0 +1,9 @@
+* There is probably no need to push the arguments vector in builtins and specials in stdlib.c(?), because
+  VM pushes the arguments before calling builtin (check specials), or at least it should. All
+  argument pushing/popping could be removed from stdlib.c (?) Only
+  newly created values need to be pushed/popped there. How about the envrironment
+  argument of builtins/specials? Check that it is pushed in VM before builtin/special is called
+  and then any pushing/popping of environment argument could be removed from stdlib.c
+
+* Check any place (if exists) where 'octaspire_container_vector_push_back' or similar 
+  might be called wihout & and without temp-variable straight with function result.
