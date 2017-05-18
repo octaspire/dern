@@ -5712,9 +5712,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_binary_file(
 
     octaspire_helpers_verify(result);
 
-    octaspire_container_utf8_string_release(fileName);
-    fileName = 0;
-
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
 }

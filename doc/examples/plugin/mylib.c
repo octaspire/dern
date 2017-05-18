@@ -7,6 +7,7 @@
   gcc -shared -o libmylib.so mylib.o
 ***/
 #include <stdio.h>
+#include <octaspire/core/octaspire_helpers.h>
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include "octaspire/dern/octaspire_dern_environment.h"
 
@@ -39,13 +40,17 @@ octaspire_dern_value_t *mylib_say(
 
 bool mylib_init(octaspire_dern_vm_t * const vm, octaspire_dern_value_t * const targetEnv)
 {
+    octaspire_helpers_verify(vm);
+    octaspire_helpers_verify(targetEnv && targetEnv->value.environment);
+    octaspire_helpers_verify(targetEnv->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         vm,
         "mylib-say",
         mylib_say,
         1,
         "mylib says something",
-        targetEnv->value.envrironment))
+        targetEnv->value.environment))
     {
         return false;
     }

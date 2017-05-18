@@ -17,6 +17,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_lib.h"
 #include <octaspire/core/octaspire_helpers.h>
 #include "octaspire/dern/octaspire_dern_vm.h"
+#include "octaspire/dern/octaspire_dern_config.h"
 
 #ifdef OCTASPIRE_DERN_CONFIG_PLUGINS
 #include <dlfcn.h>
@@ -102,7 +103,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
                 octaspire_container_utf8_string_new_format(
                     self->allocator,
                     "Binary library (name='%s' fileName='%s')\n"
-                    "cannot be loaded/opened with dlopen. dlerror is: %s"
+                    "cannot be loaded/opened with dlopen. dlerror is: %s",
                     name,
                     fileName,
                     dlerror());
@@ -119,7 +120,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
             octaspire_helpers_verify(libInitFuncName);
 
             libInitFunc =
-                (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_value_t * const))dlsym(
+                (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))dlsym(
                     self->binaryLibHandle,
                     octaspire_container_utf8_string_get_c_string(libInitFuncName));
 
@@ -134,7 +135,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
                     octaspire_container_utf8_string_new_format(
                         self->allocator,
                         "Binary library (name='%s' fileName='%s'):\n"
-                        "dlsym failed on the init function for the library. dlerror is: %s"
+                        "dlsym failed on the init function for the library. dlerror is: %s",
                         name,
                         fileName,
                         error);
@@ -146,13 +147,15 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
             }
             else
             {
-                if (!(*libInitFunc)(vm, octaspire_dern_vm_get_global_environment(vm)))
+                if (!(*libInitFunc)(
+                        vm,
+                        octaspire_dern_vm_get_global_environment(vm)->value.environment))
                 {
                     self->errorMessage =
                         octaspire_container_utf8_string_new_format(
                             self->allocator,
                             "Binary library (name='%s' fileName='%s'):\n"
-                            "init function failed."
+                            "init function failed.",
                             name,
                             fileName);
 
@@ -169,10 +172,11 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
         self->errorMessage =
             octaspire_container_utf8_string_new_format(
                 self->allocator,
-                "Your version of Octaspire Dern is compiled WITHOUT support for binary libraries\n"
-                "and this binary library (name='%s' fileName='%s')\n"
-                "cannot thus be loaded. Use source-code libraries\n"
-                "instead or compile Dern again with binary library support.",
+                "Your version of Octaspire Dern is compiled\n"
+                "WITHOUT support for binary libraries and this binary library\n"
+                "(name='%s' fileName='%s')\n"
+                "cannot thus be loaded. Use source-code libraries instead\n"
+                "or compile Dern again with binary library support.\n",
                 name,
                 fileName);
 

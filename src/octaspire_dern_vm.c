@@ -2764,6 +2764,9 @@ bool octaspire_dern_vm_create_and_register_new_builtin(
     char const * const docStr,
     octaspire_dern_environment_t * const targetEnv)
 {
+    octaspire_helpers_verify(self);
+    octaspire_helpers_verify(targetEnv);
+
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
 
     octaspire_dern_builtin_t * const builtin =
