@@ -37,7 +37,7 @@ octaspire_dern_value_t *mylib_say(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
-bool mylib_init(octaspire_dern_vm_t * const vm, octaspire_dern_environment_t * const targetEnv)
+bool mylib_init(octaspire_dern_vm_t * const vm, octaspire_dern_value_t * const targetEnv)
 {
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         vm,
@@ -45,7 +45,7 @@ bool mylib_init(octaspire_dern_vm_t * const vm, octaspire_dern_environment_t * c
         mylib_say,
         1,
         "mylib says something",
-        targetEnv))
+        targetEnv->value.envrironment))
     {
         return false;
     }
