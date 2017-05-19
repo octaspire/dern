@@ -16,6 +16,8 @@ octaspire_dern_value_t *mylib_say(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment)
 {
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
     if (octaspire_dern_value_as_vector_get_length(arguments) != 1)
     {
         return octaspire_dern_vm_create_new_value_error_from_c_string(
@@ -38,11 +40,9 @@ octaspire_dern_value_t *mylib_say(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
-bool mylib_init(octaspire_dern_vm_t * const vm, octaspire_dern_value_t * const targetEnv)
+bool mylib_init(octaspire_dern_vm_t * const vm, octaspire_dern_environment_t * const targetEnv)
 {
-    octaspire_helpers_verify(vm);
-    octaspire_helpers_verify(targetEnv && targetEnv->value.environment);
-    octaspire_helpers_verify(targetEnv->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify(vm && targetEnv);
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         vm,
@@ -50,7 +50,7 @@ bool mylib_init(octaspire_dern_vm_t * const vm, octaspire_dern_value_t * const t
         mylib_say,
         1,
         "mylib says something",
-        targetEnv->value.environment))
+        targetEnv))
     {
         return false;
     }
