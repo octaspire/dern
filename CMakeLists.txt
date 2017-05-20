@@ -18,7 +18,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(octaspire-dern C)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 64)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 65)
 set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
 
 message("== Building ${PROJECT_NAME} ${OCTASPIRE_DERN_CONFIG_VERSION_MAJOR}.${OCTASPIRE_DERN_CONFIG_VERSION_MINOR}.${OCTASPIRE_DERN_CONFIG_VERSION_PATCH}")
@@ -29,16 +29,7 @@ option(OCTASPIRE_DERN_PLUGINS   "OCTASPIRE_DERN_PLUGINS"   ON)
 
 if(OCTASPIRE_DERN_PLUGINS)
     message("== Plugin system enabled for ${PROJECT_NAME}")
-    #set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -rdynamic")
-    #set(CMAKE_C_FLAGS       "${CMAKE_C_FLAGS} -rdynamic")
-
-    # According to
-    # http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html
-    # -rdynamic flag might not always work for gcc on non-Linux systems
-    # and -Wl,--export-dynamic might be more portable way.
-
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wl,--export-dynamic")
-    set(CMAKE_C_FLAGS       "${CMAKE_C_FLAGS} -Wl,--export-dynamic")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-export-dynamic")
     set(OCTASPIRE_DERN_CONFIG_PLUGINS 1)
 endif(OCTASPIRE_DERN_PLUGINS)
 
@@ -112,7 +103,13 @@ endif(OCTASPIRE_DERN_UNIT_TEST)
 target_link_libraries(octaspire-dern octaspire-core m)
 
 if(OCTASPIRE_DERN_PLUGINS)
-    target_link_libraries(octaspire-dern dl)
+    if(UNIX)
+        message("== Building plugins for ${PROJECT_NAME} in UNIX mode")
+        if(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+            message("== Building plugins for ${PROJECT_NAME} in NON FreeBSD mode")
+            target_link_libraries(octaspire-dern dl)
+        endif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+    endif(UNIX)
 endif(OCTASPIRE_DERN_PLUGINS)
 
 add_executable(octaspire-dern-repl "src/octaspire_dern_repl.c")
