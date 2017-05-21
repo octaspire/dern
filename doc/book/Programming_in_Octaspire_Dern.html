@@ -804,7 +804,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.67.0</p></div>
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.68.0</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -903,6 +903,19 @@ make
 <div class="content"><div class="highlight"><pre><span></span>sudo pkg install git cmake
 git clone https://github.com/octaspire/dern.git
 <span class="nb">cd</span> dern/build
+cmake ..
+make
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_netbsd">NetBSD</h3>
+<div class="paragraph"><p>To build on NetBSD (NetBSD-7.1-i386) system:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>sudo pkgin install cmake git
+git clone git://github.com/octaspire/dern
+<span class="nb">cd</span> dern
+perl -pi -e <span class="s1">&#39;s/https/git/&#39;</span> .gitmodules
+<span class="nb">cd</span> build
 cmake ..
 make
 </pre></div></div></div>
@@ -1487,7 +1500,8 @@ if the system is Unix, file named <strong>libmylib.so</strong>.</p></div>
 </pre></div></div></div>
 <div class="paragraph"><p>If <span class="monospaced">mylib</span>-library is required later again, there is no need to search and load it again, because
 <span class="monospaced">require</span> know that a library with that name is already loaded.</p></div>
-<div class="paragraph"><p>Below is a small example of a binary library for <strong>Linux</strong>, <strong>FreeBSD</strong>, <strong>Haiku</strong> and <strong>MINIX 3</strong> systems.</p></div>
+<div class="paragraph"><p>Below is a small example of a binary library for <strong>Linux</strong>, <strong>FreeBSD</strong>, <strong>NetBSD</strong>, <strong>Haiku</strong> and
+<strong>MINIX 3</strong> systems.</p></div>
 <div class="listingblock">
 <div class="title">mylib.c</div>
 <div class="content"><div class="highlight"><pre><span></span><span class="cm">/***</span>
@@ -1589,6 +1603,32 @@ for different systems.</p></div>
 <span class="p">(</span><span class="nf">mylib-say</span> <span class="s">[Hello world from library]</span><span class="p">)</span>
 </pre></div></div></div>
 </div>
+<div class="sect2">
+<h3 id="_building_and_using_a_binary_library_in_freebsd">Building and using a binary library in FreeBSD</h3>
+<div class="paragraph"><p>Run these commands from the <strong>build</strong>-directory of the source distribution:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>make -C ../doc/examples/plugin -f Makefile.FreeBSD
+<span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>../doc/examples/plugin ./octaspire-dern-repl -c
+</pre></div></div></div>
+<div class="paragraph"><p>Write into the REPL:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">require </span><span class="ss">&#39;mylib</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">mylib-say</span> <span class="s">[Hello world from library]</span><span class="p">)</span>
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_building_and_using_a_binary_library_in_netbsd">Building and using a binary library in NetBSD</h3>
+<div class="paragraph"><p>Run these commands from the <strong>build</strong>-directory of the source distribution:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>make -C ../doc/examples/plugin
+<span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>../doc/examples/plugin ./octaspire-dern-repl -c
+</pre></div></div></div>
+<div class="paragraph"><p>Write into the REPL:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">require </span><span class="ss">&#39;mylib</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">mylib-say</span> <span class="s">[Hello world from library]</span><span class="p">)</span>
+</pre></div></div></div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1611,7 +1651,7 @@ for different systems.</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-21 14:38:55 EEST
+ 2017-05-21 21:54:52 EEST
 </div>
 </div>
 </body>

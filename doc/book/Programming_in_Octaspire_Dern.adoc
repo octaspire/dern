@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.67.0
+Documentation for Octaspire Dern programming language version 0.68.0
 
 == About
 
@@ -129,6 +129,28 @@ cd dern/build
 cmake ..
 make
 ----
+
+
+
+=== NetBSD
+
+To build on NetBSD (NetBSD-7.1-i386) system:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+sudo pkgin install cmake git
+git clone git://github.com/octaspire/dern
+cd dern
+perl -pi -e 's/https/git/' .gitmodules
+cd build
+cmake ..
+make
+----
+
+
 
 === MINIX 3
 To build on MINIX 3 (minix_R3.3.0-588a35b) system:
@@ -863,7 +885,8 @@ Here is small example:
 If `mylib`-library is required later again, there is no need to search and load it again, because
 `require` know that a library with that name is already loaded.
 
-Below is a small example of a binary library for *Linux*, *FreeBSD*, *Haiku* and *MINIX 3* systems.
+Below is a small example of a binary library for *Linux*, *FreeBSD*, *NetBSD*, *Haiku* and
+*MINIX 3* systems.
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -1007,6 +1030,58 @@ Write into the REPL:
 (require 'mylib)
 (mylib-say [Hello world from library])
 ----
+
+
+=== Building and using a binary library in FreeBSD
+
+Run these commands from the *build*-directory of the source distribution:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+make -C ../doc/examples/plugin -f Makefile.FreeBSD
+LD_LIBRARY_PATH=../doc/examples/plugin ./octaspire-dern-repl -c
+----
+
+Write into the REPL:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(require 'mylib)
+(mylib-say [Hello world from library])
+----
+
+
+
+=== Building and using a binary library in NetBSD
+
+Run these commands from the *build*-directory of the source distribution:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+make -C ../doc/examples/plugin
+LD_LIBRARY_PATH=../doc/examples/plugin ./octaspire-dern-repl -c
+----
+
+Write into the REPL:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(require 'mylib)
+(mylib-say [Hello world from library])
+----
+
 
 
 
