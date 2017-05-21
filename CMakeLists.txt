@@ -18,10 +18,12 @@ cmake_minimum_required(VERSION 2.8.12)
 project(octaspire-dern C)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 65)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 66)
 set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
 
 message("== Building ${PROJECT_NAME} ${OCTASPIRE_DERN_CONFIG_VERSION_MAJOR}.${OCTASPIRE_DERN_CONFIG_VERSION_MINOR}.${OCTASPIRE_DERN_CONFIG_VERSION_PATCH}")
+
+message("== Building ${PROJECT_NAME} in ${CMAKE_SYSTEM_NAME} system")
 
 set(OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/resource/")
 
@@ -105,10 +107,10 @@ target_link_libraries(octaspire-dern octaspire-core m)
 if(OCTASPIRE_DERN_PLUGINS)
     if(UNIX)
         message("== Building plugins for ${PROJECT_NAME} in UNIX mode")
-        if(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
-            message("== Building plugins for ${PROJECT_NAME} in NON FreeBSD mode")
+        if(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Haiku")
+            message("== Building plugins for ${PROJECT_NAME} in NON FreeBSD and NON Haiku mode")
             target_link_libraries(octaspire-dern dl)
-        endif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+        endif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Haiku")
     endif(UNIX)
 endif(OCTASPIRE_DERN_PLUGINS)
 
@@ -133,7 +135,7 @@ add_custom_target(
 
 add_custom_target(
     book-dern
-    COMMAND asciidoc -a source-highlighter=pygments -a max-width=55em --backend=html5 "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc")
+    COMMAND asciidoc -a source-highlighter=pygments -a max-width=70em --backend=html5 "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc")
     #COMMAND asciidoc -a source-highlighter=pygments --theme=flask --backend=html5 "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc")
 
 if(NOT TARGET octaspire-dern-test-runner AND OCTASPIRE_DERN_UNIT_TEST)

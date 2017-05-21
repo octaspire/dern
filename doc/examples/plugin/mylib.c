@@ -1,9 +1,7 @@
 /***
-  To build this file into a shared library in the 'build' dir
-  (copy this file first into build dir, or set the include- and
-  library paths to correct values):
+  To build this file into a shared library in Linux system:
 
-  gcc -c -fPIC mylib.c
+  gcc -c -fPIC mylib.c -I ../../../include -I ../../../external/octaspire_core/include
   gcc -shared -o libmylib.so mylib.o
 ***/
 #include <stdio.h>

@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.65.0
+Documentation for Octaspire Dern programming language version 0.66.0
 
 == About
 
@@ -834,6 +834,104 @@ TODO
 == Searching and indexing
 
 TODO
+
+
+
+== Loading libraries with `require`
+
+Dern has support for loading libraries or "plugins" during run time with the builtin `require`.
+Before loading the requested library, `require` checks whether the library is already loaded,
+and loads it only if it isn't already loaded.
+
+It first tries to find a source library (.dern file) with the given name. If it finds, it loads
+that. Next it tries to find a binary library (.so file in Unix) and loads that if found.
+
+So, in the example below, `require` tries first to find file named *mylib.dern* and then,
+if the system is Unix, file named *libmylib.so*.
+
+Here is small example:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(require 'mylib)
+(mylib-say [Hello world from library])
+----
+
+If `mylib`-library is required later again, there is no need to search and load it again, because
+`require` know that a library with that name is already loaded.
+
+Below is a small example of a binary library for *Linux*, *FreeBSD*, *Haiku* and *MINIX 3* systems.
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,c]
+.mylib.c
+----
+/***
+  To build this file into a shared library in Linux system:
+
+  gcc -c -fPIC mylib.c -I ../../../include -I ../../../external/octaspire_core/include
+  gcc -shared -o libmylib.so mylib.o
+***/
+#include <stdio.h>
+#include <octaspire/core/octaspire_helpers.h>
+#include "octaspire/dern/octaspire_dern_vm.h"
+#include "octaspire/dern/octaspire_dern_environment.h"
+
+octaspire_dern_value_t *mylib_say(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    if (octaspire_dern_value_as_vector_get_length(arguments) != 1)
+    {
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "mylib-say expects one argument");
+    }
+
+    octaspire_dern_value_t const * const messageVal =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    if (messageVal->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
+    {
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "mylib-say expects string argument");
+    }
+
+    printf("%s\n", octaspire_dern_value_as_string_get_c_string(messageVal));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+bool mylib_init(octaspire_dern_vm_t * const vm, octaspire_dern_environment_t * const targetEnv)
+{
+    octaspire_helpers_verify(vm && targetEnv);
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        vm,
+        "mylib-say",
+        mylib_say,
+        1,
+        "mylib says something",
+        targetEnv))
+    {
+        return false;
+    }
+
+    return true;
+}
+----
+
+See directory doc/examples/plugin in the source distribution for an example with Makefiles
+for different systems.
 
 
 == Embedding in C programs

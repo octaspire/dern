@@ -1,4 +1,4 @@
-CC         = gcc
+CC         = clang
 CFLAGS     = -fPIC -Wall -Wextra -g -I ../../../include -I ../../../external/octaspire_core/include
 LDFLAGS    = -shared
 

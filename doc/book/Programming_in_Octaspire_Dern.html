@@ -792,7 +792,7 @@ asciidoc.install(2);
 /*]]>*/
 </script>
 </head>
-<body class="article" style="max-width:55em">
+<body class="article" style="max-width:70em">
 <div id="header">
 <h1>Programming in Octaspire Dern</h1>
 <span id="author">www.octaspire.com</span><br>
@@ -804,7 +804,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.65.0</p></div>
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.66.0</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -1471,6 +1471,88 @@ only for reading and <span class="monospaced">output-file-open</span> will open 
 </div>
 </div>
 <div class="sect1">
+<h2 id="_loading_libraries_with_span_class_monospaced_require_span">Loading libraries with <span class="monospaced">require</span></h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Dern has support for loading libraries or "plugins" during run time with the builtin <span class="monospaced">require</span>.
+Before loading the requested library, <span class="monospaced">require</span> checks whether the library is already loaded,
+and loads it only if it isn&#8217;t already loaded.</p></div>
+<div class="paragraph"><p>It first tries to find a source library (.dern file) with the given name. If it finds, it loads
+that. Next it tries to find a binary library (.so file in Unix) and loads that if found.</p></div>
+<div class="paragraph"><p>So, in the example below, <span class="monospaced">require</span> tries first to find file named <strong>mylib.dern</strong> and then,
+if the system is Unix, file named <strong>libmylib.so</strong>.</p></div>
+<div class="paragraph"><p>Here is small example:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">require </span><span class="ss">&#39;mylib</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">mylib-say</span> <span class="s">[Hello world from library]</span><span class="p">)</span>
+</pre></div></div></div>
+<div class="paragraph"><p>If <span class="monospaced">mylib</span>-library is required later again, there is no need to search and load it again, because
+<span class="monospaced">require</span> know that a library with that name is already loaded.</p></div>
+<div class="paragraph"><p>Below is a small example of a binary library for <strong>Linux</strong>, <strong>FreeBSD</strong>, <strong>Haiku</strong> and <strong>MINIX 3</strong> systems.</p></div>
+<div class="listingblock">
+<div class="title">mylib.c</div>
+<div class="content"><div class="highlight"><pre><span></span><span class="cm">/***</span>
+<span class="cm">  To build this file into a shared library in Linux system:</span>
+
+<span class="cm">  gcc -c -fPIC mylib.c -I ../../../include -I ../../../external/octaspire_core/include</span>
+<span class="cm">  gcc -shared -o libmylib.so mylib.o</span>
+<span class="cm">***/</span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;octaspire/core/octaspire_helpers.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;octaspire/dern/octaspire_dern_vm.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;octaspire/dern/octaspire_dern_environment.h&quot;</span><span class="cp"></span>
+
+<span class="n">octaspire_dern_value_t</span> <span class="o">*</span><span class="nf">mylib_say</span><span class="p">(</span>
+    <span class="n">octaspire_dern_vm_t</span> <span class="o">*</span><span class="n">vm</span><span class="p">,</span>
+    <span class="n">octaspire_dern_value_t</span> <span class="o">*</span><span class="n">arguments</span><span class="p">,</span>
+    <span class="n">octaspire_dern_value_t</span> <span class="o">*</span><span class="n">environment</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">OCTASPIRE_HELPERS_UNUSED_PARAMETER</span><span class="p">(</span><span class="n">environment</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">octaspire_dern_value_as_vector_get_length</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">octaspire_dern_vm_create_new_value_error_from_c_string</span><span class="p">(</span>
+            <span class="n">vm</span><span class="p">,</span>
+            <span class="s">&quot;mylib-say expects one argument&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">octaspire_dern_value_t</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="n">messageVal</span> <span class="o">=</span>
+        <span class="n">octaspire_dern_value_as_vector_get_element_at_const</span><span class="p">(</span><span class="n">arguments</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">messageVal</span><span class="o">-&gt;</span><span class="n">typeTag</span> <span class="o">!=</span> <span class="n">OCTASPIRE_DERN_VALUE_TAG_STRING</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">octaspire_dern_vm_create_new_value_error_from_c_string</span><span class="p">(</span>
+            <span class="n">vm</span><span class="p">,</span>
+            <span class="s">&quot;mylib-say expects string argument&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">octaspire_dern_value_as_string_get_c_string</span><span class="p">(</span><span class="n">messageVal</span><span class="p">));</span>
+
+    <span class="k">return</span> <span class="n">octaspire_dern_vm_create_new_value_boolean</span><span class="p">(</span><span class="n">vm</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="nf">mylib_init</span><span class="p">(</span><span class="n">octaspire_dern_vm_t</span> <span class="o">*</span> <span class="k">const</span> <span class="n">vm</span><span class="p">,</span> <span class="n">octaspire_dern_environment_t</span> <span class="o">*</span> <span class="k">const</span> <span class="n">targetEnv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">octaspire_helpers_verify</span><span class="p">(</span><span class="n">vm</span> <span class="o">&amp;&amp;</span> <span class="n">targetEnv</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">octaspire_dern_vm_create_and_register_new_builtin</span><span class="p">(</span>
+        <span class="n">vm</span><span class="p">,</span>
+        <span class="s">&quot;mylib-say&quot;</span><span class="p">,</span>
+        <span class="n">mylib_say</span><span class="p">,</span>
+        <span class="mi">1</span><span class="p">,</span>
+        <span class="s">&quot;mylib says something&quot;</span><span class="p">,</span>
+        <span class="n">targetEnv</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div></div></div>
+<div class="paragraph"><p>See directory doc/examples/plugin in the source distribution for an example with Makefiles
+for different systems.</p></div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_embedding_in_c_programs">Embedding in C programs</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>This section is not ready yet. In the meantime you can see Dern in "real" use at:
@@ -1490,7 +1572,7 @@ only for reading and <span class="monospaced">output-file-open</span> will open 
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-20 21:13:57 EEST
+ 2017-05-21 13:46:22 EEST
 </div>
 </div>
 </body>
