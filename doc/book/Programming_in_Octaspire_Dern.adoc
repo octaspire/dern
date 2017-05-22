@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.68.0
+Documentation for Octaspire Dern programming language version 0.69.0
 
 == About
 
@@ -215,6 +215,23 @@ To see the allowed options run:
 
 [NOTE]
 Man pages are not ready yet.
+
+
+
+== Using the amalgamated source
+
+*etc*-directory of the source distribution contains amalgamated version
+of the source code. All the headers, implementation files and unit tests
+are concatenated with a script into a single file. This one file
+is all that is needed to use Octaspire Dern. The same single file
+can be used to (by giving different compiler flags):
+
+- as an include in a project that wants to embed the Dern language
+- as a stand-alone Dern REPL
+- as a stand-alone unit test runner
+
+TODO
+
 
 
 == Hello world
