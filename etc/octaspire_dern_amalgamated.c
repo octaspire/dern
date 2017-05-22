@@ -16371,17 +16371,17 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "68"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "70"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.68.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.70.0"
 
 #define OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "/home/pi/gitlab/dern/test/resource/"
 
 //#define OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 10485800
 #define OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 104858000
 
-#define OCTASPIRE_DERN_CONFIG_PLUGINS "1"
+#define OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS "1"
 
 #endif
 
@@ -17436,7 +17436,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_STDLIB_H
 
 
-#ifdef OCTASPIRE_DERN_CONFIG_PLUGINS
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #endif
 
 #ifdef __cplusplus
@@ -20698,7 +20698,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ******************************************************************************/
 
-#ifdef OCTASPIRE_DERN_CONFIG_PLUGINS
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #endif
 
 struct octaspire_dern_lib_t
@@ -20768,7 +20768,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
     self->binaryLibHandle = 0;
 
 
-#ifdef OCTASPIRE_DERN_CONFIG_PLUGINS
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 
         // Clear any old errors
         dlerror();
@@ -20874,7 +20874,7 @@ void octaspire_dern_lib_release(octaspire_dern_lib_t *self)
 
     if (self->typeTag == OCTASPIRE_DERN_LIB_TAG_BINARY && self->binaryLibHandle)
     {
-#ifdef OCTASPIRE_DERN_CONFIG_PLUGINS
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
         dlclose(self->binaryLibHandle);
 #endif
         self->binaryLibHandle = 0;
@@ -21428,7 +21428,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ******************************************************************************/
 
-#ifdef OCTASPIRE_DERN_CONFIG_PLUGINS
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #endif
 
 octaspire_dern_value_t *octaspire_dern_stdlib_private_validate_function(

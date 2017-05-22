@@ -19,7 +19,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include "octaspire/dern/octaspire_dern_config.h"
 
-#ifdef OCTASPIRE_DERN_CONFIG_PLUGINS
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #include <dlfcn.h>
 #endif
 
@@ -90,7 +90,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
     self->binaryLibHandle = 0;
 
 
-#ifdef OCTASPIRE_DERN_CONFIG_PLUGINS
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 
         // Clear any old errors
         dlerror();
@@ -196,7 +196,7 @@ void octaspire_dern_lib_release(octaspire_dern_lib_t *self)
 
     if (self->typeTag == OCTASPIRE_DERN_LIB_TAG_BINARY && self->binaryLibHandle)
     {
-#ifdef OCTASPIRE_DERN_CONFIG_PLUGINS
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
         dlclose(self->binaryLibHandle);
 #endif
         self->binaryLibHandle = 0;

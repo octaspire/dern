@@ -21,7 +21,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include "octaspire/dern/octaspire_dern_config.h"
 
-#ifdef OCTASPIRE_DERN_CONFIG_PLUGINS
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #include <dlfcn.h>
 #endif
 

@@ -18,7 +18,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(octaspire-dern C)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 69)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 70)
 set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
 
 message("== Building ${PROJECT_NAME} ${OCTASPIRE_DERN_CONFIG_VERSION_MAJOR}.${OCTASPIRE_DERN_CONFIG_VERSION_MINOR}.${OCTASPIRE_DERN_CONFIG_VERSION_PATCH}")
@@ -27,13 +27,18 @@ message("== Building ${PROJECT_NAME} in ${CMAKE_SYSTEM_NAME} system")
 
 set(OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/resource/")
 
-option(OCTASPIRE_DERN_PLUGINS   "OCTASPIRE_DERN_PLUGINS"   ON)
 
-if(OCTASPIRE_DERN_PLUGINS)
-    message("== Plugin system enabled for ${PROJECT_NAME}")
+if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "Haiku" OR CMAKE_SYSTEM_NAME STREQUAL "NetBSD" OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    option(OCTASPIRE_DERN_BINARY_PLUGINS   "OCTASPIRE_DERN_BINARY_PLUGINS"   ON)
+else()
+    option(OCTASPIRE_DERN_BINARY_PLUGINS   "OCTASPIRE_DERN_BINARY_PLUGINS"   OFF)
+endif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "Haiku" OR CMAKE_SYSTEM_NAME STREQUAL "NetBSD" OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
+
+if(OCTASPIRE_DERN_BINARY_PLUGINS)
+    message("== Binary plugin system enabled for ${PROJECT_NAME}")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-export-dynamic")
-    set(OCTASPIRE_DERN_CONFIG_PLUGINS 1)
-endif(OCTASPIRE_DERN_PLUGINS)
+    set(OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS 1)
+endif(OCTASPIRE_DERN_BINARY_PLUGINS)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/octaspire/dern/octaspire_dern_config.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/include/octaspire/dern/octaspire_dern_config.h")
@@ -104,15 +109,15 @@ endif(OCTASPIRE_DERN_UNIT_TEST)
 
 target_link_libraries(octaspire-dern octaspire-core m)
 
-if(OCTASPIRE_DERN_PLUGINS)
+if(OCTASPIRE_DERN_BINARY_PLUGINS)
     if(UNIX)
-        message("== Building plugins for ${PROJECT_NAME} in UNIX mode")
+        message("== Building binary plugins for ${PROJECT_NAME} in UNIX mode")
         if(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Haiku" AND NOT CMAKE_SYSTEM_NAME STREQUAL "NetBSD")
-            message("== Building plugins for ${PROJECT_NAME} in NON FreeBSD, NON Haiku and NON NetBSD mode")
+            message("== Building binary plugins for ${PROJECT_NAME} in NON FreeBSD, NON Haiku and NON NetBSD mode")
             target_link_libraries(octaspire-dern dl)
         endif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Haiku" AND NOT CMAKE_SYSTEM_NAME STREQUAL "NetBSD")
     endif(UNIX)
-endif(OCTASPIRE_DERN_PLUGINS)
+endif(OCTASPIRE_DERN_BINARY_PLUGINS)
 
 add_executable(octaspire-dern-repl "src/octaspire_dern_repl.c")
 target_link_libraries(octaspire-dern-repl octaspire-dern)
