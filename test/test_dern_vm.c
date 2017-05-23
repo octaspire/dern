@@ -19,15 +19,15 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include "octaspire/dern/octaspire_dern_config.h"
 
-static octaspire_memory_allocator_t *allocator = 0;
-static octaspire_stdio_t            *stdio     = 0;
+static octaspire_memory_allocator_t *octaspireDernVmTestAllocator = 0;
+static octaspire_stdio_t            *octaspireDernVmTestStdio     = 0;
 
 TEST octaspire_dern_vm_new_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     ASSERT(vm->stack);
-    ASSERT_EQ(allocator, vm->allocator);
+    ASSERT_EQ(octaspireDernVmTestAllocator, vm->allocator);
     ASSERT(vm->all);
 
     octaspire_dern_vm_release(vm);
@@ -38,7 +38,7 @@ TEST octaspire_dern_vm_new_test(void)
 
 TEST octaspire_dern_vm_create_new_value_boolean_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     for (size_t i = 0; i < 256; ++i)
     {
@@ -57,7 +57,7 @@ TEST octaspire_dern_vm_create_new_value_boolean_test(void)
 
 TEST octaspire_dern_vm_create_new_value_integer_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     for (int32_t i = 0; i < 256; ++i)
     {
@@ -76,7 +76,7 @@ TEST octaspire_dern_vm_create_new_value_integer_test(void)
 
 TEST octaspire_dern_vm_create_new_value_boolean_and_push_one_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *pushedValue = 0;
 
@@ -106,11 +106,11 @@ TEST octaspire_dern_vm_create_new_value_boolean_and_push_one_test(void)
 
 TEST octaspire_dern_vm_vm_parse_and_eval_true_amid_whitespace_test(void)
 {
-    octaspire_input_t *input = octaspire_input_new_from_c_string("  \t \n  \t true  ", allocator);
+    octaspire_input_t *input = octaspire_input_new_from_c_string("  \t \n  \t true  ", octaspireDernVmTestAllocator);
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
-    octaspire_dern_environment_t *wrappedEnv = octaspire_dern_environment_new(0, vm, allocator);
+    octaspire_dern_environment_t *wrappedEnv = octaspire_dern_environment_new(0, vm, octaspireDernVmTestAllocator);
 
     octaspire_dern_value_t *environment =
         octaspire_dern_vm_create_new_value_environment_from_environment(vm, wrappedEnv);
@@ -155,7 +155,7 @@ TEST octaspire_dern_vm_vm_parse_and_eval_true_amid_whitespace_test(void)
 
 TEST octaspire_dern_vm_special_if_two_elements_false_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -173,7 +173,7 @@ TEST octaspire_dern_vm_special_if_two_elements_false_test(void)
 
 TEST octaspire_dern_vm_special_if_two_elements_true_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -193,7 +193,7 @@ TEST octaspire_dern_vm_special_if_two_elements_true_test(void)
 
 TEST octaspire_dern_vm_special_if_three_elements_false_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -213,7 +213,7 @@ TEST octaspire_dern_vm_special_if_three_elements_false_test(void)
 
 TEST octaspire_dern_vm_special_if_three_elements_true_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -233,7 +233,7 @@ TEST octaspire_dern_vm_special_if_three_elements_true_test(void)
 
 TEST octaspire_dern_vm_special_if_three_elements_with_function_resulting_true_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -252,7 +252,7 @@ TEST octaspire_dern_vm_special_if_three_elements_with_function_resulting_true_te
 
 TEST octaspire_dern_vm_special_if_three_elements_with_function_call_resulting_true_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -271,7 +271,7 @@ TEST octaspire_dern_vm_special_if_three_elements_with_function_call_resulting_tr
 
 TEST octaspire_dern_vm_special_if_called_with_one_argument_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -294,7 +294,7 @@ TEST octaspire_dern_vm_special_if_called_with_one_argument_failure_test(void)
 
 TEST octaspire_dern_vm_special_if_called_with_integer_as_the_first_argument_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -318,7 +318,7 @@ TEST octaspire_dern_vm_special_if_called_with_integer_as_the_first_argument_fail
 
 TEST octaspire_dern_vm_special_select_one_true_selector_to_string_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -337,7 +337,7 @@ TEST octaspire_dern_vm_special_select_one_true_selector_to_string_a_test(void)
 
 TEST octaspire_dern_vm_special_select_one_false_selector_to_string_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -355,7 +355,7 @@ TEST octaspire_dern_vm_special_select_one_false_selector_to_string_a_test(void)
 
 TEST octaspire_dern_vm_special_select_one_default_selector_to_string_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -374,7 +374,7 @@ TEST octaspire_dern_vm_special_select_one_default_selector_to_string_a_test(void
 
 TEST octaspire_dern_vm_special_select_one_false_and_one_default_selectors_to_string_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -393,7 +393,7 @@ TEST octaspire_dern_vm_special_select_one_false_and_one_default_selectors_to_str
 
 TEST octaspire_dern_vm_special_select_one_false_and_one_true_and_one_default_selectors_to_string_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -412,7 +412,7 @@ TEST octaspire_dern_vm_special_select_one_false_and_one_true_and_one_default_sel
 
 TEST octaspire_dern_vm_special_select_one_false_and_one_true_selectors_to_string_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -431,7 +431,7 @@ TEST octaspire_dern_vm_special_select_one_false_and_one_true_selectors_to_string
 
 TEST octaspire_dern_vm_special_select_function_selectors_evaluating_into_false_and_true_to_string_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -468,7 +468,7 @@ TEST octaspire_dern_vm_special_select_function_selectors_evaluating_into_false_a
 
 TEST octaspire_dern_vm_special_select_function_selectors_failure_on_unknown_symbol_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -509,7 +509,7 @@ TEST octaspire_dern_vm_special_select_function_selectors_failure_on_unknown_symb
 
 TEST octaspire_dern_vm_special_select_called_with_zero_arguments_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -533,7 +533,7 @@ TEST octaspire_dern_vm_special_select_called_with_zero_arguments_failure_test(vo
 
 TEST octaspire_dern_vm_special_select_called_with_one_argument_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -557,7 +557,7 @@ TEST octaspire_dern_vm_special_select_called_with_one_argument_failure_test(void
 
 TEST octaspire_dern_vm_special_select_called_with_three_arguments_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -581,7 +581,7 @@ TEST octaspire_dern_vm_special_select_called_with_three_arguments_failure_test(v
 
 TEST octaspire_dern_vm_special_select_called_non_boolean_selector_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -604,7 +604,7 @@ TEST octaspire_dern_vm_special_select_called_non_boolean_selector_failure_test(v
 
 TEST octaspire_dern_vm_special_select_called_with_default_as_first_selector_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -627,9 +627,9 @@ TEST octaspire_dern_vm_special_select_called_with_default_as_first_selector_fail
 
 TEST octaspire_dern_vm_special_define_integer_value_test(void)
 {
-    octaspire_input_t *input = octaspire_input_new_from_c_string("(define x [test] 10)", allocator);
+    octaspire_input_t *input = octaspire_input_new_from_c_string("(define x [test] 10)", octaspireDernVmTestAllocator);
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *parsedValue = octaspire_dern_vm_parse(vm, input);
 
@@ -660,7 +660,7 @@ TEST octaspire_dern_vm_special_define_integer_value_test(void)
 
 TEST octaspire_dern_vm_special_define_integer_value_with_explicit_target_global_env_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -693,7 +693,7 @@ TEST octaspire_dern_vm_special_define_integer_value_with_explicit_target_global_
 
 TEST octaspire_dern_vm_special_define_my_inc_function_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -734,7 +734,7 @@ TEST octaspire_dern_vm_special_define_my_inc_function_test(void)
 
 TEST octaspire_dern_vm_special_define_factorial_function_with_integers_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -790,7 +790,7 @@ TEST octaspire_dern_vm_special_define_factorial_function_with_integers_test(void
 
 TEST octaspire_dern_vm_special_define_factorial_function_with_reals_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -846,7 +846,7 @@ TEST octaspire_dern_vm_special_define_factorial_function_with_reals_test(void)
 
 TEST octaspire_dern_vm_special_define_called_with_two_arguments_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -869,7 +869,7 @@ TEST octaspire_dern_vm_special_define_called_with_two_arguments_failure_test(voi
 
 TEST octaspire_dern_vm_special_define_called_with_five_arguments_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -928,7 +928,7 @@ TEST octaspire_dern_vm_special_define_called_with_five_arguments_test(void)
 
 TEST octaspire_dern_vm_special_define_called_with_four_arguments_first_being_integer_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -952,7 +952,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_first_being_int
 
 TEST octaspire_dern_vm_special_define_called_with_five_arguments_second_being_integer_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -985,7 +985,7 @@ TEST octaspire_dern_vm_special_define_called_with_five_arguments_second_being_in
 
 TEST octaspire_dern_vm_special_define_called_with_three_arguments_error_at_last_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1008,7 +1008,7 @@ TEST octaspire_dern_vm_special_define_called_with_three_arguments_error_at_last_
 
 TEST octaspire_dern_vm_special_define_called_with_three_arguments_docstring_integer_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1032,7 +1032,7 @@ TEST octaspire_dern_vm_special_define_called_with_three_arguments_docstring_inte
 
 TEST octaspire_dern_vm_special_define_called_with_three_arguments_name_evaluates_into_integer_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1056,7 +1056,7 @@ TEST octaspire_dern_vm_special_define_called_with_three_arguments_name_evaluates
 
 TEST octaspire_dern_vm_special_define_called_with_three_arguments_docstring_is_integer_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1080,7 +1080,7 @@ TEST octaspire_dern_vm_special_define_called_with_three_arguments_docstring_is_i
 
 TEST octaspire_dern_vm_special_define_called_with_three_arguments_error_in_last_argument_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1103,7 +1103,7 @@ TEST octaspire_dern_vm_special_define_called_with_three_arguments_error_in_last_
 
 TEST octaspire_dern_vm_special_define_called_with_three_arguments_trying_to_bind_a_function_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1127,7 +1127,7 @@ TEST octaspire_dern_vm_special_define_called_with_three_arguments_trying_to_bind
 
 TEST octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_first_argument_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1151,7 +1151,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_firs
 
 TEST octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_docstring_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1175,7 +1175,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_docs
 
 TEST octaspire_dern_vm_special_define_called_with_four_arguments_docstring_integer_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1199,7 +1199,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_docstring_integ
 
 TEST octaspire_dern_vm_special_quote_called_without_arguments_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1222,7 +1222,7 @@ TEST octaspire_dern_vm_special_quote_called_without_arguments_failure_test(void)
 
 TEST octaspire_dern_vm_builtin_plus_plus_integer_value_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(vm, "(define x [test] 10)");
@@ -1256,7 +1256,7 @@ TEST octaspire_dern_vm_builtin_plus_plus_integer_value_test(void)
 
 TEST octaspire_dern_vm_builtin_doc_for_integer_value_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1285,13 +1285,13 @@ TEST octaspire_dern_vm_builtin_doc_for_integer_value_test(void)
 
 TEST octaspire_dern_vm_builtin_read_and_eval_path_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     // TODO what about the path separator? Cross platform?
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(read-and-eval-path [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "test.dern])");
+            "(read-and-eval-path [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_read_and_eval_path_test.dern])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -1305,7 +1305,7 @@ TEST octaspire_dern_vm_builtin_read_and_eval_path_test(void)
 
 TEST octaspire_dern_vm_builtin_read_and_eval_string_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1324,7 +1324,7 @@ TEST octaspire_dern_vm_builtin_read_and_eval_string_test(void)
 
 TEST octaspire_dern_vm_builtin_slash_1_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1344,7 +1344,7 @@ TEST octaspire_dern_vm_builtin_slash_1_test(void)
 
 TEST octaspire_dern_vm_builtin_slash_10_2_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1364,7 +1364,7 @@ TEST octaspire_dern_vm_builtin_slash_10_2_2_test(void)
 
 TEST octaspire_dern_vm_builtin_slash_0_2_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1384,7 +1384,7 @@ TEST octaspire_dern_vm_builtin_slash_0_2_2_test(void)
 
 TEST octaspire_dern_vm_builtin_slash_100_10_0dot5_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1404,7 +1404,7 @@ TEST octaspire_dern_vm_builtin_slash_100_10_0dot5_test(void)
 
 TEST octaspire_dern_vm_builtin_slash_100_minus10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1424,7 +1424,7 @@ TEST octaspire_dern_vm_builtin_slash_100_minus10_test(void)
 
 TEST octaspire_dern_vm_builtin_slash_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1448,7 +1448,7 @@ TEST octaspire_dern_vm_builtin_slash_failure_test(void)
 
 TEST octaspire_dern_vm_builtin_slash_0_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1472,7 +1472,7 @@ TEST octaspire_dern_vm_builtin_slash_0_failure_test(void)
 
 TEST octaspire_dern_vm_builtin_slash_10_2_0_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1496,7 +1496,7 @@ TEST octaspire_dern_vm_builtin_slash_10_2_0_failure_test(void)
 
 TEST octaspire_dern_vm_builtin_slash_10_2_character_a_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1520,7 +1520,7 @@ TEST octaspire_dern_vm_builtin_slash_10_2_character_a_failure_test(void)
 
 TEST octaspire_dern_vm_builtin_mod_5_mod_3_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1540,7 +1540,7 @@ TEST octaspire_dern_vm_builtin_mod_5_mod_3_test(void)
 
 TEST octaspire_dern_vm_builtin_mod_0_mod_3_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1560,7 +1560,7 @@ TEST octaspire_dern_vm_builtin_mod_0_mod_3_test(void)
 
 TEST octaspire_dern_vm_builtin_mod_3_mod_3_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1580,7 +1580,7 @@ TEST octaspire_dern_vm_builtin_mod_3_mod_3_test(void)
 
 TEST octaspire_dern_vm_builtin_mod_4_mod_3_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1600,7 +1600,7 @@ TEST octaspire_dern_vm_builtin_mod_4_mod_3_test(void)
 
 TEST octaspire_dern_vm_builtin_mod_4_mod_0_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1625,7 +1625,7 @@ TEST octaspire_dern_vm_builtin_mod_4_mod_0_failure_test(void)
 
 TEST octaspire_dern_vm_builtin_plus_1_2_3_4_minus_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1645,7 +1645,7 @@ TEST octaspire_dern_vm_builtin_plus_1_2_3_4_minus_2_test(void)
 
 TEST octaspire_dern_vm_builtin_plus_1_2_3_4_minus_2_2dot5_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1665,7 +1665,7 @@ TEST octaspire_dern_vm_builtin_plus_1_2_3_4_minus_2_2dot5_test(void)
 
 TEST octaspire_dern_vm_builtin_plus_string_cat_dog_and_string_space_and_string_zebra_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1688,7 +1688,7 @@ TEST octaspire_dern_vm_builtin_plus_string_cat_dog_and_string_space_and_string_z
 
 TEST octaspire_dern_vm_builtin_plus_string_ca_and_character_t_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1711,7 +1711,7 @@ TEST octaspire_dern_vm_builtin_plus_string_ca_and_character_t_test(void)
 
 TEST octaspire_dern_vm_builtin_plus_empty_string_and_characters_k_i_t_t_e_n_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1734,7 +1734,7 @@ TEST octaspire_dern_vm_builtin_plus_empty_string_and_characters_k_i_t_t_e_n_test
 
 TEST octaspire_dern_vm_builtin_minus_string_cat_dog_cat_and_string_cat_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1754,7 +1754,7 @@ TEST octaspire_dern_vm_builtin_minus_string_cat_dog_cat_and_string_cat_test(void
 
 TEST octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1774,7 +1774,7 @@ TEST octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_test(void)
 
 TEST octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_and_character_b_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1794,7 +1794,7 @@ TEST octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_and_charac
 
 TEST octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_and_character_b_and_caharacter_c_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1814,7 +1814,7 @@ TEST octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_and_charac
 
 TEST octaspire_dern_vm_builtin_minus_1_2_3_4_minus_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1834,7 +1834,7 @@ TEST octaspire_dern_vm_builtin_minus_1_2_3_4_minus_2_test(void)
 
 TEST octaspire_dern_vm_builtin_minus_1_2_3_4_minus_2_2dot5_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1854,7 +1854,7 @@ TEST octaspire_dern_vm_builtin_minus_1_2_3_4_minus_2_2dot5_test(void)
 
 TEST octaspire_dern_vm_builtin_find_from_string_abcdeaaba_character_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1889,7 +1889,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_abcdeaaba_character_a_test(void)
 
 TEST octaspire_dern_vm_builtin_find_from_string_abcdeaaba_character_y_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1909,7 +1909,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_abcdeaaba_character_y_test(void)
 
 TEST octaspire_dern_vm_builtin_find_from_string_cat_dog_cat_zebra_cat_string_cat_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1944,7 +1944,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_cat_dog_cat_zebra_cat_string_cat
 
 TEST octaspire_dern_vm_builtin_find_from_string_cat_dog_cat_zebra_cat_string_parrot_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1964,7 +1964,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_cat_dog_cat_zebra_cat_string_par
 
 TEST octaspire_dern_vm_builtin_find_from_string_cat_dog_cat_zebra_cat_quoted_symbol_cat_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -1999,7 +1999,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_cat_dog_cat_zebra_cat_quoted_sym
 
 TEST octaspire_dern_vm_builtin_find_from_string_cat_dog_cat_zebra_cat_quoted_symbol_parrot_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2019,7 +2019,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_cat_dog_cat_zebra_cat_quoted_sym
 
 TEST octaspire_dern_vm_builtin_find_from_string_123_124_abc_123_99_123_integer_123_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2054,7 +2054,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_123_124_abc_123_99_123_integer_1
 
 TEST octaspire_dern_vm_builtin_find_from_string_123_124_abc_123_99_123_integer_777_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2074,7 +2074,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_123_124_abc_123_99_123_integer_7
 
 TEST octaspire_dern_vm_builtin_find_from_string_3dot14_abc_3dot13_3dot14_3dot146_3dot14_real_3dot14_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2109,7 +2109,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_3dot14_abc_3dot13_3dot14_3dot146
 
 TEST octaspire_dern_vm_builtin_find_from_string_3dot14_abc_3dot13_3dot14_3dot146_3dot14_real_7dot11_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2129,7 +2129,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_3dot14_abc_3dot13_3dot14_3dot146
 
 TEST octaspire_dern_vm_builtin_find_from_symbol_abc_def_aaxa_char_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2164,7 +2164,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_abc_def_aaxa_char_a_test(void)
 
 TEST octaspire_dern_vm_builtin_find_from_symbol_abc_def_aaxa_char_y_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2184,7 +2184,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_abc_def_aaxa_char_y_test(void)
 
 TEST octaspire_dern_vm_builtin_find_from_symbol_cat_dog_cat_cat_zebra_cat_string_cat_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2219,7 +2219,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_dog_cat_cat_zebra_cat_string
 
 TEST octaspire_dern_vm_builtin_find_from_symbol_cat_dog_cat_cat_zebra_cat_string_parrot_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2239,7 +2239,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_dog_cat_cat_zebra_cat_string
 
 TEST octaspire_dern_vm_builtin_find_from_symbol_cat_dog_cat_cat_zebra_cat_symbol_cat_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2274,7 +2274,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_dog_cat_cat_zebra_cat_symbol
 
 TEST octaspire_dern_vm_builtin_find_from_symbol_cat_dog_cat_cat_zebra_cat_symbol_parrot_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2294,7 +2294,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_dog_cat_cat_zebra_cat_symbol
 
 TEST octaspire_dern_vm_builtin_find_from_symbol_cat_123_dog_cat_123_123_cat_zebra_123_integer_123_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2329,7 +2329,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_123_dog_cat_123_123_cat_zebr
 
 TEST octaspire_dern_vm_builtin_find_from_symbol_cat_321_dog_cat_321_321_cat_zebra_321_integer_123_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2349,7 +2349,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_321_dog_cat_321_321_cat_zebr
 
 TEST octaspire_dern_vm_builtin_find_from_symbol_cat_3dot14_dog_cat_3dot14_3dot14_cat_zebra_3dot14_real_3dot14_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2384,7 +2384,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_3dot14_dog_cat_3dot14_3dot14
 
 TEST octaspire_dern_vm_builtin_find_from_symbol_cat_3dot14_dog_cat_3dot14_3dot14_cat_zebra_3dot14_real_4dot14_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2404,7 +2404,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_3dot14_dog_cat_3dot14_3dot14
 
 TEST octaspire_dern_vm_builtin_find_from_vector_of_chars_a_b_c_a_a_g_u_a_char_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2439,7 +2439,7 @@ TEST octaspire_dern_vm_builtin_find_from_vector_of_chars_a_b_c_a_a_g_u_a_char_a_
 
 TEST octaspire_dern_vm_builtin_find_from_vector_of_chars_a_b_c_a_a_g_u_a_char_x_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2459,7 +2459,7 @@ TEST octaspire_dern_vm_builtin_find_from_vector_of_chars_a_b_c_a_a_g_u_a_char_x_
 
 TEST octaspire_dern_vm_builtin_find_from_vector_of_strings_cat_dog_cat_zebra_parrot_cat_string_cat_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2494,7 +2494,7 @@ TEST octaspire_dern_vm_builtin_find_from_vector_of_strings_cat_dog_cat_zebra_par
 
 TEST octaspire_dern_vm_builtin_find_from_vector_of_strings_cat_dog_cat_zebra_parrot_cat_string_kitten_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2514,7 +2514,7 @@ TEST octaspire_dern_vm_builtin_find_from_vector_of_strings_cat_dog_cat_zebra_par
 
 TEST octaspire_dern_vm_builtin_find_from_vector_of_symbols_cat_dog_cat_zebra_parrot_cat_symbol_cat_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2549,7 +2549,7 @@ TEST octaspire_dern_vm_builtin_find_from_vector_of_symbols_cat_dog_cat_zebra_par
 
 TEST octaspire_dern_vm_builtin_find_from_vector_of_symbols_cat_dog_cat_zebra_parrot_cat_symbol_mouse_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2569,7 +2569,7 @@ TEST octaspire_dern_vm_builtin_find_from_vector_of_symbols_cat_dog_cat_zebra_par
 
 TEST octaspire_dern_vm_builtin_find_from_hash_map_of_chars_a_b_c_d_char_c_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2589,7 +2589,7 @@ TEST octaspire_dern_vm_builtin_find_from_hash_map_of_chars_a_b_c_d_char_c_test(v
 
 TEST octaspire_dern_vm_builtin_find_from_hash_map_of_chars_a_b_c_d_char_x_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2608,7 +2608,7 @@ TEST octaspire_dern_vm_builtin_find_from_hash_map_of_chars_a_b_c_d_char_x_test(v
 
 TEST octaspire_dern_vm_builtin_find_from_hash_map_of_chars_a_b_c_d_char_b_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2628,7 +2628,7 @@ TEST octaspire_dern_vm_builtin_find_from_hash_map_of_chars_a_b_c_d_char_b_test(v
 
 TEST octaspire_dern_vm_builtin_find_from_hash_map_of_strings_cat_dog_zebra_kitten_string_zebra_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2648,7 +2648,7 @@ TEST octaspire_dern_vm_builtin_find_from_hash_map_of_strings_cat_dog_zebra_kitte
 
 TEST octaspire_dern_vm_builtin_find_from_hash_map_of_strings_cat_dog_zebra_kitten_string_parrot_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2667,7 +2667,7 @@ TEST octaspire_dern_vm_builtin_find_from_hash_map_of_strings_cat_dog_zebra_kitte
 
 TEST octaspire_dern_vm_builtin_find_from_hash_map_of_integers_1_2_3_4_integer_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2687,7 +2687,7 @@ TEST octaspire_dern_vm_builtin_find_from_hash_map_of_integers_1_2_3_4_integer_2_
 
 TEST octaspire_dern_vm_builtin_find_from_hash_map_of_integers_1_2_3_4_integer_5_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2706,7 +2706,7 @@ TEST octaspire_dern_vm_builtin_find_from_hash_map_of_integers_1_2_3_4_integer_5_
 
 TEST octaspire_dern_vm_builtin_find_from_hash_map_of_reals_2dot1_2dot2_2dot3_2dot4_real_2dot2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2726,7 +2726,7 @@ TEST octaspire_dern_vm_builtin_find_from_hash_map_of_reals_2dot1_2dot2_2dot3_2do
 
 TEST octaspire_dern_vm_builtin_find_from_hash_map_of_reals_2dot1_2dot2_2dot3_2dot4_real_2dot5_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2745,7 +2745,7 @@ TEST octaspire_dern_vm_builtin_find_from_hash_map_of_reals_2dot1_2dot2_2dot3_2do
 
 TEST octaspire_dern_vm_builtin_find_from_global_environment_symbol_find_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2765,7 +2765,7 @@ TEST octaspire_dern_vm_builtin_find_from_global_environment_symbol_find_test(voi
 
 TEST octaspire_dern_vm_builtin_find_from_global_environment_defined_symbol_xyz_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2808,7 +2808,7 @@ TEST octaspire_dern_vm_builtin_find_from_global_environment_defined_symbol_xyz_t
 
 TEST octaspire_dern_vm_builtin_find_from_global_environment_symbol_notfound_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2827,7 +2827,7 @@ TEST octaspire_dern_vm_builtin_find_from_global_environment_symbol_notfound_test
 
 TEST octaspire_dern_vm_special_while_with_one_value_to_repeat_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2864,7 +2864,7 @@ TEST octaspire_dern_vm_special_while_with_one_value_to_repeat_test(void)
 
 TEST octaspire_dern_vm_special_while_with_two_values_to_repeat_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2919,7 +2919,7 @@ TEST octaspire_dern_vm_special_while_with_two_values_to_repeat_test(void)
 
 TEST octaspire_dern_vm_special_while_called_with_one_argument_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2942,7 +2942,7 @@ TEST octaspire_dern_vm_special_while_called_with_one_argument_failure_test(void)
 
 TEST octaspire_dern_vm_special_while_called_with_integer_as_first_argument_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2975,7 +2975,7 @@ TEST octaspire_dern_vm_special_while_called_with_integer_as_first_argument_failu
 
 TEST octaspire_dern_vm_builtin_hash_map_empty_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -2994,7 +2994,7 @@ TEST octaspire_dern_vm_builtin_hash_map_empty_test(void)
 
 TEST octaspire_dern_vm_builtin_hash_map_one_element_symbol_one_1_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3028,7 +3028,7 @@ TEST octaspire_dern_vm_builtin_hash_map_one_element_symbol_one_1_test(void)
 
 TEST octaspire_dern_vm_builtin_hash_map_one_element_1_symbol_one_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3062,7 +3062,7 @@ TEST octaspire_dern_vm_builtin_hash_map_one_element_1_symbol_one_test(void)
 
 TEST octaspire_dern_vm_builtin_hash_map_two_elements_strings_dog_barks_and_sun_shines_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3120,7 +3120,7 @@ TEST octaspire_dern_vm_builtin_hash_map_two_elements_strings_dog_barks_and_sun_s
 
 TEST octaspire_dern_vm_string_literal_with_embedded_characters_t_bar_newline_tab_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3142,7 +3142,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_characters_t_bar_newline_tab
 
 TEST octaspire_dern_vm_string_literal_with_embedded_characters_c_a_t__a_n_d__d_o_g_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3164,7 +3164,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_characters_c_a_t__a_n_d__d_o
 
 TEST octaspire_dern_vm_string_literal_with_embedded_character_newline_failure_on_missing_end_delimiter_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3186,7 +3186,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_newline_failure_on
 
 TEST octaspire_dern_vm_string_literal_with_embedded_character_yy_failure_on_unknown_char_constant_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3208,7 +3208,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_yy_failure_on_unkn
 
 TEST octaspire_dern_vm_string_literal_with_embedded_character_in_hex_A9_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3230,7 +3230,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_in_hex_A9_test(voi
 
 TEST octaspire_dern_vm_string_literal_with_embedded_character_in_hex_a9_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3252,7 +3252,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_in_hex_a9_test(voi
 
 TEST octaspire_dern_vm_string_literal_with_embedded_character_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3274,7 +3274,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_a_test(void)
 
 TEST octaspire_dern_vm_string_literal_with_embedded_character_in_hex_0x10000_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3296,7 +3296,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_in_hex_0x10000_tes
 
 TEST octaspire_dern_vm_string_literal_with_embedded_character_in_hex_failure_on_too_many_hex_digits_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3318,7 +3318,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_in_hex_failure_on_
 
 TEST octaspire_dern_vm_builtin_equals_with_empty_vector_of_strings_and_integer_10_and_string_cat_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3378,7 +3378,7 @@ TEST octaspire_dern_vm_builtin_equals_with_empty_vector_of_strings_and_integer_1
 
 TEST octaspire_dern_vm_builtin_equals_with_vector_of_strings_and_integer_1_and_string_cat_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3447,7 +3447,7 @@ TEST octaspire_dern_vm_builtin_equals_with_vector_of_strings_and_integer_1_and_s
 
 TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_same_key_inserted_multiple_times_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3542,7 +3542,7 @@ TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_same_key_inserted_multip
 
 TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_hash_map_with_elements_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3620,7 +3620,7 @@ TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_hash_map_with_elements_t
 
 TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_empty_hash_map_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3668,7 +3668,7 @@ TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_empty_hash_map_test(void
 
 TEST octaspire_dern_vm_builtin_equals_with_vector_and_vector_with_elements_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3728,7 +3728,7 @@ TEST octaspire_dern_vm_builtin_equals_with_vector_and_vector_with_elements_test(
 
 TEST octaspire_dern_vm_builtin_equals_with_vector_and_empty_vector_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3774,7 +3774,7 @@ TEST octaspire_dern_vm_builtin_equals_with_vector_and_empty_vector_test(void)
 
 TEST octaspire_dern_vm_builtin_minus_equals_with_character_x_and_integer_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3802,7 +3802,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_character_x_and_integer_2_test(
 
 TEST octaspire_dern_vm_builtin_minus_equals_with_character_x_and_character_exclamation_mark_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3830,7 +3830,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_character_x_and_character_excla
 
 TEST octaspire_dern_vm_builtin_minus_equals_with_real_3_dot_14_and_reals_1_dot_0_and_zero_dot_14_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3858,7 +3858,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_real_3_dot_14_and_reals_1_dot_0
 
 TEST octaspire_dern_vm_builtin_minus_equals_with_integer_10_and_integers_1_and_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3886,7 +3886,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_integer_10_and_integers_1_and_2
 
 TEST octaspire_dern_vm_builtin_minus_equals_with_vector_1_1_2_2_2_3_and_values_1_and_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3919,7 +3919,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_vector_1_1_2_2_2_3_and_values_1
 
 TEST octaspire_dern_vm_builtin_minus_equals_with_string_abcd_and_characters_a_and_b_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3947,7 +3947,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_string_abcd_and_characters_a_an
 
 TEST octaspire_dern_vm_builtin_minus_equals_with_hash_map_1_a_2_b_3_c_and_value_1_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -3990,7 +3990,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_hash_map_1_a_2_b_3_c_and_value_
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_hash_map_1_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4033,7 +4033,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_hash_map_1_a_test(v
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_1_a_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4076,7 +4076,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_1_a_test(void)
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_list_1_a_2_b_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4134,7 +4134,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_list_1_a_2_b_test(v
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_vector_1_2_3_and_4_5_6_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4174,7 +4174,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_vector_1_2_3_and_4_5_6_test(void
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_string_def_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4219,7 +4219,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_string_def_test(v
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_symbol_def_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4264,7 +4264,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_symbol_def_test(v
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_character_d_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4309,7 +4309,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_character_d_test(
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_vector_of_strings_def_ghi_jkl_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4354,7 +4354,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_vector_of_strings
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_nil_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4399,7 +4399,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_nil_test(void)
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_booleans_true_and_false_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4444,7 +4444,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_booleans_true_and
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_integer_128_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4489,7 +4489,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_integer_128_test(
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_real_3dot14_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4538,7 +4538,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_real_3dot14_test(
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_string_def_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4583,7 +4583,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_string_def_test(v
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_symbol_def_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4628,7 +4628,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_symbol_def_test(v
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_character_d_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4673,7 +4673,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_character_d_test(
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_vector_of_strings_def_ghi_jkl_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4718,7 +4718,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_vector_of_strings
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_nil_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4763,7 +4763,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_nil_test(void)
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_booleans_true_and_false_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4808,7 +4808,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_booleans_true_and
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_integer_128_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4853,7 +4853,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_integer_128_test(
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_real_3dot14_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4907,7 +4907,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_real_3dot14_test(
 
 TEST octaspire_dern_vm_builtin_plus_equals_with_bad_input_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4930,7 +4930,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_bad_input_test(void)
 
 TEST octaspire_dern_vm_run_user_factorial_function_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_path_and_eval_in_global_environment(
@@ -4949,7 +4949,7 @@ TEST octaspire_dern_vm_run_user_factorial_function_test(void)
 
 TEST octaspire_dern_vm_special_for_from_0_to_10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -4998,7 +4998,7 @@ TEST octaspire_dern_vm_special_for_from_0_to_10_test(void)
 
 TEST octaspire_dern_vm_special_for_from_0_to_10_with_step_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5047,7 +5047,7 @@ TEST octaspire_dern_vm_special_for_from_0_to_10_with_step_2_test(void)
 
 TEST octaspire_dern_vm_special_for_from_0_to_10_with_step_minus_2_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5079,7 +5079,7 @@ TEST octaspire_dern_vm_special_for_from_0_to_10_with_step_minus_2_failure_test(v
 
 TEST octaspire_dern_vm_special_for_from_10_to_0_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5128,7 +5128,7 @@ TEST octaspire_dern_vm_special_for_from_10_to_0_test(void)
 
 TEST octaspire_dern_vm_special_for_from_10_to_0_with_step_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5177,7 +5177,7 @@ TEST octaspire_dern_vm_special_for_from_10_to_0_with_step_2_test(void)
 
 TEST octaspire_dern_vm_special_for_from_10_to_0_with_step_minus_2_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5210,7 +5210,7 @@ TEST octaspire_dern_vm_special_for_from_10_to_0_with_step_minus_2_failure_test(v
 
 TEST octaspire_dern_vm_special_for_in_with_string_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5259,7 +5259,7 @@ TEST octaspire_dern_vm_special_for_in_with_string_test(void)
 
 TEST octaspire_dern_vm_special_for_in_with_string_step_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5308,7 +5308,7 @@ TEST octaspire_dern_vm_special_for_in_with_string_step_2_test(void)
 
 TEST octaspire_dern_vm_special_for_in_with_string_step_minus_2_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5349,7 +5349,7 @@ TEST octaspire_dern_vm_special_for_in_with_string_step_minus_2_failure_test(void
 
 TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5398,7 +5398,7 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_test(void)
 
 TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_step_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5447,7 +5447,7 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_step_2_test(void)
 
 TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_step_minus_2_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5487,7 +5487,7 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_step_minus_2_failur
 
 TEST octaspire_dern_vm_special_for_in_with_environment_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5574,7 +5574,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_test(void)
 
 TEST octaspire_dern_vm_special_for_in_with_environment_step_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5648,7 +5648,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_2_test(void)
 
 TEST octaspire_dern_vm_special_for_in_with_environment_step_minus_2_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5722,7 +5722,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_minus_2_failure_test
 
 TEST octaspire_dern_vm_special_for_in_with_hash_map_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5775,7 +5775,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_test(void)
 
 TEST octaspire_dern_vm_special_for_in_with_hash_map_step_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5815,7 +5815,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_2_test(void)
 
 TEST octaspire_dern_vm_special_for_in_with_hash_map_step_minus_2_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5856,7 +5856,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_minus_2_failure_test(vo
 
 TEST octaspire_dern_vm_special_for_called_without_arguments_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5880,7 +5880,7 @@ TEST octaspire_dern_vm_special_for_called_without_arguments_failure_test(void)
 
 TEST octaspire_dern_vm_special_for_called_with_one_argument_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5904,7 +5904,7 @@ TEST octaspire_dern_vm_special_for_called_with_one_argument_failure_test(void)
 
 TEST octaspire_dern_vm_special_for_second_argument_not_symbol_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5927,7 +5927,7 @@ TEST octaspire_dern_vm_special_for_second_argument_not_symbol_failure_test(void)
 
 TEST octaspire_dern_vm_special_for_called_with_integer_as_first_argument_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5950,7 +5950,7 @@ TEST octaspire_dern_vm_special_for_called_with_integer_as_first_argument_failure
 
 TEST octaspire_dern_vm_error_in_function_body_is_reported_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5982,7 +5982,7 @@ TEST octaspire_dern_vm_error_in_function_body_is_reported_test(void)
 
 TEST octaspire_dern_vm_builtin_nth_called_with_0_and_string_abc_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6004,7 +6004,7 @@ TEST octaspire_dern_vm_builtin_nth_called_with_0_and_string_abc_test(void)
 
 TEST octaspire_dern_vm_builtin_nth_called_with_1_and_string_abc_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6026,7 +6026,7 @@ TEST octaspire_dern_vm_builtin_nth_called_with_1_and_string_abc_test(void)
 
 TEST octaspire_dern_vm_builtin_nth_called_with_2_and_string_abc_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6048,7 +6048,7 @@ TEST octaspire_dern_vm_builtin_nth_called_with_2_and_string_abc_test(void)
 
 TEST octaspire_dern_vm_builtin_nth_called_with_3_and_string_abc_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6071,7 +6071,7 @@ TEST octaspire_dern_vm_builtin_nth_called_with_3_and_string_abc_failure_test(voi
 
 TEST octaspire_dern_vm_builtin_nth_called_with_0_and_vector_1_2_3_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6090,7 +6090,7 @@ TEST octaspire_dern_vm_builtin_nth_called_with_0_and_vector_1_2_3_test(void)
 
 TEST octaspire_dern_vm_builtin_nth_called_with_1_and_vector_1_2_3_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6109,7 +6109,7 @@ TEST octaspire_dern_vm_builtin_nth_called_with_1_and_vector_1_2_3_test(void)
 
 TEST octaspire_dern_vm_builtin_nth_called_with_2_and_vector_1_2_3_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6128,7 +6128,7 @@ TEST octaspire_dern_vm_builtin_nth_called_with_2_and_vector_1_2_3_test(void)
 
 TEST octaspire_dern_vm_builtin_nth_called_with_3_and_vector_1_2_3_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6151,7 +6151,7 @@ TEST octaspire_dern_vm_builtin_nth_called_with_3_and_vector_1_2_3_failure_test(v
 
 TEST octaspire_dern_vm_builtin_nth_called_with_0_and_hash_map_1a_2b_3c_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6173,7 +6173,7 @@ TEST octaspire_dern_vm_builtin_nth_called_with_0_and_hash_map_1a_2b_3c_test(void
 
 TEST octaspire_dern_vm_builtin_nth_called_with_1_and_hash_map_1a_2b_3c_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6195,7 +6195,7 @@ TEST octaspire_dern_vm_builtin_nth_called_with_1_and_hash_map_1a_2b_3c_test(void
 
 TEST octaspire_dern_vm_builtin_nth_called_with_2_and_hash_map_1a_2b_3c_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6217,7 +6217,7 @@ TEST octaspire_dern_vm_builtin_nth_called_with_2_and_hash_map_1a_2b_3c_test(void
 
 TEST octaspire_dern_vm_builtin_nth_called_with_3_and_hash_map_1a_2b_3c_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6240,7 +6240,7 @@ TEST octaspire_dern_vm_builtin_nth_called_with_3_and_hash_map_1a_2b_3c_failure_t
 
 TEST octaspire_dern_vm_changing_atom_doesnt_change_another_defined_from_it_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6286,7 +6286,7 @@ TEST octaspire_dern_vm_changing_atom_doesnt_change_another_defined_from_it_test(
 
 TEST octaspire_dern_vm_builtin_return_in_special_do_inside_function_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6332,7 +6332,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_do_inside_function_test(void)
 
 TEST octaspire_dern_vm_special_do_error_stops_evaluation_and_is_reported_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6383,7 +6383,7 @@ TEST octaspire_dern_vm_special_do_error_stops_evaluation_and_is_reported_test(vo
 
 TEST octaspire_dern_vm_builtin_return_inside_function_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6429,7 +6429,7 @@ TEST octaspire_dern_vm_builtin_return_inside_function_test(void)
 
 TEST octaspire_dern_vm_builtin_return_in_special_for_with_numeric_range_inside_function_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6475,7 +6475,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_numeric_range_inside_f
 
 TEST octaspire_dern_vm_builtin_return_in_special_for_with_collection_inside_function_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6521,7 +6521,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_collection_inside_func
 
 TEST octaspire_dern_vm_builtin_return_in_special_for_with_string_inside_function_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6567,7 +6567,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_string_inside_function
 
 TEST octaspire_dern_vm_builtin_return_in_special_for_with_environment_inside_function_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6613,7 +6613,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_environment_inside_fun
 
 TEST octaspire_dern_vm_builtin_return_in_special_for_with_hash_map_inside_function_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6662,7 +6662,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_hash_map_inside_functi
 
 TEST octaspire_dern_vm_builtin_return_in_special_while_inside_function_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6708,7 +6708,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_while_inside_function_test(void
 
 TEST octaspire_dern_vm_builtin_return_called_without_argument_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6753,7 +6753,7 @@ TEST octaspire_dern_vm_builtin_return_called_without_argument_test(void)
 
 TEST octaspire_dern_vm_builtin_return_called_with_two_arguments_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6807,7 +6807,7 @@ TEST octaspire_dern_vm_builtin_return_called_with_two_arguments_failure_test(voi
 
 TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_four_arguments_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6841,7 +6841,7 @@ TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_four_
 
 TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_one_argument_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6875,7 +6875,7 @@ TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_one_a
 
 TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_zero_arguments_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6909,7 +6909,7 @@ TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_zero_
 
 TEST octaspire_dern_vm_newly_created_function_returned_from_another_function_and_used_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6937,7 +6937,7 @@ TEST octaspire_dern_vm_newly_created_function_returned_from_another_function_and
 
 TEST octaspire_dern_vm_recursive_function_used_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -6965,7 +6965,7 @@ TEST octaspire_dern_vm_recursive_function_used_test(void)
 
 TEST octaspire_dern_vm_mutually_recursive_functions_used_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7002,7 +7002,7 @@ TEST octaspire_dern_vm_mutually_recursive_functions_used_test(void)
 
 TEST octaspire_dern_vm_special_and_called_without_arguments_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(vm, "(and)");
@@ -7019,7 +7019,7 @@ TEST octaspire_dern_vm_special_and_called_without_arguments_test(void)
 
 TEST octaspire_dern_vm_special_or_called_without_arguments_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(vm, "(or)");
@@ -7036,7 +7036,7 @@ TEST octaspire_dern_vm_special_or_called_without_arguments_test(void)
 
 TEST octaspire_dern_vm_builtin_not_called_without_arguments_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(vm, "(not)");
@@ -7056,7 +7056,7 @@ TEST octaspire_dern_vm_builtin_not_called_without_arguments_failure_test(void)
 
 TEST octaspire_dern_vm_special_and_called_with_one_argument_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7082,7 +7082,7 @@ TEST octaspire_dern_vm_special_and_called_with_one_argument_test(void)
 
 TEST octaspire_dern_vm_special_or_called_with_one_argument_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7108,7 +7108,7 @@ TEST octaspire_dern_vm_special_or_called_with_one_argument_test(void)
 
 TEST octaspire_dern_vm_special_and_called_with_one_false_argument_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7134,7 +7134,7 @@ TEST octaspire_dern_vm_special_and_called_with_one_false_argument_test(void)
 
 TEST octaspire_dern_vm_special_or_called_with_one_false_argument_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7160,7 +7160,7 @@ TEST octaspire_dern_vm_special_or_called_with_one_false_argument_test(void)
 
 TEST octaspire_dern_vm_builtin_not_called_with_one_false_argument_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7186,7 +7186,7 @@ TEST octaspire_dern_vm_builtin_not_called_with_one_false_argument_test(void)
 
 TEST octaspire_dern_vm_builtin_not_called_with_one_true_argument_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7212,7 +7212,7 @@ TEST octaspire_dern_vm_builtin_not_called_with_one_true_argument_test(void)
 
 TEST octaspire_dern_vm_builtin_not_called_with_one_integer_argument_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7242,7 +7242,7 @@ TEST octaspire_dern_vm_builtin_not_called_with_one_integer_argument_failure_test
 
 TEST octaspire_dern_vm_builtin_not_called_with_two_boolean_arguments_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7281,7 +7281,7 @@ TEST octaspire_dern_vm_builtin_not_called_with_two_boolean_arguments_failure_tes
 
 TEST octaspire_dern_vm_special_and_called_with_three_arguments_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7327,7 +7327,7 @@ TEST octaspire_dern_vm_special_and_called_with_three_arguments_test(void)
 
 TEST octaspire_dern_vm_special_or_called_with_three_arguments_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7373,7 +7373,7 @@ TEST octaspire_dern_vm_special_or_called_with_three_arguments_test(void)
 
 TEST octaspire_dern_vm_special_and_called_with_three_arguments_with_false_as_second_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7419,7 +7419,7 @@ TEST octaspire_dern_vm_special_and_called_with_three_arguments_with_false_as_sec
 
 TEST octaspire_dern_vm_special_or_called_with_three_arguments_with_true_as_second_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7465,7 +7465,7 @@ TEST octaspire_dern_vm_special_or_called_with_three_arguments_with_true_as_secon
 
 TEST octaspire_dern_vm_special_greater_than_called_with_two_reals_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7493,7 +7493,7 @@ TEST octaspire_dern_vm_special_greater_than_called_with_two_reals_test(void)
 
 TEST octaspire_dern_vm_special_greater_than_called_with_two_integers_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7521,7 +7521,7 @@ TEST octaspire_dern_vm_special_greater_than_called_with_two_integers_test(void)
 
 TEST octaspire_dern_vm_special_greater_than_called_with_integer_10_and_real_9dot9_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7549,7 +7549,7 @@ TEST octaspire_dern_vm_special_greater_than_called_with_integer_10_and_real_9dot
 
 TEST octaspire_dern_vm_special_greater_than_called_with_integer_9_and_real_9dot9_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7577,7 +7577,7 @@ TEST octaspire_dern_vm_special_greater_than_called_with_integer_9_and_real_9dot9
 
 TEST octaspire_dern_vm_special_greater_than_called_with_real_9dot9_and_integer_10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7605,7 +7605,7 @@ TEST octaspire_dern_vm_special_greater_than_called_with_real_9dot9_and_integer_1
 
 TEST octaspire_dern_vm_special_greater_than_called_with_real_10dot1_and_integer_10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7638,7 +7638,7 @@ TEST octaspire_dern_vm_special_greater_than_called_with_real_10dot1_and_integer_
 
 TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_two_reals_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7684,7 +7684,7 @@ TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_two_reals_test(
 
 TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_two_integers_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7730,7 +7730,7 @@ TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_two_integers_te
 
 TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_integer_10_and_real_9dot9_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7758,7 +7758,7 @@ TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_integer_10_and_
 
 TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_integer_9_and_real_9dot9_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7786,7 +7786,7 @@ TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_integer_9_and_r
 
 TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_real_9dot9_and_integer_10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7814,7 +7814,7 @@ TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_real_9dot9_and_
 
 TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_real_10dot1_and_integer_10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7858,7 +7858,7 @@ TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_real_10dot1_and
 
 TEST octaspire_dern_vm_special_less_than_called_with_two_reals_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7886,7 +7886,7 @@ TEST octaspire_dern_vm_special_less_than_called_with_two_reals_test(void)
 
 TEST octaspire_dern_vm_special_less_than_called_with_two_integers_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7914,7 +7914,7 @@ TEST octaspire_dern_vm_special_less_than_called_with_two_integers_test(void)
 
 TEST octaspire_dern_vm_special_less_than_called_with_integer_9_and_real_9dot9_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7942,7 +7942,7 @@ TEST octaspire_dern_vm_special_less_than_called_with_integer_9_and_real_9dot9_te
 
 TEST octaspire_dern_vm_special_less_than_called_with_integer_10_and_real_9dot9_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7970,7 +7970,7 @@ TEST octaspire_dern_vm_special_less_than_called_with_integer_10_and_real_9dot9_t
 
 TEST octaspire_dern_vm_special_less_than_called_with_real_10dot1_and_integer_10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7998,7 +7998,7 @@ TEST octaspire_dern_vm_special_less_than_called_with_real_10dot1_and_integer_10_
 
 TEST octaspire_dern_vm_special_less_than_called_with_real_9dot9_and_integer_10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8037,7 +8037,7 @@ TEST octaspire_dern_vm_special_less_than_called_with_real_9dot9_and_integer_10_t
 
 TEST octaspire_dern_vm_special_less_than_or_equal_called_with_two_reals_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8083,7 +8083,7 @@ TEST octaspire_dern_vm_special_less_than_or_equal_called_with_two_reals_test(voi
 
 TEST octaspire_dern_vm_special_less_than_or_equal_called_with_two_integers_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8129,7 +8129,7 @@ TEST octaspire_dern_vm_special_less_than_or_equal_called_with_two_integers_test(
 
 TEST octaspire_dern_vm_special_less_than_or_equal_called_with_integer_9_and_real_9dot9_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8157,7 +8157,7 @@ TEST octaspire_dern_vm_special_less_than_or_equal_called_with_integer_9_and_real
 
 TEST octaspire_dern_vm_special_less_than_or_equal_called_with_integer_10_and_real_9dot9_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8185,7 +8185,7 @@ TEST octaspire_dern_vm_special_less_than_or_equal_called_with_integer_10_and_rea
 
 TEST octaspire_dern_vm_special_less_than_or_equal_called_with_real_10dot1_and_integer_10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8213,7 +8213,7 @@ TEST octaspire_dern_vm_special_less_than_or_equal_called_with_real_10dot1_and_in
 
 TEST octaspire_dern_vm_special_less_than_or_equal_called_with_real_9dot9_and_integer_10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8246,7 +8246,7 @@ TEST octaspire_dern_vm_special_less_than_or_equal_called_with_real_9dot9_and_int
 
 TEST octaspire_dern_vm_builtin_equals_equals_called_with_two_reals_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8283,7 +8283,7 @@ TEST octaspire_dern_vm_builtin_equals_equals_called_with_two_reals_test(void)
 
 TEST octaspire_dern_vm_builtin_equals_equals_called_with_two_integers_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8320,7 +8320,7 @@ TEST octaspire_dern_vm_builtin_equals_equals_called_with_two_integers_test(void)
 
 TEST octaspire_dern_vm_buildin_equals_equals_called_with_integer_9_and_reals_9dot1_and_9dot0_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8357,7 +8357,7 @@ TEST octaspire_dern_vm_buildin_equals_equals_called_with_integer_9_and_reals_9do
 
 TEST octaspire_dern_vm_builtin_equals_equals__called_with_integer_10_and_real_9dot9_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8385,7 +8385,7 @@ TEST octaspire_dern_vm_builtin_equals_equals__called_with_integer_10_and_real_9d
 
 TEST octaspire_dern_vm_builtin_equals_equals_called_with_real_10dot1_and_integer_10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8413,7 +8413,7 @@ TEST octaspire_dern_vm_builtin_equals_equals_called_with_real_10dot1_and_integer
 
 TEST octaspire_dern_vm_builtin_equals_equals_called_with_real_9dot9_and_integer_10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8447,7 +8447,7 @@ TEST octaspire_dern_vm_builtin_equals_equals_called_with_real_9dot9_and_integer_
 
 TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_two_reals_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8484,7 +8484,7 @@ TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_two_reals_test(voi
 
 TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_two_integers_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8521,7 +8521,7 @@ TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_two_integers_test(
 
 TEST octaspire_dern_vm_buildin_exclamation_equals_called_with_integer_9_and_reals_9dot1_and_9dot0_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8558,7 +8558,7 @@ TEST octaspire_dern_vm_buildin_exclamation_equals_called_with_integer_9_and_real
 
 TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_integer_10_and_real_9dot9_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8586,7 +8586,7 @@ TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_integer_10_and_rea
 
 TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_real_10dot1_and_integer_10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8614,7 +8614,7 @@ TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_real_10dot1_and_in
 
 TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_real_9dot9_and_integer_10_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8642,7 +8642,7 @@ TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_real_9dot9_and_int
 
 TEST octaspire_dern_vm_error_during_user_function_call_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8672,7 +8672,7 @@ TEST octaspire_dern_vm_error_during_user_function_call_test(void)
 
 TEST octaspire_dern_vm_error_during_builtin_call_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8693,7 +8693,7 @@ TEST octaspire_dern_vm_error_during_builtin_call_test(void)
 
 TEST octaspire_dern_vm_error_during_special_call_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8714,7 +8714,7 @@ TEST octaspire_dern_vm_error_during_special_call_test(void)
 
 TEST octaspire_dern_vm_error_during_special_call_during_user_function_call_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8746,7 +8746,7 @@ TEST octaspire_dern_vm_error_during_special_call_during_user_function_call_test(
 
 TEST octaspire_dern_vm_special_eval_plus_1_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8765,7 +8765,7 @@ TEST octaspire_dern_vm_special_eval_plus_1_2_test(void)
 
 TEST octaspire_dern_vm_special_eval_plus_1_2_in_given_global_env_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8784,7 +8784,7 @@ TEST octaspire_dern_vm_special_eval_plus_1_2_in_given_global_env_test(void)
 
 TEST octaspire_dern_vm_special_eval_value_from_given_local_env_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8821,7 +8821,7 @@ TEST octaspire_dern_vm_special_eval_value_from_given_local_env_test(void)
 
 TEST octaspire_dern_vm_special_eval_eval_eval_f_1_2_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8849,7 +8849,7 @@ TEST octaspire_dern_vm_special_eval_eval_eval_f_1_2_test(void)
 
 TEST octaspire_dern_vm_special_eval_failure_on_integer_on_second_argument_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8873,7 +8873,7 @@ TEST octaspire_dern_vm_special_eval_failure_on_integer_on_second_argument_test(v
 
 TEST octaspire_dern_vm_special_eval_failure_on_unbound_symbol_on_second_argument_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8896,7 +8896,7 @@ TEST octaspire_dern_vm_special_eval_failure_on_unbound_symbol_on_second_argument
 
 TEST octaspire_dern_vm_special_eval_called_with_three_arguments_failure_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8919,7 +8919,7 @@ TEST octaspire_dern_vm_special_eval_called_with_three_arguments_failure_test(voi
 
 TEST octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_values_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t * const originalVal = octaspire_dern_vm_create_new_value_vector(vm);
 
@@ -8974,7 +8974,7 @@ TEST octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_val
 
 TEST octaspire_dern_vm_multiline_comment_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8994,7 +8994,7 @@ TEST octaspire_dern_vm_multiline_comment_test(void)
 
 TEST octaspire_dern_vm_multiline_comment_missing_chars_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -9018,18 +9018,18 @@ TEST octaspire_dern_vm_multiline_comment_missing_chars_test(void)
 
 TEST octaspire_dern_vm_io_file_open_failure_because_file_system_access_is_denied_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])");
+            "(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "Builtin 'io-file-open' cannot be executed; file system access is denied by VM. "
         "Enable file system access in VM before trying to run this code.\n"
-        "\tAt form: >>>>>>>>>>(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -9043,12 +9043,12 @@ TEST octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowe
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9081,18 +9081,18 @@ TEST octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowe
 
 TEST octaspire_dern_vm_input_file_open_failure_because_file_system_access_is_denied_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])");
+            "(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "Builtin 'input-file-open' cannot be executed; file system access is denied by VM. "
         "Enable file system access in VM before trying to run this code.\n"
-        "\tAt form: >>>>>>>>>>(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -9106,12 +9106,12 @@ TEST octaspire_dern_vm_input_file_open_success_because_file_system_access_is_all
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9144,18 +9144,18 @@ TEST octaspire_dern_vm_input_file_open_success_because_file_system_access_is_all
 
 TEST octaspire_dern_vm_output_file_open_failure_because_file_system_access_is_denied_test(void)
 {
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])");
+            "(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "Builtin 'output-file-open' cannot be executed; file system access is denied by VM. "
         "Enable file system access in VM before trying to run this code.\n"
-        "\tAt form: >>>>>>>>>>(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -9169,12 +9169,12 @@ TEST octaspire_dern_vm_output_file_open_success_because_file_system_access_is_al
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9190,12 +9190,12 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_output_file
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9219,12 +9219,12 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_input_file_
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9248,12 +9248,12 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_io_file_tes
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9277,7 +9277,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_integer_fai
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -9310,7 +9310,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_without_argument
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -9335,12 +9335,12 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_input_file
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9364,12 +9364,12 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_output_fil
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9393,12 +9393,12 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_io_file_te
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9422,7 +9422,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_integer_fa
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -9455,7 +9455,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_without_argumen
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -9480,12 +9480,12 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9508,7 +9508,7 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "<input-output-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt (7 octets)>",
+        "<input-output-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt (7 octets)>",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
     // Close port
@@ -9529,7 +9529,7 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "<NOT-OPEN-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt (-1 octets)>",
+        "<NOT-OPEN-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt (-1 octets)>",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
     // Check that reading from closed file port fails
@@ -9566,12 +9566,12 @@ TEST octaspire_dern_vm_port_dist_called_with_a_file_test(void)
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9643,12 +9643,12 @@ TEST octaspire_dern_vm_port_seek_called_with_a_file_test(void)
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9747,7 +9747,7 @@ TEST octaspire_dern_vm_input_file_open_with_file_system_access_allowed_failure_o
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -9779,12 +9779,12 @@ TEST octaspire_dern_vm_port_write_failure_on_input_file_test(void)
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9853,12 +9853,12 @@ TEST octaspire_dern_vm_port_length_test(void)
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
     config.fileSystemAccessAllowed = true;
 
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(allocator, stdio, config);
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9896,15 +9896,15 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmSuiteNumTimesRun = 0;
 
-    allocator = octaspire_memory_allocator_new_create_region(
+    octaspireDernVmTestAllocator = octaspire_memory_allocator_new_create_region(
         OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
 
-    stdio     = octaspire_stdio_new(allocator);
+    octaspireDernVmTestStdio     = octaspire_stdio_new(octaspireDernVmTestAllocator);
 
 second_run:
 
-    assert(allocator);
-    assert(stdio);
+    assert(octaspireDernVmTestAllocator);
+    assert(octaspireDernVmTestStdio);
 
     RUN_TEST(octaspire_dern_vm_new_test);
     RUN_TEST(octaspire_dern_vm_create_new_value_boolean_test);
@@ -10245,11 +10245,11 @@ second_run:
     RUN_TEST(octaspire_dern_vm_port_write_failure_on_input_file_test);
     RUN_TEST(octaspire_dern_vm_port_length_test);
 
-    octaspire_stdio_release(stdio);
-    stdio = 0;
+    octaspire_stdio_release(octaspireDernVmTestStdio);
+    octaspireDernVmTestStdio = 0;
 
-    octaspire_memory_allocator_release(allocator);
-    allocator = 0;
+    octaspire_memory_allocator_release(octaspireDernVmTestAllocator);
+    octaspireDernVmTestAllocator = 0;
 
     ++octaspireDernVmSuiteNumTimesRun;
 
@@ -10257,8 +10257,8 @@ second_run:
     {
         // Second run without region allocator
 
-        allocator = octaspire_memory_allocator_new(0);
-        stdio     = octaspire_stdio_new(allocator);
+        octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
+        octaspireDernVmTestStdio     = octaspire_stdio_new(octaspireDernVmTestAllocator);
 
         goto second_run;
     }

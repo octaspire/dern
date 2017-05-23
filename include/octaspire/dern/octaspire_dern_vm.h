@@ -24,6 +24,7 @@ limitations under the License.
 #include <octaspire/core/octaspire_container_utf8_string.h>
 #include "octaspire/dern/octaspire_dern_environment.h"
 #include "octaspire/dern/octaspire_dern_value.h"
+#include "octaspire/dern/octaspire_dern_lib.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -149,6 +150,10 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
     octaspire_dern_value_t *value,
     octaspire_dern_value_t *environment);
 
+octaspire_dern_value_t *octaspire_dern_vm_read_from_octaspire_input_and_eval_in_global_environment(
+    octaspire_dern_vm_t *self,
+    octaspire_input_t * const input);
+
 octaspire_dern_value_t *octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
     octaspire_dern_vm_t *self,
     char const * const str);
@@ -246,6 +251,17 @@ void octaspire_dern_vm_set_gc_trigger_limit(
     size_t const numAllocs);
 
 bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self);
+
+bool octaspire_dern_vm_add_library(
+    octaspire_dern_vm_t *self,
+    char const * const name,
+    octaspire_dern_lib_t *library);
+
+bool octaspire_dern_vm_has_library(
+    octaspire_dern_vm_t const * const self,
+    char const * const name);
+
+octaspire_stdio_t *octaspire_dern_vm_get_stdio(octaspire_dern_vm_t * const self);
 
 #ifdef __cplusplus
 }

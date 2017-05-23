@@ -51,9 +51,10 @@ struct octaspire_dern_vm_t
     int32_t                       exitCode;
     bool                          quit;
     void                         *userData;
-    uintmax_t                     nextFreeUniqueIdForValues;
-    octaspire_dern_value_t       *functionReturn;
-    bool                          fileSystemAccessAllowed;
+    uintmax_t                       nextFreeUniqueIdForValues;
+    octaspire_dern_value_t         *functionReturn;
+    bool                            fileSystemAccessAllowed;
+    octaspire_container_hash_map_t *libraries;
 };
 
 octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(octaspire_dern_vm_t* self, octaspire_dern_value_tag_t const typeTag);
@@ -111,13 +112,20 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
     self->functionReturn = 0;
     self->fileSystemAccessAllowed = config.fileSystemAccessAllowed;
 
+    self->libraries = octaspire_container_hash_map_new_with_octaspire_container_utf8_string_keys(
+        sizeof(octaspire_dern_lib_t*),
+        true,
+        (octaspire_container_hash_map_element_callback_function_t)octaspire_dern_lib_release,
+        self->allocator);
+
+    octaspire_helpers_verify(self->libraries);
+
     self->stack = octaspire_container_vector_new_with_preallocated_elements(
         sizeof(octaspire_dern_value_t*),
         true,
         256,
         0,
         self->allocator);
-
 
     if (!self->stack)
     {
@@ -274,6 +282,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
 
 
     //////////////////////////////////////// Builtins ////////////////////////////////////////////
+
+    // require
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "require",
+        octaspire_dern_vm_builtin_require,
+        1,
+        "Ensure that plugin is loaded (if dern is compiled with plugin support)",
+        env))
+    {
+        abort();
+    }
 
     // input-file-open
     if (!octaspire_dern_vm_create_and_register_new_builtin(
@@ -1058,6 +1078,9 @@ void octaspire_dern_vm_release(octaspire_dern_vm_t *self)
 
     // At this point stack had nil and self->globalEnvironment was tried to remove
     //octaspire_dern_vm_pop_value(self, self->globalEnvironment);
+
+    octaspire_container_hash_map_release(self->libraries);
+    self->libraries = 0;
 
     octaspire_container_vector_clear(self->stack);
     octaspire_dern_vm_gc(self);
@@ -2581,6 +2604,47 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
     return result;
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_read_from_octaspire_input_and_eval_in_global_environment(
+    octaspire_dern_vm_t *self,
+    octaspire_input_t * const input)
+{
+    if (!input || !octaspire_input_is_good(input))
+    {
+        return octaspire_dern_vm_create_new_value_error_from_c_string(self, "No input");
+    }
+
+    octaspire_dern_value_t *lastGoodResult = 0;
+    octaspire_dern_value_t *result = 0;
+
+    while (octaspire_input_is_good(input))
+    {
+        result = octaspire_dern_vm_eval_in_global_environment(
+            self,
+            octaspire_dern_vm_parse(self, input));
+
+        if (!result)
+        {
+            break;
+        }
+
+        lastGoodResult = result;
+
+        if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+        {
+            break;
+        }
+    }
+
+    //octaspire_input_release(input);
+    //input = 0;
+
+    if (!result && lastGoodResult)
+    {
+        return lastGoodResult;
+    }
+
+    return result;
+}
 
 octaspire_dern_value_t *octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
     octaspire_dern_vm_t *self,
@@ -2613,37 +2677,7 @@ octaspire_dern_value_t *octaspire_dern_vm_read_from_buffer_and_eval_in_global_en
         return octaspire_dern_vm_create_new_value_error_from_c_string(self, "Allocation failure of input");
     }
 
-    octaspire_dern_value_t *lastGoodResult = 0;
-    octaspire_dern_value_t *result = 0;
-
-    while (octaspire_input_is_good(input))
-    {
-        result = octaspire_dern_vm_eval_in_global_environment(
-            self,
-            octaspire_dern_vm_parse(self, input));
-
-        if (!result)
-        {
-            break;
-        }
-
-        lastGoodResult = result;
-
-        if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
-        {
-            break;
-        }
-    }
-
-    octaspire_input_release(input);
-    input = 0;
-
-    if (!result && lastGoodResult)
-    {
-        return lastGoodResult;
-    }
-
-    return result;
+    return octaspire_dern_vm_read_from_octaspire_input_and_eval_in_global_environment(self, input);
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_read_from_path_and_eval_in_global_environment(
@@ -2730,6 +2764,9 @@ bool octaspire_dern_vm_create_and_register_new_builtin(
     char const * const docStr,
     octaspire_dern_environment_t * const targetEnv)
 {
+    octaspire_helpers_verify(self);
+    octaspire_helpers_verify(targetEnv);
+
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
 
     octaspire_dern_builtin_t * const builtin =
@@ -3290,5 +3327,51 @@ void octaspire_dern_vm_set_gc_trigger_limit(octaspire_dern_vm_t * const self, si
 bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self)
 {
     return self->fileSystemAccessAllowed;
+}
+
+bool octaspire_dern_vm_add_library(
+    octaspire_dern_vm_t *self,
+    char const * const name,
+    octaspire_dern_lib_t *library)
+{
+    if (octaspire_dern_vm_has_library(self, name))
+    {
+        return false;
+    }
+
+    octaspire_container_utf8_string_t *str =
+        octaspire_container_utf8_string_new(name, self->allocator);
+
+    return octaspire_container_hash_map_put(
+        self->libraries,
+        octaspire_container_utf8_string_get_hash(str),
+        &str,
+        &library);
+}
+
+bool octaspire_dern_vm_has_library(
+    octaspire_dern_vm_t const * const self,
+    char const * const name)
+{
+    octaspire_container_utf8_string_t *str = octaspire_container_utf8_string_new(
+        name,
+        self->allocator);
+
+    octaspire_helpers_verify(str);
+
+    bool const result = (octaspire_container_hash_map_get(
+            self->libraries,
+            octaspire_container_utf8_string_get_hash(str),
+            &str) != 0);
+
+    octaspire_container_utf8_string_release(str);
+    str = 0;
+
+    return result;
+}
+
+octaspire_stdio_t *octaspire_dern_vm_get_stdio(octaspire_dern_vm_t * const self)
+{
+    return self->stdio;
 }
 

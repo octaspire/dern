@@ -18,12 +18,27 @@ cmake_minimum_required(VERSION 2.8.12)
 project(octaspire-dern C)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 59)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 71)
 set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
 
 message("== Building ${PROJECT_NAME} ${OCTASPIRE_DERN_CONFIG_VERSION_MAJOR}.${OCTASPIRE_DERN_CONFIG_VERSION_MINOR}.${OCTASPIRE_DERN_CONFIG_VERSION_PATCH}")
 
+message("== Building ${PROJECT_NAME} in ${CMAKE_SYSTEM_NAME} system")
+
 set(OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/resource/")
+
+
+if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "Haiku" OR CMAKE_SYSTEM_NAME STREQUAL "NetBSD" OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    option(OCTASPIRE_DERN_BINARY_PLUGINS   "OCTASPIRE_DERN_BINARY_PLUGINS"   ON)
+else()
+    option(OCTASPIRE_DERN_BINARY_PLUGINS   "OCTASPIRE_DERN_BINARY_PLUGINS"   OFF)
+endif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "Haiku" OR CMAKE_SYSTEM_NAME STREQUAL "NetBSD" OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
+
+if(OCTASPIRE_DERN_BINARY_PLUGINS)
+    message("== Binary plugin system enabled for ${PROJECT_NAME}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-export-dynamic")
+    set(OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS 1)
+endif(OCTASPIRE_DERN_BINARY_PLUGINS)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/octaspire/dern/octaspire_dern_config.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/include/octaspire/dern/octaspire_dern_config.h")
@@ -68,8 +83,8 @@ set_property(TARGET octaspire-dern PROPERTY C_STANDARD 99)
 set_property(TARGET octaspire-dern PROPERTY C_EXTENSIONS OFF)
 
 if(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra -pedantic")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c99 -fno-omit-frame-pointer -Wall -Wextra -pedantic -Werror")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c99 -fno-omit-frame-pointer -Wall -Wextra -Werror")
 endif(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID MATCHES "GNU")
 
 if(CMAKE_C_COMPILER_ID MATCHES "Clang")
@@ -93,6 +108,17 @@ else()
 endif(OCTASPIRE_DERN_UNIT_TEST)
 
 target_link_libraries(octaspire-dern octaspire-core m)
+
+if(OCTASPIRE_DERN_BINARY_PLUGINS)
+    if(UNIX)
+        message("== Building binary plugins for ${PROJECT_NAME} in UNIX mode")
+        if(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Haiku" AND NOT CMAKE_SYSTEM_NAME STREQUAL "NetBSD")
+            message("== Building binary plugins for ${PROJECT_NAME} in NON FreeBSD, NON Haiku and NON NetBSD mode")
+            target_link_libraries(octaspire-dern dl)
+        endif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Haiku" AND NOT CMAKE_SYSTEM_NAME STREQUAL "NetBSD")
+    endif(UNIX)
+endif(OCTASPIRE_DERN_BINARY_PLUGINS)
+
 add_executable(octaspire-dern-repl "src/octaspire_dern_repl.c")
 target_link_libraries(octaspire-dern-repl octaspire-dern)
 set_property(TARGET octaspire-dern-repl PROPERTY C_STANDARD 99)
@@ -114,7 +140,7 @@ add_custom_target(
 
 add_custom_target(
     book-dern
-    COMMAND asciidoc -a source-highlighter=pygments -a max-width=55em --backend=html5 "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc")
+    COMMAND asciidoc -a source-highlighter=pygments -a max-width=70em --backend=html5 "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc")
     #COMMAND asciidoc -a source-highlighter=pygments --theme=flask --backend=html5 "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc")
 
 if(NOT TARGET octaspire-dern-test-runner AND OCTASPIRE_DERN_UNIT_TEST)
