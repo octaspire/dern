@@ -75,6 +75,10 @@ Language manual can be found from doc/book or from here:
 Video of Dern in action:
 [![asciicast](https://asciinema.org/a/112216.png)](https://asciinema.org/a/112216)
 
+Downloading and building amalgamated source distribution of Octaspire Dern in Raspberry Pi 2.
+Just one file. No build tools required. No dependencies, only C compiler is needed.
+[![asciicast](https://asciinema.org/a/121995.png)](https://asciinema.org/a/121995)
+
 For games (work in progress) being written with Dern and C99 see:
 [http://www.octaspire.com/maze](http://www.octaspire.com/maze) and 
 [http://www.octaspire.com/lightboard](http://www.octaspire.com/lightboard)
