@@ -2677,7 +2677,13 @@ octaspire_dern_value_t *octaspire_dern_vm_read_from_buffer_and_eval_in_global_en
         return octaspire_dern_vm_create_new_value_error_from_c_string(self, "Allocation failure of input");
     }
 
-    return octaspire_dern_vm_read_from_octaspire_input_and_eval_in_global_environment(self, input);
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_read_from_octaspire_input_and_eval_in_global_environment(self, input);
+
+    octaspire_input_release(input);
+    input = 0;
+
+    return result;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_read_from_path_and_eval_in_global_environment(
