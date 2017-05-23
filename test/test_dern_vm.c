@@ -1291,7 +1291,7 @@ TEST octaspire_dern_vm_builtin_read_and_eval_path_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(read-and-eval-path [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "test.dern])");
+            "(read-and-eval-path [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_read_and_eval_path_test.dern])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -9023,13 +9023,13 @@ TEST octaspire_dern_vm_io_file_open_failure_because_file_system_access_is_denied
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])");
+            "(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "Builtin 'io-file-open' cannot be executed; file system access is denied by VM. "
         "Enable file system access in VM before trying to run this code.\n"
-        "\tAt form: >>>>>>>>>>(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -9048,7 +9048,7 @@ TEST octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowe
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9086,13 +9086,13 @@ TEST octaspire_dern_vm_input_file_open_failure_because_file_system_access_is_den
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])");
+            "(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "Builtin 'input-file-open' cannot be executed; file system access is denied by VM. "
         "Enable file system access in VM before trying to run this code.\n"
-        "\tAt form: >>>>>>>>>>(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -9111,7 +9111,7 @@ TEST octaspire_dern_vm_input_file_open_success_because_file_system_access_is_all
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9149,13 +9149,13 @@ TEST octaspire_dern_vm_output_file_open_failure_because_file_system_access_is_de
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])");
+            "(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "Builtin 'output-file-open' cannot be executed; file system access is denied by VM. "
         "Enable file system access in VM before trying to run this code.\n"
-        "\tAt form: >>>>>>>>>>(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -9174,7 +9174,7 @@ TEST octaspire_dern_vm_output_file_open_success_because_file_system_access_is_al
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9195,7 +9195,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_output_file
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9224,7 +9224,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_input_file_
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9253,7 +9253,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_io_file_tes
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9340,7 +9340,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_input_file
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9369,7 +9369,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_output_fil
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9398,7 +9398,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_io_file_te
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9485,7 +9485,7 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9508,7 +9508,7 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "<input-output-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt (7 octets)>",
+        "<input-output-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt (7 octets)>",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
     // Close port
@@ -9529,7 +9529,7 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "<NOT-OPEN-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt (-1 octets)>",
+        "<NOT-OPEN-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt (-1 octets)>",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
     // Check that reading from closed file port fails
@@ -9571,7 +9571,7 @@ TEST octaspire_dern_vm_port_dist_called_with_a_file_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9648,7 +9648,7 @@ TEST octaspire_dern_vm_port_seek_called_with_a_file_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9784,7 +9784,7 @@ TEST octaspire_dern_vm_port_write_failure_on_input_file_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9858,7 +9858,7 @@ TEST octaspire_dern_vm_port_length_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);

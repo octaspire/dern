@@ -44,6 +44,9 @@ limitations under the License.
 #include <wchar.h>
 
 
+
+
+
 #ifdef OCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION
 #define OCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION 1
 #endif
@@ -77,17 +80,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************
 
-  This file is amalgamated version of the header files of Octaspire Core.
-  It is created automatically by a script.
+  This file is amalgamated version of the header files, implementation files
+  and unit tests of Octaspire Core. It is created automatically by a script.
 
                             DO NOT EDIT MANUALLY!
 
-  Edit the separate header files and then let the script create this file.
+  Edit the separate .h and .c files in the source distribution and then let
+  the script create this file again with the modifications.
 
 ******************************************************************************/
 #ifndef OCTASPIRE_CORE_AMALGAMATED_H
 #define OCTASPIRE_CORE_AMALGAMATED_H
 
+
+
+
+
+#define OCTASPIRE_CORE_CONFIG_TEST_RES_PATH ""
 
 
 #ifdef OCTASPIRE_CORE_AMALGAMATED_UNIT_TEST_IMPLEMENTATION
@@ -153,10 +162,12 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "29"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "30"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_TEST_RES_PATH "/home/pi/gitlab/core/test/resource/"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.30.0"
+
+
 
 //#define OCTASPIRE_CORE_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 10485800
 #define OCTASPIRE_CORE_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 104858000
@@ -16321,10 +16332,173 @@ second_run:
 
 
 
+
+void octaspire_core_amalgamated_write_test_file(
+    char const * const name,
+    char const * const buffer,
+    size_t const bufferSize)
+{
+    FILE *stream = fopen(name, "wb");
+
+    if (!stream)
+    {
+        abort();
+    }
+
+    if (!buffer || !bufferSize)
+    {
+        if (fwrite("", sizeof(char), 0, stream) != 0)
+        {
+            fclose(stream);
+            stream = 0;
+            abort();
+        }
+    }
+    else
+    {
+        if (fwrite(buffer, sizeof(char), bufferSize, stream) != bufferSize)
+        {
+            fclose(stream);
+            stream = 0;
+            abort();
+        }
+    }
+
+    if (fclose(stream) != 0)
+    {
+        abort();
+    }
+
+    printf("  Wrote file '%s'\n", name);
+}
+
 GREATEST_MAIN_DEFS();
 
 int main(int argc, char **argv)
 {
+    // This banner is created with figlet using font 'small'
+    unsigned char octaspire_core_amalgamated_version_banner[] = {
+      0x20, 0x20, 0x5f, 0x5f, 0x5f, 0x20, 0x20, 0x20, 0x20, 0x20, 0x5f, 0x20,
+      0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+      0x20, 0x20, 0x20, 0x5f, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+      0x20, 0x20, 0x20, 0x20, 0x5f, 0x5f, 0x5f, 0x20, 0x20, 0x20, 0x20, 0x20,
+      0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x0a, 0x20, 0x2f, 0x20,
+      0x5f, 0x20, 0x5c, 0x20, 0x5f, 0x5f, 0x7c, 0x20, 0x7c, 0x5f, 0x20, 0x5f,
+      0x5f, 0x20, 0x5f, 0x20, 0x5f, 0x5f, 0x5f, 0x5f, 0x20, 0x5f, 0x5f, 0x28,
+      0x5f, 0x29, 0x5f, 0x20, 0x5f, 0x20, 0x5f, 0x5f, 0x5f, 0x20, 0x20, 0x20,
+      0x2f, 0x20, 0x5f, 0x5f, 0x7c, 0x5f, 0x5f, 0x5f, 0x20, 0x5f, 0x20, 0x5f,
+      0x20, 0x5f, 0x5f, 0x5f, 0x20, 0x0a, 0x7c, 0x20, 0x28, 0x5f, 0x29, 0x20,
+      0x2f, 0x20, 0x5f, 0x7c, 0x20, 0x20, 0x5f, 0x2f, 0x20, 0x5f, 0x60, 0x20,
+      0x28, 0x5f, 0x2d, 0x3c, 0x20, 0x27, 0x5f, 0x20, 0x5c, 0x20, 0x7c, 0x20,
+      0x27, 0x5f, 0x2f, 0x20, 0x2d, 0x5f, 0x29, 0x20, 0x7c, 0x20, 0x28, 0x5f,
+      0x5f, 0x2f, 0x20, 0x5f, 0x20, 0x5c, 0x20, 0x27, 0x5f, 0x2f, 0x20, 0x2d,
+      0x5f, 0x29, 0x0a, 0x20, 0x5c, 0x5f, 0x5f, 0x5f, 0x2f, 0x5c, 0x5f, 0x5f,
+      0x7c, 0x5c, 0x5f, 0x5f, 0x5c, 0x5f, 0x5f, 0x2c, 0x5f, 0x2f, 0x5f, 0x5f,
+      0x2f, 0x20, 0x2e, 0x5f, 0x5f, 0x2f, 0x5f, 0x7c, 0x5f, 0x7c, 0x20, 0x5c,
+      0x5f, 0x5f, 0x5f, 0x7c, 0x20, 0x20, 0x5c, 0x5f, 0x5f, 0x5f, 0x5c, 0x5f,
+      0x5f, 0x5f, 0x2f, 0x5f, 0x7c, 0x20, 0x5c, 0x5f, 0x5f, 0x5f, 0x7c, 0x0a,
+      0x20, 0x20, 0x41, 0x6d, 0x61, 0x6c, 0x67, 0x61, 0x6d, 0x61, 0x74, 0x65,
+      0x64, 0x20, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x7c, 0x5f, 0x7c,
+      0x73, 0x74, 0x61, 0x6e, 0x64, 0x2d, 0x61, 0x6c, 0x6f, 0x6e, 0x65, 0x20,
+      0x75, 0x6e, 0x69, 0x74, 0x20, 0x74, 0x65, 0x73, 0x74, 0x20, 0x72, 0x75,
+      0x6e, 0x6e, 0x65, 0x72, 0x20, 0x20, 0x20, 0x20, 0x0a, 0x0a, '\0'
+    };
+
+    printf(
+        "%s  %s\n\n",
+        octaspire_core_amalgamated_version_banner,
+        OCTASPIRE_CORE_CONFIG_VERSION_STR);
+
+    printf(
+        "  This is stand-alone unit test runner for the amalgamated version of\n"
+        "  Octaspire Core. Some of the unit tests test reading of files from\n"
+        "  the filesystem. The full source distribution has these files in\n"
+        "  the 'test/resource' directory. But because this amalgamated\n"
+        "  distribution can have only one file, to be able to run all\n"
+        "  the tests succesfully something must be done. What do you\n"
+        "  want to do? Select 'a', 'b', 'c' or any other key:\n"
+        "\n"
+        "  a) Let this program to write those files to disk to the current working\n"
+        "     directory. All existing files with the same name will be OVERWRITTEN.\n"
+        "     The files to be written are of form 'octaspire_XYZ_test', where XYZ\n"
+        "     is the name of the test.\n"
+        "\n"
+        "  b) Let those tests to fail on missing files, or succeed if the files are\n"
+        "     already present in the current working directory.\n"
+        "\n"
+        "  c) Abort and quit this program.\n"
+        "\n"
+        "  > ");
+
+    int const c = getchar();
+
+    switch (c)
+    {
+        case 'a':
+        {
+            printf("Writing test files to current working directory...\n");
+
+            octaspire_core_amalgamated_write_test_file(
+                "octaspire_helpers_path_to_buffer_failure_on_empty_file_test", 0, 0);
+
+
+
+            char const octaspire_helpers_path_to_buffer_test[] = {
+                0xc2, 0xa9, 0xe2, 0x89, 0xa0, 0xf0, 0x90, 0x80, 0x80
+            };
+            size_t const octaspire_helpers_path_to_buffer_test_len = 9;
+
+            octaspire_core_amalgamated_write_test_file(
+                "octaspire_helpers_path_to_buffer_test",
+                octaspire_helpers_path_to_buffer_test,
+                octaspire_helpers_path_to_buffer_test_len);
+
+
+            char const octaspire_input_new_from_path_test[] = {
+              0x61, 0x62, 0x63, 0xc2, 0xa9, 0xe2, 0x89, 0xa0, 0xf0, 0x90, 0x80, 0x80
+            };
+            size_t const octaspire_input_new_from_path_test_len = 12;
+
+            octaspire_core_amalgamated_write_test_file(
+                "octaspire_input_new_from_path_test",
+                octaspire_input_new_from_path_test,
+                octaspire_input_new_from_path_test_len);
+
+
+
+            char const octaspire_stdio_fread_test[] = {
+              0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x71, 0x77,
+              0x65, 0x72, 0x74, 0x79, 0x75, 0x69, 0x6f, 0x70, 0x0a
+            };
+            size_t const octaspire_stdio_fread_test_len = 21;
+
+            octaspire_core_amalgamated_write_test_file(
+                "octaspire_stdio_fread_test",
+                octaspire_stdio_fread_test,
+                octaspire_stdio_fread_test_len);
+
+
+
+
+            printf("Done.\n");
+        }
+        break;
+
+        case 'b':
+        {
+            printf("Tests reading files will fail, if the required files are not available.\n");
+        }
+        break;
+
+        case 'c':
+        default:
+        {
+            printf("Going to quit now, as requested\n");
+            return EXIT_FAILURE;
+        }
+        break;
+    }
+
     GREATEST_MAIN_BEGIN();
     RUN_SUITE(octaspire_helpers_suite);
     RUN_SUITE(octaspire_utf8_suite);
@@ -16376,12 +16550,10 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.70.0"
 
-#define OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "/home/pi/gitlab/dern/test/resource/"
 
 //#define OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 10485800
 #define OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 104858000
 
-#define OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS "1"
 
 #endif
 
@@ -16390,6 +16562,9 @@ limitations under the License.
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
+
+#define OCTASPIRE_DERN_CONFIG_TEST_RES_PATH ""
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // START OF        ../include/octaspire/dern/octaspire_dern_lexer.h
@@ -38957,7 +39132,7 @@ TEST octaspire_dern_vm_builtin_read_and_eval_path_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(read-and-eval-path [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "test.dern])");
+            "(read-and-eval-path [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_read_and_eval_path_test.dern])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -46689,13 +46864,13 @@ TEST octaspire_dern_vm_io_file_open_failure_because_file_system_access_is_denied
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])");
+            "(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "Builtin 'io-file-open' cannot be executed; file system access is denied by VM. "
         "Enable file system access in VM before trying to run this code.\n"
-        "\tAt form: >>>>>>>>>>(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -46714,7 +46889,7 @@ TEST octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowe
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -46752,13 +46927,13 @@ TEST octaspire_dern_vm_input_file_open_failure_because_file_system_access_is_den
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])");
+            "(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "Builtin 'input-file-open' cannot be executed; file system access is denied by VM. "
         "Enable file system access in VM before trying to run this code.\n"
-        "\tAt form: >>>>>>>>>>(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -46777,7 +46952,7 @@ TEST octaspire_dern_vm_input_file_open_success_because_file_system_access_is_all
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -46815,13 +46990,13 @@ TEST octaspire_dern_vm_output_file_open_failure_because_file_system_access_is_de
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])");
+            "(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "Builtin 'output-file-open' cannot be executed; file system access is denied by VM. "
         "Enable file system access in VM before trying to run this code.\n"
-        "\tAt form: >>>>>>>>>>(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt])<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -46840,7 +47015,7 @@ TEST octaspire_dern_vm_output_file_open_success_because_file_system_access_is_al
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -46861,7 +47036,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_output_file
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -46890,7 +47065,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_input_file_
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -46919,7 +47094,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_io_file_tes
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -47006,7 +47181,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_input_file
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -47035,7 +47210,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_output_fil
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -47064,7 +47239,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_io_file_te
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -47151,7 +47326,7 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -47174,7 +47349,7 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "<input-output-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt (7 octets)>",
+        "<input-output-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt (7 octets)>",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
     // Close port
@@ -47195,7 +47370,7 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "<NOT-OPEN-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt (-1 octets)>",
+        "<NOT-OPEN-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt (-1 octets)>",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
     // Check that reading from closed file port fails
@@ -47237,7 +47412,7 @@ TEST octaspire_dern_vm_port_dist_called_with_a_file_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -47314,7 +47489,7 @@ TEST octaspire_dern_vm_port_seek_called_with_a_file_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -47450,7 +47625,7 @@ TEST octaspire_dern_vm_port_write_failure_on_input_file_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -47524,7 +47699,7 @@ TEST octaspire_dern_vm_port_length_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "io-file-open-test.txt]))");
+            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -47936,10 +48111,203 @@ second_run:
 
 
 
+
+
+void octaspire_dern_amalgamated_write_test_file(
+    char const * const name,
+    char const * const buffer,
+    size_t const bufferSize)
+{
+    FILE *stream = fopen(name, "wb");
+
+    if (!stream)
+    {
+        abort();
+    }
+
+    if (!buffer || !bufferSize)
+    {
+        if (fwrite("", sizeof(char), 0, stream) != 0)
+        {
+            fclose(stream);
+            stream = 0;
+            abort();
+        }
+    }
+    else
+    {
+        if (fwrite(buffer, sizeof(char), bufferSize, stream) != bufferSize)
+        {
+            fclose(stream);
+            stream = 0;
+            abort();
+        }
+    }
+
+    if (fclose(stream) != 0)
+    {
+        abort();
+    }
+
+    printf("  Wrote file '%s'\n", name);
+}
+
+
 GREATEST_MAIN_DEFS();
 
 int main(int argc, char **argv)
 {
+    // This banner is created with figlet using font 'small'
+    unsigned char octaspire_dern_amalgamated_version_banner[] = {
+      0x20, 0x20, 0x5f, 0x5f, 0x5f, 0x20, 0x20, 0x20, 0x20, 0x20, 0x5f, 0x20,
+      0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+      0x20, 0x20, 0x20, 0x5f, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+      0x20, 0x20, 0x20, 0x5f, 0x5f, 0x5f, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+      0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x0a, 0x20, 0x2f,
+      0x20, 0x5f, 0x20, 0x5c, 0x20, 0x5f, 0x5f, 0x7c, 0x20, 0x7c, 0x5f, 0x20,
+      0x5f, 0x5f, 0x20, 0x5f, 0x20, 0x5f, 0x5f, 0x5f, 0x5f, 0x20, 0x5f, 0x5f,
+      0x28, 0x5f, 0x29, 0x5f, 0x20, 0x5f, 0x20, 0x5f, 0x5f, 0x5f, 0x20, 0x20,
+      0x7c, 0x20, 0x20, 0x20, 0x5c, 0x20, 0x5f, 0x5f, 0x5f, 0x20, 0x5f, 0x20,
+      0x5f, 0x20, 0x5f, 0x20, 0x5f, 0x20, 0x20, 0x0a, 0x7c, 0x20, 0x28, 0x5f,
+      0x29, 0x20, 0x2f, 0x20, 0x5f, 0x7c, 0x20, 0x20, 0x5f, 0x2f, 0x20, 0x5f,
+      0x60, 0x20, 0x28, 0x5f, 0x2d, 0x3c, 0x20, 0x27, 0x5f, 0x20, 0x5c, 0x20,
+      0x7c, 0x20, 0x27, 0x5f, 0x2f, 0x20, 0x2d, 0x5f, 0x29, 0x20, 0x7c, 0x20,
+      0x7c, 0x29, 0x20, 0x2f, 0x20, 0x2d, 0x5f, 0x29, 0x20, 0x27, 0x5f, 0x7c,
+      0x20, 0x27, 0x20, 0x5c, 0x20, 0x0a, 0x20, 0x5c, 0x5f, 0x5f, 0x5f, 0x2f,
+      0x5c, 0x5f, 0x5f, 0x7c, 0x5c, 0x5f, 0x5f, 0x5c, 0x5f, 0x5f, 0x2c, 0x5f,
+      0x2f, 0x5f, 0x5f, 0x2f, 0x20, 0x2e, 0x5f, 0x5f, 0x2f, 0x5f, 0x7c, 0x5f,
+      0x7c, 0x20, 0x5c, 0x5f, 0x5f, 0x5f, 0x7c, 0x20, 0x7c, 0x5f, 0x5f, 0x5f,
+      0x2f, 0x5c, 0x5f, 0x5f, 0x5f, 0x7c, 0x5f, 0x7c, 0x20, 0x7c, 0x5f, 0x7c,
+      0x7c, 0x5f, 0x7c, 0x0a, 0x20, 0x20, 0x41, 0x6d, 0x61, 0x6c, 0x67, 0x61,
+      0x6d, 0x61, 0x74, 0x65, 0x64, 0x20, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f,
+      0x6e, 0x7c, 0x5f, 0x7c, 0x73, 0x74, 0x61, 0x6e, 0x64, 0x2d, 0x61, 0x6c,
+      0x6f, 0x6e, 0x65, 0x20, 0x75, 0x6e, 0x69, 0x74, 0x20, 0x74, 0x65, 0x73,
+      0x74, 0x20, 0x72, 0x75, 0x6e, 0x6e, 0x65, 0x72, 0x20, 0x20, 0x20, 0x20,
+      0x20, 0x0a, '\0'
+    };
+
+
+
+
+
+    printf(
+        "%s  %s\n\n",
+        octaspire_dern_amalgamated_version_banner,
+        OCTASPIRE_DERN_CONFIG_VERSION_STR);
+
+    printf(
+        "  This is stand-alone unit test runner for the amalgamated version of\n"
+        "  Octaspire Dern. Some of the unit tests test reading of files from\n"
+        "  the filesystem. The full source distribution has these files in\n"
+        "  the 'test/resource' directory. But because this amalgamated\n"
+        "  distribution can have only one file, to be able to run all\n"
+        "  the tests succesfully something must be done. What do you\n"
+        "  want to do? Select 'a', 'b', 'c' or any other key:\n"
+        "\n"
+        "  a) Let this program to write those files to disk to the current working\n"
+        "     directory. All existing files with the same name will be OVERWRITTEN.\n"
+        "     The files to be written are of form 'octaspire_XYZ_test.abc', where XYZ\n"
+        "     is the name of the test and abc is some suffix.\n"
+        "\n"
+        "  b) Let those tests to fail on missing files, or succeed if the files are\n"
+        "     already present in the current working directory.\n"
+        "\n"
+        "  c) Abort and quit this program.\n"
+        "\n"
+        "  > ");
+
+    int const c = getchar();
+
+    switch (c)
+    {
+        case 'a':
+        {
+            printf("Writing test files to current working directory...\n");
+
+
+
+            char const octaspire_dern_vm_run_user_factorial_function_test_dern[] = {
+              0x28, 0x64, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x20, 0x66, 0x61, 0x63, 0x74,
+              0x20, 0x5b, 0x66, 0x61, 0x63, 0x74, 0x5d, 0x20, 0x27, 0x28, 0x6e, 0x20,
+              0x5b, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x20, 0x74, 0x6f, 0x20, 0x63, 0x61,
+              0x6c, 0x63, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x20, 0x6e, 0x21, 0x5d, 0x29,
+              0x20, 0x28, 0x66, 0x6e, 0x20, 0x28, 0x6e, 0x29, 0x20, 0x28, 0x69, 0x66,
+              0x20, 0x28, 0x3d, 0x3d, 0x20, 0x6e, 0x20, 0x30, 0x29, 0x20, 0x31, 0x20,
+              0x28, 0x2a, 0x20, 0x6e, 0x20, 0x28, 0x66, 0x61, 0x63, 0x74, 0x20, 0x28,
+              0x2d, 0x20, 0x6e, 0x20, 0x31, 0x29, 0x29, 0x29, 0x29, 0x29, 0x29, 0x0a,
+              0x28, 0x64, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x20, 0x69, 0x20, 0x5b, 0x69,
+              0x5d, 0x20, 0x30, 0x29, 0x0a, 0x28, 0x77, 0x68, 0x69, 0x6c, 0x65, 0x20,
+              0x28, 0x3c, 0x3d, 0x20, 0x69, 0x20, 0x31, 0x30, 0x30, 0x29, 0x20, 0x28,
+              0x66, 0x61, 0x63, 0x74, 0x20, 0x31, 0x30, 0x29, 0x20, 0x28, 0x2b, 0x2b,
+              0x20, 0x69, 0x29, 0x29, 0x0a
+            };
+            size_t const octaspire_dern_vm_run_user_factorial_function_test_dern_len = 149;
+
+            octaspire_dern_amalgamated_write_test_file(
+                "octaspire_dern_vm_run_user_factorial_function_test.dern",
+                 octaspire_dern_vm_run_user_factorial_function_test_dern,
+                 octaspire_dern_vm_run_user_factorial_function_test_dern_len);
+
+
+
+
+
+            char const octaspire_read_and_eval_path_test_dern[] = {
+              0x28, 0x64, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x20, 0x79, 0x20, 0x5b, 0x79,
+              0x5d, 0x20, 0x31, 0x30, 0x30, 0x29, 0x0a, 0x79, 0x0a, 0x28, 0x64, 0x65,
+              0x66, 0x69, 0x6e, 0x65, 0x20, 0x78, 0x20, 0x5b, 0x78, 0x5d, 0x20, 0x32,
+              0x30, 0x30, 0x29, 0x0a, 0x78, 0x0a
+            };
+            size_t const octaspire_read_and_eval_path_test_dern_len = 42;
+
+            octaspire_dern_amalgamated_write_test_file(
+                "octaspire_read_and_eval_path_test.dern",
+                 octaspire_read_and_eval_path_test_dern,
+                 octaspire_read_and_eval_path_test_dern_len);
+
+
+
+
+
+            char const octaspire_io_file_open_test_txt[] = {
+              0x41, 0x42, 0x43, 0x41, 0x42, 0x43, 0x0a
+            };
+            size_t const octaspire_io_file_open_test_txt_len = 7;
+
+            octaspire_dern_amalgamated_write_test_file(
+                "octaspire_io_file_open_test.txt",
+                 octaspire_io_file_open_test_txt,
+                 octaspire_io_file_open_test_txt_len);
+
+
+            printf("Done.\n");
+        }
+        break;
+
+        case 'b':
+        {
+            printf("Tests reading files will fail, if the required files are not available.\n");
+        }
+        break;
+
+        case 'c':
+        default:
+        {
+            printf("Going to quit now, as requested\n");
+            return EXIT_FAILURE;
+        }
+        break;
+    }
+
+
+
+
+
+
+
+
+
+
     GREATEST_MAIN_BEGIN();
     RUN_SUITE(octaspire_dern_lexer_suite);
     RUN_SUITE(octaspire_dern_vm_suite);
