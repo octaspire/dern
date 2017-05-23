@@ -16545,10 +16545,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "70"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "72"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.70.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.72.0"
 
 
 //#define OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 10485800
@@ -32442,7 +32442,13 @@ octaspire_dern_value_t *octaspire_dern_vm_read_from_buffer_and_eval_in_global_en
         return octaspire_dern_vm_create_new_value_error_from_c_string(self, "Allocation failure of input");
     }
 
-    return octaspire_dern_vm_read_from_octaspire_input_and_eval_in_global_environment(self, input);
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_read_from_octaspire_input_and_eval_in_global_environment(self, input);
+
+    octaspire_input_release(input);
+    input = 0;
+
+    return result;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_read_from_path_and_eval_in_global_environment(
