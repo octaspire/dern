@@ -1,9 +1,30 @@
+# Octaspire Dern
+
+[http://www.octaspire.com/dern](http://www.octaspire.com/dern)
+
 [![Build Status](https://travis-ci.org/octaspire/dern.svg?branch=master)](https://travis-ci.org/octaspire/dern) [![Coverage Status](https://codecov.io/gh/octaspire/dern/coverage.svg?branch=master)](https://codecov.io/gh/octaspire/dern) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
 Programming language written in standard C99
 
-To build Dern from source in Raspberry Pi, Debian or Ubuntu (16.04 LTS) system:
+## To build Dern from source in Raspberry Pi, Debian or Ubuntu (16.04 LTS) system:
+
+### From the amalgamated source distribution
+
+```shell
+wget https://github.com/octaspire/dern/releases/download/v0.73.0/octaspire_dern_amalgamated.c
+
+gcc -O3 -std=c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION \
+                               -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                \
+                               -DGREATEST_ENABLE_ANSI_COLORS                         \
+octaspire_dern_amalgamated.c -Wl,-export-dynamic -ldl -lm -o octaspire-dern-test-runner
+
+gcc -O3 -std=c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION \
+                               -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS           \
+octaspire_dern_amalgamated.c -Wl,-export-dynamic -ldl -lm -o octaspire-dern-repl
+```
+
+### From the regular source distribution:
 
 ```shell
 sudo apt-get install cmake git
@@ -13,7 +34,7 @@ cmake ..
 make
 ```
 
-To build on Arch Linux (Arch Linux ARM) system:
+## To build on Arch Linux (Arch Linux ARM) system:
 
 ```shell
 sudo pacman -S cmake git gcc make
@@ -23,7 +44,7 @@ cmake ..
 make
 ```
 
-To build on Haiku (Version Walter (Revision hrev51127) x86_gcc2):
+## To build on Haiku (Version Walter (Revision hrev51127) x86_gcc2):
 
 ```shell
 pkgman install gcc_x86 cmake_x86
@@ -33,7 +54,7 @@ CC=gcc-x86 cmake ..
 make
 ```
 
-To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:
+## To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:
 
 ```shell
 sudo pkg install git cmake
@@ -43,7 +64,7 @@ cmake ..
 make
 ```
 
-To build on MINIX 3 (minix_R3.3.0-588a35b) system:
+## To build on MINIX 3 (minix_R3.3.0-588a35b) system:
 
 ```shell
 su root
@@ -56,6 +77,8 @@ cd build
 cmake ..
 make
 ```
+
+## To use Dern
 
 To run the unit tests:
 
