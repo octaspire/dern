@@ -2261,20 +2261,22 @@ bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
     }
     else if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP)
     {
-        for (size_t i = 0; i < octaspire_container_hash_map_get_number_of_elements(self->value.hashMap); ++i)
+        octaspire_container_hash_map_element_iterator_t iter =
+            octaspire_container_hash_map_element_iterator_init(self->value.hashMap);
+
+        while (iter.element)
         {
-            octaspire_container_hash_map_element_t *element =
-                octaspire_container_hash_map_get_at_index(self->value.hashMap, i);
-
-            if (!octaspire_dern_value_mark(octaspire_container_hash_map_element_get_key(element)))
+            if (!octaspire_dern_value_mark(octaspire_container_hash_map_element_get_key(iter.element)))
             {
                 return false;
             }
 
-            if (!octaspire_dern_value_mark(octaspire_container_hash_map_element_get_value(element)))
+            if (!octaspire_dern_value_mark(octaspire_container_hash_map_element_get_value(iter.element)))
             {
                 return false;
             }
+
+            octaspire_container_hash_map_element_iterator_next(&iter);
         }
     }
     else if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_FUNCTION)
