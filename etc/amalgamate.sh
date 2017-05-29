@@ -40,7 +40,10 @@ EnDoFmEsSaGe
 
 # Write system includes
 cat >> $FILE << EnDoFmEsSaGe
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #include <dlfcn.h>
+#endif
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>

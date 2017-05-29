@@ -26,7 +26,10 @@ limitations under the License.
 #ifndef OCTASPIRE_DERN_AMALGAMATED_H
 #define OCTASPIRE_DERN_AMALGAMATED_H
 
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #include <dlfcn.h>
+#endif
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -16724,9 +16727,9 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "81"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.81.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.81.1"
 
 
 //#define OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 10485800
