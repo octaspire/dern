@@ -16723,10 +16723,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "80"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "81"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.80.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.81.0"
 
 
 //#define OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 10485800
@@ -17124,7 +17124,6 @@ struct octaspire_dern_environment_t;
 struct octaspire_dern_value_t
 {
     bool                         mark;
-    size_t                       containerLengthAtTimeOfMarking;
     octaspire_dern_value_tag_t   typeTag;
     octaspire_dern_value_t      *docstr;
     octaspire_dern_value_t      *docvec;
@@ -29726,44 +29725,7 @@ size_t octaspire_dern_value_get_length(
 
 bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
 {
-    if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR)
-    {
-        if (self->mark)
-        {
-            if (self->containerLengthAtTimeOfMarking ==
-                octaspire_container_vector_get_length(self->value.vector))
-            {
-                return true;
-            }
-        }
-        else
-        {
-            //octaspire_dern_value_print(self, octaspire_dern_vm_get_allocator(self->vm));
-            self->mark = true;
-
-            self->containerLengthAtTimeOfMarking = octaspire_container_vector_get_length(self->value.vector);
-        }
-    }
-    else if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP)
-    {
-        if (self->mark)
-        {
-            // TODO XXX should containerLengthAtTimeOfMarking be just removed?
-            if (self->containerLengthAtTimeOfMarking ==
-                octaspire_container_hash_map_get_number_of_elements(self->value.hashMap))
-            {
-                return true;
-            }
-        }
-        else
-        {
-            self->mark = true;
-
-            self->containerLengthAtTimeOfMarking =
-                octaspire_container_hash_map_get_number_of_elements(self->value.hashMap);
-        }
-    }
-    else if (self->mark)
+    if (self->mark)
     {
         return true;
     }
@@ -29782,7 +29744,7 @@ bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
     {
         for (size_t i = 0; i < octaspire_container_vector_get_length(self->value.vector); ++i)
         {
-            octaspire_dern_value_t *tmpVal =
+            octaspire_dern_value_t * const tmpVal =
                 octaspire_container_vector_get_element_at(self->value.vector, i);
 
             octaspire_helpers_verify(tmpVal);
@@ -29827,8 +29789,8 @@ bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
             status = false;
         }
 
-        //if (!octaspire_dern_value_mark(self->value.function->definitionEnvironment))
-        if (!octaspire_dern_environment_mark(self->value.function->definitionEnvironment->value.environment))
+        if (!octaspire_dern_environment_mark(
+            self->value.function->definitionEnvironment->value.environment))
         {
             status = false;
         }
@@ -31105,7 +31067,6 @@ octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(octasp
 
     result->typeTag                        = typeTag;
     result->mark                           = false;
-    result->containerLengthAtTimeOfMarking = 0;
     result->docstr                         = 0;
     result->vm                             = self;
     result->uniqueId                       = self->nextFreeUniqueIdForValues;

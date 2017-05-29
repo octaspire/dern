@@ -126,7 +126,6 @@ struct octaspire_dern_environment_t;
 struct octaspire_dern_value_t
 {
     bool                         mark;
-    size_t                       containerLengthAtTimeOfMarking;
     octaspire_dern_value_tag_t   typeTag;
     octaspire_dern_value_t      *docstr;
     octaspire_dern_value_t      *docvec;

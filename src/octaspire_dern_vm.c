@@ -1158,7 +1158,6 @@ octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(octasp
 
     result->typeTag                        = typeTag;
     result->mark                           = false;
-    result->containerLengthAtTimeOfMarking = 0;
     result->docstr                         = 0;
     result->vm                             = self;
     result->uniqueId                       = self->nextFreeUniqueIdForValues;
