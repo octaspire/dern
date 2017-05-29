@@ -456,19 +456,21 @@ bool octaspire_dern_environment_mark(octaspire_dern_environment_t *self)
     bool statusKey = true;
     bool statusVal = true;
 
-    for (size_t i = 0; i < octaspire_container_hash_map_get_number_of_elements(self->bindings); ++i)
+    octaspire_container_hash_map_element_iterator_t iter =
+        octaspire_container_hash_map_element_iterator_init(self->bindings);
+
+    while (iter.element)
     {
-        octaspire_container_hash_map_element_t *element = octaspire_container_hash_map_get_at_index(
-            self->bindings,
-            i);
+        octaspire_dern_value_t * const key =
+            octaspire_container_hash_map_element_get_key(iter.element);
 
-        assert(element);
-
-        octaspire_dern_value_t *key = octaspire_container_hash_map_element_get_key(element);
-        octaspire_dern_value_t *val = octaspire_container_hash_map_element_get_value(element);
+        octaspire_dern_value_t * const val =
+            octaspire_container_hash_map_element_get_value(iter.element);
 
         statusKey = octaspire_dern_value_mark(key);
         statusVal = octaspire_dern_value_mark(val);
+
+        octaspire_container_hash_map_element_iterator_next(&iter);
     }
 
     if (self->enclosing && self->enclosing->value.environment != self)
