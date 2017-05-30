@@ -16726,10 +16726,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "81"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "82"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.81.1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.82.0"
 
 
 //#define OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 10485800
@@ -29792,8 +29792,7 @@ bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
             status = false;
         }
 
-        if (!octaspire_dern_environment_mark(
-            self->value.function->definitionEnvironment->value.environment))
+        if (!octaspire_dern_value_mark(self->value.function->definitionEnvironment))
         {
             status = false;
         }

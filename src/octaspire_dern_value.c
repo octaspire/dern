@@ -2256,8 +2256,7 @@ bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
             status = false;
         }
 
-        if (!octaspire_dern_environment_mark(
-            self->value.function->definitionEnvironment->value.environment))
+        if (!octaspire_dern_value_mark(self->value.function->definitionEnvironment))
         {
             status = false;
         }
