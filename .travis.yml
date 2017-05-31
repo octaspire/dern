@@ -25,6 +25,12 @@ script:
     - gcov test_dern_lexer.c.gcno
     - cd ../../../../test/REPL
     - ./octaspire-dern-repl.exp
+    - cd ../../etc/
+    - gcc -O3 -std=c99 -Wall -Wextra -Werror -DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS octaspire_dern_amalgamated.c -Wl,-export-dynamic -ldl -lm -o octaspire-dern-repl
+    - echo "(println [Hello])" > hello.dern
+    - ./octaspire-dern-repl hello.dern
+    - clang -O3 -std=c99 -Wall -Wextra -Werror -DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS octaspire_dern_amalgamated.c -Wl,-export-dynamic -ldl -lm -o octaspire-dern-repl
+    - ./octaspire-dern-repl hello.dern
 
 after_success:
       - bash <(curl -s https://codecov.io/bash)
