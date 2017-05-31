@@ -1065,6 +1065,89 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // integer?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "integer?",
+        octaspire_dern_vm_builtin_integer_question_mark,
+        1,
+        "Predicate telling whether the argument is an integer",
+        env))
+    {
+        abort();
+    }
+
+    // real?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "real?",
+        octaspire_dern_vm_builtin_real_question_mark,
+        1,
+        "Predicate telling whether the argument is a real",
+        env))
+    {
+        abort();
+    }
+
+    // number?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "number?",
+        octaspire_dern_vm_builtin_number_question_mark,
+        1,
+        "Predicate telling whether the argument is a number (integer or real)",
+        env))
+    {
+        abort();
+    }
+
+    // nil?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "nil?",
+        octaspire_dern_vm_builtin_nil_question_mark,
+        1,
+        "Predicate telling whether the argument is nil",
+        env))
+    {
+        abort();
+    }
+
+    // boolean?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "boolean?",
+        octaspire_dern_vm_builtin_boolean_question_mark,
+        1,
+        "Predicate telling whether the argument is a boolean",
+        env))
+    {
+        abort();
+    }
+
+    // character?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "character?",
+        octaspire_dern_vm_builtin_character_question_mark,
+        1,
+        "Predicate telling whether the argument is a character",
+        env))
+    {
+        abort();
+    }
+
+    // string?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "string?",
+        octaspire_dern_vm_builtin_string_question_mark,
+        1,
+        "Predicate telling whether the argument is a string",
+        env))
+    {
+        abort();
+    }
 
     return self;
 }

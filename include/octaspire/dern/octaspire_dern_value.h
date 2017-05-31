@@ -193,7 +193,25 @@ octaspire_container_utf8_string_t *octaspire_dern_value_to_string_plain(
     octaspire_dern_value_t const * const self,
     octaspire_memory_allocator_t * const allocator);
 
+bool octaspire_dern_value_is_integer(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_real(
+    octaspire_dern_value_t const * const self);
+
 bool octaspire_dern_value_is_number(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_nil(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_boolean(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_character(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_string(
     octaspire_dern_value_t const * const self);
 
 void octaspire_dern_value_print(

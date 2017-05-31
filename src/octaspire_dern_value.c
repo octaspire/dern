@@ -1303,11 +1303,47 @@ octaspire_memory_allocator_t * const allocator)
     return octaspire_dern_private_value_to_string(self, true, allocator);
 }
 
+bool octaspire_dern_value_is_integer(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_INTEGER;
+}
+
+bool octaspire_dern_value_is_real(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_REAL;
+}
+
 bool octaspire_dern_value_is_number(
     octaspire_dern_value_t const * const self)
 {
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_INTEGER ||
            self->typeTag == OCTASPIRE_DERN_VALUE_TAG_REAL;
+}
+
+bool octaspire_dern_value_is_nil(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_NIL;
+}
+
+bool octaspire_dern_value_is_boolean(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_BOOLEAN;
+}
+
+bool octaspire_dern_value_is_character(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_CHARACTER;
+}
+
+bool octaspire_dern_value_is_string(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING;
 }
 
 void octaspire_dern_value_print(

@@ -16726,10 +16726,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "83"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "84"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.83.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.84.0"
 
 
 //#define OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 10485800
@@ -17194,7 +17194,25 @@ octaspire_container_utf8_string_t *octaspire_dern_value_to_string_plain(
     octaspire_dern_value_t const * const self,
     octaspire_memory_allocator_t * const allocator);
 
+bool octaspire_dern_value_is_integer(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_real(
+    octaspire_dern_value_t const * const self);
+
 bool octaspire_dern_value_is_number(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_nil(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_boolean(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_character(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_string(
     octaspire_dern_value_t const * const self);
 
 void octaspire_dern_value_print(
@@ -18113,6 +18131,41 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_uid(
     octaspire_dern_value_t *environment);
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_require(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_integer_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_real_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_number_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_nil_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_boolean_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_character_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_string_question_mark(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
@@ -27535,6 +27588,201 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_require(
         octaspire_dern_value_as_symbol_get_c_string(nameVal));
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_integer_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'integer?' expects one argument.");
+    }
+
+    octaspire_dern_value_t const * const value =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, octaspire_dern_value_is_integer(value));
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_real_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'real?' expects one argument.");
+    }
+
+    octaspire_dern_value_t const * const value =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, octaspire_dern_value_is_real(value));
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_number_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'number?' expects one argument.");
+    }
+
+    octaspire_dern_value_t const * const value =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, octaspire_dern_value_is_number(value));
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_nil_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'nil?' expects one argument.");
+    }
+
+    octaspire_dern_value_t const * const value =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, octaspire_dern_value_is_nil(value));
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_boolean_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'boolean?' expects one argument.");
+    }
+
+    octaspire_dern_value_t const * const value =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, octaspire_dern_value_is_boolean(value));
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_character_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'character?' expects one argument.");
+    }
+
+    octaspire_dern_value_t const * const value =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, octaspire_dern_value_is_character(value));
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_string_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'string?' expects one argument.");
+    }
+
+    octaspire_dern_value_t const * const value =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, octaspire_dern_value_is_string(value));
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../src/octaspire_dern_stdlib.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28839,11 +29087,47 @@ octaspire_memory_allocator_t * const allocator)
     return octaspire_dern_private_value_to_string(self, true, allocator);
 }
 
+bool octaspire_dern_value_is_integer(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_INTEGER;
+}
+
+bool octaspire_dern_value_is_real(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_REAL;
+}
+
 bool octaspire_dern_value_is_number(
     octaspire_dern_value_t const * const self)
 {
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_INTEGER ||
            self->typeTag == OCTASPIRE_DERN_VALUE_TAG_REAL;
+}
+
+bool octaspire_dern_value_is_nil(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_NIL;
+}
+
+bool octaspire_dern_value_is_boolean(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_BOOLEAN;
+}
+
+bool octaspire_dern_value_is_character(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_CHARACTER;
+}
+
+bool octaspire_dern_value_is_string(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING;
 }
 
 void octaspire_dern_value_print(
@@ -30976,6 +31260,89 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // integer?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "integer?",
+        octaspire_dern_vm_builtin_integer_question_mark,
+        1,
+        "Predicate telling whether the argument is an integer",
+        env))
+    {
+        abort();
+    }
+
+    // real?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "real?",
+        octaspire_dern_vm_builtin_real_question_mark,
+        1,
+        "Predicate telling whether the argument is a real",
+        env))
+    {
+        abort();
+    }
+
+    // number?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "number?",
+        octaspire_dern_vm_builtin_number_question_mark,
+        1,
+        "Predicate telling whether the argument is a number (integer or real)",
+        env))
+    {
+        abort();
+    }
+
+    // nil?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "nil?",
+        octaspire_dern_vm_builtin_nil_question_mark,
+        1,
+        "Predicate telling whether the argument is nil",
+        env))
+    {
+        abort();
+    }
+
+    // boolean?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "boolean?",
+        octaspire_dern_vm_builtin_boolean_question_mark,
+        1,
+        "Predicate telling whether the argument is a boolean",
+        env))
+    {
+        abort();
+    }
+
+    // character?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "character?",
+        octaspire_dern_vm_builtin_character_question_mark,
+        1,
+        "Predicate telling whether the argument is a character",
+        env))
+    {
+        abort();
+    }
+
+    // string?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "string?",
+        octaspire_dern_vm_builtin_string_question_mark,
+        1,
+        "Predicate telling whether the argument is a string",
+        env))
+    {
+        abort();
+    }
 
     return self;
 }
@@ -47882,6 +48249,685 @@ TEST octaspire_dern_vm_port_length_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_integer_question_mark_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(integer? 0)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(integer? 10)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(integer? -1)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(integer? -1.0)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(integer? 0.0)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(integer? 10.0)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(integer? |0|)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(integer? [0])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(integer? '())");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(integer?)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'integer?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(integer?)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(integer? 1 2)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'integer?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(integer? 1 2)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_real_question_mark_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(real? 0.0)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(real? 10.0)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(real? -1.1)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(real? -1)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(real? 0)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(real? 10)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(real? |0|)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(real? [0.0])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(real? '())");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(real?)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'real?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(real?)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(real? 1.1 1.2)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'real?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(real? 1.1 1.2)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_number_question_mark_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(number? 0)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(number? 0.0)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(number? -1.1)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(number? -1)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(number? 2048)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(number? -100)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(number? |0|)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(number? [0.0])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(number? '())");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(number?)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'number?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(number?)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(number? 1.1 1.2)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'number?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(number? 1.1 1.2)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_nil_question_mark_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(nil? nil)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(nil? 0)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                            evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(nil? [nil])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                            evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(nil? -1)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(nil? 2048)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(nil? |a|)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                            evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(define myNil [myNil] nil)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(nil? myNil)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(nil? '())");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(nil?)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'nil?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(nil?)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(nil? 1.1 1.2)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'nil?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(nil? 1.1 1.2)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_boolean_question_mark_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(boolean? true)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(boolean? false)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                            evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(boolean? [true])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                            evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(boolean? -1)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(boolean? 2048)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(boolean? |a|)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                            evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(define myBool [myBool] true)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(boolean? myBool)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(boolean? '())");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(boolean?)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'boolean?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(boolean?)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(boolean? true true)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'boolean?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(boolean? true true)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_character_question_mark_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(character? |a|)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(character? |0|)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                            evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(character? [true])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                            evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(character? |newline|)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(character? 2048)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(character? 0)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                            evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(define myChar [myChar] |a|)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(character? myChar)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(character? '())");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(character?)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'character?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(character?)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(character? |a| |b|)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'character?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(character? |a| |b|)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_string_question_mark_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(string? [])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(string? [0])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(string? |a|)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                            evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(string? |newline|)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                            evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(string? 2048)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(string? 0)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                            evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(define myStr [myStr] [abc])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(string? myStr)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(string? '())");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(string?)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'string?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(string?)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(string? [a] [b])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'string?' expects one argument.\n"
+        "\tAt form: >>>>>>>>>>(string? [a] [b])<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 static size_t octaspireDernVmSuiteNumTimesRun = 0;
 
 GREATEST_SUITE(octaspire_dern_vm_suite)
@@ -48236,6 +49282,14 @@ second_run:
     RUN_TEST(octaspire_dern_vm_input_file_open_with_file_system_access_allowed_failure_on_missing_file_test);
     RUN_TEST(octaspire_dern_vm_port_write_failure_on_input_file_test);
     RUN_TEST(octaspire_dern_vm_port_length_test);
+
+    RUN_TEST(octaspire_dern_vm_integer_question_mark_test);
+    RUN_TEST(octaspire_dern_vm_real_question_mark_test);
+    RUN_TEST(octaspire_dern_vm_number_question_mark_test);
+    RUN_TEST(octaspire_dern_vm_nil_question_mark_test);
+    RUN_TEST(octaspire_dern_vm_boolean_question_mark_test);
+    RUN_TEST(octaspire_dern_vm_character_question_mark_test);
+    RUN_TEST(octaspire_dern_vm_string_question_mark_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;
