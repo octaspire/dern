@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.84.0
+Documentation for Octaspire Dern programming language version 0.85.0
 
 == About
 
@@ -19,10 +19,10 @@ languages scheme and emacs lisp. The name of the language means
 an *obscure language*. footnote:[https://en.wiktionary.org/wiki/dern]
 
 Dern should support imperative and functional programming. It has atomic types
-*integer*, *real*, (utf-8) *string*, (utf-8) *character*, *boolean*, *nil*,
-(input/output) *port* and *hash-map*.
-As non-atomic type it has *vector*. So, where in scheme `'(1 2 3)` is a list, in Dern it
-is a vector.
+*integer*, *real*, (utf-8) *string*, (utf-8) *character*, (utf-8) *symbol*, *boolean*,
+*nil*, (input/output) *port*, *hash-map*, *environment*, first class *function*, *special* and
+*builtin*. As non-atomic type it has *vector*. So, where in scheme `'(1 2 3)` is a list, in Dern
+it is a vector.
 
 Every variable and function definition in Dern must be documented by a *documentation string*.
 Dern also makes sure that every formal function parameter is documented in the
@@ -32,8 +32,22 @@ Dern can also be extended with functions written in C; C-functions can be regist
 as *builtins* or *specials*. Arguments to builtins are evaluated normally, but to specials
 are not, so specials can be used to implement special forms like *if*, etc.
 
-Dern is written in standard *C99* and depends only on C99 compiler, standard library
-and *octaspire-core* (container, utf-8, and utility library).
+Dern has also library system, that allows one to load libraries using builtin `require`.
+On Unix-like systems Dern also supports loading of binary libraries (.so files). For the
+end user, it doesn't matter whether the library she loaded was binary or written in Dern;
+it can be used exactly the same way.
+
+Dern is dynamically typed language and has *mark and sweep* garbage collector. Functions
+in dern are first class values. Dern is written in standard *C99* and depends only on C99 compiler,
+standard library and *octaspire-core* (container, utf-8, and utility library). Dern should
+compile cleanly without any warnings using `-Wall -Wextra` on any compiler supporting C99.
+Currently it is tested with *gcc*, *clang* and *tcc*.
+
+By using the amalgamated version of Dern, you need only one file. This same single source file
+can be compiled into (1) stand-alone unit test runner, (2) interactive Dern-REPL and (3) used
+as single header file library in programs that want to embed the Dern-language. The amalgamated
+source file *octaspire_dern_amalgamated.c* can be found from the *etc*-directory of the source
+distribution.
 
 [NOTE]
 This is the first language I have ever designed or implemented. There

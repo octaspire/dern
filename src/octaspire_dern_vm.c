@@ -1149,6 +1149,42 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // symbol?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "symbol?",
+        octaspire_dern_vm_builtin_symbol_question_mark,
+        1,
+        "Predicate telling whether the argument is a symbol",
+        env))
+    {
+        abort();
+    }
+
+    // vector?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "vector?",
+        octaspire_dern_vm_builtin_vector_question_mark,
+        1,
+        "Predicate telling whether the argument is a vector",
+        env))
+    {
+        abort();
+    }
+
+    // hash-map?
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "hash-map?",
+        octaspire_dern_vm_builtin_hash_map_question_mark,
+        1,
+        "Predicate telling whether the argument is a hash map",
+        env))
+    {
+        abort();
+    }
+
     return self;
 }
 

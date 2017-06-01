@@ -214,6 +214,15 @@ bool octaspire_dern_value_is_character(
 bool octaspire_dern_value_is_string(
     octaspire_dern_value_t const * const self);
 
+bool octaspire_dern_value_is_symbol(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_vector(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_hash_map(
+    octaspire_dern_value_t const * const self);
+
 void octaspire_dern_value_print(
     octaspire_dern_value_t const * const self,
     octaspire_memory_allocator_t *allocator);

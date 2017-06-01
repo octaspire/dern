@@ -1346,6 +1346,24 @@ bool octaspire_dern_value_is_string(
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING;
 }
 
+bool octaspire_dern_value_is_symbol(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL;
+}
+
+bool octaspire_dern_value_is_vector(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR;
+}
+
+bool octaspire_dern_value_is_hash_map(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP;
+}
+
 void octaspire_dern_value_print(
     octaspire_dern_value_t const * const self,
     octaspire_memory_allocator_t *allocator)
