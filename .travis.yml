@@ -13,7 +13,6 @@ before_install:
 before_script:
     - cd build
     - DERN_TRAVIS_BUILD_DIR=$(pwd)
-    - echo "DERN_TRAVIS_BUILD_DIR: $DERN_TRAVIS_BUILD_DIR"
     - ulimit -c unlimited -S
     - cmake -DCMAKE_BUILD_TYPE=Debug -DOCTASPIRE_DERN_COVERAGE:BOOL=ON ..
 
@@ -41,7 +40,6 @@ after_success:
 # 'after_failure'-hook in modified form from:
 # jsteemann.github.io/blog/2014/10/30/getting-core-dumps-of-failed-travisci-builds/
 after_failure:
-    - echo "Changing into DERN_TRAVIS_BUILD_DIR: $DERN_TRAVIS_BUILD_DIR"
     - cd "$DERN_TRAVIS_BUILD_DIR"
     - COREFILE=$(find . -maxdepth 1 -name "core*" | head -n 1)
     - if [[ -f "$COREFILE" ]]; then gdb -c "$COREFILE" test/octaspire-dern-test-runner -ex "thread apply all bt" -ex "set pagination 0" -batch; fi
