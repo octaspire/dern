@@ -1,2 +1,0 @@
-* disable region allocator (octaspire-dern-repl --no-region-allocator) when looking
-  for invalid reads/writes etc. with valgrind.
