@@ -10860,18 +10860,10 @@ TEST octaspire_dern_vm_hash_map_question_mark_test(void)
     PASS();
 }
 
-static size_t octaspireDernVmSuiteNumTimesRun = 0;
-
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
-    octaspireDernVmSuiteNumTimesRun = 0;
-
-    octaspireDernVmTestAllocator = octaspire_memory_allocator_new_create_region(
-        OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
-
+    octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
     octaspireDernVmTestStdio     = octaspire_stdio_new(octaspireDernVmTestAllocator);
-
-second_run:
 
     assert(octaspireDernVmTestAllocator);
     assert(octaspireDernVmTestStdio);
@@ -11231,16 +11223,5 @@ second_run:
 
     octaspire_memory_allocator_release(octaspireDernVmTestAllocator);
     octaspireDernVmTestAllocator = 0;
-
-    ++octaspireDernVmSuiteNumTimesRun;
-
-    if (octaspireDernVmSuiteNumTimesRun < 2)
-    {
-        // Second run without region allocator
-
-        octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
-        octaspireDernVmTestStdio     = octaspire_stdio_new(octaspireDernVmTestAllocator);
-
-        goto second_run;
-    }
 }
+

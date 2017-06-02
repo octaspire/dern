@@ -18,7 +18,6 @@ limitations under the License.
 #include <assert.h>
 #include <string.h>
 #include <octaspire/core/octaspire_input.h>
-#include <octaspire/core/octaspire_region.h>
 #include <octaspire/dern/octaspire_dern_config.h>
 #include "external/octaspire_dern_banner_color.h"
 #include "external/octaspire_dern_banner_white.h"
@@ -135,7 +134,6 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
     printf("\nwhere [option] is one of the values listed below and every\n");
     printf("[file] is loaded and evaluated before the REPL is started or closed.\n");
     printf("If any of -e string or [file] is used, REPL is not started unless -i is used.\n\n");
-    printf("-n        --no-region-allocator           : use regular malloc/free instead of region allocator\n");
     printf("-c        --color-diagnostics             : use colors on unix like systems\n");
     printf("-i        --interactive                   : start REPL after any -e string or [file]s are evaluated\n");
     printf("-e string --evaluate string               : evaluate a string without entering the REPL (unless -i is given)\n");
@@ -178,7 +176,6 @@ static void octaspire_dern_repl_private_cleanup(void)
 int main(int argc, char *argv[])
 {
     bool useColors               = false;
-    bool useRegionAllocator      = true;
     int  userFilesStartIdx       = -1;
     bool enterReplAlways         = false;
     bool evaluate                = false;
@@ -247,10 +244,6 @@ int main(int argc, char *argv[])
 
                 octaspire_container_vector_push_back_element(stringsToBeEvaluated, &tmp);
             }
-            else if (strcmp(argv[i], "-n") == 0 || strcmp(argv[i], "--no-region-allocator") == 0)
-            {
-                useRegionAllocator = false;
-            }
             else if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--color-diagnostics") == 0)
             {
                 useColors = true;
@@ -296,29 +289,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    allocator = 0;
-
-    if (useRegionAllocator)
-    {
-        octaspire_region_t *region = octaspire_region_new(
-            OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
-
-        if (!region)
-        {
-            octaspire_dern_repl_print_message_c_str(
-                "Allocation failure\n",
-                OCTASPIRE_DERN_REPL_MESSAGE_FATAL,
-                useColors);
-
-            exit(EXIT_FAILURE);
-        }
-
-        allocator = octaspire_memory_allocator_new(region);
-    }
-    else
-    {
-        allocator = octaspire_memory_allocator_new(0);
-    }
+    allocator = octaspire_memory_allocator_new(0);
 
     if (!allocator)
     {

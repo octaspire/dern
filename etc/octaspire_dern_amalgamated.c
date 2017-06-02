@@ -165,15 +165,12 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "34"
-#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "3"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "36"
+#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.34.3"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.36.0"
 
 
-
-//#define OCTASPIRE_CORE_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 10485800
-#define OCTASPIRE_CORE_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 104858000
 
 #endif
 
@@ -291,11 +288,27 @@ limitations under the License.
 extern "C" {
 #endif
 
-struct octaspire_region_t;
+typedef void *(*octaspire_memory_allocator_custom_malloc_function_t)(size_t size);
+typedef void  (*octaspire_memory_allocator_custom_free_function_t)(void *ptr);
+typedef void *(*octaspire_memory_allocator_custom_realloc_function_t)(void *ptr, size_t size);
+
+typedef struct octaspire_memory_allocator_config_t
+{
+    octaspire_memory_allocator_custom_malloc_function_t  customMallocFunction;
+    octaspire_memory_allocator_custom_free_function_t    customFreeFunction;
+    octaspire_memory_allocator_custom_realloc_function_t customReallocFunction;
+}
+octaspire_memory_allocator_config_t;
+
+octaspire_memory_allocator_config_t octaspire_memory_allocator_config_default(void);
+
+
+
+
 typedef struct octaspire_memory_allocator_t octaspire_memory_allocator_t;
 
-octaspire_memory_allocator_t *octaspire_memory_allocator_new_create_region(size_t const minBlockSizeInOctets);
-octaspire_memory_allocator_t *octaspire_memory_allocator_new(struct octaspire_region_t *region);
+octaspire_memory_allocator_t *octaspire_memory_allocator_new(
+    octaspire_memory_allocator_config_t const * config);
 
 void octaspire_memory_allocator_release(octaspire_memory_allocator_t *self);
 
@@ -351,67 +364,6 @@ size_t octaspire_memory_allocator_get_number_of_future_allocations_to_be_rigged(
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../include/octaspire/core/octaspire_memory.h
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-// START OF        ../include/octaspire/core/octaspire_region.h
-//////////////////////////////////////////////////////////////////////////////////////////////////
-/******************************************************************************
-Octaspire Core - Containers and other utility libraries in standard C99
-Copyright 2017 www.octaspire.com
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-******************************************************************************/
-#ifndef OCTASPIRE_REGION_H
-#define OCTASPIRE_REGION_H
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct octaspire_region_t octaspire_region_t;
-
-octaspire_region_t *octaspire_region_new(size_t const minBlockSizeInOctets);
-
-void octaspire_region_release(octaspire_region_t *self);
-
-void *octaspire_region_malloc(
-    octaspire_region_t *self,
-    size_t const size);
-
-void *octaspire_region_realloc(
-    octaspire_region_t *self,
-    void *ptr, size_t const size);
-
-void octaspire_region_free(
-    octaspire_region_t *self,
-    void *ptr);
-
-void octaspire_region_compact(octaspire_region_t *self);
-
-void octaspire_region_print(octaspire_region_t const * const self);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-// END OF          ../include/octaspire/core/octaspire_region.h
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1583,647 +1535,6 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-// START OF        ../src/octaspire_region.c
-//////////////////////////////////////////////////////////////////////////////////////////////////
-/******************************************************************************
-Octaspire Core - Containers and other utility libraries in standard C99
-Copyright 2017 www.octaspire.com
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-******************************************************************************/
-
-typedef struct octaspire_region_block_t
-{
-    char                            *buffer;
-    size_t                           bufferLengthInOctets;
-    size_t                           firstFreeIndex;
-    size_t                           sizeOfHeader;
-    struct octaspire_region_block_t *next;
-}
-octaspire_region_block_t;
-
-// Prototypes for private functions /////////////////////////////////////////
-static size_t octaspire_region_block_private_get_number_of_octets_available(
-    octaspire_region_block_t const * const self);
-
-static bool octaspire_region_block_private_is_valid_index(
-    octaspire_region_block_t const * const self,
-    size_t const index);
-
-static octaspire_region_block_t *octaspire_region_block_new(size_t const minBlockSizeInOctets);
-
-static bool octaspire_region_block_is_full_of_freed(octaspire_region_block_t const * const self);
-
-static ptrdiff_t octaspire_region_block_private_calculate_alignment_padding_for_size(
-    octaspire_region_block_t const * const self,
-    size_t const startIndex,
-    size_t const size);
-
-static void *octaspire_region_block_malloc(octaspire_region_block_t *self, size_t const size);
-
-static void octaspire_region_private_add_new_head(octaspire_region_t *self, size_t const minSize);
-
-static void octaspire_region_block_measure_wasted(
-    octaspire_region_block_t const * const self,
-    double *wastedOnPadding,
-    double *wastedOnFreed);
-
-static void *octaspire_region_block_realloc(octaspire_region_block_t *self, void *ptr, size_t const size);
-/////////////////////////////////////////////////////////////////////////////
-
-static bool octaspire_region_block_is_pointer_inside(
-    octaspire_region_block_t const * const self,
-    void *ptr)
-{
-    if ((char*)ptr < self->buffer)
-    {
-        return false;
-    }
-
-    if ((char*)ptr > self->buffer + self->bufferLengthInOctets)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-/*
-static void octaspire_region_block_private_assert_header_values(
-    octaspire_region_block_t *self,
-    size_t const index,
-    size_t const expectedInUse,
-    size_t const expectedUserDataLen,
-    size_t const expectedPaddingBefore,
-    size_t const expectedPaddingAfter)
-{
-    octaspire_helpers_verify(index >= 4);
-    char const * const ptr = self->buffer + index;
-
-    size_t const * const headerInUse         = (size_t const * const)(ptr - (sizeof(size_t) * 4));
-    size_t const * const headerUserDataLen   = (size_t const * const)(ptr - (sizeof(size_t) * 3));
-    size_t const * const headerPaddingBefore = (size_t const * const)(ptr - (sizeof(size_t) * 2));
-    size_t const * const headerPaddingAfter  = (size_t const * const)(ptr - (sizeof(size_t) * 1));
-
-    octaspire_helpers_verify(expectedInUse         == *headerInUse);
-    octaspire_helpers_verify(expectedUserDataLen   == *headerUserDataLen);
-    octaspire_helpers_verify(expectedPaddingBefore == *headerPaddingBefore);
-    octaspire_helpers_verify(expectedPaddingAfter  == *headerPaddingAfter);
-}
-*/
-
-static void octaspire_region_block_private_get_header_values(
-    octaspire_region_block_t const * const self,
-    size_t const index,
-    size_t *inUse,
-    size_t *userDataLen,
-    size_t *paddingBefore,
-    size_t *paddingAfter)
-{
-    //assert(index >= 4);
-    char const * const ptr = self->buffer + index;
-    size_t const sizeOfSizet = sizeof(size_t);
-
-    memcpy(inUse,         (ptr - (sizeOfSizet * 4)), sizeof(size_t));
-    memcpy(userDataLen,   (ptr - (sizeOfSizet * 3)), sizeof(size_t));
-    memcpy(paddingBefore, (ptr - (sizeOfSizet * 2)), sizeof(size_t));
-    memcpy(paddingAfter,  (ptr -  sizeOfSizet     ), sizeof(size_t));
-}
-
-size_t octaspire_region_block_private_get_number_of_octets_available(
-    octaspire_region_block_t const * const self)
-{
-    return self->bufferLengthInOctets - self->firstFreeIndex;
-}
-
-bool octaspire_region_block_private_is_valid_index(
-    octaspire_region_block_t const * const self,
-    size_t const index)
-{
-    return index < self->bufferLengthInOctets;
-}
-
-void octaspire_region_block_release(octaspire_region_block_t *self);
-
-octaspire_region_block_t *octaspire_region_block_new(size_t const minBlockSizeInOctets)
-{
-    octaspire_region_block_t *self = calloc(1, sizeof(octaspire_region_block_t));
-
-    if (!self)
-    {
-        return 0;
-    }
-
-    self->next = 0;
-    self->buffer = calloc(1, minBlockSizeInOctets);
-
-    if (!self->buffer)
-    {
-        octaspire_region_block_release(self);
-        return 0;
-    }
-
-    self->bufferLengthInOctets = minBlockSizeInOctets;
-    self->firstFreeIndex = 0;
-    self->sizeOfHeader   = sizeof(size_t) * 4;
-    self->next           = 0;
-
-    return self;
-}
-
-bool octaspire_region_block_is_full_of_freed(octaspire_region_block_t const * const self)
-{
-    size_t inUse         = 0;
-    size_t userDataLen   = 0;
-    size_t paddingBefore = 0;
-    size_t paddingAfter  = 0;
-
-    size_t index = self->sizeOfHeader;
-
-    while (index < self->firstFreeIndex && octaspire_region_block_private_is_valid_index(self, index))
-    {
-        octaspire_region_block_private_get_header_values(
-            self,
-            index,
-            &inUse,
-            &userDataLen,
-            &paddingBefore,
-            &paddingAfter);
-
-        if (inUse)
-        {
-            return false;
-        }
-
-        size_t const delta = (paddingBefore + userDataLen + paddingAfter + self->sizeOfHeader);
-
-        assert(delta);
-
-        index += delta;
-    }
-
-    // TODO XXX make this value configurable
-    if (octaspire_region_block_private_get_number_of_octets_available(self) < 128)
-    {
-        return true;
-    }
-
-    return false;
-}
-
-void octaspire_region_block_release(octaspire_region_block_t *self)
-{
-    if (!self)
-    {
-        return;
-    }
-
-    free(self->buffer);
-    free(self);
-}
-
-ptrdiff_t octaspire_region_block_private_calculate_alignment_padding_for_size(
-    octaspire_region_block_t const * const self,
-    size_t const startIndex,
-    size_t const size)
-{
-    size_t result = 0;
-
-    while (true)
-    {
-        char const * const buf = self->buffer + startIndex + result;
-
-        //if ((size_t)buf % size == 0 && (size_t)buf % 16 == 0)
-        //if ((size_t)buf % 16 == 0)
-        //if ((size_t)buf % 4 == 0 && (size_t)buf % 8 == 0 && (size_t)buf % 16 == 0)
-
-        //if ((size_t)buf % 16 == 0)
-        if ((size_t)buf % 8 == 0)
-        {
-            return (ptrdiff_t)result;
-        }
-
-        ++result;
-
-        assert(result <= 409600); // TODO XXX what value to use here, or should no limit be used?
-
-        if (!octaspire_region_block_private_is_valid_index(self, startIndex + result + size))
-        {
-            return -1;
-        }
-    }
-}
-
-void *octaspire_region_block_malloc(octaspire_region_block_t *self, size_t const size)
-{
-    ptrdiff_t const paddingBefore = octaspire_region_block_private_calculate_alignment_padding_for_size(
-        self,
-        self->firstFreeIndex + self->sizeOfHeader,
-        size);
-
-    if (paddingBefore < 0)
-    {
-        return 0;
-    }
-
-    ptrdiff_t const paddingAfter  = octaspire_region_block_private_calculate_alignment_padding_for_size(
-        self,
-        self->firstFreeIndex + self->sizeOfHeader + size,
-        self->sizeOfHeader);
-
-    if (paddingAfter < 0)
-    {
-        return 0;
-    }
-
-    if (octaspire_region_block_private_get_number_of_octets_available(self) < ((size_t)paddingBefore + size + (size_t)paddingAfter))
-    {
-        return 0;
-    }
-
-    char *buf = self->buffer + self->firstFreeIndex;
-
-    size_t header[] = {
-        1,             // inUse = yes
-        size,          // userDataLen
-        (size_t)paddingBefore, // amountOfPaddingInTheBeginning
-        (size_t)paddingAfter   // amountOfPaddingInTheEnd
-    };
-
-    for (size_t i = 0; i < (sizeof(header) / sizeof(header[0])); ++i)
-    {
-        void *dest = buf + (i * sizeof(header[i]));
-
-        if (dest != memcpy(
-            dest,
-            &(header[i]),
-            sizeof(header[i])))
-        {
-            return 0;
-        }
-    }
-
-    void *result = buf + self->sizeOfHeader;
-    if (result != memset(result, 0, (size_t)paddingBefore + size + (size_t)paddingAfter))
-    {
-        return 0;
-    }
-
-    /*
-    octaspire_region_block_private_assert_header_values(
-        self,
-        self->firstFreeIndex + self->sizeOfHeader,
-        header[0],
-        header[1],
-        header[2],
-        header[3]);
-    */
-
-    self->firstFreeIndex += (self->sizeOfHeader + (size_t)paddingBefore + size + (size_t)paddingAfter);
-
-    return result;
-}
-
-void octaspire_region_block_free(octaspire_region_block_t *self, void *ptr);
-
-void *octaspire_region_block_realloc(octaspire_region_block_t *self, void *ptr, size_t const size)
-{
-    //size_t const * const headerUserDataLen = (size_t*)((char*)ptr - (sizeof(size_t) * 3));
-    size_t headerUserDataLen = 0;
-    memcpy(&headerUserDataLen, ((char*)ptr - (sizeof(size_t) * 3)), sizeof(size_t));
-
-    octaspire_region_block_free(self, ptr);
-
-    // TODO if slot is made smaller, the reserved area could just be shrunk.
-    void *newSlot = octaspire_region_block_malloc(self, size);
-
-    if (!newSlot)
-    {
-        return 0;
-    }
-
-    size_t const octetsToCopy = octaspire_helpers_min_size_t(headerUserDataLen, size);
-
-    if (newSlot != memcpy(newSlot, ptr, octetsToCopy))
-    {
-        abort();
-    }
-
-    return newSlot;
-}
-
-void octaspire_region_block_free(octaspire_region_block_t *self, void *ptr)
-{
-    OCTASPIRE_HELPERS_UNUSED_PARAMETER(self);
-
-    //size_t       * const headerInUse          = (size_t*)((char*)ptr - (sizeof(size_t) * 4));
-    //size_t const * const headerUserDataLen    = (size_t*)((char*)ptr - (sizeof(size_t) * 3));
-    size_t headerInUse = 0;
-    size_t headerUserDataLen = 0;
-
-    memcpy(&headerInUse, ((char*)ptr - (sizeof(size_t) * 4)), sizeof(size_t));
-    memcpy(&headerUserDataLen, ((char*)ptr - (sizeof(size_t) * 3)), sizeof(size_t));
-
-    // Sanity checks
-    octaspire_helpers_verify(headerInUse == 1);
-    octaspire_helpers_verify(headerUserDataLen > 0);
-
-    // Mark as free
-    headerInUse = 0;
-    memcpy(((char*)ptr - (sizeof(size_t) * 4)), &headerInUse, sizeof(size_t));
-}
-
-void octaspire_region_block_measure_wasted(
-    octaspire_region_block_t const * const self,
-    double *wastedOnPadding,
-    double *wastedOnFreed)
-{
-    //size_t usedOctets    = 0;
-    size_t paddingOctets = 0;
-    size_t freedOctets   = 0;
-
-    size_t inUse         = 0;
-    size_t userDataLen   = 0;
-    size_t paddingBefore = 0;
-    size_t paddingAfter  = 0;
-
-    size_t index = self->sizeOfHeader;
-
-    while (index < self->firstFreeIndex && octaspire_region_block_private_is_valid_index(self, index))
-    {
-        octaspire_region_block_private_get_header_values(
-            self,
-            index,
-            &inUse,
-            &userDataLen,
-            &paddingBefore,
-            &paddingAfter);
-
-        if (inUse)
-        {
-            //usedOctets    += userDataLen;
-            paddingOctets += (paddingBefore + paddingAfter);
-        }
-        else
-        {
-            freedOctets += userDataLen;
-            freedOctets += (paddingBefore + paddingAfter);
-        }
-
-        size_t const delta = (paddingBefore + userDataLen + paddingAfter + self->sizeOfHeader);
-
-        assert(delta);
-
-        index += delta;
-    }
-
-    *wastedOnFreed   = ((double)freedOctets   / (double)self->firstFreeIndex) * 100.0;
-    *wastedOnPadding = ((double)paddingOctets / (double)self->firstFreeIndex) * 100.0;
-}
-
-static void octaspire_region_block_print(octaspire_region_block_t const * const self)
-{
-    double const used   = ((double)self->firstFreeIndex / (double)self->bufferLengthInOctets) * 100.0;
-
-    double wastedOnPadding = 0;
-    double wastedOnFreed   = 0;
-
-    octaspire_region_block_measure_wasted(self, &wastedOnPadding, &wastedOnFreed);
-
-    printf(
-        "block %p (used %g%% wasted on padding of used %g%% wasted on freed (payload + padding) %g%%)\n",
-        (void const * const)self,
-        used,
-        wastedOnPadding,
-        wastedOnFreed);
-
-    if (self->next)
-    {
-        octaspire_region_block_print(self->next);
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-struct octaspire_region_t
-{
-    size_t                    minBlockSizeInOctets;
-    octaspire_region_block_t *head;
-    size_t                    numFreesDone;
-};
-
-octaspire_region_t *octaspire_region_new(size_t const minBlockSizeInOctets)
-{
-    octaspire_region_t *self = calloc(1, sizeof(octaspire_region_t));
-
-    if (!self)
-    {
-        return 0;
-    }
-
-    self->head                 = 0;
-    self->minBlockSizeInOctets = minBlockSizeInOctets;
-    self->head                 = octaspire_region_block_new(self->minBlockSizeInOctets);
-    self->numFreesDone         = 0;
-
-    if (!self->head)
-    {
-        octaspire_region_release(self);
-        self = 0;
-        return 0;
-    }
-
-    return self;
-}
-
-void octaspire_region_release(octaspire_region_t *self)
-{
-    if (!self)
-    {
-        return;
-    }
-
-    while (self->head)
-    {
-        octaspire_region_block_t *next = self->head->next;
-        self->head->next = 0;
-        octaspire_region_block_release(self->head);
-        self->head = next;
-    }
-
-    free(self);
-}
-
-void octaspire_region_private_add_new_head(octaspire_region_t *self, size_t const minSize)
-{
-    octaspire_region_block_t *block = octaspire_region_block_new(
-        octaspire_helpers_max_size_t(
-            minSize,
-            self->minBlockSizeInOctets));
-
-    assert(block);
-
-    block->next = self->head;
-    self->head = block;
-}
-
-void *octaspire_region_malloc(octaspire_region_t *self, size_t const size)
-{
-    if (!self->head)
-    {
-        self->head = octaspire_region_block_new(self->minBlockSizeInOctets);
-    }
-
-    void *result = octaspire_region_block_malloc(self->head, size);
-
-    if (!result)
-    {
-        octaspire_region_private_add_new_head(self, size);
-        return octaspire_region_block_malloc(self->head, size);
-    }
-
-    return result;
-}
-
-void *octaspire_region_realloc(octaspire_region_t *self, void *ptr, size_t const size)
-{
-    if (!self->head)
-    {
-        self->head = octaspire_region_block_new(self->minBlockSizeInOctets);
-    }
-
-    void *result = octaspire_region_block_realloc(self->head, ptr, size);
-
-    if (!result)
-    {
-        octaspire_region_private_add_new_head(self, size);
-        return octaspire_region_block_realloc(self->head, ptr, size);
-    }
-
-    return result;
-}
-
-void octaspire_region_compact(octaspire_region_t *self)
-{
-    octaspire_region_block_t *block = self->head;
-    octaspire_region_block_t *prev = 0;
-
-    while (block)
-    {
-        octaspire_region_block_t *next = block->next;
-
-        if (octaspire_region_block_is_full_of_freed(block))
-        {
-            if (prev)
-            {
-                prev->next = block->next;
-            }
-
-            block->next = 0;
-            octaspire_region_block_release(block);
-
-            if (block == self->head)
-            {
-                self->head = next;
-            }
-        }
-        else
-        {
-            prev = block;
-        }
-
-        block = next;
-    }
-}
-
-void octaspire_region_free(octaspire_region_t *self, void *ptr)
-{
-    if (!ptr)
-    {
-        // TODO is this ok solution? free does nothing on NULL.
-        return;
-    }
-
-    if (!self->head)
-    {
-        self->head = octaspire_region_block_new(self->minBlockSizeInOctets);
-    }
-
-    octaspire_region_block_t *block = self->head;
-
-    while (block)
-    {
-        if (octaspire_region_block_is_pointer_inside(block, ptr))
-        {
-            octaspire_region_block_free(block, ptr);
-            ++(self->numFreesDone);
-
-            // TODO XXX make this value configurable
-            // And check the need to do this at all again.
-            if (self->numFreesDone > 2048)
-            {
-                octaspire_region_compact(self);
-                self->numFreesDone = 0;
-            }
-
-            return;
-        }
-
-        block = block->next;
-    }
-
-    assert(false);
-}
-
-void octaspire_region_print(octaspire_region_t const * const self)
-{
-    printf("region contains the following blocks\n"
-           "------------------------------------\n");
-    if (self->head)
-    {
-        octaspire_region_block_print(self->head);
-    }
-
-    printf("\n");
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-// END OF          ../src/octaspire_region.c
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
 // START OF        ../src/octaspire_memory.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
 /******************************************************************************
@@ -2246,26 +1557,36 @@ limitations under the License.
 
 struct octaspire_memory_allocator_t
 {
-    size_t               numberOfFutureAllocationsToBeRigged;
-    size_t               bitIndex;
-    uint32_t             bitQueue[20];
-    octaspire_region_t  *region;
+    size_t                                               numberOfFutureAllocationsToBeRigged;
+    size_t                                               bitIndex;
+    uint32_t                                             bitQueue[20];
+    octaspire_memory_allocator_custom_malloc_function_t  customMallocFunction;
+    octaspire_memory_allocator_custom_free_function_t    customFreeFunction;
+    octaspire_memory_allocator_custom_realloc_function_t customReallocFunction;
 };
 
-octaspire_memory_allocator_t *octaspire_memory_allocator_new_create_region(size_t const minBlockSizeInOctets)
+octaspire_memory_allocator_config_t octaspire_memory_allocator_config_default(void)
 {
-    octaspire_region_t *region = octaspire_region_new(minBlockSizeInOctets);
-
-    if (!region)
+    octaspire_memory_allocator_config_t result =
     {
-        return 0;
-    }
+        .customMallocFunction  = 0,
+        .customFreeFunction    = 0,
+        .customReallocFunction = 0
+    };
 
-    return octaspire_memory_allocator_new(region);
+    return result;
 }
 
-octaspire_memory_allocator_t *octaspire_memory_allocator_new(struct octaspire_region_t *region)
+octaspire_memory_allocator_t *octaspire_memory_allocator_new(
+    octaspire_memory_allocator_config_t const * config)
 {
+    octaspire_memory_allocator_config_t defaultConfig = octaspire_memory_allocator_config_default();
+
+    if (!config)
+    {
+        config = &defaultConfig;
+    }
+
     size_t const size = sizeof(octaspire_memory_allocator_t);
 
     octaspire_memory_allocator_t *self = malloc(size);
@@ -2285,7 +1606,9 @@ octaspire_memory_allocator_t *octaspire_memory_allocator_new(struct octaspire_re
         abort();
     }
 
-    self->region = region;
+    self->customMallocFunction  = config->customMallocFunction;
+    self->customFreeFunction    = config->customFreeFunction;
+    self->customReallocFunction = config->customReallocFunction;
 
     return self;
 }
@@ -2295,12 +1618,6 @@ void octaspire_memory_allocator_release(octaspire_memory_allocator_t *self)
     if (!self)
     {
         return;
-    }
-
-    if (self->region)
-    {
-        octaspire_region_release(self->region);
-        self->region = 0;
     }
 
     free(self);
@@ -2336,15 +1653,15 @@ void *octaspire_memory_allocator_malloc(
 
     assert(size);
 
-    void *result = self->region ? octaspire_region_malloc(self->region, size) : malloc(size);
+    void * const result =
+        self->customMallocFunction ? self->customMallocFunction(size) : malloc(size);
 
     if (!result)
     {
         return result;
     }
 
-    // Region sets memory to zero, so there is no need to do it twice if region is in use.
-    if (!self->region)
+    if (!self->customMallocFunction)
     {
         if (result != memset(result, 0, size))
         {
@@ -2372,7 +1689,7 @@ void *octaspire_memory_allocator_realloc(
         ++(self->bitIndex);
     }
 
-    return self->region ? octaspire_region_realloc(self->region, ptr, size) : realloc(ptr, size);
+    return self->customReallocFunction ? self->customReallocFunction(ptr, size) : realloc(ptr, size);
 }
 
 void octaspire_memory_allocator_free(
@@ -2380,7 +1697,8 @@ void octaspire_memory_allocator_free(
     void *ptr)
 {
     assert(self);
-    self->region ? octaspire_region_free(self->region, ptr) : free(ptr);
+
+    self->customFreeFunction ? self->customFreeFunction(ptr) : free(ptr);
 }
 
 void octaspire_memory_allocator_set_number_and_type_of_future_allocations_to_be_rigged(
@@ -8102,18 +7420,10 @@ TEST octaspire_helpers_path_to_buffer_read_failure_test(void)
     PASS();
 }
 
-static size_t octaspireHelpersSuiteNumTimesRun = 0;
-
 GREATEST_SUITE(octaspire_helpers_suite)
 {
-    octaspireHelpersSuiteNumTimesRun = 0;
-
-    octaspireHelpersTestAllocator       = octaspire_memory_allocator_new_create_region(
-        OCTASPIRE_CORE_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
-
-    octaspireHelpersTestStdio  = octaspire_stdio_new(octaspireHelpersTestAllocator);
-
-second_run:
+    octaspireHelpersTestAllocator = octaspire_memory_allocator_new(0);
+    octaspireHelpersTestStdio     = octaspire_stdio_new(octaspireHelpersTestAllocator);
 
     assert(octaspireHelpersTestAllocator);
     assert(octaspireHelpersTestStdio);
@@ -8135,18 +7445,6 @@ second_run:
 
     octaspire_memory_allocator_release(octaspireHelpersTestAllocator);
     octaspireHelpersTestAllocator = 0;
-
-    ++octaspireHelpersSuiteNumTimesRun;
-
-    if (octaspireHelpersSuiteNumTimesRun < 2)
-    {
-        // Second run without region allocator
-
-        octaspireHelpersTestAllocator      = octaspire_memory_allocator_new(0);
-        octaspireHelpersTestStdio = octaspire_stdio_new(octaspireHelpersTestAllocator);
-
-        goto second_run;
-    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9395,17 +8693,9 @@ TEST octaspire_utf8_decode_character_illegal_octet_sequence_0xF0_0x80_0x80_0xAF_
     PASS();
 }
 
-static size_t octaspireUtf8SuiteNumTimesRun = 0;
-
 GREATEST_SUITE(octaspire_utf8_suite)
 {
-    octaspireUtf8SuiteNumTimesRun = 0;
-
-    octaspireUtf8TestAllocator = octaspire_memory_allocator_new_create_region(
-        OCTASPIRE_CORE_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
-
-second_run:
-
+    octaspireUtf8TestAllocator = octaspire_memory_allocator_new(0);
     assert(octaspireUtf8TestAllocator);
 
     RUN_TEST(octaspire_utf8_private_rangeof_test);
@@ -9483,17 +8773,6 @@ second_run:
 
     octaspire_memory_allocator_release(octaspireUtf8TestAllocator);
     octaspireUtf8TestAllocator = 0;
-
-    ++octaspireUtf8SuiteNumTimesRun;
-
-    if (octaspireUtf8SuiteNumTimesRun < 2)
-    {
-        // Second run without region allocator
-
-        octaspireUtf8TestAllocator = octaspire_memory_allocator_new(0);
-
-        goto second_run;
-    }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../test/test_utf8.c
@@ -9771,8 +9050,6 @@ TEST octaspire_memory_allocator_setting_and_getting_future_allocations_to_fail_a
     PASS();
 }
 
-
-
 GREATEST_SUITE(octaspire_memory_suite)
 {
     RUN_TEST(octaspire_memory_allocator_new_test);
@@ -9788,101 +9065,6 @@ GREATEST_SUITE(octaspire_memory_suite)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../test/test_memory.c
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-// START OF        ../test/test_region.c
-//////////////////////////////////////////////////////////////////////////////////////////////////
-/******************************************************************************
-Octaspire Core - Containers and other utility libraries in standard C99
-Copyright 2017 www.octaspire.com
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-******************************************************************************/
-
-TEST octaspire_region_block_new_test(void)
-{
-    octaspire_region_block_t *regionBlock = octaspire_region_block_new(1024);
-
-    ASSERT(regionBlock);
-
-    ASSERT   (regionBlock->buffer);
-    ASSERT_EQ(1024, regionBlock->bufferLengthInOctets);
-    ASSERT_EQ(0,    regionBlock->firstFreeIndex);
-
-    octaspire_region_block_release(regionBlock);
-    regionBlock = 0;
-
-    PASS();
-}
-
-TEST octaspire_region_block_malloc_test(void)
-{
-    octaspire_region_block_t *regionBlock = octaspire_region_block_new(1024*1024);
-
-    size_t *ptrs[100];
-
-    size_t const elemsize = sizeof(ptrs[0]);
-    size_t const nelems   = sizeof(ptrs) / elemsize;
-
-    for (size_t i = 0; i < nelems; ++i)
-    {
-        ptrs[i] = octaspire_region_block_malloc(regionBlock, elemsize);
-        ASSERT(ptrs[i]);
-        ASSERT_EQ(0, *(ptrs[i]));
-        *(ptrs[i]) = i;
-    }
-
-    for (size_t i = 0; i < nelems; ++i)
-    {
-        ASSERT_EQ(i, *(ptrs[i]));
-    }
-
-    void *ptr = regionBlock->buffer + (sizeof(size_t) * 4);
-    for (size_t i = 0; i < 100; ++i)
-    {
-        size_t headerInUse = 0;
-        memcpy(&headerInUse, ((char*)ptr - (sizeof(size_t) * 4)), sizeof(size_t));
-
-        size_t headerUserDataLen = 0;
-        memcpy(&headerUserDataLen, ((char*)ptr - (sizeof(size_t) * 3)), sizeof(size_t));
-
-        ASSERT_EQ(1,              headerInUse);
-        ASSERT_EQ(sizeof(size_t), headerUserDataLen);
-    }
-
-    for (size_t i = 0; i < nelems; ++i)
-    {
-        octaspire_region_block_free(regionBlock, ptrs[i]);
-        ptrs[i] = 0;
-    }
-
-    octaspire_region_block_release(regionBlock);
-    regionBlock = 0;
-
-    PASS();
-}
-
-GREATEST_SUITE(octaspire_region_suite)
-{
-    RUN_TEST(octaspire_region_block_new_test);
-    RUN_TEST(octaspire_region_block_malloc_test);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-// END OF          ../test/test_region.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -10024,16 +9206,9 @@ TEST octaspire_stdio_fread_rigging_and_failure_test(void)
     PASS();
 }
 
-static size_t octaspireStdioSuiteNumTimesRun = 0;
-
 GREATEST_SUITE(octaspire_stdio_suite)
 {
-    octaspireStdioSuiteNumTimesRun = 0;
-
-    octaspireStdioTestAllocator = octaspire_memory_allocator_new_create_region(
-        OCTASPIRE_CORE_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
-
-second_run:
+    octaspireStdioTestAllocator = octaspire_memory_allocator_new(0);
 
     assert(octaspireStdioTestAllocator);
 
@@ -10044,17 +9219,6 @@ second_run:
 
     octaspire_memory_allocator_release(octaspireStdioTestAllocator);
     octaspireStdioTestAllocator = 0;
-
-    ++octaspireStdioSuiteNumTimesRun;
-
-    if (octaspireStdioSuiteNumTimesRun < 2)
-    {
-        // Second run without region allocator
-
-        octaspireStdioTestAllocator      = octaspire_memory_allocator_new(0);
-
-        goto second_run;
-    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -10662,18 +9826,10 @@ TEST octaspire_input_private_is_ucs_character_index_valid_test(void)
     PASS();
 }
 
-static size_t octaspireInputSuiteNumTimesRun = 0;
-
 GREATEST_SUITE(octaspire_input_suite)
 {
-    octaspireInputSuiteNumTimesRun = 0;
-
-    octaspireInputTestAllocator = octaspire_memory_allocator_new_create_region(
-        OCTASPIRE_CORE_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
-
-    octaspireInputTestStdio = octaspire_stdio_new(octaspireInputTestAllocator);
-
-second_run:
+    octaspireInputTestAllocator = octaspire_memory_allocator_new(0);
+    octaspireInputTestStdio     = octaspire_stdio_new(octaspireInputTestAllocator);
 
     assert(octaspireInputTestAllocator);
     assert(octaspireInputTestStdio);
@@ -10701,18 +9857,6 @@ second_run:
 
     octaspire_memory_allocator_release(octaspireInputTestAllocator);
     octaspireInputTestAllocator = 0;
-
-    ++octaspireInputSuiteNumTimesRun;
-
-    if (octaspireInputSuiteNumTimesRun < 2)
-    {
-        // Second run without region allocator
-
-        octaspireInputTestAllocator      = octaspire_memory_allocator_new(0);
-        octaspireInputTestStdio = octaspire_stdio_new(octaspireInputTestAllocator);
-
-        goto second_run;
-    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12741,17 +11885,9 @@ TEST octaspire_container_vector_clear_called_on_empty_vector_test(void)
     PASS();
 }
 
-static size_t octaspireContainerVectorSuiteNumTimesRun = 0;
-
 GREATEST_SUITE(octaspire_container_vector_suite)
 {
-    octaspireContainerVectorSuiteNumTimesRun = 0;
-
-    octaspireContainerVectorTestAllocator = octaspire_memory_allocator_new_create_region(
-        OCTASPIRE_CORE_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
-
-second_run:
-
+    octaspireContainerVectorTestAllocator = octaspire_memory_allocator_new(0);
     assert(octaspireContainerVectorTestAllocator);
 
     RUN_TEST(octaspire_container_vector_private_index_to_pointer_test);
@@ -12828,17 +11964,6 @@ second_run:
 
     octaspire_memory_allocator_release(octaspireContainerVectorTestAllocator);
     octaspireContainerVectorTestAllocator = 0;
-
-    ++octaspireContainerVectorSuiteNumTimesRun;
-
-    if (octaspireContainerVectorSuiteNumTimesRun < 2)
-    {
-        // Second run without region allocator
-
-        octaspireContainerVectorTestAllocator = octaspire_memory_allocator_new(0);
-
-        goto second_run;
-    }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../test/test_container_vector.c
@@ -14930,16 +14055,9 @@ TEST octaspire_container_utf8_string_pop_back_ucs_character_test(void)
     PASS();
 }
 
-static size_t octaspireContainerUtf8StringSuiteNumTimesRun = 0;
-
 GREATEST_SUITE(octaspire_container_utf8_string_suite)
 {
-    octaspireContainerUtf8StringSuiteNumTimesRun = 0;
-
-    octaspireContainerUtf8StringTestAllocator = octaspire_memory_allocator_new_create_region(
-        OCTASPIRE_CORE_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
-
-second_run:
+    octaspireContainerUtf8StringTestAllocator = octaspire_memory_allocator_new(0);
 
     assert(octaspireContainerUtf8StringTestAllocator);
 
@@ -15021,17 +14139,6 @@ second_run:
 
     octaspire_memory_allocator_release(octaspireContainerUtf8StringTestAllocator);
     octaspireContainerUtf8StringTestAllocator = 0;
-
-    ++octaspireContainerUtf8StringSuiteNumTimesRun;
-
-    if (octaspireContainerUtf8StringSuiteNumTimesRun < 2)
-    {
-        // Second run without region allocator
-
-        octaspireContainerUtf8StringTestAllocator = octaspire_memory_allocator_new(0);
-
-        goto second_run;
-    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15846,16 +14953,10 @@ TEST octaspire_container_pair_clear_test(void)
     PASS();
 }
 
-static size_t octaspireContainerPairSuiteNumTimesRun = 0;
-
 GREATEST_SUITE(octaspire_container_pair_suite)
 {
-    octaspireContainerPairSuiteNumTimesRun = 0;
-
-    octaspireContainerPairTestAllocator = octaspire_memory_allocator_new_create_region(
-        OCTASPIRE_CORE_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
-
-second_run:
+    octaspireContainerPairTestAllocator = octaspire_memory_allocator_new(0);
+    assert(octaspireContainerPairTestAllocator);
 
     RUN_TEST(octaspire_container_pair_new_short_and_long_test);
     RUN_TEST(octaspire_container_pair_new_long_and_short_test);
@@ -15885,17 +14986,6 @@ second_run:
 
     octaspire_memory_allocator_release(octaspireContainerPairTestAllocator);
     octaspireContainerPairTestAllocator = 0;
-
-    ++octaspireContainerPairSuiteNumTimesRun;
-
-    if (octaspireContainerPairSuiteNumTimesRun < 2)
-    {
-        // Second run without region allocator
-
-        octaspireContainerPairTestAllocator = octaspire_memory_allocator_new(0);
-
-        goto second_run;
-    }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../test/test_container_pair.c
@@ -16466,16 +15556,9 @@ TEST octaspire_container_hash_map_element_iterator_test(void)
     PASS();
 }
 
-static size_t octaspireContainerHashMapSuiteNumTimesRun = 0;
-
 GREATEST_SUITE(octaspire_container_hash_map_suite)
 {
-    octaspireContainerHashMapSuiteNumTimesRun = 0;
-
-    octaspireContainerHashMapTestAllocator = octaspire_memory_allocator_new_create_region(
-        OCTASPIRE_CORE_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
-
-second_run:
+    octaspireContainerHashMapTestAllocator = octaspire_memory_allocator_new(0);
 
     assert(octaspireContainerHashMapTestAllocator);
 
@@ -16494,18 +15577,8 @@ second_run:
 
     octaspire_memory_allocator_release(octaspireContainerHashMapTestAllocator);
     octaspireContainerHashMapTestAllocator = 0;
-
-    ++octaspireContainerHashMapSuiteNumTimesRun;
-
-    if (octaspireContainerHashMapSuiteNumTimesRun < 2)
-    {
-        // Second run without region octaspireContainerHashMapTestAllocator
-
-        octaspireContainerHashMapTestAllocator = octaspire_memory_allocator_new(0);
-
-        goto second_run;
-    }
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../test/test_container_hash_map.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16684,7 +15757,6 @@ int main(int argc, char **argv)
     RUN_SUITE(octaspire_helpers_suite);
     RUN_SUITE(octaspire_utf8_suite);
     RUN_SUITE(octaspire_memory_suite);
-    RUN_SUITE(octaspire_region_suite);
     RUN_SUITE(octaspire_stdio_suite);
     RUN_SUITE(octaspire_input_suite);
     RUN_SUITE(octaspire_container_vector_suite);
@@ -16726,14 +15798,11 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "85"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "6"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "86"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.85.6"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.86.0"
 
-
-//#define OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 10485800
-#define OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS 104858000
 
 
 #endif
@@ -34685,7 +33754,6 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
     printf("\nwhere [option] is one of the values listed below and every\n");
     printf("[file] is loaded and evaluated before the REPL is started or closed.\n");
     printf("If any of -e string or [file] is used, REPL is not started unless -i is used.\n\n");
-    printf("-n        --no-region-allocator           : use regular malloc/free instead of region allocator\n");
     printf("-c        --color-diagnostics             : use colors on unix like systems\n");
     printf("-i        --interactive                   : start REPL after any -e string or [file]s are evaluated\n");
     printf("-e string --evaluate string               : evaluate a string without entering the REPL (unless -i is given)\n");
@@ -34728,7 +33796,6 @@ static void octaspire_dern_repl_private_cleanup(void)
 int main(int argc, char *argv[])
 {
     bool useColors               = false;
-    bool useRegionAllocator      = true;
     int  userFilesStartIdx       = -1;
     bool enterReplAlways         = false;
     bool evaluate                = false;
@@ -34797,10 +33864,6 @@ int main(int argc, char *argv[])
 
                 octaspire_container_vector_push_back_element(stringsToBeEvaluated, &tmp);
             }
-            else if (strcmp(argv[i], "-n") == 0 || strcmp(argv[i], "--no-region-allocator") == 0)
-            {
-                useRegionAllocator = false;
-            }
             else if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--color-diagnostics") == 0)
             {
                 useColors = true;
@@ -34846,29 +33909,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    allocator = 0;
-
-    if (useRegionAllocator)
-    {
-        octaspire_region_t *region = octaspire_region_new(
-            OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
-
-        if (!region)
-        {
-            octaspire_dern_repl_print_message_c_str(
-                "Allocation failure\n",
-                OCTASPIRE_DERN_REPL_MESSAGE_FATAL,
-                useColors);
-
-            exit(EXIT_FAILURE);
-        }
-
-        allocator = octaspire_memory_allocator_new(region);
-    }
-    else
-    {
-        allocator = octaspire_memory_allocator_new(0);
-    }
+    allocator = octaspire_memory_allocator_new(0);
 
     if (!allocator)
     {
@@ -38420,17 +37461,9 @@ TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(vo
     PASS();
 }
 
-static size_t octaspireDernLexerSuiteNumTimesRun = 0;
-
 GREATEST_SUITE(octaspire_dern_lexer_suite)
 {
-    octaspireDernLexerSuiteNumTimesRun = 0;
-
-    octaspireDernLexerTestAllocator = octaspire_memory_allocator_new_create_region(
-        OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
-
-second_run:
-
+    octaspireDernLexerTestAllocator = octaspire_memory_allocator_new(0);
     assert(octaspireDernLexerTestAllocator);
 
     RUN_TEST(octaspire_dern_lexer_token_new_test);
@@ -38503,18 +37536,8 @@ second_run:
 
     octaspire_memory_allocator_release(octaspireDernLexerTestAllocator);
     octaspireDernLexerTestAllocator = 0;
-
-    ++octaspireDernLexerSuiteNumTimesRun;
-
-    if (octaspireDernLexerSuiteNumTimesRun < 2)
-    {
-        // Second run without region allocator
-
-        octaspireDernLexerTestAllocator = octaspire_memory_allocator_new(0);
-
-        goto second_run;
-    }
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../test/test_dern_lexer.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49382,18 +48405,10 @@ TEST octaspire_dern_vm_hash_map_question_mark_test(void)
     PASS();
 }
 
-static size_t octaspireDernVmSuiteNumTimesRun = 0;
-
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
-    octaspireDernVmSuiteNumTimesRun = 0;
-
-    octaspireDernVmTestAllocator = octaspire_memory_allocator_new_create_region(
-        OCTASPIRE_DERN_CONFIG_MEMORY_ALLOCATOR_REGION_MIN_BLOCK_SIZE_IN_OCTETS);
-
+    octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
     octaspireDernVmTestStdio     = octaspire_stdio_new(octaspireDernVmTestAllocator);
-
-second_run:
 
     assert(octaspireDernVmTestAllocator);
     assert(octaspireDernVmTestStdio);
@@ -49753,19 +48768,8 @@ second_run:
 
     octaspire_memory_allocator_release(octaspireDernVmTestAllocator);
     octaspireDernVmTestAllocator = 0;
-
-    ++octaspireDernVmSuiteNumTimesRun;
-
-    if (octaspireDernVmSuiteNumTimesRun < 2)
-    {
-        // Second run without region allocator
-
-        octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
-        octaspireDernVmTestStdio     = octaspire_stdio_new(octaspireDernVmTestAllocator);
-
-        goto second_run;
-    }
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../test/test_dern_vm.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
