@@ -94,6 +94,7 @@ void octaspire_dern_repl_print_message(
 
 void octaspire_dern_repl_print_version(bool const useColors)
 {
+    printf("  ");
     octaspire_dern_repl_print_message_c_str(
         OCTASPIRE_DERN_CONFIG_VERSION_STR,
         OCTASPIRE_DERN_REPL_MESSAGE_INFO,
@@ -104,6 +105,7 @@ void octaspire_dern_repl_print_version(bool const useColors)
 
 void octaspire_dern_repl_print_banner(bool const useColors)
 {
+    printf("\n");
     if (useColors)
     {
         for (size_t i = 0; i < octaspire_dern_banner_color_len; ++i)
@@ -120,9 +122,9 @@ void octaspire_dern_repl_print_banner(bool const useColors)
     }
 
     octaspire_dern_repl_print_message_c_str(
-        "Licensed under the Apache License, Version 2.0\n"
-        "Distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES\n"
-        "OR CONDITIONS OF ANY KIND.\n\n",
+        "  \n"
+        "  Licensed under the Apache License, Version 2.0. Distributed on\n"
+        "  an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND.\n\n",
         OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
 }
 
@@ -372,7 +374,8 @@ int main(int argc, char *argv[])
     octaspire_dern_repl_print_version(useColors);
 
     octaspire_dern_repl_print_message_c_str(
-        "\nQuit by pressing CTRL-d on empty line or by writing (exit) and then enter.\n\n",
+        "\n  Quit by pressing CTRL-d on empty line\n"
+        "  or by writing (exit) and then enter.\n\n",
         OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
 
     do
