@@ -1,0 +1,4 @@
+(require 'mylib)
+
+(mylib-say [Hello from binary library])
+
