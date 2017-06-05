@@ -60,6 +60,16 @@ create_new_version() {
     "$PROJECT_PATH/build/octaspire_dern_amalgamated_test_runner"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
+    echo "\nCopying amalgamation to a file having the version number...\n--------------------------\n"
+    cp "$PROJECT_PATH/etc/octaspire_dern_amalgamated.c" "$PROJECT_PATH/etc/octaspire-dern-amalgamated-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH.c"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+
+    echo "\nCompressing version numbered amalgamation into release.tar.bz2...\n--------------------------\n"
+    cd "$PROJECT_PATH/etc/"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    tar --bzip2 -cf release.tar.bz2 "octaspire-dern-amalgamated-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH.c"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+
     echo "\nRelease $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH created."
 }
 
