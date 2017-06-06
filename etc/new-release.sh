@@ -75,7 +75,35 @@ create_new_version() {
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "\nCreate a README file...\n--------------------------\n"
-    echo "This is amalgamated single file source release for Octaspire Dern programming language\n version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH. File 'octaspire-dern-amalgamated.c' is all that is needed;\nit has no other dependecies than a C compiler and standard library supporting C99.\n\nSHA-512 checksums for this and older releases can be found from: https://octaspire.github.io/dern/\nIf you want to check this release, download checksums for version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH from:\nhttps://octaspire.github.io/dern/checksums-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH\n\nBuilding instructions for all supported platforms (and scripts for building automatically)\ncan be found in directory how-to-build. Look for a file that has your plarform's name in the\nfile's name. If instructions for your platform are not yet added, looking instructions\nfor a similar system will probably help. The amalgamation contains only one source file and\nshould be straightforward to to use. By using few compiler defines, the single file can be used\nfor different purposes:\n\n\t(1) to build stand-alone unit test runner for the file.\n\t(2) to build stand-alone interactive Dern REPL.\n\t(3) to use the file as a single file header+library in C/C++ programs\n\t    wanting to embed the Dern language.\n\nOctaspire Dern is work in progress. The most recent version\nof this amalgamated source release can be downloaded from:\n\n\t* www.octaspire.com/dern/release.tar.bz2\n\t* https://octaspire.github.io/dern/release.tar.bz2\n" > "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/README"
+    echo \
+"This is amalgamated single file source release for Octaspire Dern programming\n\
+language version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH. File 'octaspire-dern-amalgamated.c'\n\
+is all that is needed; it has no other dependecies than a C compiler and\n\
+standard library supporting C99.\n\
+\n\
+SHA-512 checksums for this and older releases can be found from:\n\
+https://octaspire.github.io/dern/ If you want to check this release, download\n\
+checksums for version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH from:\n\
+https://octaspire.github.io/dern/checksums-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH\n\
+\n\
+Building instructions for all supported platforms (and scripts for building\n\
+automatically) can be found in directory 'how-to-build'. Look for a file that\n\
+has your platform's name in the file's name. If instructions for your\n\
+platform are not yet added, looking instructions for a similar system will\n\
+probably help. The amalgamation contains only one source file and should be\n\
+straightforward to use. By using few compiler defines, the single file can\n\
+be used for different purposes:\n\
+\n\
+\t(1) to build stand-alone unit test runner for the file.\n\
+\t(2) to build stand-alone interactive Dern REPL.\n\
+\t(3) to use the file as a single file header+library in C/C++ programs\n\
+\t    wanting to embed the Dern language.\n\
+\n\
+Octaspire Dern is work in progress. The most recent version\n\
+of this amalgamated source release can be downloaded from:\n\
+\n\
+\t* www.octaspire.com/dern/release.tar.bz2\n\
+\t* https://octaspire.github.io/dern/release.tar.bz2\n" > "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/README"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "\nCopying amalgamation...\n--------------------------\n"

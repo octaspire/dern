@@ -1,15 +1,16 @@
-Octaspire Dern is licensed under the Apache License, Version 2.0. This license applies
-to everything else, but not the external-directory. For unit testing Octaspire Core
-uses external/greatest.h that is ISC licensed. This file is not the original version,
-but contains modifications by octaspire. These modifications are also ICS licensed.
-Octaspire Dern uses Octaspire Core that is licensed under the Apache License, Version 2.0.
-For fast hash calculation Octaspire Core uses MurmurHash3 that is placed in the public domain.
+Octaspire Dern is licensed under the Apache License, Version 2.0.
+This license applies to everything else, but not the external-directory.
+For unit testing Octaspire Dern uses external/greatest.h that is ISC licensed.
+This file is not the original version, but contains modifications by octaspire.
+These modifications are also ICS licensed. Octaspire Dern uses Octaspire Core
+that is licensed under the Apache License, Version 2.0. For fast hash
+calculation Octaspire Core uses MurmurHash3 that is placed in the public domain.
 All licenses and public domain waiver are listed here:
 
 
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 License of Octaspire Dern
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
    Octaspire Dern - Programming language
    Copyright 2017 www.octaspire.com
 
@@ -24,12 +25,12 @@ License of Octaspire Dern
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
----------------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 License of Octaspire Core
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
    Octaspire Core - Containers and other utility libraries
    Copyright 2017 www.octaspire.com
 
@@ -44,12 +45,12 @@ License of Octaspire Core
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 License of external/greatest.h
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
    Copyright (c) 2011-2016 Scott Vokes <vokes.s@gmail.com>
 
    Permission to use, copy, modify, and/or distribute this software for any
@@ -63,20 +64,20 @@ License of external/greatest.h
    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 Public domain waiwer of external/octaspire_core/external/murmur3.*
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 MurmurHash3 was written by Austin Appleby, and is placed in the public
 domain. The author hereby disclaims copyright to this source code.
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 Apache License, Version 2.0
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -278,5 +279,5 @@ Apache License, Version 2.0
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
