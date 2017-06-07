@@ -14,7 +14,7 @@ modify Dern itself. To use the amalgamated release, you will need only a C compi
 C standard library supporting C99.
 
 ```shell
-curl -O www.octaspire.com/dern/release.tar.bz2
+curl -O octaspire.com/dern/release.tar.bz2
 tar jxf release.tar.bz2
 cd release/*
 curl -O https://octaspire.github.io/dern/checksums

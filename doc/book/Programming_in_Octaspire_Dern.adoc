@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.107.0
+Documentation for Octaspire Dern programming language version 0.109.0
 
 == About
 
@@ -96,7 +96,7 @@ C standard library supporting C99.
 :pygments-linenums-mode: inline
 [source,bash]
 ----
-curl -O www.octaspire.com/dern/release.tar.bz2
+curl -O octaspire.com/dern/release.tar.bz2
 tar jxf release.tar.bz2
 cd release/*
 curl -O https://octaspire.github.io/dern/checksums
