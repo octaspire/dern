@@ -804,7 +804,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.105.0</p></div>
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.107.0</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -874,283 +874,21 @@ Just one file. No build tools required. No dependencies, only C compiler is need
 </div>
 </div>
 <div class="sect1">
-<h2 id="_building_from_source">Building from source</h2>
+<h2 id="_building_the_amalgamated_source_release">Building the amalgamated source release</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>To build Dern without the unit tests, replace <strong>cmake ..</strong> with
-<strong>cmake -DOCTASPIRE_DERN_UNIT_TEST=OFF ..</strong> in the instructions that follow.</p></div>
-<div class="sect2">
-<h3 id="_raspberry_pi_debian_and_ubuntu">Raspberry Pi, Debian and Ubuntu</h3>
-<div class="sect3">
-<h4 id="_amalgamated_source_distribution">Amalgamated source distribution</h4>
-<div class="paragraph"><p>To download the amalgamated source distribution and build Dern unit test runner and
-Dern REPL in Raspberry Pi (Raspbian), Debian or Ubuntu (16.04 LTS) system:</p></div>
+<div class="paragraph"><p>The amalgamated source release is the recommended way of using Dern, if you don&#8217;t need to
+modify Dern itself. To use the amalgamated release, you will need only a C compiler and
+C standard library supporting C99.</p></div>
 <div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span>wget https://github.com/octaspire/dern/releases/download/v0.73.0/octaspire_dern_amalgamated.c
-
-gcc -O3 -std<span class="o">=</span>c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION <span class="se">\</span>
-                               -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                <span class="se">\</span>
-                               -DGREATEST_ENABLE_ANSI_COLORS                         <span class="se">\</span>
-octaspire_dern_amalgamated.c -Wl,-export-dynamic -ldl -lm -o octaspire-dern-test-runner
-
-gcc -O3 -std<span class="o">=</span>c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION <span class="se">\</span>
-                               -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS           <span class="se">\</span>
-octaspire_dern_amalgamated.c -Wl,-export-dynamic -ldl -lm -o octaspire-dern-repl
+<div class="content"><div class="highlight"><pre><span></span>curl -O www.octaspire.com/dern/release.tar.bz2
+tar jxf release.tar.bz2
+<span class="nb">cd</span> release/*
+curl -O https://octaspire.github.io/dern/checksums
+sha512sum -c checksums
+sh how-to-build/YOUR_PLATFORM_NAME_HERE.XX
 </pre></div></div></div>
-<div class="paragraph"><p>Here is small example where the amalgamated source distribution is used as a Dern library in a program that wants to embed the Dern language:</p></div>
-<div class="listingblock">
-<div class="title">main.c</div>
-<div class="content"><div class="highlight"><pre><span></span><span class="c1">// Compile with:</span>
-<span class="c1">// gcc -O3 -std=c99 -Wall -Wextra main.c -Wl,-export-dynamic -ldl -lm</span>
-<span class="cp">#define OCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION</span>
-<span class="cp">#include</span> <span class="cpf">&quot;octaspire_dern_amalgamated.c&quot;</span><span class="cp"></span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">octaspire_memory_allocator_t</span> <span class="o">*</span><span class="n">allocator</span> <span class="o">=</span>
-        <span class="n">octaspire_memory_allocator_new</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-
-    <span class="n">octaspire_stdio_t</span> <span class="o">*</span><span class="n">stdio</span> <span class="o">=</span> <span class="n">octaspire_stdio_new</span><span class="p">(</span><span class="n">allocator</span><span class="p">);</span>
-
-    <span class="n">octaspire_dern_vm_t</span> <span class="o">*</span><span class="n">vm</span> <span class="o">=</span> <span class="n">octaspire_dern_vm_new</span><span class="p">(</span><span class="n">allocator</span><span class="p">,</span> <span class="n">stdio</span><span class="p">);</span>
-
-    <span class="n">octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment</span><span class="p">(</span>
-        <span class="n">vm</span><span class="p">,</span>
-        <span class="s">&quot;(println [Hello World])&quot;</span><span class="p">);</span>
-
-    <span class="n">octaspire_stdio_release</span><span class="p">(</span><span class="n">stdio</span><span class="p">);</span>
-    <span class="n">octaspire_dern_vm_release</span><span class="p">(</span><span class="n">vm</span><span class="p">);</span>
-    <span class="n">octaspire_memory_allocator_release</span><span class="p">(</span><span class="n">allocator</span><span class="p">);</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div></div></div>
-<div class="paragraph"><p>The amalgamated source distribution is a single source code file, that contains everything that
-is needed for using Dern. The same single file can be used to (by using different compiler flags):</p></div>
-<div class="ulist"><ul>
-<li>
-<p>
-build a stand-alone unit test runner to test the file.
-</p>
-</li>
-<li>
-<p>
-build a stand-alone Dern REPL to run Dern programs interactively.
-</p>
-</li>
-<li>
-<p>
-build programs that want to embed the Dern programming language and use the
-  amalgamated file as a single file library.
-</p>
-</li>
-</ul></div>
-<div class="paragraph"><p>To use the amalgamated source distribution you don&#8217;t need any build tools;
-only C compiler is required.</p></div>
-</div>
-<div class="sect3">
-<h4 id="_regular_source_distribution">Regular source distribution</h4>
-<div class="paragraph"><p>To build Dern from the regular source distribution in Raspberry Pi (Raspbian), Debian or Ubuntu (16.04 LTS) system:</p></div>
-<div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span>sudo apt-get install cmake git
-git clone https://github.com/octaspire/dern.git
-<span class="nb">cd</span> dern/build
-cmake ..
-make
-</pre></div></div></div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_arch_linux">Arch Linux</h3>
-<div class="paragraph"><p>To build on Arch Linux (Arch Linux ARM) system:</p></div>
-<div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span>sudo pacman -S cmake git gcc make
-git clone https://github.com/octaspire/dern.git
-<span class="nb">cd</span> dern/build
-cmake ..
-make
-</pre></div></div></div>
-</div>
-<div class="sect2">
-<h3 id="_haiku">Haiku</h3>
-<div class="paragraph"><p>To build on Haiku (Version Walter (Revision hrev51127) x86_gcc2):</p></div>
-<div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span>pkgman install gcc_x86 cmake_x86
-git clone https://github.com/octaspire/dern.git
-<span class="nb">cd</span> dern/build
-<span class="nv">CC</span><span class="o">=</span>gcc-x86 cmake ..
-make
-</pre></div></div></div>
-</div>
-<div class="sect2">
-<h3 id="_freebsd">FreeBSD</h3>
-<div class="paragraph"><p>To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:</p></div>
-<div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span>sudo pkg install git cmake
-git clone https://github.com/octaspire/dern.git
-<span class="nb">cd</span> dern/build
-cmake ..
-make
-</pre></div></div></div>
-</div>
-<div class="sect2">
-<h3 id="_netbsd">NetBSD</h3>
-<div class="paragraph"><p>To build on NetBSD (NetBSD-7.1-i386) system:</p></div>
-<div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span>sudo pkgin install cmake git
-git clone git://github.com/octaspire/dern
-<span class="nb">cd</span> dern
-perl -pi -e <span class="s1">&#39;s/https/git/&#39;</span> .gitmodules
-<span class="nb">cd</span> build
-cmake ..
-make
-</pre></div></div></div>
-</div>
-<div class="sect2">
-<h3 id="_minix_3">MINIX 3</h3>
-<div class="sect3">
-<h4 id="_amalgamated_source_distribution_2">Amalgamated source distribution</h4>
-<div class="paragraph"><p>To download the amalgamated source distribution and build Dern unit test runner and
-Dern REPL in MINIX 3 (minix_R3.3.0-588a35b) system:</p></div>
-<div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span>curl -OkL https://github.com/octaspire/dern/releases/download/v0.73.0/octaspire_dern_amalgamated.c
-
-clang -O3 -std<span class="o">=</span>c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION <span class="se">\</span>
-                                 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                <span class="se">\</span>
-                                 -DGREATEST_ENABLE_ANSI_COLORS                         <span class="se">\</span>
-octaspire_dern_amalgamated.c -Wl,-export-dynamic -lm -o octaspire-dern-test-runner
-
-clang -O3 -std<span class="o">=</span>c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION <span class="se">\</span>
-                         -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                   <span class="se">\</span>
-octaspire_dern_amalgamated.c -Wl,-export-dynamic -lm -o octaspire-dern-repl
-</pre></div></div></div>
-<div class="paragraph"><p>Here is small example where the amalgamated source distribution is used as a Dern library in a
-program that wants to embed the Dern language:</p></div>
-<div class="listingblock">
-<div class="title">main.c</div>
-<div class="content"><div class="highlight"><pre><span></span><span class="c1">// Compile with:</span>
-<span class="c1">// clang -O3 -std=c99 -Wall -Wextra main.c -Wl,-export-dynamic -lm</span>
-<span class="cp">#define OCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION</span>
-<span class="cp">#include</span> <span class="cpf">&quot;octaspire_dern_amalgamated.c&quot;</span><span class="cp"></span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">octaspire_memory_allocator_t</span> <span class="o">*</span><span class="n">allocator</span> <span class="o">=</span>
-        <span class="n">octaspire_memory_allocator_new</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-
-    <span class="n">octaspire_stdio_t</span> <span class="o">*</span><span class="n">stdio</span> <span class="o">=</span> <span class="n">octaspire_stdio_new</span><span class="p">(</span><span class="n">allocator</span><span class="p">);</span>
-
-    <span class="n">octaspire_dern_vm_t</span> <span class="o">*</span><span class="n">vm</span> <span class="o">=</span> <span class="n">octaspire_dern_vm_new</span><span class="p">(</span><span class="n">allocator</span><span class="p">,</span> <span class="n">stdio</span><span class="p">);</span>
-
-    <span class="n">octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment</span><span class="p">(</span>
-        <span class="n">vm</span><span class="p">,</span>
-        <span class="s">&quot;(println [Hello World])&quot;</span><span class="p">);</span>
-
-    <span class="n">octaspire_stdio_release</span><span class="p">(</span><span class="n">stdio</span><span class="p">);</span>
-    <span class="n">octaspire_dern_vm_release</span><span class="p">(</span><span class="n">vm</span><span class="p">);</span>
-    <span class="n">octaspire_memory_allocator_release</span><span class="p">(</span><span class="n">allocator</span><span class="p">);</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div></div></div>
-<div class="paragraph"><p>The amalgamated source distribution is a single source code file, that contains everything that
-is needed for using Dern. The same single file can be used to (by using different compiler flags):</p></div>
-<div class="ulist"><ul>
-<li>
-<p>
-build a stand-alone unit test runner to test the file.
-</p>
-</li>
-<li>
-<p>
-build a stand-alone Dern REPL to run Dern programs interactively.
-</p>
-</li>
-<li>
-<p>
-build programs that want to embed the Dern programming language and use the
-  amalgamated file as a single file library.
-</p>
-</li>
-</ul></div>
-<div class="paragraph"><p>To use the amalgamated source distribution you don&#8217;t need any build tools;
-only C compiler is required.</p></div>
-</div>
-<div class="sect3">
-<h4 id="_regular_source_distribution_2">Regular source distribution</h4>
-<div class="paragraph"><p>To build from the regular source distribution on MINIX 3 (minix_R3.3.0-588a35b) system:</p></div>
-<div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span>su root
-pkgin install cmake clang binutils git-base
-<span class="nb">exit</span>
-git clone git://github.com/octaspire/dern
-<span class="nb">cd</span> dern
-perl -pi -e <span class="s1">&#39;s/https/git/&#39;</span> .gitmodules
-<span class="nb">cd</span> build
-cmake ..
-make
-</pre></div></div></div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_other_systems">Other systems</h3>
-<div class="paragraph"><p>On different systems the required commands can vary. In any case, you should install
-a <strong>C compiler</strong>, <strong>cmake</strong> and <strong>git</strong>. Depending on the system, you might need to install
-also either <strong>make</strong> or <strong>ninja</strong>.</p></div>
-<div class="paragraph"><p>This is all there should be to it; <strong>octaspire core</strong> is included as a git submodule
-and it should be updated and be build automatically, so when make finishes, everything
-should be ready.</p></div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_running_dern">Running Dern</h2>
-<div class="sectionbody">
-<div class="paragraph"><p>To run the unit tests:</p></div>
-<div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span>test/octaspire-dern-test-runner
-</pre></div></div></div>
-<div class="paragraph"><p>To start the REPL with color diagnostics (requires support for ANSI color escapes):</p></div>
-<div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span>./octaspire-dern-repl -c
-</pre></div></div></div>
-<div class="paragraph"><p>To see the allowed options run:</p></div>
-<div class="listingblock">
-<div class="content"><div class="highlight"><pre><span></span>./octaspire-dern-repl -h
-</pre></div></div></div>
-<div class="admonitionblock">
-<table><tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">Man pages are not ready yet.</td>
-</tr></table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_using_the_amalgamated_source">Using the amalgamated source</h2>
-<div class="sectionbody">
-<div class="paragraph"><p><strong>etc</strong>-directory of the source distribution contains amalgamated version
-of the source code. All the headers, implementation files and unit tests
-are concatenated with a script into a single file. This one file
-is all that is needed to use Octaspire Dern. The same single file
-can be used to (by giving different compiler flags):</p></div>
-<div class="ulist"><ul>
-<li>
-<p>
-as an include in a project that wants to embed the Dern language
-</p>
-</li>
-<li>
-<p>
-as a stand-alone Dern REPL
-</p>
-</li>
-<li>
-<p>
-as a stand-alone unit test runner
-</p>
-</li>
-</ul></div>
-<div class="paragraph"><p>TODO</p></div>
+<div class="paragraph"><p>replace <strong>YOUR_PLATFORM_NAME_HERE.XX</strong> with <strong>FreeBSD.sh</strong>, <strong>NetBSD.sh</strong>, <strong>linux.sh</strong>, <strong>minix3.sh</strong>
+or <strong>haiku.sh</strong>. More scripts for different platforms will be added later.</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -1828,12 +1566,152 @@ for different systems.</p></div>
 <strong>pygments</strong>.</p></div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_building_the_development_repository">Building the development repository</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>To build Dern without the unit tests, replace <strong>cmake ..</strong> with
+<strong>cmake -DOCTASPIRE_DERN_UNIT_TEST=OFF ..</strong> in the instructions that follow.</p></div>
+<div class="sect2">
+<h3 id="_raspberry_pi_debian_and_ubuntu">Raspberry Pi, Debian and Ubuntu</h3>
+<div class="paragraph"><p>To build Dern from the regular source distribution in Raspberry Pi (Raspbian), Debian or Ubuntu (16.04 LTS) system:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>sudo apt-get install cmake git
+git clone https://github.com/octaspire/dern.git
+<span class="nb">cd</span> dern/build
+cmake ..
+make
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_arch_linux">Arch Linux</h3>
+<div class="paragraph"><p>To build on Arch Linux (Arch Linux ARM) system:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>sudo pacman -S cmake git gcc make
+git clone https://github.com/octaspire/dern.git
+<span class="nb">cd</span> dern/build
+cmake ..
+make
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_haiku">Haiku</h3>
+<div class="paragraph"><p>To build on Haiku (Version Walter (Revision hrev51127) x86_gcc2):</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>pkgman install gcc_x86 cmake_x86
+git clone https://github.com/octaspire/dern.git
+<span class="nb">cd</span> dern/build
+<span class="nv">CC</span><span class="o">=</span>gcc-x86 cmake ..
+make
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_freebsd">FreeBSD</h3>
+<div class="paragraph"><p>To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>sudo pkg install git cmake
+git clone https://github.com/octaspire/dern.git
+<span class="nb">cd</span> dern/build
+cmake ..
+make
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_netbsd">NetBSD</h3>
+<div class="paragraph"><p>To build on NetBSD (NetBSD-7.1-i386) system:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>sudo pkgin install cmake git
+git clone git://github.com/octaspire/dern
+<span class="nb">cd</span> dern
+perl -pi -e <span class="s1">&#39;s/https/git/&#39;</span> .gitmodules
+<span class="nb">cd</span> build
+cmake ..
+make
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_minix_3">MINIX 3</h3>
+<div class="paragraph"><p>To build from the regular source distribution on MINIX 3 (minix_R3.3.0-588a35b) system:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>su root
+pkgin install cmake clang binutils git-base
+<span class="nb">exit</span>
+git clone git://github.com/octaspire/dern
+<span class="nb">cd</span> dern
+perl -pi -e <span class="s1">&#39;s/https/git/&#39;</span> .gitmodules
+<span class="nb">cd</span> build
+cmake ..
+make
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_other_systems">Other systems</h3>
+<div class="paragraph"><p>On different systems the required commands can vary. In any case, you should install
+a <strong>C compiler</strong>, <strong>cmake</strong> and <strong>git</strong>. Depending on the system, you might need to install
+also either <strong>make</strong> or <strong>ninja</strong>.</p></div>
+<div class="paragraph"><p>This is all there should be to it; <strong>octaspire core</strong> is included as a git submodule
+and it should be updated and be build automatically, so when make finishes, everything
+should be ready.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_running_dern">Running Dern</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>To run the unit tests:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>test/octaspire-dern-test-runner
+</pre></div></div></div>
+<div class="paragraph"><p>To start the REPL with color diagnostics (requires support for ANSI color escapes):</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>./octaspire-dern-repl -c
+</pre></div></div></div>
+<div class="paragraph"><p>To see the allowed options run:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span></span>./octaspire-dern-repl -h
+</pre></div></div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">Man pages are not ready yet.</td>
+</tr></table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_using_the_amalgamated_source">Using the amalgamated source</h2>
+<div class="sectionbody">
+<div class="paragraph"><p><strong>etc</strong>-directory of the source distribution contains amalgamated version
+of the source code. All the headers, implementation files and unit tests
+are concatenated with a script into a single file. This one file
+is all that is needed to use Octaspire Dern. The same single file
+can be used to (by giving different compiler flags):</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+as an include in a project that wants to embed the Dern language
+</p>
+</li>
+<li>
+<p>
+as a stand-alone Dern REPL
+</p>
+</li>
+<li>
+<p>
+as a stand-alone unit test runner
+</p>
+</li>
+</ul></div>
+</div>
+</div>
 </div>
 <div id="footnotes"><hr></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-06-07 03:02:16 EEST
+ 2017-06-07 13:23:40 EEST
 </div>
 </div>
 </body>

@@ -1,11 +1,13 @@
 echoAndRun() { echo "$@" ; "$@" ; }
 
 
-echo " "
+
+echo "$(tput setaf 3) $(tput bold)"
 cat << EnDoFmEsSaGe
 1. Building stand alone unit test runner to test the release
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
+echo "$(tput sgr 0)"
 echoAndRun gcc -O2 -std=c99 -Wall -Wextra                      \
     -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION      \
     -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
@@ -15,11 +17,36 @@ echoAndRun gcc -O2 -std=c99 -Wall -Wextra                      \
 
 
 
-echo " "
+echo "$(tput setaf 3) $(tput bold)"
 cat << EnDoFmEsSaGe
-2. Building the interactive Dern REPL
+2. Building the embedding example
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
+echo "$(tput sgr 0)"
+echoAndRun gcc -O2 -std=c99 -Wall -Wextra                      \
+    -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
+-I . examples/embedding-example.c -Wl,-export-dynamic -ldl -lm \
+-o embedding-example
+
+
+
+echo "$(tput setaf 3) $(tput bold)"
+cat << EnDoFmEsSaGe
+3. Building the binary library example
+-------------------------------------------------------------------------------
+EnDoFmEsSaGe
+echo "$(tput sgr 0)"
+echoAndRun gcc -O2 -std=c99 -Wall -Wextra -fPIC -I . -c examples/mylib.c
+echoAndRun gcc -O2 -std=c99 -Wall -Wextra -shared -I . -o libmylib.so mylib.o
+
+
+
+echo "$(tput setaf 3) $(tput bold)"
+cat << EnDoFmEsSaGe
+4. Building the interactive Dern REPL
+-------------------------------------------------------------------------------
+EnDoFmEsSaGe
+echo "$(tput sgr 0)"
 echoAndRun gcc -O2 -std=c99 -Wall -Wextra                      \
     -DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION           \
     -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
@@ -28,34 +55,15 @@ echoAndRun gcc -O2 -std=c99 -Wall -Wextra                      \
 
 
 
-echo " "
-cat << EnDoFmEsSaGe
- 3. Building the embedding example
--------------------------------------------------------------------------------
-EnDoFmEsSaGe
-echoAndRun gcc -O2 -std=c99 -Wall -Wextra                      \
-    -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
--I . examples/embedding-example.c -Wl,-export-dynamic -ldl -lm \
--o embedding-example
-
-
-
-echo " "
-cat << EnDoFmEsSaGe
- 4. Building the binary library example
--------------------------------------------------------------------------------
-EnDoFmEsSaGe
-echoAndRun gcc -O2 -std=c99 -Wall -Wextra -fPIC -I . -c examples/mylib.c
-echoAndRun gcc -O2 -std=c99 -Wall -Wextra -shared -I . -o libmylib.so mylib.o
-
-echo "\nDone.\n"
-echo "==============================================================="
+echo "$(tput bold)\nDone."
+echo "$(tput setaf 2) $(tput bold)"
+echo "=================================================================="
 echo "Run programs and examples like this:"
-echo "===============================================================\n"
-echo "./octaspire-dern-unit-test-runner"
-echo "./embedding-example"
-echo "LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/use-mylib.dern"
-echo "./octaspire-dern-repl -c"
-echo "===============================================================\n"
-
+echo "=================================================================="
+echo "$(tput setaf 3)1)$(tput setaf 2) ./octaspire-dern-unit-test-runner"
+echo "$(tput setaf 3)2)$(tput setaf 2) ./embedding-example"
+echo "$(tput setaf 3)3)$(tput setaf 2) LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/use-mylib.dern"
+echo "$(tput setaf 3)4)$(tput setaf 2) ./octaspire-dern-repl -c"
+echo "==================================================================\n"
+echo "$(tput sgr 0)"
 

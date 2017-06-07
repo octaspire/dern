@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.105.0
+Documentation for Octaspire Dern programming language version 0.107.0
 
 == About
 
@@ -83,317 +83,29 @@ http://www.octaspire.com/maze[Maze] and http://www.octaspire.com/lightboard[Ligh
 
 Octaspire Maze and Lightboard are games (work in progress) that are being written using Dern and C99.
 
-== Building from source
 
-To build Dern without the unit tests, replace *cmake ..* with
-*cmake -DOCTASPIRE_DERN_UNIT_TEST=OFF ..* in the instructions that follow.
 
-=== Raspberry Pi, Debian and Ubuntu
+== Building the amalgamated source release
 
-==== Amalgamated source distribution
-
-To download the amalgamated source distribution and build Dern unit test runner and
-Dern REPL in Raspberry Pi (Raspbian), Debian or Ubuntu (16.04 LTS) system:
+The amalgamated source release is the recommended way of using Dern, if you don't need to
+modify Dern itself. To use the amalgamated release, you will need only a C compiler and
+C standard library supporting C99.
 
 :source-highlighter: pygments
 :pygments-style: colorful
 :pygments-linenums-mode: inline
 [source,bash]
 ----
-wget https://github.com/octaspire/dern/releases/download/v0.73.0/octaspire_dern_amalgamated.c
-
-gcc -O3 -std=c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION \
-                               -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                \
-                               -DGREATEST_ENABLE_ANSI_COLORS                         \
-octaspire_dern_amalgamated.c -Wl,-export-dynamic -ldl -lm -o octaspire-dern-test-runner
-
-gcc -O3 -std=c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION \
-                               -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS           \
-octaspire_dern_amalgamated.c -Wl,-export-dynamic -ldl -lm -o octaspire-dern-repl
+curl -O www.octaspire.com/dern/release.tar.bz2
+tar jxf release.tar.bz2
+cd release/*
+curl -O https://octaspire.github.io/dern/checksums
+sha512sum -c checksums
+sh how-to-build/YOUR_PLATFORM_NAME_HERE.XX
 ----
 
-Here is small example where the amalgamated source distribution is used as a Dern library in a program that wants to embed the Dern language:
-
-:source-highlighter: pygments
-:pygments-style: colorful
-:pygments-linenums-mode: inline
-[source,c]
-.main.c
-----
-// Compile with:
-// gcc -O3 -std=c99 -Wall -Wextra main.c -Wl,-export-dynamic -ldl -lm
-#define OCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION
-#include "octaspire_dern_amalgamated.c"
-
-int main(void)
-{
-    octaspire_memory_allocator_t *allocator =
-        octaspire_memory_allocator_new(0);
-
-    octaspire_stdio_t *stdio = octaspire_stdio_new(allocator);
-
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
-
-    octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
-        vm,
-        "(println [Hello World])");
-
-    octaspire_stdio_release(stdio);
-    octaspire_dern_vm_release(vm);
-    octaspire_memory_allocator_release(allocator);
-    return 0;
-}
-----
-
-The amalgamated source distribution is a single source code file, that contains everything that
-is needed for using Dern. The same single file can be used to (by using different compiler flags):
-
-- build a stand-alone unit test runner to test the file.
-- build a stand-alone Dern REPL to run Dern programs interactively.
-- build programs that want to embed the Dern programming language and use the
-  amalgamated file as a single file library.
-
-To use the amalgamated source distribution you don't need any build tools;
-only C compiler is required.
-
-
-==== Regular source distribution
-
-To build Dern from the regular source distribution in Raspberry Pi (Raspbian), Debian or Ubuntu (16.04 LTS) system:
-
-:source-highlighter: pygments
-:pygments-style: colorful
-:pygments-linenums-mode: inline
-[source,bash]
-----
-sudo apt-get install cmake git
-git clone https://github.com/octaspire/dern.git
-cd dern/build
-cmake ..
-make
-----
-
-=== Arch Linux
-
-To build on Arch Linux (Arch Linux ARM) system:
-
-:source-highlighter: pygments
-:pygments-style: colorful
-:pygments-linenums-mode: inline
-[source,bash]
-----
-sudo pacman -S cmake git gcc make
-git clone https://github.com/octaspire/dern.git
-cd dern/build
-cmake ..
-make
-----
-
-=== Haiku
-
-To build on Haiku (Version Walter (Revision hrev51127) x86_gcc2):
-
-:source-highlighter: pygments
-:pygments-style: colorful
-:pygments-linenums-mode: inline
-[source,bash]
-----
-pkgman install gcc_x86 cmake_x86
-git clone https://github.com/octaspire/dern.git
-cd dern/build
-CC=gcc-x86 cmake ..
-make
-----
-
-=== FreeBSD
-
-To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:
-
-:source-highlighter: pygments
-:pygments-style: colorful
-:pygments-linenums-mode: inline
-[source,bash]
-----
-sudo pkg install git cmake
-git clone https://github.com/octaspire/dern.git
-cd dern/build
-cmake ..
-make
-----
-
-
-
-=== NetBSD
-
-To build on NetBSD (NetBSD-7.1-i386) system:
-
-:source-highlighter: pygments
-:pygments-style: colorful
-:pygments-linenums-mode: inline
-[source,bash]
-----
-sudo pkgin install cmake git
-git clone git://github.com/octaspire/dern
-cd dern
-perl -pi -e 's/https/git/' .gitmodules
-cd build
-cmake ..
-make
-----
-
-
-
-=== MINIX 3
-
-==== Amalgamated source distribution
-
-To download the amalgamated source distribution and build Dern unit test runner and
-Dern REPL in MINIX 3 (minix_R3.3.0-588a35b) system:
-
-:source-highlighter: pygments
-:pygments-style: colorful
-:pygments-linenums-mode: inline
-[source,bash]
-----
-curl -OkL https://github.com/octaspire/dern/releases/download/v0.73.0/octaspire_dern_amalgamated.c
-
-clang -O3 -std=c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION \
-                                 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                \
-                                 -DGREATEST_ENABLE_ANSI_COLORS                         \
-octaspire_dern_amalgamated.c -Wl,-export-dynamic -lm -o octaspire-dern-test-runner
-
-clang -O3 -std=c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION \
-                         -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                   \
-octaspire_dern_amalgamated.c -Wl,-export-dynamic -lm -o octaspire-dern-repl
-----
-
-Here is small example where the amalgamated source distribution is used as a Dern library in a
-program that wants to embed the Dern language:
-
-:source-highlighter: pygments
-:pygments-style: colorful
-:pygments-linenums-mode: inline
-[source,c]
-.main.c
-----
-// Compile with:
-// clang -O3 -std=c99 -Wall -Wextra main.c -Wl,-export-dynamic -lm
-#define OCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION
-#include "octaspire_dern_amalgamated.c"
-
-int main(void)
-{
-    octaspire_memory_allocator_t *allocator =
-        octaspire_memory_allocator_new(0);
-
-    octaspire_stdio_t *stdio = octaspire_stdio_new(allocator);
-
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
-
-    octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
-        vm,
-        "(println [Hello World])");
-
-    octaspire_stdio_release(stdio);
-    octaspire_dern_vm_release(vm);
-    octaspire_memory_allocator_release(allocator);
-    return 0;
-}
-----
-
-The amalgamated source distribution is a single source code file, that contains everything that
-is needed for using Dern. The same single file can be used to (by using different compiler flags):
-
-- build a stand-alone unit test runner to test the file.
-- build a stand-alone Dern REPL to run Dern programs interactively.
-- build programs that want to embed the Dern programming language and use the
-  amalgamated file as a single file library.
-
-To use the amalgamated source distribution you don't need any build tools;
-only C compiler is required.
-
-==== Regular source distribution
-
-To build from the regular source distribution on MINIX 3 (minix_R3.3.0-588a35b) system:
-
-:source-highlighter: pygments
-:pygments-style: colorful
-:pygments-linenums-mode: inline
-[source,bash]
-----
-su root
-pkgin install cmake clang binutils git-base
-exit
-git clone git://github.com/octaspire/dern
-cd dern
-perl -pi -e 's/https/git/' .gitmodules
-cd build
-cmake ..
-make
-----
-
-=== Other systems
-
-On different systems the required commands can vary. In any case, you should install
-a *C compiler*, *cmake* and *git*. Depending on the system, you might need to install
-also either *make* or *ninja*.
-
-This is all there should be to it; *octaspire core* is included as a git submodule
-and it should be updated and be build automatically, so when make finishes, everything
-should be ready.
-
-== Running Dern
-
-To run the unit tests:
-
-:source-highlighter: pygments
-:pygments-style: colorful
-:pygments-linenums-mode: inline
-[source,bash]
-----
-test/octaspire-dern-test-runner
-----
-
-To start the REPL with color diagnostics (requires support for ANSI color escapes):
-
-:source-highlighter: pygments
-:pygments-style: colorful
-:pygments-linenums-mode: inline
-[source,bash]
-----
-./octaspire-dern-repl -c
-----
-
-To see the allowed options run:
-
-:source-highlighter: pygments
-:pygments-style: colorful
-:pygments-linenums-mode: inline
-[source,bash]
-----
-./octaspire-dern-repl -h
-----
-
-[NOTE]
-Man pages are not ready yet.
-
-
-
-== Using the amalgamated source
-
-*etc*-directory of the source distribution contains amalgamated version
-of the source code. All the headers, implementation files and unit tests
-are concatenated with a script into a single file. This one file
-is all that is needed to use Octaspire Dern. The same single file
-can be used to (by giving different compiler flags):
-
-- as an include in a project that wants to embed the Dern language
-- as a stand-alone Dern REPL
-- as a stand-alone unit test runner
-
-TODO
-
-
+replace *YOUR_PLATFORM_NAME_HERE.XX* with *FreeBSD.sh*, *NetBSD.sh*, *linux.sh*, *minix3.sh*
+or *haiku.sh*. More scripts for different platforms will be added later.
 
 == Hello world
 
@@ -1274,4 +986,186 @@ Octaspire Maze and Lightboard are games (work in progress) that are being writte
 
 *etc*-directory of the source distribution contains syntax files for *vim*, *emacs* and
 *pygments*.
+
+
+
+
+
+
+
+
+
+
+== Building the development repository
+
+To build Dern without the unit tests, replace *cmake ..* with
+*cmake -DOCTASPIRE_DERN_UNIT_TEST=OFF ..* in the instructions that follow.
+
+=== Raspberry Pi, Debian and Ubuntu
+
+To build Dern from the regular source distribution in Raspberry Pi (Raspbian), Debian or Ubuntu (16.04 LTS) system:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+sudo apt-get install cmake git
+git clone https://github.com/octaspire/dern.git
+cd dern/build
+cmake ..
+make
+----
+
+=== Arch Linux
+
+To build on Arch Linux (Arch Linux ARM) system:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+sudo pacman -S cmake git gcc make
+git clone https://github.com/octaspire/dern.git
+cd dern/build
+cmake ..
+make
+----
+
+=== Haiku
+
+To build on Haiku (Version Walter (Revision hrev51127) x86_gcc2):
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+pkgman install gcc_x86 cmake_x86
+git clone https://github.com/octaspire/dern.git
+cd dern/build
+CC=gcc-x86 cmake ..
+make
+----
+
+=== FreeBSD
+
+To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+sudo pkg install git cmake
+git clone https://github.com/octaspire/dern.git
+cd dern/build
+cmake ..
+make
+----
+
+
+
+=== NetBSD
+
+To build on NetBSD (NetBSD-7.1-i386) system:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+sudo pkgin install cmake git
+git clone git://github.com/octaspire/dern
+cd dern
+perl -pi -e 's/https/git/' .gitmodules
+cd build
+cmake ..
+make
+----
+
+
+
+=== MINIX 3
+
+To build from the regular source distribution on MINIX 3 (minix_R3.3.0-588a35b) system:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+su root
+pkgin install cmake clang binutils git-base
+exit
+git clone git://github.com/octaspire/dern
+cd dern
+perl -pi -e 's/https/git/' .gitmodules
+cd build
+cmake ..
+make
+----
+
+=== Other systems
+
+On different systems the required commands can vary. In any case, you should install
+a *C compiler*, *cmake* and *git*. Depending on the system, you might need to install
+also either *make* or *ninja*.
+
+This is all there should be to it; *octaspire core* is included as a git submodule
+and it should be updated and be build automatically, so when make finishes, everything
+should be ready.
+
+== Running Dern
+
+To run the unit tests:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+test/octaspire-dern-test-runner
+----
+
+To start the REPL with color diagnostics (requires support for ANSI color escapes):
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+./octaspire-dern-repl -c
+----
+
+To see the allowed options run:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+./octaspire-dern-repl -h
+----
+
+[NOTE]
+Man pages are not ready yet.
+
+
+
+== Using the amalgamated source
+
+*etc*-directory of the source distribution contains amalgamated version
+of the source code. All the headers, implementation files and unit tests
+are concatenated with a script into a single file. This one file
+is all that is needed to use Octaspire Dern. The same single file
+can be used to (by giving different compiler flags):
+
+- as an include in a project that wants to embed the Dern language
+- as a stand-alone Dern REPL
+- as a stand-alone unit test runner
+
+
+
 
