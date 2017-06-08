@@ -73,17 +73,19 @@ create_new_version() {
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     mkdir -p "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    mkdir -p "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "\nCreate a README file...\n--------------------------\n"
     echo \
 "This is amalgamated single file source release for Octaspire Dern programming\n\
 language version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH. File 'octaspire-dern-amalgamated.c'\n\
-is all that is needed; it has no other dependecies than a C compiler and\n\
+is all that is needed; it has no other dependencies than a C compiler and\n\
 standard library supporting C99.\n\
 \n\
 SHA-512 checksums for this and older releases can be found from:\n\
-https://octaspire.github.io/dern/ If you want to check this release, download\n\
-checksums for version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH from:\n\
+https://octaspire.github.io/dern/\n\
+If you want to check this release, download checksums for version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH from:\n\
 https://octaspire.github.io/dern/checksums-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH\n\
 \n\
 Building instructions for all supported platforms (and scripts for building\n\
@@ -102,8 +104,18 @@ be used for different purposes:\n\
 Octaspire Dern is work in progress. The most recent version\n\
 of this amalgamated source release can be downloaded from:\n\
 \n\
-\t* www.octaspire.com/dern/release.tar.bz2\n\
-\t* https://octaspire.github.io/dern/release.tar.bz2\n" > "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/README"
+\t* octaspire.com/dern/release.tar.bz2\n\
+\t* https://octaspire.github.io/dern/release.tar.bz2\n\
+\n\
+Directory 'tool-support' contains files that help working with the Dern\n\
+language using different tools; there are, for example, syntax files\n\
+to allow Dern code to be syntax highlighted in Vim, Emacs and Pygments.\n\
+\n\
+Directory 'documentation' contains the book 'Programming in Octaspire Dern'\n\
+and directory 'examples' has some short examples.\n\
+\n\
+More information about Dern can be found from the homepage:\n\
+octaspire.com/dern\n" > "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/README"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "\nCopying amalgamation...\n--------------------------\n"
@@ -132,10 +144,26 @@ of this amalgamated source release can be downloaded from:\n\
     cp -r "$PROJECT_PATH/etc/how-to-build/" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
+    echo "\nCopying tool-support directories...\n--------------------------\n"
+    cp -r "$PROJECT_PATH/etc/emacs" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    cp -r "$PROJECT_PATH/etc/vim" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    cp -r "$PROJECT_PATH/etc/pygments" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+
     echo "\nCompressing release directory into tar.bz2...\n--------------------------\n"
     cd "$PROJECT_PATH/etc/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     tar --bzip2 -cf "release.tar.bz2" release
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+
+    echo "\nRemoving $PROJECT_PATH/release/ and creating it again with updates\n--------------------------\n"
+    rm -rf "$PROJECT_PATH/release"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    cp -r "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH" "$PROJECT_PATH"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    mv "$PROJECT_PATH/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH" "$PROJECT_PATH/release"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "\nRelease $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH created."
