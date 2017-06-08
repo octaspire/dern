@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.115.0
+Documentation for Octaspire Dern programming language version 0.116.0
 
 == About
 
@@ -65,20 +65,9 @@ even in backwards incompatible manner.
 
 == See Dern in action
 
-See Dern in action the video below. Dern is build from source in Raspberry Pi and some example
-programs are run:
-
 ++++
-<script type="text/javascript" src="https://asciinema.org/a/112216.js" id="asciicast-112216" async></script>
+<script type="text/javascript" src="https://asciinema.org/a/123972.js" id="asciicast-123972" async></script>
 ++++
-
-Downloading and building amalgamated source distribution of Octaspire Dern in Raspberry Pi 2.
-Just one file. No build tools required. No dependencies, only C compiler is needed.
-
-++++
-<script type="text/javascript" src="https://asciinema.org/a/121995.js" id="asciicast-121995" async></script>
-++++
-
 
 You can also see Dern in "real" use at:
 http://www.octaspire.com/maze[Maze] and http://www.octaspire.com/lightboard[Lightboard].
