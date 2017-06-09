@@ -15799,9 +15799,9 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "118"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.118.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.118.1"
 
 
 
@@ -48712,12 +48712,16 @@ void octaspire_dern_amalgamated_write_test_file(
 
     if (!buffer || !bufferSize)
     {
-        if (fwrite("", sizeof(char), 0, stream) != 0)
+        if (fclose(stream) != 0)
         {
-            fclose(stream);
-            stream = 0;
             abort();
         }
+
+        stream = 0;
+
+        printf("  Wrote empty file '%s'\n", name);
+
+        return;
     }
     else
     {
@@ -48733,6 +48737,8 @@ void octaspire_dern_amalgamated_write_test_file(
     {
         abort();
     }
+
+    stream = 0;
 
     printf("  Wrote file '%s'\n", name);
 }

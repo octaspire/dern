@@ -322,12 +322,16 @@ void octaspire_dern_amalgamated_write_test_file(
 
     if (!buffer || !bufferSize)
     {
-        if (fwrite("", sizeof(char), 0, stream) != 0)
+        if (fclose(stream) != 0)
         {
-            fclose(stream);
-            stream = 0;
             abort();
         }
+
+        stream = 0;
+
+        printf("  Wrote empty file '%s'\n", name);
+
+        return;
     }
     else
     {
@@ -343,6 +347,8 @@ void octaspire_dern_amalgamated_write_test_file(
     {
         abort();
     }
+
+    stream = 0;
 
     printf("  Wrote file '%s'\n", name);
 }
