@@ -15799,9 +15799,9 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "117"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.117.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.117.1"
 
 
 
@@ -35988,7 +35988,7 @@ TEST octaspire_dern_lexer_pop_next_token_real_12_dot_3_test(void)
     ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
 
     ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_REAL, token->typeTag);
-    ASSERT_EQ(12.3,                                token->value.real);
+    ASSERT_IN_RANGE(12.3, token->value.real, 0.000001);
 
     octaspire_dern_lexer_token_release(token);
     token = 0;
@@ -36054,7 +36054,7 @@ TEST octaspire_dern_lexer_pop_next_token_real_759_dot_2_after_whitespace_test(vo
     ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
 
     ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_REAL, token->typeTag);
-    ASSERT_EQ(759.2,                               token->value.real);
+    ASSERT_IN_RANGE(759.2, token->value.real, 0.00001);
 
     octaspire_dern_lexer_token_release(token);
     token = 0;
@@ -36120,7 +36120,7 @@ TEST octaspire_dern_lexer_pop_next_token_real_759_dot_2_amid_whitespace_test(voi
     ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
 
     ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_REAL, token->typeTag);
-    ASSERT_EQ(759.2,                               token->value.real);
+    ASSERT_IN_RANGE(759.2, token->value.real, 0.00001);
 
     octaspire_dern_lexer_token_release(token);
     token = 0;
