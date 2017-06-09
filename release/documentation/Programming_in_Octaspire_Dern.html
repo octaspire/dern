@@ -804,7 +804,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.117.1</p></div>
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.118.0</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -876,6 +876,8 @@ even in backwards incompatible manner.</p></div>
 <div class="paragraph"><p>The amalgamated source release is the recommended way of using Dern, if you don&#8217;t need to
 modify Dern itself. To use the amalgamated release, you will need only a C compiler and
 C standard library supporting C99.</p></div>
+<div class="sect2">
+<h3 id="_linux_freebsd_openbsd_netbsd_minix_3_haiku">Linux, FreeBSD, OpenBSD, NetBSD, MINIX 3, Haiku</h3>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span>curl -O octaspire.com/dern/release.tar.bz2
 tar jxf release.tar.bz2
@@ -884,8 +886,51 @@ curl -O https://octaspire.github.io/dern/checksums
 sha512sum -c checksums
 sh how-to-build/YOUR_PLATFORM_NAME_HERE.XX
 </pre></div></div></div>
-<div class="paragraph"><p>replace <strong>YOUR_PLATFORM_NAME_HERE.XX</strong> with <strong>FreeBSD.sh</strong>, <strong>NetBSD.sh</strong>, <strong>linux.sh</strong>, <strong>minix3.sh</strong>
-or <strong>haiku.sh</strong>. More scripts for different platforms will be added later.</p></div>
+<div class="paragraph"><p>replace <strong>YOUR_PLATFORM_NAME_HERE.XX</strong> with <strong>FreeBSD.sh</strong>, <strong>NetBSD.sh</strong>, <strong>OpenBSD.sh</strong>, <strong>linux.sh</strong>,
+<strong>minix3.sh</strong> or <strong>haiku.sh</strong>. More scripts for different platforms will be added later.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_windows_using_mingw">Windows using MinGW</h3>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Download and install <strong>MinGW</strong> from
+<a href="http://www.mingw.org">www.mingw.org</a> into directory <span class="monospaced">C:\MinGW</span>. Please note, that you might need
+to add <span class="monospaced">C:\MinGW</span> and <span class="monospaced">C:\MinGW\bin</span> into the <span class="monospaced">PATH</span>.
+If you cannot install into <span class="monospaced">C:\MinGW</span>, you can install MinGW to some other place.
+Remember the installation path, because later you can write it into the
+<span class="monospaced">WindowsMinGW.bat</span> file, so that the script finds MinGW.
+</p>
+</li>
+<li>
+<p>
+Download and install <strong>7-Zip</strong> from
+<a href="http://www.7-zip.org">www.7-zip.org</a>.
+</p>
+</li>
+<li>
+<p>
+Download
+<a href="http://www.octaspire.com/dern/release.tar.bz2">www.octaspire.com/dern/release.tar.bz2</a> and
+extract it with 7-Zip. You might need to extract it twice; first into file <span class="monospaced">release.tar</span>
+and then again to get the directory.
+</p>
+</li>
+<li>
+<p>
+Start <strong>shell</strong> and change directory to the extracted release directory
+   and then into directory <span class="monospaced">version-x.y.z</span>, where x, y and z are some version
+   numbers.
+</p>
+</li>
+<li>
+<p>
+When you are in the directory <span class="monospaced">version-x.y.z</span> run command <span class="monospaced">how-to-build\WindowsMinGW.bat</span>
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>More scripts for different tools might be added later.</p></div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1708,7 +1753,7 @@ as a stand-alone unit test runner
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-06-09 16:18:35 EEST
+ 2017-06-09 22:53:37 EEST
 </div>
 </div>
 </body>
