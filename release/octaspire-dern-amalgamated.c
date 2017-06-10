@@ -165,10 +165,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "36"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "37"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.36.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.37.0"
 
 
 
@@ -660,6 +660,14 @@ bool octaspire_container_utf8_string_is_equal(
     octaspire_container_utf8_string_t const * const other);
 
 bool octaspire_container_utf8_string_is_equal_to_c_string(
+    octaspire_container_utf8_string_t const * const self,
+    char const * const str);
+
+int octaspire_container_utf8_string_compare(
+    octaspire_container_utf8_string_t const * const self,
+    octaspire_container_utf8_string_t const * const other);
+
+int octaspire_container_utf8_string_compare_to_c_string(
     octaspire_container_utf8_string_t const * const self,
     char const * const str);
 
@@ -4072,6 +4080,30 @@ bool octaspire_container_utf8_string_is_equal_to_c_string(
     return memcmp(octaspire_container_vector_get_element_at(self->octets,  0), str, len) == 0;
 }
 
+int octaspire_container_utf8_string_compare(
+    octaspire_container_utf8_string_t const * const self,
+    octaspire_container_utf8_string_t const * const other)
+{
+    assert(self);
+    assert(other);
+    assert(octaspire_container_vector_get_length(self->octets) > 0);
+    assert(octaspire_container_vector_get_length(other->octets) > 0);
+
+    return octaspire_container_utf8_string_compare_to_c_string(
+        self,
+        octaspire_container_utf8_string_get_c_string(other));
+}
+
+int octaspire_container_utf8_string_compare_to_c_string(
+    octaspire_container_utf8_string_t const * const self,
+    char const * const str)
+{
+    assert(self);
+    assert(str);
+    assert(octaspire_container_vector_get_length(self->octets) > 0);
+
+    return strcmp(octaspire_container_utf8_string_get_c_string(self), str);
+}
 
 bool octaspire_container_utf8_string_starts_with(
     octaspire_container_utf8_string_t const * const self,
@@ -14055,6 +14087,174 @@ TEST octaspire_container_utf8_string_pop_back_ucs_character_test(void)
     PASS();
 }
 
+TEST octaspire_container_utf8_string_compare_with_two_empty_strings_test(void)
+{
+    octaspire_container_utf8_string_t *str1 =
+        octaspire_container_utf8_string_new("", octaspireContainerUtf8StringTestAllocator);
+
+    octaspire_container_utf8_string_t *str2 =
+        octaspire_container_utf8_string_new("", octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+    ASSERT(str2);
+    ASSERT_EQ(0, octaspire_container_utf8_string_compare(str1, str2));
+
+    octaspire_container_utf8_string_release(str1);
+    str1 = 0;
+
+    octaspire_container_utf8_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_container_utf8_string_compare_with_abc_and_empty_string_test(void)
+{
+    octaspire_container_utf8_string_t *str1 =
+        octaspire_container_utf8_string_new("abc", octaspireContainerUtf8StringTestAllocator);
+
+    octaspire_container_utf8_string_t *str2 =
+        octaspire_container_utf8_string_new("", octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+    ASSERT(str2);
+    ASSERT(octaspire_container_utf8_string_compare(str1, str2) > 0);
+
+    octaspire_container_utf8_string_release(str1);
+    str1 = 0;
+
+    octaspire_container_utf8_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_container_utf8_string_compare_with_empty_string_and_abc_test(void)
+{
+    octaspire_container_utf8_string_t *str1 =
+        octaspire_container_utf8_string_new("", octaspireContainerUtf8StringTestAllocator);
+
+    octaspire_container_utf8_string_t *str2 =
+        octaspire_container_utf8_string_new("abc", octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+    ASSERT(str2);
+    ASSERT(octaspire_container_utf8_string_compare(str1, str2) < 0);
+
+    octaspire_container_utf8_string_release(str1);
+    str1 = 0;
+
+    octaspire_container_utf8_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_container_utf8_string_compare_with_string_abc_and_abc_test(void)
+{
+    octaspire_container_utf8_string_t *str1 =
+        octaspire_container_utf8_string_new("abc", octaspireContainerUtf8StringTestAllocator);
+
+    octaspire_container_utf8_string_t *str2 =
+        octaspire_container_utf8_string_new("abc", octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+    ASSERT(str2);
+    ASSERT_EQ(0, octaspire_container_utf8_string_compare(str1, str2));
+
+    octaspire_container_utf8_string_release(str1);
+    str1 = 0;
+
+    octaspire_container_utf8_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_container_utf8_string_compare_with_string_abd_and_abc_test(void)
+{
+    octaspire_container_utf8_string_t *str1 =
+        octaspire_container_utf8_string_new("abd", octaspireContainerUtf8StringTestAllocator);
+
+    octaspire_container_utf8_string_t *str2 =
+        octaspire_container_utf8_string_new("abc", octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+    ASSERT(str2);
+    ASSERT(octaspire_container_utf8_string_compare(str1, str2) > 0);
+
+    octaspire_container_utf8_string_release(str1);
+    str1 = 0;
+
+    octaspire_container_utf8_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_container_utf8_string_compare_with_string_abca_and_abc_test(void)
+{
+    octaspire_container_utf8_string_t *str1 =
+        octaspire_container_utf8_string_new("abca", octaspireContainerUtf8StringTestAllocator);
+
+    octaspire_container_utf8_string_t *str2 =
+        octaspire_container_utf8_string_new("abc", octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+    ASSERT(str2);
+    ASSERT(octaspire_container_utf8_string_compare(str1, str2) > 0);
+
+    octaspire_container_utf8_string_release(str1);
+    str1 = 0;
+
+    octaspire_container_utf8_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_container_utf8_string_compare_with_string_abb_and_abc_test(void)
+{
+    octaspire_container_utf8_string_t *str1 =
+        octaspire_container_utf8_string_new("abb", octaspireContainerUtf8StringTestAllocator);
+
+    octaspire_container_utf8_string_t *str2 =
+        octaspire_container_utf8_string_new("abc", octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+    ASSERT(str2);
+    ASSERT(octaspire_container_utf8_string_compare(str1, str2) < 0);
+
+    octaspire_container_utf8_string_release(str1);
+    str1 = 0;
+
+    octaspire_container_utf8_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_container_utf8_string_compare_with_string_abc_and_abca_test(void)
+{
+    octaspire_container_utf8_string_t *str1 =
+        octaspire_container_utf8_string_new("abc", octaspireContainerUtf8StringTestAllocator);
+
+    octaspire_container_utf8_string_t *str2 =
+        octaspire_container_utf8_string_new("abca", octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+    ASSERT(str2);
+    ASSERT(octaspire_container_utf8_string_compare(str1, str2) < 0);
+
+    octaspire_container_utf8_string_release(str1);
+    str1 = 0;
+
+    octaspire_container_utf8_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_container_utf8_string_suite)
 {
     octaspireContainerUtf8StringTestAllocator = octaspire_memory_allocator_new(0);
@@ -14136,6 +14336,15 @@ GREATEST_SUITE(octaspire_container_utf8_string_suite)
     RUN_TEST(octaspire_container_utf8_string_insert_string_to_bc_into_index_0_of_ade_test);
     RUN_TEST(octaspire_container_utf8_string_insert_string_to_bc_into_index_2_of_ade_test);
     RUN_TEST(octaspire_container_utf8_string_pop_back_ucs_character_test);
+
+    RUN_TEST(octaspire_container_utf8_string_compare_with_two_empty_strings_test);
+    RUN_TEST(octaspire_container_utf8_string_compare_with_abc_and_empty_string_test);
+    RUN_TEST(octaspire_container_utf8_string_compare_with_empty_string_and_abc_test);
+    RUN_TEST(octaspire_container_utf8_string_compare_with_string_abc_and_abc_test);
+    RUN_TEST(octaspire_container_utf8_string_compare_with_string_abd_and_abc_test);
+    RUN_TEST(octaspire_container_utf8_string_compare_with_string_abca_and_abc_test);
+    RUN_TEST(octaspire_container_utf8_string_compare_with_string_abb_and_abc_test);
+    RUN_TEST(octaspire_container_utf8_string_compare_with_string_abc_and_abca_test);
 
     octaspire_memory_allocator_release(octaspireContainerUtf8StringTestAllocator);
     octaspireContainerUtf8StringTestAllocator = 0;
@@ -15798,10 +16007,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "118"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "126"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.118.1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.126.0"
 
 
 
@@ -15971,6 +16180,85 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+// START OF        ../include/octaspire/dern/octaspire_dern_c_data.h
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+Octaspire Dern - Programming language
+Copyright 2017 www.octaspire.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+******************************************************************************/
+#ifndef OCTASPIRE_DERN_C_DATA_H
+#define OCTASPIRE_DERN_C_DATA_H
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct octaspire_dern_c_data_t octaspire_dern_c_data_t;
+
+octaspire_dern_c_data_t *octaspire_dern_c_data_new(
+    char const * const pluginName,
+    char const * const typeNameForPayload,
+    void * const payload,
+    octaspire_memory_allocator_t *allocator);
+
+octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
+    octaspire_dern_c_data_t * const other,
+    octaspire_memory_allocator_t *allocator);
+
+void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self);
+
+octaspire_container_utf8_string_t *octaspire_dern_c_data_to_string(
+    octaspire_dern_c_data_t const * const self,
+    octaspire_memory_allocator_t * const allocator);
+
+bool octaspire_dern_c_data_is_equal(
+    octaspire_dern_c_data_t const * const self,
+    octaspire_dern_c_data_t const * const other);
+
+int octaspire_dern_c_data_compare(
+    octaspire_dern_c_data_t const * const self,
+    octaspire_dern_c_data_t const * const other);
+
+bool octaspire_dern_c_data_is_plugin_and_payload_type_name(
+    octaspire_dern_c_data_t const * const self,
+    char const * const pluginName,
+    char const * const typeNameForPayload);
+
+char const *octaspire_dern_c_data_get_plugin_name(
+    octaspire_dern_c_data_t const * const self);
+
+char const *octaspire_dern_c_data_get_payload_typename(
+    octaspire_dern_c_data_t const * const self);
+
+void *octaspire_dern_c_data_get_payload(
+    octaspire_dern_c_data_t const * const self);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// END OF          ../include/octaspire/dern/octaspire_dern_c_data.h
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
 // START OF        ../include/octaspire/dern/octaspire_dern_port.h
 //////////////////////////////////////////////////////////////////////////////////////////////////
 /******************************************************************************
@@ -16116,7 +16404,8 @@ typedef enum
     OCTASPIRE_DERN_VALUE_TAG_FUNCTION,
     OCTASPIRE_DERN_VALUE_TAG_SPECIAL,
     OCTASPIRE_DERN_VALUE_TAG_BUILTIN,
-    OCTASPIRE_DERN_VALUE_TAG_PORT
+    OCTASPIRE_DERN_VALUE_TAG_PORT,
+    OCTASPIRE_DERN_VALUE_TAG_C_DATA
 }
 octaspire_dern_value_tag_t;
 
@@ -16219,6 +16508,7 @@ struct octaspire_dern_value_t
         octaspire_dern_special_t            *special;
         octaspire_dern_builtin_t            *builtin;
         octaspire_dern_port_t               *port;
+        octaspire_dern_c_data_t             *cData;
     }
     value;
 };
@@ -16287,10 +16577,19 @@ bool octaspire_dern_value_is_string(
 bool octaspire_dern_value_is_symbol(
     octaspire_dern_value_t const * const self);
 
+bool octaspire_dern_value_is_text(
+    octaspire_dern_value_t const * const self);
+
 bool octaspire_dern_value_is_vector(
     octaspire_dern_value_t const * const self);
 
 bool octaspire_dern_value_is_hash_map(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_port(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_c_data(
     octaspire_dern_value_t const * const self);
 
 void octaspire_dern_value_print(
@@ -16355,6 +16654,9 @@ char const *octaspire_dern_value_as_string_get_c_string(
     octaspire_dern_value_t const * const self);
 
 char const *octaspire_dern_value_as_symbol_get_c_string(
+    octaspire_dern_value_t const * const self);
+
+char const *octaspire_dern_value_as_text_get_c_string(
     octaspire_dern_value_t const * const self);
 
 size_t octaspire_dern_value_as_vector_get_length(
@@ -16719,6 +17021,12 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_function(
 
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_special     (octaspire_dern_vm_t *self, octaspire_dern_special_t * const value, char const * const docstr);
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_builtin     (octaspire_dern_vm_t *self, octaspire_dern_builtin_t * const value, char const * const docstr);
+
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
+    octaspire_dern_vm_t * const self,
+    char const * const pluginName,
+    char const * const typeNameForPayload,
+    void * const payload);
 
 bool octaspire_dern_vm_push_value(octaspire_dern_vm_t *self, struct octaspire_dern_value_t *value);
 bool octaspire_dern_vm_pop_value (octaspire_dern_vm_t *self, struct octaspire_dern_value_t *valueForBalanceCheck);
@@ -20409,6 +20717,196 @@ char const *octaspire_dern_lib_get_error_message(octaspire_dern_lib_t const * co
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../src/octaspire_dern_lib.c
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// START OF        ../src/octaspire_dern_c_data.c
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+Octaspire Dern - Programming language
+Copyright 2017 www.octaspire.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+******************************************************************************/
+
+struct octaspire_dern_c_data_t
+{
+    octaspire_container_utf8_string_t *pluginName;
+    octaspire_container_utf8_string_t *typeNameForPayload;
+    void                              *payload;
+    octaspire_memory_allocator_t      *allocator;
+};
+
+octaspire_dern_c_data_t *octaspire_dern_c_data_new(
+    char const * const pluginName,
+    char const * const typeNameForPayload,
+    void * const payload,
+    octaspire_memory_allocator_t *allocator)
+{
+    octaspire_dern_c_data_t *self =
+        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_c_data_t));
+
+    if (!self)
+    {
+        return self;
+    }
+
+    self->allocator          = allocator;
+    self->pluginName         = octaspire_container_utf8_string_new(pluginName,         self->allocator);
+    self->typeNameForPayload = octaspire_container_utf8_string_new(typeNameForPayload, self->allocator);
+    self->payload            = payload;
+
+    return self;
+}
+
+octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
+    octaspire_dern_c_data_t * const other,
+    octaspire_memory_allocator_t *allocator)
+{
+    return octaspire_dern_c_data_new(
+        octaspire_container_utf8_string_get_c_string(other->pluginName),
+        octaspire_container_utf8_string_get_c_string(other->typeNameForPayload),
+        other->payload,
+        allocator);
+}
+
+void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
+{
+    if (!self)
+    {
+        return;
+    }
+
+    octaspire_container_utf8_string_release(self->pluginName);
+    self->pluginName = 0;
+
+    octaspire_container_utf8_string_release(self->typeNameForPayload);
+    self->typeNameForPayload = 0;
+
+    octaspire_memory_allocator_free(self->allocator, self);
+}
+
+octaspire_container_utf8_string_t *octaspire_dern_c_data_to_string(
+    octaspire_dern_c_data_t const * const self,
+    octaspire_memory_allocator_t * const allocator)
+{
+    return octaspire_container_utf8_string_new_format(
+        allocator,
+        "C data (%s : %s) %p",
+        octaspire_container_utf8_string_get_c_string(self->pluginName),
+        octaspire_container_utf8_string_get_c_string(self->typeNameForPayload),
+        (void*)self->payload);
+}
+
+bool octaspire_dern_c_data_is_equal(
+    octaspire_dern_c_data_t const * const self,
+    octaspire_dern_c_data_t const * const other)
+{
+    if (self->payload != other->payload)
+    {
+        return false;
+    }
+
+    if (octaspire_container_utf8_string_is_equal(self->pluginName, other->pluginName))
+    {
+        return false;
+    }
+
+    if (octaspire_container_utf8_string_is_equal(self->typeNameForPayload, other->typeNameForPayload))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+int octaspire_dern_c_data_compare(
+    octaspire_dern_c_data_t const * const self,
+    octaspire_dern_c_data_t const * const other)
+{
+    int tmp = octaspire_container_utf8_string_compare(self->pluginName, other->pluginName);
+
+    if (tmp != 0)
+    {
+        return tmp;
+    }
+
+    tmp = octaspire_container_utf8_string_compare(
+        self->typeNameForPayload,
+        other->typeNameForPayload);
+
+    if (tmp != 0)
+    {
+        return tmp;
+    }
+
+    ptrdiff_t const diff = self - other;
+
+    if (diff == 0)
+    {
+        return 0;
+    }
+
+    if (diff < 0)
+    {
+        return -1;
+    }
+
+    return 1;
+}
+
+bool octaspire_dern_c_data_is_plugin_and_payload_type_name(
+    octaspire_dern_c_data_t const * const self,
+    char const * const pluginName,
+    char const * const typeNameForPayload)
+{
+    if (!octaspire_container_utf8_string_is_equal_to_c_string(self->pluginName, pluginName))
+    {
+        return false;
+    }
+
+    if (!octaspire_container_utf8_string_is_equal_to_c_string(
+            self->typeNameForPayload,
+            typeNameForPayload))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+char const *octaspire_dern_c_data_get_plugin_name(
+    octaspire_dern_c_data_t const * const self)
+{
+    return octaspire_container_utf8_string_get_c_string(self->pluginName);
+}
+
+char const *octaspire_dern_c_data_get_payload_typename(
+    octaspire_dern_c_data_t const * const self)
+{
+    return octaspire_container_utf8_string_get_c_string(self->typeNameForPayload);
+}
+
+void *octaspire_dern_c_data_get_payload(
+    octaspire_dern_c_data_t const * const self)
+{
+    return self->payload;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// END OF          ../src/octaspire_dern_c_data.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -27005,7 +27503,8 @@ static char const * const octaspire_dern_value_helper_type_tags_as_c_strings[] =
     "function",
     "special",
     "builtin",
-    "port"
+    "port",
+    "C data"
 };
 
 octaspire_dern_function_t *octaspire_dern_function_new(
@@ -27486,6 +27985,15 @@ bool octaspire_dern_value_set(
             abort();
         }
         break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            self->value.cData =
+                octaspire_dern_c_data_new_copy(
+                    value->value.cData,
+                    octaspire_dern_vm_get_allocator(self->vm));
+        }
+        break;
     }
 
     if (value->docstr)
@@ -27642,6 +28150,7 @@ uint32_t octaspire_dern_value_get_hash(
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.special);
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.builtin);
         case OCTASPIRE_DERN_VALUE_TAG_PORT:        return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.port);
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:      return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.cData);
     }
 
     abort();
@@ -27709,6 +28218,11 @@ bool octaspire_dern_value_is_equal(
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special == other->value.special;
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin == other->value.builtin;
         case OCTASPIRE_DERN_VALUE_TAG_PORT:        return self->value.port    == other->value.port;
+
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            return octaspire_dern_c_data_is_equal(self->value.cData, other->value.cData);
+        }
     }
 
     abort();
@@ -28226,6 +28740,12 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
             }
             break;
 
+            case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+            {
+                return octaspire_dern_c_data_to_string(self->value.cData, allocator);
+            }
+            break;
+
             case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
             {
                 return octaspire_container_utf8_string_new("<special>", allocator);
@@ -28314,6 +28834,15 @@ bool octaspire_dern_value_is_symbol(
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL;
 }
 
+bool octaspire_dern_value_is_text(
+    octaspire_dern_value_t const * const self)
+{
+    return
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_CHARACTER ||
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING    ||
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL;
+}
+
 bool octaspire_dern_value_is_vector(
     octaspire_dern_value_t const * const self)
 {
@@ -28324,6 +28853,18 @@ bool octaspire_dern_value_is_hash_map(
     octaspire_dern_value_t const * const self)
 {
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP;
+}
+
+bool octaspire_dern_value_is_port(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_PORT;
+}
+
+bool octaspire_dern_value_is_c_data(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_C_DATA;
 }
 
 void octaspire_dern_value_print(
@@ -29039,6 +29580,39 @@ char const *octaspire_dern_value_as_symbol_get_c_string(
     return octaspire_container_utf8_string_get_c_string(self->value.symbol);
 }
 
+char const *octaspire_dern_value_as_text_get_c_string(
+    octaspire_dern_value_t const * const self)
+{
+    switch (self->typeTag)
+    {
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        {
+            return octaspire_container_utf8_string_get_c_string(self->value.character);
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            return octaspire_container_utf8_string_get_c_string(self->value.string);
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            return octaspire_container_utf8_string_get_c_string(self->value.symbol);
+        }
+        break;
+
+        default:
+        {
+            octaspire_helpers_verify(false);
+        }
+        break;
+    }
+
+    return 0;
+}
+
 size_t octaspire_dern_value_as_vector_get_length(
     octaspire_dern_value_t const * const self)
 {
@@ -29201,6 +29775,7 @@ size_t octaspire_dern_value_get_length(
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special->numRequiredActualArguments;
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin->numRequiredActualArguments;
         case OCTASPIRE_DERN_VALUE_TAG_PORT:        return (size_t)octaspire_dern_port_get_length_in_octets(self->value.port);
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:      return 1;
     }
 
     abort();
@@ -29348,6 +29923,11 @@ int octaspire_dern_value_compare(
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return (ptrdiff_t)self->value.special - (ptrdiff_t)other->value.special;
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return (ptrdiff_t)self->value.builtin - (ptrdiff_t)other->value.builtin;
         case OCTASPIRE_DERN_VALUE_TAG_PORT:        return (ptrdiff_t)self->value.port - (ptrdiff_t)other->value.port;
+
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            return octaspire_dern_c_data_compare(self->value.cData, other->value.cData);
+        }
     }
 
     abort();
@@ -29373,6 +29953,7 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         case OCTASPIRE_DERN_VALUE_TAG_PORT: // TODO XXX atom or not? Also, think about renaming this func.
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             return true;
         }
@@ -30825,6 +31406,13 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
                 octaspire_dern_port_new_copy(valueToBeCopied->value.port, self->allocator);
         }
         break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            result->value.cData =
+                octaspire_dern_c_data_new_copy(valueToBeCopied->value.cData, self->allocator);
+        }
+        break;
     }
 
     if (valueToBeCopied->docstr)
@@ -31173,6 +31761,24 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_builtin(
     return result;
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
+    octaspire_dern_vm_t * const self,
+    char const * const pluginName,
+    char const * const typeNameForPayload,
+    void * const payload)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
+
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_C_DATA);
+
+    result->value.cData =
+        octaspire_dern_c_data_new(pluginName, typeNameForPayload, payload, self->allocator);
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(self));
+    return result;
+}
+
 void octaspire_dern_vm_clear_value_to_nil(
     octaspire_dern_vm_t *self,
     octaspire_dern_value_t *value)
@@ -31289,6 +31895,13 @@ void octaspire_dern_vm_clear_value_to_nil(
         {
             octaspire_dern_port_release(value->value.port);
             value->value.port = 0;
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            octaspire_dern_c_data_release(value->value.cData);
+            value->value.cData = 0;
         }
         break;
     }

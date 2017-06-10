@@ -23,6 +23,7 @@ limitations under the License.
 #include <octaspire/core/octaspire_container_hash_map.h>
 #include <octaspire/core/octaspire_container_utf8_string.h>
 #include "octaspire/dern/octaspire_dern_port.h"
+#include "octaspire/dern/octaspire_dern_c_data.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,7 +47,8 @@ typedef enum
     OCTASPIRE_DERN_VALUE_TAG_FUNCTION,
     OCTASPIRE_DERN_VALUE_TAG_SPECIAL,
     OCTASPIRE_DERN_VALUE_TAG_BUILTIN,
-    OCTASPIRE_DERN_VALUE_TAG_PORT
+    OCTASPIRE_DERN_VALUE_TAG_PORT,
+    OCTASPIRE_DERN_VALUE_TAG_C_DATA
 }
 octaspire_dern_value_tag_t;
 
@@ -149,6 +151,7 @@ struct octaspire_dern_value_t
         octaspire_dern_special_t            *special;
         octaspire_dern_builtin_t            *builtin;
         octaspire_dern_port_t               *port;
+        octaspire_dern_c_data_t             *cData;
     }
     value;
 };
@@ -217,10 +220,19 @@ bool octaspire_dern_value_is_string(
 bool octaspire_dern_value_is_symbol(
     octaspire_dern_value_t const * const self);
 
+bool octaspire_dern_value_is_text(
+    octaspire_dern_value_t const * const self);
+
 bool octaspire_dern_value_is_vector(
     octaspire_dern_value_t const * const self);
 
 bool octaspire_dern_value_is_hash_map(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_port(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_c_data(
     octaspire_dern_value_t const * const self);
 
 void octaspire_dern_value_print(
@@ -285,6 +297,9 @@ char const *octaspire_dern_value_as_string_get_c_string(
     octaspire_dern_value_t const * const self);
 
 char const *octaspire_dern_value_as_symbol_get_c_string(
+    octaspire_dern_value_t const * const self);
+
+char const *octaspire_dern_value_as_text_get_c_string(
     octaspire_dern_value_t const * const self);
 
 size_t octaspire_dern_value_as_vector_get_length(

@@ -1,0 +1,26 @@
+(require 'dern_ncurses)
+
+(define win [win] (ncurses-initscr))
+
+(if (ncurses-has-colors) (ncurses-start-color))
+
+(ncurses-init-pair 1 'RED    'BLACK)
+(ncurses-init-pair 2 'YELLOW 'BLUE)
+
+(ncurses-print win [Hello])
+
+(ncurses-attron 'BOLD 1)
+(ncurses-print win 3 10 [World])
+(ncurses-attroff 'BOLD 1)
+
+(ncurses-print win 5 3 [from ncurses!])
+
+(ncurses-attron 'UNDERLINE 2)
+(ncurses-print win 8 [Bye!])
+(ncurses-attroff 'UNDERLINE 2)
+
+(ncurses-refresh)
+
+(ncurses-getch)
+(ncurses-endwin)
+

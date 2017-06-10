@@ -75,6 +75,8 @@ create_new_version() {
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     mkdir -p "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    mkdir -p "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/plugins"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "\nCreate a README file...\n--------------------------\n"
     echo \
@@ -130,11 +132,16 @@ octaspire.com/dern\n" > "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR
     cp "$PROJECT_PATH/doc/book/Programming_in_Octaspire_Dern.html" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/documentation/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
+    echo "\nCopying plugins...\n--------------------------\n"
+    cp "$PROJECT_PATH/etc/plugins/dern_ncurses.c" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/plugins/"
+
     echo "\nCopying files for binary library example...\n--------------------------\n"
-    cp "$PROJECT_PATH/doc/examples/plugin/amalgamated/mylib.c" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
+    cp "$PROJECT_PATH/doc/examples/plugins/hello/amalgamated/mylib.c" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    cp "$PROJECT_PATH/doc/examples/plugin/use-mylib.dern" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
+    cp "$PROJECT_PATH/doc/examples/plugins/hello/use-mylib.dern" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    echo "\nCopying file for binary 'dern_ncurses' plugin example...\n--------------------------\n"
+    cp "$PROJECT_PATH/doc/examples/plugins/dern_ncurses/dern-ncurses-example.dern" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
 
     echo "\nCopying embedding example...\n--------------------------\n"
     cp "$PROJECT_PATH/doc/examples/embedding-example.c" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"

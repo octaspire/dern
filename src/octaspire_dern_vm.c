@@ -1434,6 +1434,13 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
                 octaspire_dern_port_new_copy(valueToBeCopied->value.port, self->allocator);
         }
         break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            result->value.cData =
+                octaspire_dern_c_data_new_copy(valueToBeCopied->value.cData, self->allocator);
+        }
+        break;
     }
 
     if (valueToBeCopied->docstr)
@@ -1782,6 +1789,24 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_builtin(
     return result;
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
+    octaspire_dern_vm_t * const self,
+    char const * const pluginName,
+    char const * const typeNameForPayload,
+    void * const payload)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
+
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_C_DATA);
+
+    result->value.cData =
+        octaspire_dern_c_data_new(pluginName, typeNameForPayload, payload, self->allocator);
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(self));
+    return result;
+}
+
 void octaspire_dern_vm_clear_value_to_nil(
     octaspire_dern_vm_t *self,
     octaspire_dern_value_t *value)
@@ -1898,6 +1923,13 @@ void octaspire_dern_vm_clear_value_to_nil(
         {
             octaspire_dern_port_release(value->value.port);
             value->value.port = 0;
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            octaspire_dern_c_data_release(value->value.cData);
+            value->value.cData = 0;
         }
         break;
     }

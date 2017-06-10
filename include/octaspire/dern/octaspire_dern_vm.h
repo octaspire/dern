@@ -131,6 +131,12 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_function(
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_special     (octaspire_dern_vm_t *self, octaspire_dern_special_t * const value, char const * const docstr);
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_builtin     (octaspire_dern_vm_t *self, octaspire_dern_builtin_t * const value, char const * const docstr);
 
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
+    octaspire_dern_vm_t * const self,
+    char const * const pluginName,
+    char const * const typeNameForPayload,
+    void * const payload);
+
 bool octaspire_dern_vm_push_value(octaspire_dern_vm_t *self, struct octaspire_dern_value_t *value);
 bool octaspire_dern_vm_pop_value (octaspire_dern_vm_t *self, struct octaspire_dern_value_t *valueForBalanceCheck);
     void const * octaspire_dern_vm_get_top_value(octaspire_dern_vm_t const * const self);

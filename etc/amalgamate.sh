@@ -168,6 +168,7 @@ cat >> $FILE << EnDoFmEsSaGe
 EnDoFmEsSaGe
 
 concat_file "../include/octaspire/dern/octaspire_dern_lexer.h"
+concat_file "../include/octaspire/dern/octaspire_dern_c_data.h"
 concat_file "../include/octaspire/dern/octaspire_dern_port.h"
 concat_file "../include/octaspire/dern/octaspire_dern_value.h"
 concat_file "../include/octaspire/dern/octaspire_dern_environment.h"
@@ -235,6 +236,7 @@ EnDoFmEsSaGe
 concat_file "../src/octaspire_dern_environment.c"
 concat_file "../src/octaspire_dern_lexer.c"
 concat_file "../src/octaspire_dern_lib.c"
+concat_file "../src/octaspire_dern_c_data.c"
 concat_file "../src/octaspire_dern_port.c"
 concat_file "../src/octaspire_dern_stdlib.c"
 concat_file "../src/octaspire_dern_value.c"
