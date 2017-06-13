@@ -6,6 +6,7 @@
 
 (ncurses-init-pair 1 'RED    'BLACK)
 (ncurses-init-pair 2 'YELLOW 'BLUE)
+(ncurses-init-pair 3 'GREEN  'BLACK)
 
 (ncurses-print win [Hello])
 
@@ -22,5 +23,14 @@
 (ncurses-refresh)
 
 (ncurses-getch)
+
+(ncurses-clear win)
+
+(ncurses-attron 'BLINK 'BOLD 3)
+(ncurses-print win 3 10 [Page 2])
+(ncurses-attroff 'BLINK 'BOLD 3)
+
+(ncurses-getch)
+
 (ncurses-endwin)
 
