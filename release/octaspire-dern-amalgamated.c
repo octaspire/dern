@@ -16007,10 +16007,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "127"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "129"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.127.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.129.0"
 
 
 
@@ -16655,6 +16655,10 @@ char const *octaspire_dern_value_as_string_get_c_string(
 
 char const *octaspire_dern_value_as_symbol_get_c_string(
     octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_as_symbol_is_equal_to_c_string(
+    octaspire_dern_value_t const * const self,
+    char const * const str);
 
 char const *octaspire_dern_value_as_text_get_c_string(
     octaspire_dern_value_t const * const self);
@@ -29578,6 +29582,14 @@ char const *octaspire_dern_value_as_symbol_get_c_string(
 {
     octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
     return octaspire_container_utf8_string_get_c_string(self->value.symbol);
+}
+
+bool octaspire_dern_value_as_symbol_is_equal_to_c_string(
+    octaspire_dern_value_t const * const self,
+    char const * const str)
+{
+    octaspire_helpers_verify(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+    return octaspire_container_utf8_string_is_equal_to_c_string(self->value.symbol, str);
 }
 
 char const *octaspire_dern_value_as_text_get_c_string(

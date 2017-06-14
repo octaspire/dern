@@ -299,6 +299,10 @@ char const *octaspire_dern_value_as_string_get_c_string(
 char const *octaspire_dern_value_as_symbol_get_c_string(
     octaspire_dern_value_t const * const self);
 
+bool octaspire_dern_value_as_symbol_is_equal_to_c_string(
+    octaspire_dern_value_t const * const self,
+    char const * const str);
+
 char const *octaspire_dern_value_as_text_get_c_string(
     octaspire_dern_value_t const * const self);
 

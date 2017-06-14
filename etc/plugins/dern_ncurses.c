@@ -208,6 +208,106 @@ octaspire_dern_value_t *dern_ncurses_set_nl(
     return octaspire_dern_vm_create_new_value_nil(vm);
 }
 
+octaspire_dern_value_t *dern_ncurses_set_cursor(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-set-cursor' expects one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    if (!octaspire_dern_value_is_symbol(arg))
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-set-cursor' expects symbol argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    int result = ERR;
+
+    if (octaspire_dern_value_as_symbol_is_equal_to_c_string(arg, "invisible"))
+    {
+        result = curs_set(0);
+
+        if (result == ERR)
+        {
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "Builtin 'ncurses-set-cursor' failed to make cursor 'invisible'. ");
+        }
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(arg, "normal"))
+    {
+        result = curs_set(1);
+
+        if (result == ERR)
+        {
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "Builtin 'ncurses-set-cursor' failed to make cursor 'normal'. ");
+        }
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(arg, "very-visible"))
+    {
+        result = curs_set(2);
+
+        if (result == ERR)
+        {
+            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "Builtin 'ncurses-set-cursor' failed to make cursor 'very-visible'. ");
+        }
+    }
+    else
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-set-cursor' expects symbol argument 'invisible', 'normal' or "
+            "'very-visible'. Symbol '%s' was given.",
+            octaspire_dern_value_as_symbol_get_c_string(arg));
+    }
+
+    octaspire_helpers_verify(result == 0 || result == 1 || result == 2);
+
+    if (result == 0)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "invisible");
+    }
+
+    if (result == 1)
+    {
+        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "normal");
+    }
+
+    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "very-visible");
+}
+
 octaspire_dern_value_t *dern_ncurses_set_keypad(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -400,6 +500,151 @@ octaspire_dern_value_t *dern_ncurses_clear(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+static int dern_ncurses_private_print_symbol(
+    octaspire_dern_value_t const * const value,
+    WINDOW * const window)
+{
+    int result = ERR;
+
+    if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_BLOCK"))
+    {
+        result = waddch(window, ACS_BLOCK);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_BOARD"))
+    {
+        result = waddch(window, ACS_BOARD);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_BTEE"))
+    {
+        result = waddch(window, ACS_BTEE);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_BULLET"))
+    {
+        result = waddch(window, ACS_BULLET);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_CKBOARD"))
+    {
+        result = waddch(window, ACS_CKBOARD);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_DARROW"))
+    {
+        result = waddch(window, ACS_DARROW);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_DEGREE"))
+    {
+        result = waddch(window, ACS_DEGREE);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_DIAMOND"))
+    {
+        result = waddch(window, ACS_DIAMOND);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_GEQUAL"))
+    {
+        result = waddch(window, ACS_GEQUAL);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_HLINE"))
+    {
+        result = waddch(window, ACS_HLINE);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_LANTERN"))
+    {
+        result = waddch(window, ACS_LANTERN);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_LARROW"))
+    {
+        result = waddch(window, ACS_LARROW);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_LEQUAL"))
+    {
+        result = waddch(window, ACS_LEQUAL);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_LLCORNER"))
+    {
+        result = waddch(window, ACS_LLCORNER);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_LRCORNER"))
+    {
+        result = waddch(window, ACS_LRCORNER);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_LTEE"))
+    {
+        result = waddch(window, ACS_LTEE);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_NEQUAL"))
+    {
+        result = waddch(window, ACS_NEQUAL);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_PI"))
+    {
+        result = waddch(window, ACS_PI);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_PLMINUS"))
+    {
+        result = waddch(window, ACS_PLMINUS);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_PLUS"))
+    {
+        result = waddch(window, ACS_PLUS);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_RARROW"))
+    {
+        result = waddch(window, ACS_RARROW);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_RTEE"))
+    {
+        result = waddch(window, ACS_RTEE);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_S1"))
+    {
+        result = waddch(window, ACS_S1);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_S3"))
+    {
+        result = waddch(window, ACS_S3);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_S7"))
+    {
+        result = waddch(window, ACS_S7);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_S9"))
+    {
+        result = waddch(window, ACS_S9);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_STERLING"))
+    {
+        result = waddch(window, ACS_STERLING);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_TTEE"))
+    {
+        result = waddch(window, ACS_TTEE);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_UARROW"))
+    {
+        result = waddch(window, ACS_UARROW);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_ULCORNER"))
+    {
+        result = waddch(window, ACS_ULCORNER);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_URCORNER"))
+    {
+        result = waddch(window, ACS_URCORNER);
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_VLINE"))
+    {
+        result = waddch(window, ACS_VLINE);
+    }
+    else
+    {
+        result = wprintw(
+            window,
+            "%s",
+            octaspire_dern_value_as_text_get_c_string(value));
+    }
+
+    return result;
+}
+
 octaspire_dern_value_t *dern_ncurses_print(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -470,10 +715,21 @@ octaspire_dern_value_t *dern_ncurses_print(
                 octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
         }
 
-        int const result = wprintw(
-            octaspire_dern_c_data_get_payload(cData),
-            "%s",
-            octaspire_dern_value_as_text_get_c_string(secondArg));
+        int result = ERR;
+
+        if (octaspire_dern_value_is_symbol(secondArg))
+        {
+            result = dern_ncurses_private_print_symbol(
+                secondArg,
+                octaspire_dern_c_data_get_payload(cData));
+        }
+        else
+        {
+            result = wprintw(
+                octaspire_dern_c_data_get_payload(cData),
+                "%s",
+                octaspire_dern_value_as_text_get_c_string(secondArg));
+        }
 
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
@@ -511,12 +767,31 @@ octaspire_dern_value_t *dern_ncurses_print(
         getyx((WINDOW * const)payload, currentY, currentX);
         OCTASPIRE_HELPERS_UNUSED_PARAMETER(currentY);
 
-        int const result = mvwprintw(
-            payload,
-            secondArg->value.integer,
-            currentX,
-            "%s",
-            octaspire_dern_value_as_text_get_c_string(thirdArg));
+        int result = ERR;
+
+        if (octaspire_dern_value_is_symbol(thirdArg))
+        {
+            result = wmove(payload, secondArg->value.integer, currentX);
+
+
+            int const tmpResult = dern_ncurses_private_print_symbol(
+                thirdArg,
+                payload);
+
+            if (result != ERR)
+            {
+                result = tmpResult;
+            }
+        }
+        else
+        {
+            result = mvwprintw(
+                payload,
+                secondArg->value.integer,
+                currentX,
+                "%s",
+                octaspire_dern_value_as_text_get_c_string(thirdArg));
+        }
 
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
@@ -559,12 +834,31 @@ octaspire_dern_value_t *dern_ncurses_print(
                 octaspire_dern_value_helper_get_type_as_c_string(fourthArg->typeTag));
         }
 
-        int const result = mvwprintw(
-            octaspire_dern_c_data_get_payload(cData),
-            secondArg->value.integer,
-            thirdArg->value.integer,
-            "%s",
-            octaspire_dern_value_as_text_get_c_string(fourthArg));
+        void * const payload = octaspire_dern_c_data_get_payload(cData);
+        int result = ERR;
+
+        if (octaspire_dern_value_is_symbol(fourthArg))
+        {
+            result = wmove(payload, secondArg->value.integer, thirdArg->value.integer);
+
+            int const tmpResult = dern_ncurses_private_print_symbol(
+                fourthArg,
+                payload);
+
+            if (result != ERR)
+            {
+                result = tmpResult;
+            }
+        }
+        else
+        {
+            result = mvwprintw(
+                payload,
+                secondArg->value.integer,
+                thirdArg->value.integer,
+                "%s",
+                octaspire_dern_value_as_text_get_c_string(fourthArg));
+        }
 
         octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
@@ -1109,6 +1403,17 @@ bool dern_ncurses_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
+            "ncurses-set-cursor",
+            dern_ncurses_set_cursor,
+            1,
+            "(ncurses-set-cursor boolean) -> boolean",
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
             "ncurses-set-keypad",
             dern_ncurses_set_keypad,
             0,
@@ -1163,9 +1468,15 @@ bool dern_ncurses_init(
             "\twindow              Target window, a value returned by some call to ncurses-initscr\n"
             "\ty        optional   Y-coordinate (line)   to print to\n"
             "\tx        optional   X-coordinate (column) to print to\n"
-            "\tsymbol      |       \n"
-            "\tstring      |       The text to print. To create formatted strings, use 'string-format'\n"
-            "\tcharacter   |       \n"
+            "\tsymbol              The symbol's text value to print, or     ACS_BLOCK,    ACS_BOARD,\n"
+            "\t                    ACS_BTEE,    ACS_BULLET,   ACS_CKBOARD,  ACS_DARROW,   ACS_DEGREE,\n"
+            "\t                    ACS_DIAMOND, ACS_GEQUAL,   ACS_HLINE,    ACS_LANTERN,  ACS_LARROW,\n"
+            "\t                    ACS_LEQUAL,  ACS_LLCORNER, ACS_LRCORNER, ACS_LTEE,     ACS_NEQUAL,\n"
+            "\t                    ACS_PI,      ACS_PLMINUS,  ACS_PLUS,     ACS_RARROW,   ACS_RTEE,\n"
+            "\t                    ACS_S1,      ACS_S3,       ACS_S7,       ACS_S9,       ACS_STERLING,\n"
+            "\t                    ACS_TTEE,    ACS_UARROW,   ACS_ULCORNER, ACS_URCORNER, ACS_VLINE \n"
+            "\tstring              The text to print. To create formatted strings, use 'string-format'\n"
+            "\tcharacter           The character to print.\n"
             "\n"
             "RETURN VALUE\n"
             "\tBoolean: 'false' on failure and 'true' otherwise.\n"
