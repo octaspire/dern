@@ -954,10 +954,6 @@ octaspire_dern_value_t *dern_ncurses_attron(
             {
                 attr = A_ALTCHARSET;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "ITALIC"))
-            {
-                attr = A_ITALIC;
-            }
             else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "CHARTEXT"))
             {
                 attr = A_CHARTEXT;
@@ -1075,10 +1071,6 @@ octaspire_dern_value_t *dern_ncurses_attroff(
             else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "ALTCHARSET"))
             {
                 attr = A_ALTCHARSET;
-            }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "ITALIC"))
-            {
-                attr = A_ITALIC;
             }
             else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "CHARTEXT"))
             {

@@ -56,6 +56,24 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                 \
 
 
 
+echo "$(tput setaf 3) $(tput bold)"
+cat << EnDoFmEsSaGe
+5. Building the 'dern_ncurses' (binary) plugin.  PLEASE NOTE: This plugin
+   requires development version of 'ncurses' library (i.e. headers) to be
+   installed on the system; otherwise compilation will fail. Failure will
+   not affect other steps, so if this step fails and you don't want to use
+   binary plugin 'dern_ncurses', you don't have to do anything. Otherwise,
+   to install development version of library 'ncurses':
+
+       - NetBSD: sudo pkgin install devel/ncurses
+-------------------------------------------------------------------------------
+EnDoFmEsSaGe
+echoToDefs
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_ncurses.c
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_ncurses.so dern_ncurses.o -lncurses
+
+
+
 echo " "
 echo "$(tput bold)Done."
 echo "$(tput setaf 2) $(tput bold)"
@@ -66,6 +84,7 @@ echo "$(tput setaf 3)1)$(tput setaf 2) ./octaspire-dern-unit-test-runner"
 echo "$(tput setaf 3)2)$(tput setaf 2) ./embedding-example"
 echo "$(tput setaf 3)3)$(tput setaf 2) LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/use-mylib.dern"
 echo "$(tput setaf 3)4)$(tput setaf 2) ./octaspire-dern-repl -c"
+echo "$(tput setaf 3)5)$(tput setaf 2) LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-ncurses-example.dern"
 echo "=================================================================="
 echoToDefs
 
