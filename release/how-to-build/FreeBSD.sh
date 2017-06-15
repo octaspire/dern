@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 echoAndRun() { echo "$@" ; "$@" ; }
 echoToDefs() { echo "$(tput setaf 9) $(tput sgr0)" ; }
 

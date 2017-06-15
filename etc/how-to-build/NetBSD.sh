@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 echoAndRun() { echo "$@" ; "$@" ; }
 echoToDefs() { echo "$(tput setaf 9) $(tput sgr0)" ; }
 
@@ -65,12 +67,12 @@ cat << EnDoFmEsSaGe
    binary plugin 'dern_ncurses', you don't have to do anything. Otherwise,
    to install development version of library 'ncurses':
 
-       - NetBSD: sudo pkgin install devel/ncurses
+       - NetBSD: sudo pkgin install ncurses
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
 echoToDefs
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_ncurses.c
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_ncurses.so dern_ncurses.o -lncurses
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_ncurses.so dern_ncurses.o -lcurses -lterminfo
 
 
 

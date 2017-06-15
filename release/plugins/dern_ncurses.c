@@ -1,5 +1,10 @@
 #include "octaspire-dern-amalgamated.c"
+
+#ifdef __NetBSD__
+#include <curses.h>
+#else
 #include <ncurses.h>
+#endif
 
 static char const * const DERN_NCURSES_PLUGIN_NAME = "dern_ncurses";
 
@@ -251,9 +256,9 @@ octaspire_dern_value_t *dern_ncurses_set_cursor(
         if (result == ERR)
         {
             octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_from_c_string(
+            return octaspire_dern_vm_create_new_value_string_from_c_string(
                 vm,
-                "Builtin 'ncurses-set-cursor' failed to make cursor 'invisible'. ");
+                "Builtin 'ncurses-set-cursor' failed to make cursor 'invisible'.");
         }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(arg, "normal"))
@@ -263,9 +268,9 @@ octaspire_dern_value_t *dern_ncurses_set_cursor(
         if (result == ERR)
         {
             octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_from_c_string(
+            return octaspire_dern_vm_create_new_value_string_from_c_string(
                 vm,
-                "Builtin 'ncurses-set-cursor' failed to make cursor 'normal'. ");
+                "Builtin 'ncurses-set-cursor' failed to make cursor 'normal'.");
         }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(arg, "very-visible"))
@@ -275,7 +280,7 @@ octaspire_dern_value_t *dern_ncurses_set_cursor(
         if (result == ERR)
         {
             octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_from_c_string(
+            return octaspire_dern_vm_create_new_value_string_from_c_string(
                 vm,
                 "Builtin 'ncurses-set-cursor' failed to make cursor 'very-visible'. ");
         }
@@ -1398,7 +1403,7 @@ bool dern_ncurses_init(
             "ncurses-set-cursor",
             dern_ncurses_set_cursor,
             1,
-            "(ncurses-set-cursor boolean) -> boolean",
+            "(ncurses-set-cursor boolean) -> symbol of previous mode or error string",
             targetEnv))
     {
         return false;
