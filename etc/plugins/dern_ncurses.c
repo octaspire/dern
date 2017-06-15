@@ -1241,7 +1241,7 @@ octaspire_dern_value_t *dern_ncurses_init_pair(
         }
     }
 
-    bool const result = init_pair(pairNum, colorNums[0], colorNums[1]);
+    int const result = init_pair(pairNum, colorNums[0], colorNums[1]);
 
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
@@ -1268,10 +1268,10 @@ octaspire_dern_value_t *dern_ncurses_start_color(
             numArgs);
     }
 
-    bool const result = start_color();
+    int const result = start_color();
 
     octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
-    return octaspire_dern_vm_create_new_value_boolean(vm, result);
+    return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
 
