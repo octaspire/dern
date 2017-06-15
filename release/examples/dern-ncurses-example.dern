@@ -1,0 +1,77 @@
+(require 'dern_ncurses)
+
+(define win [win] (ncurses-initscr))
+
+(ncurses-set-cursor 'invisible)
+;(ncurses-set-cursor 'normal)
+;(ncurses-set-cursor 'very-visible)
+
+(if (ncurses-has-colors) (ncurses-start-color))
+
+(ncurses-init-pair 1 'RED    'BLACK)
+(ncurses-init-pair 2 'YELLOW 'BLUE)
+(ncurses-init-pair 3 'GREEN  'BLACK)
+
+(ncurses-print win [Hello])
+
+(ncurses-attron 'BOLD 1)
+(ncurses-print win 3 10 [World])
+(ncurses-attroff 'BOLD 1)
+
+(ncurses-print win 5 3 [from ncurses!])
+
+(ncurses-attron 'UNDERLINE 2)
+(ncurses-print win 8 [Bye!])
+(ncurses-attroff 'UNDERLINE 2)
+
+(ncurses-refresh)
+
+(ncurses-getch)
+
+(ncurses-clear win)
+
+(ncurses-attron 'BLINK 'BOLD 3)
+(ncurses-print win 3 10 [Page 2])
+(ncurses-attroff 'BLINK 'BOLD 3)
+
+(ncurses-attron 'BOLD 3)
+(ncurses-print win 'ACS_BLOCK)
+(ncurses-print win 'ACS_BOARD)
+(ncurses-print win 'ACS_BTEE)
+(ncurses-print win 'ACS_BULLET)
+(ncurses-print win 'ACS_CKBOARD)
+(ncurses-print win 'ACS_DARROW)
+(ncurses-print win 'ACS_DEGREE)
+(ncurses-print win 'ACS_DIAMOND)
+(ncurses-print win 'ACS_GEQUAL)
+(ncurses-print win 'ACS_HLINE)
+(ncurses-print win 'ACS_LANTERN)
+(ncurses-print win 'ACS_LARROW)
+(ncurses-print win 'ACS_LEQUAL)
+(ncurses-print win 'ACS_LLCORNER)
+(ncurses-print win 'ACS_LRCORNER)
+(ncurses-print win 'ACS_LTEE)
+(ncurses-print win 'ACS_NEQUAL)
+(ncurses-print win 'ACS_PI)
+(ncurses-print win 'ACS_PLMINUS)
+(ncurses-print win 'ACS_PLUS)
+(ncurses-print win 'ACS_RARROW)
+(ncurses-print win 'ACS_RTEE)
+(ncurses-print win 'ACS_S1)
+(ncurses-print win 'ACS_S3)
+(ncurses-print win 'ACS_S7)
+(ncurses-print win 'ACS_S9)
+(ncurses-print win 'ACS_STERLING)
+(ncurses-print win 'ACS_TTEE)
+(ncurses-print win 'ACS_UARROW)
+(ncurses-print win 'ACS_ULCORNER)
+(ncurses-print win 'ACS_URCORNER)
+(ncurses-print win 'ACS_VLINE)
+(ncurses-print win 10 'ACS_VLINE)
+(ncurses-print win 6 6 'ACS_VLINE)
+(ncurses-attroff 'BOLD 3)
+
+(ncurses-getch)
+
+(ncurses-endwin)
+
