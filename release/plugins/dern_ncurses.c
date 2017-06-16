@@ -1,6 +1,11 @@
 #include "octaspire-dern-amalgamated.c"
 
-#ifdef __NetBSD__
+#if defined(__NetBSD__)
+#include <curses.h>
+#elif defined(__sun) && defined(__SVR4)
+// Solaris, OpenIndiana
+#define NCURSES_ENABLE_STDBOOL_H 1
+#undef bool
 #include <curses.h>
 #else
 #include <ncurses.h>
@@ -543,10 +548,6 @@ static int dern_ncurses_private_print_symbol(
     {
         result = waddch(window, ACS_DIAMOND);
     }
-    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_GEQUAL"))
-    {
-        result = waddch(window, ACS_GEQUAL);
-    }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_HLINE"))
     {
         result = waddch(window, ACS_HLINE);
@@ -559,10 +560,6 @@ static int dern_ncurses_private_print_symbol(
     {
         result = waddch(window, ACS_LARROW);
     }
-    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_LEQUAL"))
-    {
-        result = waddch(window, ACS_LEQUAL);
-    }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_LLCORNER"))
     {
         result = waddch(window, ACS_LLCORNER);
@@ -574,14 +571,6 @@ static int dern_ncurses_private_print_symbol(
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_LTEE"))
     {
         result = waddch(window, ACS_LTEE);
-    }
-    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_NEQUAL"))
-    {
-        result = waddch(window, ACS_NEQUAL);
-    }
-    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_PI"))
-    {
-        result = waddch(window, ACS_PI);
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_PLMINUS"))
     {
@@ -603,21 +592,9 @@ static int dern_ncurses_private_print_symbol(
     {
         result = waddch(window, ACS_S1);
     }
-    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_S3"))
-    {
-        result = waddch(window, ACS_S3);
-    }
-    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_S7"))
-    {
-        result = waddch(window, ACS_S7);
-    }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_S9"))
     {
         result = waddch(window, ACS_S9);
-    }
-    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_STERLING"))
-    {
-        result = waddch(window, ACS_STERLING);
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(value, "ACS_TTEE"))
     {
@@ -1465,13 +1442,12 @@ bool dern_ncurses_init(
             "\twindow              Target window, a value returned by some call to ncurses-initscr\n"
             "\ty        optional   Y-coordinate (line)   to print to\n"
             "\tx        optional   X-coordinate (column) to print to\n"
-            "\tsymbol              The symbol's text value to print, or     ACS_BLOCK,    ACS_BOARD,\n"
-            "\t                    ACS_BTEE,    ACS_BULLET,   ACS_CKBOARD,  ACS_DARROW,   ACS_DEGREE,\n"
-            "\t                    ACS_DIAMOND, ACS_GEQUAL,   ACS_HLINE,    ACS_LANTERN,  ACS_LARROW,\n"
-            "\t                    ACS_LEQUAL,  ACS_LLCORNER, ACS_LRCORNER, ACS_LTEE,     ACS_NEQUAL,\n"
-            "\t                    ACS_PI,      ACS_PLMINUS,  ACS_PLUS,     ACS_RARROW,   ACS_RTEE,\n"
-            "\t                    ACS_S1,      ACS_S3,       ACS_S7,       ACS_S9,       ACS_STERLING,\n"
-            "\t                    ACS_TTEE,    ACS_UARROW,   ACS_ULCORNER, ACS_URCORNER, ACS_VLINE \n"
+            "\tsymbol              The symbol's text value to print, or   ACS_BLOCK,  ACS_BOARD,\n"
+            "\t                    ACS_BTEE,     ACS_BULLET,   ACS_CKBOARD, ACS_DARROW, ACS_DEGREE,\n"
+            "\t                    ACS_DIAMOND,  ACS_HLINE,    ACS_LANTERN, ACS_LARROW, ACS_LLCORNER,\n"
+            "\t                    ACS_LRCORNER, ACS_LTEE,     ACS_PLMINUS, ACS_PLUS,   ACS_RARROW,\n"
+            "\t                    ACS_RTEE,     ACS_S1,       ACS_S9,      ACS_TTEE,   ACS_UARROW,\n"
+            "\t                    ACS_ULCORNER, ACS_URCORNER, ACS_VLINE\n"
             "\tstring              The text to print. To create formatted strings, use 'string-format'\n"
             "\tcharacter           The character to print.\n"
             "\n"
