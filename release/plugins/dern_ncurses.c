@@ -2,6 +2,8 @@
 
 #if defined(__NetBSD__)
 #include <curses.h>
+#elif defined(__DragonFly__)
+#include <ncurses/curses.h>
 #elif defined(__sun) && defined(__SVR4)
 // Solaris, OpenIndiana
 #define NCURSES_ENABLE_STDBOOL_H 1

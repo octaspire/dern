@@ -804,7 +804,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.137.0</p></div>
+<div class="paragraph"><p>Documentation for Octaspire Dern programming language version 0.140.0</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -844,8 +844,8 @@ version controlled source distribution. The whole amalgamated release can be fou
 the <strong>release</strong>-directory of the version controlled source distribution and from
 <a href="http://www.octaspire.com/dern/release.tar.bz2">octaspire.com/dern/release.tar.bz2</a>.</p></div>
 <div class="paragraph"><p>Dern is portable and is tested and known to run in Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana,
-MINIX 3, Haiku, and Windows. The <span class="monospaced">how-to-build</span>-directory of the amalgamated source release
-contains build script for all tested platforms.</p></div>
+DragonFly BSD, MINIX 3, Haiku, and Windows. The <span class="monospaced">how-to-build</span>-directory of the amalgamated source
+release contains build script for all tested platforms.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -880,7 +880,7 @@ even in backwards incompatible manner.</p></div>
 modify Dern itself. To use the amalgamated release, you will need only a C compiler and
 C standard library supporting C99.</p></div>
 <div class="sect2">
-<h3 id="_linux_freebsd_openbsd_netbsd_openindiana_minix_3_haiku">Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, MINIX 3, Haiku</h3>
+<h3 id="_linux_freebsd_openbsd_netbsd_openindiana_dragonfly_bsd_minix_3_haiku">Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MINIX 3, Haiku</h3>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span></span>curl -O octaspire.com/dern/release.tar.bz2
 tar jxf release.tar.bz2
@@ -890,7 +890,8 @@ sha512sum -c checksums
 sh how-to-build/YOUR_PLATFORM_NAME_HERE.XX
 </pre></div></div></div>
 <div class="paragraph"><p>replace <strong>YOUR_PLATFORM_NAME_HERE.XX</strong> with <strong>FreeBSD.sh</strong>, <strong>NetBSD.sh</strong>, <strong>OpenBSD.sh</strong>, <strong>OpenIndiana.sh</strong>,
-<strong>linux.sh</strong>, <strong>minix3.sh</strong> or <strong>haiku.sh</strong>. More scripts for different platforms will be added later.</p></div>
+<strong>DragonFlyBSD.sh</strong>, <strong>linux.sh</strong>, <strong>minix3.sh</strong> or <strong>haiku.sh</strong>. More scripts for different platforms will
+be added later.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_windows_using_mingw">Windows using MinGW</h3>
@@ -1756,7 +1757,7 @@ as a stand-alone unit test runner
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-06-16 21:36:24 EEST
+ 2017-06-18 14:41:08 EEST
 </div>
 </div>
 </body>

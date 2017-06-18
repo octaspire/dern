@@ -13,7 +13,7 @@ The amalgamated source release is the recommended way of using Dern, if you don'
 modify Dern itself. To use the amalgamated release, you will need only a C compiler and
 C standard library supporting C99.
 
-### Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, MINIX 3, Haiku
+### Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MINIX 3, Haiku
 
 ```shell
 curl -O octaspire.com/dern/release.tar.bz2
@@ -25,8 +25,8 @@ sh how-to-build/YOUR_PLATFORM_NAME_HERE.XX
 ```
 
 replace **YOUR_PLATFORM_NAME_HERE.XX** with **FreeBSD.sh**, **NetBSD.sh**, **OpenBSD.sh**,
-**OpenIndiana.sh**, **linux.sh**, **minix3.sh** or **haiku.sh**. More scripts for different
-platforms will be added later.
+**OpenIndiana.sh**, **DragonFlyBSD.sh**, **linux.sh**, **minix3.sh** or **haiku.sh**.
+More scripts for different platforms will be added later.
 
 
 
