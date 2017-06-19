@@ -3,9 +3,8 @@ This license applies to everything else, but not the external-directory.
 For unit testing Octaspire Dern uses external/greatest.h that is ISC licensed.
 This file is not the original version, but contains modifications by octaspire.
 These modifications are also ICS licensed. Octaspire Dern uses Octaspire Core
-that is licensed under the Apache License, Version 2.0. For fast hash
-calculation Octaspire Core uses MurmurHash3 that is placed in the public domain.
-All licenses and public domain waiver are listed here:
+that is licensed under the Apache License, Version 2.0.
+All licenses are listed here:
 
 
 -------------------------------------------------------------------------------
@@ -64,14 +63,6 @@ License of external/greatest.h
    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
--------------------------------------------------------------------------------
-
-
--------------------------------------------------------------------------------
-Public domain waiwer of external/octaspire_core/external/murmur3.*
--------------------------------------------------------------------------------
-MurmurHash3 was written by Austin Appleby, and is placed in the public
-domain. The author hereby disclaims copyright to this source code.
 -------------------------------------------------------------------------------
 
 

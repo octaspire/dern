@@ -674,23 +674,23 @@ uint32_t octaspire_dern_value_get_hash(
         }
         break;
 
-        case OCTASPIRE_DERN_VALUE_TAG_NIL:         return octaspire_helpers_calculate_murmur3_hash_for_bool_argument(false);
-        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     return octaspire_helpers_calculate_murmur3_hash_for_bool_argument(self->value.boolean);
-        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:     return octaspire_helpers_calculate_murmur3_hash_for_int32_t_argument(self->value.integer);
-        case OCTASPIRE_DERN_VALUE_TAG_REAL:        return octaspire_helpers_calculate_murmur3_hash_for_double_argument(self->value.real);
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:         return octaspire_helpers_calculate_hash_for_bool_argument(false);
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     return octaspire_helpers_calculate_hash_for_bool_argument(self->value.boolean);
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:     return octaspire_helpers_calculate_hash_for_int32_t_argument(self->value.integer);
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:        return octaspire_helpers_calculate_hash_for_double_argument(self->value.real);
         case OCTASPIRE_DERN_VALUE_TAG_STRING:      return octaspire_container_utf8_string_get_hash(self->value.string);
         case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:      return octaspire_container_utf8_string_get_hash(self->value.comment);
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:   return octaspire_container_utf8_string_get_hash(self->value.character);
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:      return octaspire_container_utf8_string_get_hash(self->value.symbol);
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_get_hash(self->value.error);
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.vector);
-        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:    return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.hashMap);
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.environment);
-        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.function);
-        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.special);
-        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.builtin);
-        case OCTASPIRE_DERN_VALUE_TAG_PORT:        return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.port);
-        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:      return octaspire_helpers_calculate_murmur3_hash_for_void_pointer_argument(self->value.cData);
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.vector);
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:    return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.hashMap);
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.environment);
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.function);
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.special);
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.builtin);
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:        return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.port);
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:      return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.cData);
     }
 
     abort();
