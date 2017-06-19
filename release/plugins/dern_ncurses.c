@@ -40,7 +40,7 @@ octaspire_dern_value_t *dern_ncurses_getch(
 
     if (numArgs != 0)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-getch' expects zero arguments. "
@@ -55,7 +55,7 @@ octaspire_dern_value_t *dern_ncurses_getch(
         abort();
     }
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_character_from_uint32t(vm, (uint32_t)ch);
 }
 
@@ -72,7 +72,7 @@ octaspire_dern_value_t *dern_ncurses_set_raw(
 
     if (numArgs != 1)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-raw' expects one argument. "
@@ -85,7 +85,7 @@ octaspire_dern_value_t *dern_ncurses_set_raw(
 
     if (!octaspire_dern_value_is_boolean(arg))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-raw' expects boolean argument. "
@@ -96,7 +96,7 @@ octaspire_dern_value_t *dern_ncurses_set_raw(
 
     int const result = arg->value.boolean ? raw() : noraw();
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
@@ -113,7 +113,7 @@ octaspire_dern_value_t *dern_ncurses_set_cbreak(
 
     if (numArgs != 1)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-cbreak' expects one argument. "
@@ -126,7 +126,7 @@ octaspire_dern_value_t *dern_ncurses_set_cbreak(
 
     if (!octaspire_dern_value_is_boolean(arg))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-cbreak' expects boolean argument. "
@@ -136,7 +136,7 @@ octaspire_dern_value_t *dern_ncurses_set_cbreak(
 
     int const result = arg->value.boolean ? cbreak() : nocbreak();
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
@@ -153,7 +153,7 @@ octaspire_dern_value_t *dern_ncurses_set_echo(
 
     if (numArgs != 1)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-echo' expects one argument. "
@@ -166,7 +166,7 @@ octaspire_dern_value_t *dern_ncurses_set_echo(
 
     if (!octaspire_dern_value_is_boolean(arg))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-echo' expects boolean argument. "
@@ -176,7 +176,7 @@ octaspire_dern_value_t *dern_ncurses_set_echo(
 
     int const result = arg->value.boolean ? echo() : noecho();
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
@@ -193,7 +193,7 @@ octaspire_dern_value_t *dern_ncurses_set_nl(
 
     if (numArgs != 1)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-nl' expects one argument. "
@@ -206,7 +206,7 @@ octaspire_dern_value_t *dern_ncurses_set_nl(
 
     if (!octaspire_dern_value_is_boolean(arg))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-nl' expects boolean argument. "
@@ -216,7 +216,7 @@ octaspire_dern_value_t *dern_ncurses_set_nl(
 
     arg->value.boolean ? nl() : nonl();
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_nil(vm);
 }
 
@@ -233,7 +233,7 @@ octaspire_dern_value_t *dern_ncurses_set_cursor(
 
     if (numArgs != 1)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-cursor' expects one argument. "
@@ -246,7 +246,7 @@ octaspire_dern_value_t *dern_ncurses_set_cursor(
 
     if (!octaspire_dern_value_is_symbol(arg))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-cursor' expects symbol argument. "
@@ -262,7 +262,7 @@ octaspire_dern_value_t *dern_ncurses_set_cursor(
 
         if (result == ERR)
         {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_string_from_c_string(
                 vm,
                 "Builtin 'ncurses-set-cursor' failed to make cursor 'invisible'.");
@@ -274,7 +274,7 @@ octaspire_dern_value_t *dern_ncurses_set_cursor(
 
         if (result == ERR)
         {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_string_from_c_string(
                 vm,
                 "Builtin 'ncurses-set-cursor' failed to make cursor 'normal'.");
@@ -286,7 +286,7 @@ octaspire_dern_value_t *dern_ncurses_set_cursor(
 
         if (result == ERR)
         {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_string_from_c_string(
                 vm,
                 "Builtin 'ncurses-set-cursor' failed to make cursor 'very-visible'. ");
@@ -294,7 +294,7 @@ octaspire_dern_value_t *dern_ncurses_set_cursor(
     }
     else
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-cursor' expects symbol argument 'invisible', 'normal' or "
@@ -302,21 +302,21 @@ octaspire_dern_value_t *dern_ncurses_set_cursor(
             octaspire_dern_value_as_symbol_get_c_string(arg));
     }
 
-    octaspire_helpers_verify(result == 0 || result == 1 || result == 2);
+    octaspire_helpers_verify_true(result == 0 || result == 1 || result == 2);
 
     if (result == 0)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "invisible");
     }
 
     if (result == 1)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "normal");
     }
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "very-visible");
 }
 
@@ -333,7 +333,7 @@ octaspire_dern_value_t *dern_ncurses_set_keypad(
 
     if (numArgs != 2)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-keypad' expects two arguments. "
@@ -344,11 +344,11 @@ octaspire_dern_value_t *dern_ncurses_set_keypad(
     octaspire_dern_value_t const * const firstArg =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
 
-    octaspire_helpers_verify(firstArg);
+    octaspire_helpers_verify_not_null(firstArg);
 
     if (!octaspire_dern_value_is_c_data(firstArg))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-keypad' expects window as first argument. "
@@ -363,7 +363,7 @@ octaspire_dern_value_t *dern_ncurses_set_keypad(
             DERN_NCURSES_PLUGIN_NAME,
             "window"))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-keypad' expects 'dern_ncurses' and 'window' as "
@@ -376,11 +376,11 @@ octaspire_dern_value_t *dern_ncurses_set_keypad(
     octaspire_dern_value_t const * const secondArg =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
 
-    octaspire_helpers_verify(secondArg);
+    octaspire_helpers_verify_not_null(secondArg);
 
     if (!octaspire_dern_value_is_boolean(secondArg))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-set-keypad' expects boolean as second argument. "
@@ -390,7 +390,7 @@ octaspire_dern_value_t *dern_ncurses_set_keypad(
 
     int const result = keypad(octaspire_dern_c_data_get_payload(cData), secondArg->value.boolean);
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
@@ -407,7 +407,7 @@ octaspire_dern_value_t *dern_ncurses_erase(
 
     if (numArgs != 1)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-erase' expects one argument. "
@@ -418,11 +418,11 @@ octaspire_dern_value_t *dern_ncurses_erase(
     octaspire_dern_value_t const * const firstArg =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
 
-    octaspire_helpers_verify(firstArg);
+    octaspire_helpers_verify_not_null(firstArg);
 
     if (!octaspire_dern_value_is_c_data(firstArg))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-erase' expects window as first argument. "
@@ -437,7 +437,7 @@ octaspire_dern_value_t *dern_ncurses_erase(
             DERN_NCURSES_PLUGIN_NAME,
             "window"))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-erase' expects 'dern_ncurses' and 'window' as "
@@ -449,7 +449,7 @@ octaspire_dern_value_t *dern_ncurses_erase(
 
     int const result = werase(octaspire_dern_c_data_get_payload(cData));
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
@@ -466,7 +466,7 @@ octaspire_dern_value_t *dern_ncurses_clear(
 
     if (numArgs != 1)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-clear' expects one argument. "
@@ -477,11 +477,11 @@ octaspire_dern_value_t *dern_ncurses_clear(
     octaspire_dern_value_t const * const firstArg =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
 
-    octaspire_helpers_verify(firstArg);
+    octaspire_helpers_verify_not_null(firstArg);
 
     if (!octaspire_dern_value_is_c_data(firstArg))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-clear' expects window as first argument. "
@@ -496,7 +496,7 @@ octaspire_dern_value_t *dern_ncurses_clear(
             DERN_NCURSES_PLUGIN_NAME,
             "window"))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-clear' expects 'dern_ncurses' and 'window' as "
@@ -508,7 +508,7 @@ octaspire_dern_value_t *dern_ncurses_clear(
 
     int const result = wclear(octaspire_dern_c_data_get_payload(cData));
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
@@ -642,7 +642,7 @@ octaspire_dern_value_t *dern_ncurses_print(
 
     if (numArgs < 2 || numArgs > 4)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-print' expects 2 - 4 arguments. "
@@ -653,11 +653,11 @@ octaspire_dern_value_t *dern_ncurses_print(
     octaspire_dern_value_t const * const firstArg =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
 
-    octaspire_helpers_verify(firstArg);
+    octaspire_helpers_verify_not_null(firstArg);
 
     if (!octaspire_dern_value_is_c_data(firstArg))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-print' expects window as first argument. "
@@ -672,7 +672,7 @@ octaspire_dern_value_t *dern_ncurses_print(
             DERN_NCURSES_PLUGIN_NAME,
             "window"))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-print' expects 'dern_ncurses' and 'window' as "
@@ -685,13 +685,13 @@ octaspire_dern_value_t *dern_ncurses_print(
     octaspire_dern_value_t const * const secondArg =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
 
-    octaspire_helpers_verify(secondArg);
+    octaspire_helpers_verify_not_null(secondArg);
 
     if (numArgs == 2)
     {
         if (!octaspire_dern_value_is_text(secondArg))
         {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'ncurses-print' expects text (string, character or symbol) as "
@@ -715,14 +715,14 @@ octaspire_dern_value_t *dern_ncurses_print(
                 octaspire_dern_value_as_text_get_c_string(secondArg));
         }
 
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
     }
     else if (numArgs == 3)
     {
         if (!octaspire_dern_value_is_integer(secondArg))
         {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'ncurses-print' expects integer as second argument, when three "
@@ -735,7 +735,7 @@ octaspire_dern_value_t *dern_ncurses_print(
 
         if (!octaspire_dern_value_is_text(thirdArg))
         {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'ncurses-print' expects text (string, character or symbol) as third "
@@ -777,14 +777,14 @@ octaspire_dern_value_t *dern_ncurses_print(
                 octaspire_dern_value_as_text_get_c_string(thirdArg));
         }
 
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
     }
     else if (numArgs == 4)
     {
         if (!octaspire_dern_value_is_integer(secondArg))
         {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'ncurses-print' expects integer as second argument, when four "
@@ -797,7 +797,7 @@ octaspire_dern_value_t *dern_ncurses_print(
 
         if (!octaspire_dern_value_is_integer(thirdArg))
         {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'ncurses-print' expects integer as third argument, when four "
@@ -810,7 +810,7 @@ octaspire_dern_value_t *dern_ncurses_print(
 
         if (!octaspire_dern_value_is_text(fourthArg))
         {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'ncurses-print' expects text (string, character or symbol) as fourth "
@@ -844,7 +844,7 @@ octaspire_dern_value_t *dern_ncurses_print(
                 octaspire_dern_value_as_text_get_c_string(fourthArg));
         }
 
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
     }
 
@@ -864,7 +864,7 @@ octaspire_dern_value_t *dern_ncurses_attron(
 
     if (numArgs == 0)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-attron' expects at least one argument. "
@@ -879,11 +879,11 @@ octaspire_dern_value_t *dern_ncurses_attron(
         octaspire_dern_value_t const * const arg =
             octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
 
-        octaspire_helpers_verify(arg);
+        octaspire_helpers_verify_not_null(arg);
 
         if (!octaspire_dern_value_is_symbol(arg) && !octaspire_dern_value_is_integer(arg))
         {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'ncurses-attron' expects symbol or integer arguments. %zu. argument "
@@ -944,7 +944,7 @@ octaspire_dern_value_t *dern_ncurses_attron(
             }
             else
             {
-                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
                     "Builtin 'ncurses-attron': %zu. argument '%s' is not known attribute.",
@@ -965,7 +965,7 @@ octaspire_dern_value_t *dern_ncurses_attron(
         }
     }
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
@@ -982,7 +982,7 @@ octaspire_dern_value_t *dern_ncurses_attroff(
 
     if (numArgs == 0)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-attroff' expects at least one argument. "
@@ -997,11 +997,11 @@ octaspire_dern_value_t *dern_ncurses_attroff(
         octaspire_dern_value_t const * const arg =
             octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
 
-        octaspire_helpers_verify(arg);
+        octaspire_helpers_verify_not_null(arg);
 
         if (!octaspire_dern_value_is_symbol(arg) && !octaspire_dern_value_is_integer(arg))
         {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'ncurses-attroff' expects symbol or integer arguments. %zu. argument "
@@ -1062,7 +1062,7 @@ octaspire_dern_value_t *dern_ncurses_attroff(
             }
             else
             {
-                octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
                     "Builtin 'ncurses-attroff': %zu. argument '%s' is not known attribute.",
@@ -1083,7 +1083,7 @@ octaspire_dern_value_t *dern_ncurses_attroff(
         }
     }
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
@@ -1100,7 +1100,7 @@ octaspire_dern_value_t *dern_ncurses_has_colors(
 
     if (numArgs != 0)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-has-colors' expects zero arguments. "
@@ -1110,7 +1110,7 @@ octaspire_dern_value_t *dern_ncurses_has_colors(
 
     bool const result = has_colors();
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
@@ -1127,7 +1127,7 @@ octaspire_dern_value_t *dern_ncurses_init_pair(
 
     if (numArgs != 3)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-init-pair' expects three arguments. "
@@ -1138,11 +1138,11 @@ octaspire_dern_value_t *dern_ncurses_init_pair(
     octaspire_dern_value_t const * arg =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
 
-    octaspire_helpers_verify(arg);
+    octaspire_helpers_verify_not_null(arg);
 
     if (!octaspire_dern_value_is_integer(arg))
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-init-pair' expects integer as first argument. "
@@ -1158,11 +1158,11 @@ octaspire_dern_value_t *dern_ncurses_init_pair(
     {
         arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
 
-        octaspire_helpers_verify(arg);
+        octaspire_helpers_verify_not_null(arg);
 
         if (!octaspire_dern_value_is_symbol(arg))
         {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'ncurses-init-pair' expects symbol as %zu. argument. "
@@ -1207,7 +1207,7 @@ octaspire_dern_value_t *dern_ncurses_init_pair(
         }
         else
         {
-            octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Builtin 'ncurses-init-pair' expects color name (a symbol) as %zu. argument. "
@@ -1219,7 +1219,7 @@ octaspire_dern_value_t *dern_ncurses_init_pair(
 
     int const result = init_pair(pairNum, colorNums[0], colorNums[1]);
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
@@ -1236,7 +1236,7 @@ octaspire_dern_value_t *dern_ncurses_start_color(
 
     if (numArgs != 0)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-start-color' expects zero arguments. "
@@ -1246,7 +1246,7 @@ octaspire_dern_value_t *dern_ncurses_start_color(
 
     int const result = start_color();
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
@@ -1264,7 +1264,7 @@ octaspire_dern_value_t *dern_ncurses_refresh(
 
     if (numArgs != 0)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-refresh' expects zero arguments. "
@@ -1274,7 +1274,7 @@ octaspire_dern_value_t *dern_ncurses_refresh(
 
     int const result = refresh();
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
@@ -1291,7 +1291,7 @@ octaspire_dern_value_t *dern_ncurses_endwin(
 
     if (numArgs != 0)
     {
-        octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'ncurses-endwin' expects zero arguments. "
@@ -1301,7 +1301,7 @@ octaspire_dern_value_t *dern_ncurses_endwin(
 
     int const result = endwin();
 
-    octaspire_helpers_verify(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
@@ -1309,7 +1309,7 @@ bool dern_ncurses_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv)
 {
-    octaspire_helpers_verify(vm && targetEnv);
+    octaspire_helpers_verify_true(vm && targetEnv);
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,

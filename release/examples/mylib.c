@@ -32,7 +32,7 @@ octaspire_dern_value_t *mylib_say(
 
 bool mylib_init(octaspire_dern_vm_t * const vm, octaspire_dern_environment_t * const targetEnv)
 {
-    octaspire_helpers_verify(vm && targetEnv);
+    octaspire_helpers_verify_true(vm && targetEnv);
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         vm,
