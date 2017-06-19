@@ -61,9 +61,9 @@ octaspire_dern_port_t *octaspire_dern_port_new_copy(
                 self->typeTag = OCTASPIRE_DERN_PORT_TAG_NOT_OPEN;
             }
 
-            octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_END) == 0);
+            octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_END) == 0);
             self->lengthInOctets = ftell(self->value.file);
-            octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_SET) == 0);
+            octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_SET) == 0);
         }
         break;
 
@@ -77,9 +77,9 @@ octaspire_dern_port_t *octaspire_dern_port_new_copy(
                 self->typeTag = OCTASPIRE_DERN_PORT_TAG_NOT_OPEN;
             }
 
-            octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_END) == 0);
+            octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_END) == 0);
             self->lengthInOctets = ftell(self->value.file);
-            octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_SET) == 0);
+            octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_SET) == 0);
         }
         break;
 
@@ -93,9 +93,9 @@ octaspire_dern_port_t *octaspire_dern_port_new_copy(
                 self->typeTag = OCTASPIRE_DERN_PORT_TAG_NOT_OPEN;
             }
 
-            octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_END) == 0);
+            octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_END) == 0);
             self->lengthInOctets = ftell(self->value.file);
-            octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_SET) == 0);
+            octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_SET) == 0);
         }
         break;
 
@@ -133,9 +133,9 @@ octaspire_dern_port_t *octaspire_dern_port_new_input_file(
         return self;
     }
 
-    octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_END) == 0);
+    octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_END) == 0);
     self->lengthInOctets = ftell(self->value.file);
-    octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_SET) == 0);
+    octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_SET) == 0);
 
     return self;
 }
@@ -164,9 +164,9 @@ octaspire_dern_port_t *octaspire_dern_port_new_output_file(
         return self;
     }
 
-    octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_END) == 0);
+    octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_END) == 0);
     self->lengthInOctets = ftell(self->value.file);
-    octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_SET) == 0);
+    octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_SET) == 0);
 
     return self;
 }
@@ -195,9 +195,9 @@ octaspire_dern_port_t *octaspire_dern_port_new_io_file(
         return self;
     }
 
-    octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_END) == 0);
+    octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_END) == 0);
     self->lengthInOctets = ftell(self->value.file);
-    octaspire_helpers_verify(fseek(self->value.file, 0, SEEK_SET) == 0);
+    octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_SET) == 0);
 
     return self;
 }
@@ -216,7 +216,7 @@ void octaspire_dern_port_release(octaspire_dern_port_t *self)
         int const res = fclose(self->value.file);
         self->value.file = 0;
         self->lengthInOctets = -1;
-        octaspire_helpers_verify(res == 0);
+        octaspire_helpers_verify_true(res == 0);
     }
 
     octaspire_container_utf8_string_release(self->name);
@@ -230,12 +230,12 @@ ptrdiff_t octaspire_dern_port_write(
     void const * const buffer,
     size_t const bufferSizeInOctets)
 {
-    octaspire_helpers_verify(self);
+    octaspire_helpers_verify_not_null(self);
 
     if (self->typeTag == OCTASPIRE_DERN_PORT_TAG_IO_FILE ||
         self->typeTag == OCTASPIRE_DERN_PORT_TAG_OUTPUT_FILE)
     {
-        octaspire_helpers_verify(self->value.file);
+        octaspire_helpers_verify_not_null(self->value.file);
         size_t const numItemsWritten = fwrite(buffer, sizeof(char), bufferSizeInOctets, self->value.file);
         return (ptrdiff_t)numItemsWritten;
     }
@@ -248,12 +248,12 @@ ptrdiff_t octaspire_dern_port_read(
     void * const buffer,
     size_t const bufferSizeInOctets)
 {
-    octaspire_helpers_verify(self);
+    octaspire_helpers_verify_not_null(self);
 
     if (self->typeTag == OCTASPIRE_DERN_PORT_TAG_INPUT_FILE ||
         self->typeTag == OCTASPIRE_DERN_PORT_TAG_IO_FILE)
     {
-        octaspire_helpers_verify(self->value.file);
+        octaspire_helpers_verify_not_null(self->value.file);
         size_t const numItemsRead = fread(buffer, sizeof(char), bufferSizeInOctets, self->value.file);
         return (ptrdiff_t)numItemsRead;
     }
@@ -290,7 +290,7 @@ bool octaspire_dern_port_close(
 
 ptrdiff_t octaspire_dern_port_get_length_in_octets(octaspire_dern_port_t const * const self)
 {
-    octaspire_helpers_verify(self);
+    octaspire_helpers_verify_not_null(self);
     return self->lengthInOctets;
 }
 
@@ -349,7 +349,7 @@ bool octaspire_dern_port_seek(
     ptrdiff_t const amount,
     bool const fromCurrentPos)
 {
-    octaspire_helpers_verify(self);
+    octaspire_helpers_verify_not_null(self);
 
     switch (self->typeTag)
     {
@@ -357,7 +357,7 @@ bool octaspire_dern_port_seek(
         case OCTASPIRE_DERN_PORT_TAG_OUTPUT_FILE:
         case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         {
-            octaspire_helpers_verify(self->value.file);
+            octaspire_helpers_verify_not_null(self->value.file);
 
             if (amount < 0)
             {
@@ -388,7 +388,7 @@ bool octaspire_dern_port_seek(
 
 bool octaspire_dern_port_flush(octaspire_dern_port_t * const self)
 {
-    octaspire_helpers_verify(self);
+    octaspire_helpers_verify_not_null(self);
 
     switch (self->typeTag)
     {
@@ -396,7 +396,7 @@ bool octaspire_dern_port_flush(octaspire_dern_port_t * const self)
         case OCTASPIRE_DERN_PORT_TAG_OUTPUT_FILE:
         case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         {
-            octaspire_helpers_verify(self->value.file);
+            octaspire_helpers_verify_not_null(self->value.file);
 
             return fflush(self->value.file) == 0;
         }
@@ -414,7 +414,7 @@ bool octaspire_dern_port_flush(octaspire_dern_port_t * const self)
 
 ptrdiff_t octaspire_dern_port_distance(octaspire_dern_port_t const * const self)
 {
-    octaspire_helpers_verify(self);
+    octaspire_helpers_verify_not_null(self);
 
     switch (self->typeTag)
     {
@@ -422,7 +422,7 @@ ptrdiff_t octaspire_dern_port_distance(octaspire_dern_port_t const * const self)
         case OCTASPIRE_DERN_PORT_TAG_OUTPUT_FILE:
         case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         {
-            octaspire_helpers_verify(self->value.file);
+            octaspire_helpers_verify_not_null(self->value.file);
 
             return (ptrdiff_t)ftell(self->value.file);
         }
@@ -441,14 +441,14 @@ ptrdiff_t octaspire_dern_port_distance(octaspire_dern_port_t const * const self)
 bool octaspire_dern_port_supports_output(
     octaspire_dern_port_t const * const self)
 {
-    octaspire_helpers_verify(self);
+    octaspire_helpers_verify_not_null(self);
 
     switch (self->typeTag)
     {
         case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         case OCTASPIRE_DERN_PORT_TAG_OUTPUT_FILE:
         {
-            octaspire_helpers_verify(self->value.file);
+            octaspire_helpers_verify_not_null(self->value.file);
             return true;
         }
         break;
@@ -467,14 +467,14 @@ bool octaspire_dern_port_supports_output(
 bool octaspire_dern_port_supports_input(
     octaspire_dern_port_t const * const self)
 {
-    octaspire_helpers_verify(self);
+    octaspire_helpers_verify_not_null(self);
 
     switch (self->typeTag)
     {
         case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         case OCTASPIRE_DERN_PORT_TAG_INPUT_FILE:
         {
-            octaspire_helpers_verify(self->value.file);
+            octaspire_helpers_verify_not_null(self->value.file);
             return true;
         }
         break;

@@ -56,14 +56,14 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_source(
     octaspire_dern_value_t *value =
         octaspire_dern_vm_read_from_octaspire_input_and_eval_in_global_environment(vm, input);
 
-    octaspire_helpers_verify(value);
+    octaspire_helpers_verify_not_null(value);
 
     if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
     {
         self->errorMessage =
             octaspire_container_utf8_string_new_copy(value->value.error, self->allocator);
 
-        octaspire_helpers_verify(self->errorMessage);
+        octaspire_helpers_verify_not_null(self->errorMessage);
     }
 
     return self;
@@ -108,7 +108,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
                     fileName,
                     dlerror());
 
-            octaspire_helpers_verify(self->errorMessage);
+            octaspire_helpers_verify_not_null(self->errorMessage);
         }
         else
         {
@@ -117,7 +117,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
             octaspire_container_utf8_string_t *libInitFuncName =
                 octaspire_container_utf8_string_new_format(self->allocator, "%s_init", name);
 
-            octaspire_helpers_verify(libInitFuncName);
+            octaspire_helpers_verify_not_null(libInitFuncName);
 
             libInitFunc =
                 (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))dlsym(
@@ -140,7 +140,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
                         fileName,
                         error);
 
-                octaspire_helpers_verify(self->errorMessage);
+                octaspire_helpers_verify_not_null(self->errorMessage);
 
                 dlclose(self->binaryLibHandle);
                 self->binaryLibHandle = 0;
@@ -159,7 +159,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
                             name,
                             fileName);
 
-                    octaspire_helpers_verify(self->errorMessage);
+                    octaspire_helpers_verify_not_null(self->errorMessage);
 
                     dlclose(self->binaryLibHandle);
                     self->binaryLibHandle = 0;
@@ -180,7 +180,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
                 name,
                 fileName);
 
-        octaspire_helpers_verify(self->errorMessage);
+        octaspire_helpers_verify_not_null(self->errorMessage);
 
 #endif
 

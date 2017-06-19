@@ -13,6 +13,15 @@ The amalgamated source release is the recommended way of using Dern, if you don'
 modify Dern itself. To use the amalgamated release, you will need only a C compiler and
 C standard library supporting C99.
 
+Dern should compile cleanly without any warnings using `-Wall -Wextra`.
+Currently it is tested with *gcc*, *clang*, *Tiny C Compiler (tcc)* and *Portable C compiler
+(pcc)*.
+
+Dern is portable and is tested and known to run in Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana,
+DragonFly BSD, MINIX 3, Haiku, and Windows. The `how-to-build`-directory of the amalgamated source
+release contains build script for all tested platforms. More platforms and build scripts will
+be added later.
+
 ### Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MINIX 3, Haiku
 
 ```shell

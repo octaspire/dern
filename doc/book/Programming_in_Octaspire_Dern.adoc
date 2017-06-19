@@ -4,7 +4,7 @@ Programming in Octaspire Dern
 :lang: en
 :toc:
 
-Documentation for Octaspire Dern programming language version 0.140.0
+Documentation for Octaspire Dern programming language version 0.141.0
 
 == About
 
@@ -41,7 +41,8 @@ Dern is dynamically typed language and has *mark and sweep* garbage collector. F
 in dern are first class values. Dern is written in standard *C99* and depends only on C99 compiler,
 standard library and *octaspire-core* (container, utf-8, and utility library). Dern should
 compile cleanly without any warnings using `-Wall -Wextra` on any compiler supporting C99.
-Currently it is tested with *gcc*, *clang* and *tcc*.
+Currently it is tested with *gcc*, *clang*, *Tiny C Compiler (tcc)* and *Portable C compiler
+(pcc)*.
 
 By using the amalgamated version of Dern, you need only one file. This same single source file
 can be compiled into (1) stand-alone unit test runner, (2) interactive Dern-REPL and (3) used
