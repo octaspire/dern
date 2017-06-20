@@ -592,7 +592,7 @@ bool octaspire_dern_value_set_collection(
 
             // octaspire_container_vector_insert_element_at cannot be used here, because
             // it fills the missing indices with 0. Now those must be nil-values.
-            
+
             for (size_t i = octaspire_container_vector_get_length(self->value.vector);
                  i < (size_t)indexOrKey->value.integer;
                  ++i)
@@ -694,6 +694,7 @@ uint32_t octaspire_dern_value_get_hash(
     }
 
     abort();
+    return 0;
 }
 
 bool octaspire_dern_value_is_equal(
@@ -766,6 +767,7 @@ bool octaspire_dern_value_is_equal(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_is_less_than(
@@ -837,6 +839,7 @@ bool octaspire_dern_value_is_less_than(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_is_greater_than(
@@ -908,6 +911,7 @@ bool octaspire_dern_value_is_greater_than(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_is_less_than_or_equal(
@@ -979,6 +983,7 @@ bool octaspire_dern_value_is_less_than_or_equal(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_is_greater_than_or_equal(
@@ -1050,6 +1055,7 @@ bool octaspire_dern_value_is_greater_than_or_equal(
     }
 
     abort();
+    return false;
 }
 
 octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
@@ -1309,6 +1315,7 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
         }
 
     abort();
+    return 0;
 }
 
 octaspire_container_utf8_string_t *octaspire_dern_value_to_string(
@@ -2327,6 +2334,7 @@ size_t octaspire_dern_value_get_length(
     }
 
     abort();
+    return 0;
 }
 
 bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
@@ -2479,6 +2487,7 @@ int octaspire_dern_value_compare(
     }
 
     abort();
+    return 0;
 }
 
 bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
@@ -2518,6 +2527,7 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
     }
 
     abort();
+    return false;
 }
 
 

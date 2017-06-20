@@ -30,6 +30,17 @@ limitations under the License.
 #include <dlfcn.h>
 #endif
 
+
+#ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
+
+#include <u.h>
+#include <libc.h>
+#include <mp.h>
+#include <stdio.h>
+#include <ctype.h>
+
+#else
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -46,7 +57,7 @@ limitations under the License.
 #include <limits.h>
 #include <wchar.h>
 
-
+#endif
 
 
 
@@ -96,6 +107,30 @@ limitations under the License.
 #define OCTASPIRE_CORE_AMALGAMATED_H
 
 
+#ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
+
+
+typedef long               int32_t;
+typedef unsigned long      uint32_t;
+typedef char               bool;
+typedef char               int8_t;
+typedef unsigned char      uint8_t;
+typedef long               ptrdiff_t;
+typedef unsigned long      size_t;
+typedef unsigned long long uintmax_t;
+
+#define true 1
+#define false 0
+
+#define CHAR_BIT 8
+#define INT32_MAX 2147483647
+#define va_copy(x,y) (x) = (y)
+
+#else
+
+
+
+#endif
 
 
 
@@ -156,10 +191,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "39"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "42"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.39.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.42.0"
 
 
 
@@ -1164,6 +1199,9 @@ void octaspire_helpers_verify_true(bool const condition);
 void octaspire_helpers_verify_null(void const * const ptr);
 void octaspire_helpers_verify_not_null(void const * const ptr);
 
+float octaspire_helpers_maxf(float const a, float const b);
+float octaspire_helpers_ceilf(float const value);
+
 #ifdef __cplusplus
 }
 #endif
@@ -1628,6 +1666,21 @@ void octaspire_helpers_verify_not_null(void const * const ptr)
     {
         abort();
     }
+}
+
+float octaspire_helpers_maxf(float const a, float const b)
+{
+    if (a > b)
+    {
+        return a;
+    }
+
+    return b;
+}
+
+float octaspire_helpers_ceilf(float const value)
+{
+    return (float)ceil((double)value);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2235,7 +2288,7 @@ static bool octaspire_container_vector_private_grow(
     octaspire_container_vector_t *self,
     float const factor)
 {
-    size_t const newNumAllocated = (size_t)(self->numAllocated * fmaxf(2, factor));
+    size_t const newNumAllocated = (size_t)(self->numAllocated * octaspire_helpers_maxf(2, factor));
 
     void *newElements = octaspire_memory_allocator_realloc(
         self->allocator,
@@ -2620,7 +2673,7 @@ bool octaspire_container_vector_insert_element_at(
     {
         if (!octaspire_container_vector_private_grow(
                 self,
-                ceilf((float)index / (float)self->numAllocated)))
+                octaspire_helpers_ceilf((float)index / (float)self->numAllocated)))
         {
             return false;
         }
@@ -5896,64 +5949,6 @@ extern "C" {
  */
 
 
-/*********************************************************************
- * Minimal test runner template
- *********************************************************************/
-#if 0
-
-
-TEST foo_should_foo(void) {
-    PASS();
-}
-
-static void setup_cb(void *data) {
-    printf("setup callback for each test case\n");
-}
-
-static void teardown_cb(void *data) {
-    printf("teardown callback for each test case\n");
-}
-
-SUITE(suite) {
-    /* Optional setup/teardown callbacks which will be run before/after
-     * every test case. If using a test suite, they will be cleared when
-     * the suite finishes. */
-    SET_SETUP(setup_cb, voidp_to_callback_data);
-    SET_TEARDOWN(teardown_cb, voidp_to_callback_data);
-
-    RUN_TEST(foo_should_foo);
-}
-
-/* Add definitions that need to be in the test runner's main file. */
-GREATEST_MAIN_DEFS();
-
-/* Set up, run suite(s) of tests, report pass/fail/skip stats. */
-int run_tests(void) {
-    GREATEST_INIT();            /* init. greatest internals */
-    /* List of suites to run (if any). */
-    RUN_SUITE(suite);
-
-    /* Tests can also be run directly, without using test suites. */
-    RUN_TEST(foo_should_foo);
-
-    GREATEST_PRINT_REPORT();          /* display results */
-    return greatest_all_passed();
-}
-
-/* main(), for a standalone command-line test runner.
- * This replaces run_tests above, and adds command line option
- * handling and exiting with a pass/fail status. */
-int main(int argc, char **argv) {
-    GREATEST_MAIN_BEGIN();      /* init & parse command-line args */
-    RUN_SUITE(suite);
-    GREATEST_MAIN_END();        /* display results */
-}
-
-#endif
-/*********************************************************************/
-
-
-
 /***********
  * Options *
  ***********/
@@ -5978,7 +5973,7 @@ int main(int argc, char **argv) {
 #define GREATEST_USE_LONGJMP 1
 #endif
 
-#if GREATEST_USE_LONGJMP
+#ifdef GREATEST_USE_LONGJMP
 #endif
 
 /* Set to 0 to disable all use of time.h / clock(). */
@@ -5986,7 +5981,7 @@ int main(int argc, char **argv) {
 #define GREATEST_USE_TIME 1
 #endif
 
-#if GREATEST_USE_TIME
+#ifdef GREATEST_USE_TIME
 #endif
 
 /* Floating point type, for ASSERT_IN_RANGE. */
@@ -6006,7 +6001,7 @@ typedef struct greatest_suite_info {
     unsigned int failed;
     unsigned int skipped;
 
-#if GREATEST_USE_TIME
+#ifdef GREATEST_USE_TIME
     /* timers, pre/post running suite and individual tests */
     clock_t pre_suite;
     clock_t post_suite;
@@ -6092,13 +6087,13 @@ typedef struct greatest_run_info {
     const char *suite_filter;
     const char *test_filter;
 
-#if GREATEST_USE_TIME
+#ifdef GREATEST_USE_TIME
     /* overall timers */
     clock_t begin;
     clock_t end;
 #endif
 
-#if GREATEST_USE_LONGJMP
+#ifdef GREATEST_USE_LONGJMP
     int pad_jmp_buf;
     char octaspire_padding[4];
     jmp_buf jump_dest;
@@ -6149,13 +6144,6 @@ void greatest_set_flag(greatest_flag_t flag);
 /********************
 * Language Support *
 ********************/
-
-/* If __VA_ARGS__ (C99) is supported, allow parametric testing
-* without needing to manually manage the argument struct. */
-#if __STDC_VERSION__ >= 19901L || _MSC_VER >= 1800
-#define GREATEST_VA_ARGS
-#endif
-
 
 /**********
  * Macros *
@@ -6402,7 +6390,7 @@ typedef enum greatest_test_res {
     } while (0)
 
 /* Optional GREATEST_FAILm variant that longjmps. */
-#if GREATEST_USE_LONGJMP
+#ifdef GREATEST_USE_LONGJMP
 #define GREATEST_FAIL_WITH_LONGJMP() GREATEST_FAIL_WITH_LONGJMPm(NULL)
 #define GREATEST_FAIL_WITH_LONGJMPm(MSG)                                \
     do {                                                                \
@@ -6429,7 +6417,7 @@ typedef enum greatest_test_res {
         }                                                               \
     } while (0)                                                         \
 
-#if GREATEST_USE_TIME
+#ifdef GREATEST_USE_TIME
 #define GREATEST_SET_TIME(NAME)                                         \
     NAME = clock();                                                     \
     if (NAME == (clock_t) -1) {                                         \
@@ -6447,7 +6435,7 @@ typedef enum greatest_test_res {
 #define GREATEST_CLOCK_DIFF(UNUSED1, UNUSED2)
 #endif
 
-#if GREATEST_USE_LONGJMP
+#ifdef GREATEST_USE_LONGJMP
 #define GREATEST_SAVE_CONTEXT()                                         \
         /* setjmp returns 0 (GREATEST_TEST_RES_PASS) on first call */   \
         /* so the test runs, then RES_FAIL from FAIL_WITH_LONGJMP. */   \
@@ -6837,7 +6825,7 @@ greatest_run_info greatest_info
 
 /* Make abbreviations without the GREATEST_ prefix for the
  * most commonly used symbols. */
-#if GREATEST_USE_ABBREVS
+#ifdef GREATEST_USE_ABBREVS
 #define TEST           GREATEST_TEST
 #define SUITE          GREATEST_SUITE
 #define SUITE_EXTERN   GREATEST_SUITE_EXTERN
@@ -6879,7 +6867,7 @@ greatest_run_info greatest_info
 #define RUN_TESTp      GREATEST_RUN_TESTp
 #endif
 
-#if GREATEST_USE_LONGJMP
+#ifdef GREATEST_USE_LONGJMP
 #define ASSERT_OR_LONGJMP  GREATEST_ASSERT_OR_LONGJMP
 #define ASSERT_OR_LONGJMPm GREATEST_ASSERT_OR_LONGJMPm
 #define FAIL_WITH_LONGJMP  GREATEST_FAIL_WITH_LONGJMP
@@ -15475,10 +15463,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "144"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "146"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.144.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.146.0"
 
 
 
@@ -17071,10 +17059,8 @@ extern "C" {
 
 
 
-
 #ifdef OCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION
 
-#define OCTASPIRE_CORE_AMALGAMATED_IMPLEMENTATION 1
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // START OF        ../src/octaspire_dern_environment.c
@@ -22591,6 +22577,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
     }
 
     abort();
+    return 0;
 }
 
 // TODO move to other builtins
@@ -23263,6 +23250,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_abort(
     octaspire_dern_vm_pop_value(vm, arguments);
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_input_file_open(
@@ -24811,6 +24799,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_string(
         // TODO XXX
         abort();
     }
+
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
@@ -24855,6 +24845,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
         // TODO XXX
         abort();
     }
+
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_print(
@@ -27524,7 +27516,7 @@ bool octaspire_dern_value_set_collection(
 
             // octaspire_container_vector_insert_element_at cannot be used here, because
             // it fills the missing indices with 0. Now those must be nil-values.
-            
+
             for (size_t i = octaspire_container_vector_get_length(self->value.vector);
                  i < (size_t)indexOrKey->value.integer;
                  ++i)
@@ -27626,6 +27618,7 @@ uint32_t octaspire_dern_value_get_hash(
     }
 
     abort();
+    return 0;
 }
 
 bool octaspire_dern_value_is_equal(
@@ -27698,6 +27691,7 @@ bool octaspire_dern_value_is_equal(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_is_less_than(
@@ -27769,6 +27763,7 @@ bool octaspire_dern_value_is_less_than(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_is_greater_than(
@@ -27840,6 +27835,7 @@ bool octaspire_dern_value_is_greater_than(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_is_less_than_or_equal(
@@ -27911,6 +27907,7 @@ bool octaspire_dern_value_is_less_than_or_equal(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_is_greater_than_or_equal(
@@ -27982,6 +27979,7 @@ bool octaspire_dern_value_is_greater_than_or_equal(
     }
 
     abort();
+    return false;
 }
 
 octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
@@ -28241,6 +28239,7 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
         }
 
     abort();
+    return 0;
 }
 
 octaspire_container_utf8_string_t *octaspire_dern_value_to_string(
@@ -29259,6 +29258,7 @@ size_t octaspire_dern_value_get_length(
     }
 
     abort();
+    return 0;
 }
 
 bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
@@ -29411,6 +29411,7 @@ int octaspire_dern_value_compare(
     }
 
     abort();
+    return 0;
 }
 
 bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
@@ -29450,6 +29451,7 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
     }
 
     abort();
+    return false;
 }
 
 
@@ -33804,7 +33806,11 @@ static void octaspire_dern_repl_private_cleanup(void)
     allocator = 0;
 }
 
+#ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
+void main(int argc, char *argv[])
+#else
 int main(int argc, char *argv[])
+#endif
 {
     bool useColors               = false;
     int  userFilesStartIdx       = -1;
@@ -34120,7 +34126,11 @@ octaspire_dern_repl_cleanup:
 
     octaspire_dern_repl_private_cleanup();
 
+#ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
+    exits(exitCode);
+#else
     return exitCode;
+#endif
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../src/octaspire_dern_repl.c
@@ -34212,65 +34222,6 @@ extern "C" {
  *     https://github.com/silentbicycle/greatest/
  */
 
-
-/*********************************************************************
- * Minimal test runner template
- *********************************************************************/
-#if 0
-
-#include "greatest.h"
-
-TEST foo_should_foo(void) {
-    PASS();
-}
-
-static void setup_cb(void *data) {
-    printf("setup callback for each test case\n");
-}
-
-static void teardown_cb(void *data) {
-    printf("teardown callback for each test case\n");
-}
-
-SUITE(suite) {
-    /* Optional setup/teardown callbacks which will be run before/after
-     * every test case. If using a test suite, they will be cleared when
-     * the suite finishes. */
-    SET_SETUP(setup_cb, voidp_to_callback_data);
-    SET_TEARDOWN(teardown_cb, voidp_to_callback_data);
-
-    RUN_TEST(foo_should_foo);
-}
-
-/* Add definitions that need to be in the test runner's main file. */
-GREATEST_MAIN_DEFS();
-
-/* Set up, run suite(s) of tests, report pass/fail/skip stats. */
-int run_tests(void) {
-    GREATEST_INIT();            /* init. greatest internals */
-    /* List of suites to run (if any). */
-    RUN_SUITE(suite);
-
-    /* Tests can also be run directly, without using test suites. */
-    RUN_TEST(foo_should_foo);
-
-    GREATEST_PRINT_REPORT();          /* display results */
-    return greatest_all_passed();
-}
-
-/* main(), for a standalone command-line test runner.
- * This replaces run_tests above, and adds command line option
- * handling and exiting with a pass/fail status. */
-int main(int argc, char **argv) {
-    GREATEST_MAIN_BEGIN();      /* init & parse command-line args */
-    RUN_SUITE(suite);
-    GREATEST_MAIN_END();        /* display results */
-}
-
-#endif
-/*********************************************************************/
-
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -34300,7 +34251,7 @@ int main(int argc, char **argv) {
 #define GREATEST_USE_LONGJMP 1
 #endif
 
-#if GREATEST_USE_LONGJMP
+#ifdef GREATEST_USE_LONGJMP
 #include <setjmp.h>
 #endif
 
@@ -34309,7 +34260,7 @@ int main(int argc, char **argv) {
 #define GREATEST_USE_TIME 1
 #endif
 
-#if GREATEST_USE_TIME
+#ifdef GREATEST_USE_TIME
 #include <time.h>
 #endif
 
@@ -34330,7 +34281,7 @@ typedef struct greatest_suite_info {
     unsigned int failed;
     unsigned int skipped;
 
-#if GREATEST_USE_TIME
+#ifdef GREATEST_USE_TIME
     /* timers, pre/post running suite and individual tests */
     clock_t pre_suite;
     clock_t post_suite;
@@ -34416,13 +34367,13 @@ typedef struct greatest_run_info {
     const char *suite_filter;
     const char *test_filter;
 
-#if GREATEST_USE_TIME
+#ifdef GREATEST_USE_TIME
     /* overall timers */
     clock_t begin;
     clock_t end;
 #endif
 
-#if GREATEST_USE_LONGJMP
+#ifdef GREATEST_USE_LONGJMP
     int pad_jmp_buf;
     char octaspire_padding[4];
     jmp_buf jump_dest;
@@ -34473,13 +34424,6 @@ void greatest_set_flag(greatest_flag_t flag);
 /********************
 * Language Support *
 ********************/
-
-/* If __VA_ARGS__ (C99) is supported, allow parametric testing
-* without needing to manually manage the argument struct. */
-#if __STDC_VERSION__ >= 19901L || _MSC_VER >= 1800
-#define GREATEST_VA_ARGS
-#endif
-
 
 /**********
  * Macros *
@@ -34726,7 +34670,7 @@ typedef enum greatest_test_res {
     } while (0)
 
 /* Optional GREATEST_FAILm variant that longjmps. */
-#if GREATEST_USE_LONGJMP
+#ifdef GREATEST_USE_LONGJMP
 #define GREATEST_FAIL_WITH_LONGJMP() GREATEST_FAIL_WITH_LONGJMPm(NULL)
 #define GREATEST_FAIL_WITH_LONGJMPm(MSG)                                \
     do {                                                                \
@@ -34753,7 +34697,7 @@ typedef enum greatest_test_res {
         }                                                               \
     } while (0)                                                         \
 
-#if GREATEST_USE_TIME
+#ifdef GREATEST_USE_TIME
 #define GREATEST_SET_TIME(NAME)                                         \
     NAME = clock();                                                     \
     if (NAME == (clock_t) -1) {                                         \
@@ -34771,7 +34715,7 @@ typedef enum greatest_test_res {
 #define GREATEST_CLOCK_DIFF(UNUSED1, UNUSED2)
 #endif
 
-#if GREATEST_USE_LONGJMP
+#ifdef GREATEST_USE_LONGJMP
 #define GREATEST_SAVE_CONTEXT()                                         \
         /* setjmp returns 0 (GREATEST_TEST_RES_PASS) on first call */   \
         /* so the test runs, then RES_FAIL from FAIL_WITH_LONGJMP. */   \
@@ -35161,7 +35105,7 @@ greatest_run_info greatest_info
 
 /* Make abbreviations without the GREATEST_ prefix for the
  * most commonly used symbols. */
-#if GREATEST_USE_ABBREVS
+#ifdef GREATEST_USE_ABBREVS
 #define TEST           GREATEST_TEST
 #define SUITE          GREATEST_SUITE
 #define SUITE_EXTERN   GREATEST_SUITE_EXTERN
@@ -35203,7 +35147,7 @@ greatest_run_info greatest_info
 #define RUN_TESTp      GREATEST_RUN_TESTp
 #endif
 
-#if GREATEST_USE_LONGJMP
+#ifdef GREATEST_USE_LONGJMP
 #define ASSERT_OR_LONGJMP  GREATEST_ASSERT_OR_LONGJMP
 #define ASSERT_OR_LONGJMPm GREATEST_ASSERT_OR_LONGJMPm
 #define FAIL_WITH_LONGJMP  GREATEST_FAIL_WITH_LONGJMP

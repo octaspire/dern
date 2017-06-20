@@ -44,6 +44,17 @@ cat >> $FILE << EnDoFmEsSaGe
 #include <dlfcn.h>
 #endif
 
+
+#ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
+
+#include <u.h>
+#include <libc.h>
+#include <mp.h>
+#include <stdio.h>
+#include <ctype.h>
+
+#else
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -60,7 +71,7 @@ cat >> $FILE << EnDoFmEsSaGe
 #include <limits.h>
 #include <wchar.h>
 
-
+#endif
 
 
 
@@ -216,8 +227,9 @@ EnDoFmEsSaGe
 
 
 # Write implementations
-cat >> $FILE << EnDoFmEsSaGe
 
+
+cat >> $FILE << EnDoFmEsSaGe
 
 
 
@@ -226,9 +238,12 @@ cat >> $FILE << EnDoFmEsSaGe
 
 #ifdef OCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION
 
-#define OCTASPIRE_CORE_AMALGAMATED_IMPLEMENTATION 1
 
 EnDoFmEsSaGe
+
+
+
+
 
 
 

@@ -1712,6 +1712,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
     }
 
     abort();
+    return 0;
 }
 
 // TODO move to other builtins
@@ -2384,6 +2385,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_abort(
     octaspire_dern_vm_pop_value(vm, arguments);
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_input_file_open(
@@ -3932,6 +3934,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_string(
         // TODO XXX
         abort();
     }
+
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
@@ -3976,6 +3980,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
         // TODO XXX
         abort();
     }
+
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_print(

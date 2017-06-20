@@ -175,7 +175,11 @@ static void octaspire_dern_repl_private_cleanup(void)
     allocator = 0;
 }
 
+#ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
+void main(int argc, char *argv[])
+#else
 int main(int argc, char *argv[])
+#endif
 {
     bool useColors               = false;
     int  userFilesStartIdx       = -1;
@@ -491,5 +495,9 @@ octaspire_dern_repl_cleanup:
 
     octaspire_dern_repl_private_cleanup();
 
+#ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
+    exits(exitCode);
+#else
     return exitCode;
+#endif
 }
