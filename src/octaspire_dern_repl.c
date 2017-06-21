@@ -188,7 +188,11 @@ int main(int argc, char *argv[])
 
     octaspire_dern_vm_config_t vmConfig = octaspire_dern_vm_config_default();
 
+#ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
+    if (atexit(octaspire_dern_repl_private_cleanup) == 0)
+#else
     if (atexit(octaspire_dern_repl_private_cleanup) != 0)
+#endif
     {
         octaspire_dern_repl_print_message_c_str(
             "Cannot register the 'atexit' function",
@@ -496,7 +500,7 @@ octaspire_dern_repl_cleanup:
     octaspire_dern_repl_private_cleanup();
 
 #ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
-    exits(exitCode);
+    exits(exitCode == EXIT_SUCCESS ? "" : "error");
 #else
     return exitCode;
 #endif

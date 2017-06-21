@@ -130,6 +130,11 @@ typedef unsigned long long uintmax_t;
 #define EXIT_FAILURE 1
 #define EXIT_SUCCESS 0
 
+void exit(int32_t const status)
+{
+    exits(status == 0 ? "" : "error");
+}
+
 #else
 
 
@@ -195,10 +200,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "43"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "44"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.43.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.44.0"
 
 
 
@@ -15467,10 +15472,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "147"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "149"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.147.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.149.0"
 
 
 
@@ -33827,7 +33832,11 @@ int main(int argc, char *argv[])
 
     octaspire_dern_vm_config_t vmConfig = octaspire_dern_vm_config_default();
 
+#ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
+    if (atexit(octaspire_dern_repl_private_cleanup) == 0)
+#else
     if (atexit(octaspire_dern_repl_private_cleanup) != 0)
+#endif
     {
         octaspire_dern_repl_print_message_c_str(
             "Cannot register the 'atexit' function",
@@ -34135,7 +34144,7 @@ octaspire_dern_repl_cleanup:
     octaspire_dern_repl_private_cleanup();
 
 #ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
-    exits(exitCode);
+    exits(exitCode == EXIT_SUCCESS ? "" : "error");
 #else
     return exitCode;
 #endif
