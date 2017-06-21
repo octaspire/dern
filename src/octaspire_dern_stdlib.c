@@ -485,6 +485,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_define(
 
     octaspire_dern_vm_pop_value(vm, arguments);
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_special_eval(

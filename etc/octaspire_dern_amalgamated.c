@@ -124,7 +124,11 @@ typedef unsigned long long uintmax_t;
 
 #define CHAR_BIT 8
 #define INT32_MAX 2147483647
+#define UINTMAX_MAX 0xFFFFFFFF
 #define va_copy(x,y) (x) = (y)
+#define PRId32 "ld"
+#define EXIT_FAILURE 1
+#define EXIT_SUCCESS 0
 
 #else
 
@@ -191,10 +195,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "42"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "43"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.42.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.43.0"
 
 
 
@@ -15463,10 +15467,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "146"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "147"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.146.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.147.0"
 
 
 
@@ -20657,6 +20661,7 @@ bool octaspire_dern_port_close(
     }
 
     abort();
+    return false;
 }
 
 ptrdiff_t octaspire_dern_port_get_length_in_octets(octaspire_dern_port_t const * const self)
@@ -20713,6 +20718,7 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
     }
 
     abort();
+    return 0;
 }
 
 bool octaspire_dern_port_seek(
@@ -21350,6 +21356,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_define(
 
     octaspire_dern_vm_pop_value(vm, arguments);
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_special_eval(
@@ -32997,8 +33004,9 @@ octaspire_stdio_t *octaspire_dern_vm_get_stdio(octaspire_dern_vm_t * const self)
 
 #ifdef OCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION
 
-
+#ifndef OCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION
 #define OCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION 1
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // START OF        ../external/octaspire_dern_banner_color.h

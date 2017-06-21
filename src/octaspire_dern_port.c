@@ -286,6 +286,7 @@ bool octaspire_dern_port_close(
     }
 
     abort();
+    return false;
 }
 
 ptrdiff_t octaspire_dern_port_get_length_in_octets(octaspire_dern_port_t const * const self)
@@ -342,6 +343,7 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
     }
 
     abort();
+    return 0;
 }
 
 bool octaspire_dern_port_seek(
