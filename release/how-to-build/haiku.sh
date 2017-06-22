@@ -1,11 +1,15 @@
 #!/usr/bin/env sh
 
+YELLOW="$(tput setaf 3 ; tput bold)"
+GREEN="$(tput setaf 2 ; tput bold)"
+NOCOLOR="$(tput setaf 9 ; tput sgr0)"
+
 echoAndRun() { echo "$@" ; "$@" ; }
-echoToDefs() { echo "$(tput setaf 9) $(tput sgr0)" ; }
+echoToDefs() { printf "$NOCOLOR\n" ; }
 
 CC=gcc-x86
 
-echo "$(tput setaf 3) $(tput bold)"
+printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
 1. Building stand alone unit test runner to test the release
 -------------------------------------------------------------------------------
@@ -20,7 +24,7 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                 \
 
 
 
-echo "$(tput setaf 3) $(tput bold)"
+printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
 2. Building the embedding example
 -------------------------------------------------------------------------------
@@ -33,7 +37,7 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                 \
 
 
 
-echo "$(tput setaf 3) $(tput bold)"
+printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
 3. Building the binary library example
 -------------------------------------------------------------------------------
@@ -44,7 +48,7 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libmylib.so mylib.o
 
 
 
-echo "$(tput setaf 3) $(tput bold)"
+printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
 4. Building the interactive Dern REPL
 -------------------------------------------------------------------------------
@@ -58,7 +62,7 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                 \
 
 
 
-echo "$(tput setaf 3) $(tput bold)"
+printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
 5. Building the 'dern_ncurses' (binary) plugin.  PLEASE NOTE: This plugin
    requires development version of 'ncurses' library (i.e. headers) to be
@@ -76,17 +80,15 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_ncurses.so der
 
 
 
-echo " "
-echo "$(tput bold)Done."
-echo "$(tput setaf 2) $(tput bold)"
-echo "============================================================================="
-echo "Run programs and examples like this:"
-echo "============================================================================="
-echo "$(tput setaf 3)1)$(tput setaf 2) ./octaspire-dern-unit-test-runner"
-echo "$(tput setaf 3)2)$(tput setaf 2) ./embedding-example"
-echo "$(tput setaf 3)3)$(tput setaf 2) LIBRARY_PATH=\$LIBRARY_PATH:. ./octaspire-dern-repl examples/use-mylib.dern"
-echo "$(tput setaf 3)4)$(tput setaf 2) ./octaspire-dern-repl -c"
-echo "$(tput setaf 3)5)$(tput setaf 2) LIBRARY_PATH=\$LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-ncurses-example.dern"
+printf "\nDone.\n$GREEN"
+echo   "============================================================================="
+echo   "Run programs and examples like this:"
+echo   "============================================================================="
+printf "%b1)%b ./octaspire-dern-unit-test-runner\n" $YELLOW $GREEN
+printf "%b2)%b ./embedding-example\n" $YELLOW $GREEN
+printf "%b3)%b LIBRARY_PATH=\$LIBRARY_PATH:. ./octaspire-dern-repl examples/use-mylib.dern\n" $YELLOW $GREEN
+printf "%b4)%b ./octaspire-dern-repl -c\n" $YELLOW $GREEN
+printf "%b5)%b LIBRARY_PATH=\$LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN
 echo "============================================================================="
 echoToDefs
 

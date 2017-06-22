@@ -1,15 +1,15 @@
 #!/usr/bin/env sh
 
 YELLOW='\033[1;33m'
-GREEN='\033[0;32m'
+GREEN='\033[1;32m'
 NOCOLOR='\033[0m'
 
 echoAndRun() { echo "$@" ; "$@" ; }
-echoToDefs() { echo -e "$NOCOLOR" ; }
+echoToDefs() { printf "$NOCOLOR\n" ; }
 
 CC=gcc
 
-echo -e "$YELLOW"
+printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
 1. Building stand alone unit test runner to test the release
 -------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                 \
 
 
 
-echo -e "$YELLOW"
+printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
 2. Building the embedding example
 -------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                 \
 
 
 
-echo -e "$YELLOW"
+printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
 3. Building the binary library example
 -------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libmylib.so mylib.o
 
 
 
-echo -e "$YELLOW"
+printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
 4. Building the interactive Dern REPL
 -------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                 \
 
 
 
-echo -e "$YELLOW"
+printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
 5. Building the 'dern_ncurses' (binary) plugin.  PLEASE NOTE: This plugin
    requires development version of 'ncurses' library (i.e. headers) to be
@@ -81,22 +81,15 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_ncurses.so der
 
 
 
-echo " "
-echo "Done."
-printf "$YELLOW"
+printf "\nDone.\n$GREEN"
 echo   "=================================================================="
 echo   "Run programs and examples like this:"
 echo   "=================================================================="
-printf "$GREEN"
-printf "1)$YELLOW ./octaspire-dern-unit-test-runner\n"
-printf "$GREEN"
-printf "2)$YELLOW ./embedding-example\n"
-printf "$GREEN"
-printf "3)$YELLOW ./octaspire-dern-repl examples/use-mylib.dern\n"
-printf "$GREEN"
-printf "4)$YELLOW ./octaspire-dern-repl -c\n"
-printf "$GREEN"
-printf "5)$YELLOW ./octaspire-dern-repl examples/dern-ncurses-example.dern\n"
+printf "%b1)%b ./octaspire-dern-unit-test-runner\n" $YELLOW $GREEN
+printf "%b2)%b ./embedding-example\n" $YELLOW $GREEN
+printf "%b3)%b ./octaspire-dern-repl examples/use-mylib.dern\n" $YELLOW $GREEN
+printf "%b4)%b ./octaspire-dern-repl -c\n" $YELLOW $GREEN
+printf "%b5)%b ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN
 echo "=================================================================="
 echoToDefs
 
