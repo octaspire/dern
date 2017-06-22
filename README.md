@@ -18,11 +18,11 @@ Currently it is tested with *gcc*, *clang*, *Tiny C Compiler (tcc)* and *Portabl
 (pcc)*.
 
 Dern is portable and is tested and known to run in Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana,
-DragonFly BSD, MINIX 3, Haiku, and Windows. The `how-to-build`-directory of the amalgamated source
-release contains build script for all tested platforms. More platforms and build scripts will
-be added later.
+DragonFly BSD, MidnightBSD, MINIX 3, Haiku, and Windows. The `how-to-build`-directory of
+the amalgamated source release contains build script for all tested platforms. More platforms
+and build scripts will be added later.
 
-### Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MINIX 3, Haiku
+### Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku
 
 ```shell
 curl -O octaspire.com/dern/release.tar.bz2
@@ -34,8 +34,8 @@ sh how-to-build/YOUR_PLATFORM_NAME_HERE.XX
 ```
 
 replace **YOUR_PLATFORM_NAME_HERE.XX** with **FreeBSD.sh**, **NetBSD.sh**, **OpenBSD.sh**,
-**OpenIndiana.sh**, **DragonFlyBSD.sh**, **linux.sh**, **minix3.sh** or **haiku.sh**.
-More scripts for different platforms will be added later.
+**OpenIndiana.sh**, **DragonFlyBSD.sh**, **MidnightBSD.sh**, **linux.sh**, **minix3.sh** or
+**haiku.sh**. More scripts for different platforms will be added later.
 
 
 
