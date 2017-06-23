@@ -39,6 +39,20 @@ replace **YOUR_PLATFORM_NAME_HERE.XX** with **FreeBSD.sh**, **NetBSD.sh**, **Ope
 
 
 
+### Plan9
+
+```shell
+hget -o release.tar.bz2 http://octaspire.com/dern/release.tar.bz2
+bunzip2 release.tar.bz2
+tar xf release.tar
+cd release/*
+rc how-to-build/Plan9.sh
+```
+
+Please note, that Dern in Plan9 is currently EXPERIMENTAL, can crash and should be used only for
+testing and development/fixing purposes.
+
+
 ### Windows using MinGW
 
 1. Download and install **MinGW** from

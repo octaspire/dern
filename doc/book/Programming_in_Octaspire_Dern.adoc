@@ -3,8 +3,9 @@ Programming in Octaspire Dern
 :author: www.octaspire.com
 :lang: en
 :toc:
+:source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.152.0
+Documentation for Octaspire Dern programming language version 0.153.0
 
 == About
 
@@ -105,6 +106,24 @@ sh how-to-build/YOUR_PLATFORM_NAME_HERE.XX
 replace *YOUR_PLATFORM_NAME_HERE.XX* with *FreeBSD.sh*, *NetBSD.sh*, *OpenBSD.sh*, *OpenIndiana.sh*,
 *DragonFlyBSD.sh*, *MidnightBSD*, *linux.sh*, *minix3.sh* or *haiku.sh*. More scripts for
 different platforms will be added later.
+
+
+=== Plan9
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+hget -o release.tar.bz2 http://octaspire.com/dern/release.tar.bz2
+bunzip2 release.tar.bz2
+tar xf release.tar
+cd release/*
+rc how-to-build/Plan9.sh
+----
+
+Please note, that Dern in Plan9 is currently EXPERIMENTAL, can crash and should be used only for
+testing and development/fixing purposes.
 
 
 === Windows using MinGW

@@ -131,6 +131,8 @@ octaspire.com/dern\n" > "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR
     echo "\nCopying book to the release directory...\n--------------------------\n"
     cp "$PROJECT_PATH/doc/book/Programming_in_Octaspire_Dern.html" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/documentation/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    cp "$PROJECT_PATH/doc/book/Programming_in_Octaspire_Dern.pdf" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/documentation/"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "\nCopying plugins...\n--------------------------\n"
     cp "$PROJECT_PATH/etc/plugins/dern_ncurses.c" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/plugins/"
