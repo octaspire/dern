@@ -7,7 +7,22 @@ NOCOLOR="$(tput setaf 9 ; tput sgr0)"
 echoAndRun() { echo "$@" ; "$@" ; }
 echoToDefs() { printf "$NOCOLOR\n" ; }
 
-CC=gcc-x86
+CC=gcc
+
+printf "$YELLOW\n"
+cat << EnDoFmEsSaGe
+--------------------------------------------------------------------------------------
+Please note, that to be able to build software in Syllable Desktop, you must
+have 'DevelopersDelight-8.i586.zip' and 'SyllableDesktop-x.y.z-development-1.i586.zip'
+(where x.y.z is the version number of yours Syllable desktop) downloaded and installed.
+
+If this build fails, please download and install those packages.
+--------------------------------------------------------------------------------------
+EnDoFmEsSaGe
+echoToDefs
+
+read -p "Press enter to start the build..." dummyVar
+
 
 printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
@@ -15,11 +30,11 @@ cat << EnDoFmEsSaGe
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
 echoToDefs
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra                 \
-    -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION \
-    -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                \
-    -DGREATEST_ENABLE_ANSI_COLORS                         \
--I . octaspire-dern-amalgamated.c -Wl,-export-dynamic -lm \
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
+    -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION      \
+    -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
+    -DGREATEST_ENABLE_ANSI_COLORS                              \
+-I . octaspire-dern-amalgamated.c -Wl,-export-dynamic -ldl -lm \
 -o octaspire-dern-unit-test-runner
 
 
@@ -30,9 +45,9 @@ cat << EnDoFmEsSaGe
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
 echoToDefs
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra                 \
-    -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                \
--I . examples/embedding-example.c -Wl,-export-dynamic -lm \
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
+    -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
+-I . examples/embedding-example.c -Wl,-export-dynamic -ldl -lm \
 -o embedding-example
 
 
@@ -54,10 +69,10 @@ cat << EnDoFmEsSaGe
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
 echoToDefs
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra                 \
-    -DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION      \
-    -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                \
--I . octaspire-dern-amalgamated.c -Wl,-export-dynamic -lm \
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
+    -DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION           \
+    -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
+-I . octaspire-dern-amalgamated.c -Wl,-export-dynamic -ldl -lm \
 -o octaspire-dern-repl
 
 
@@ -71,7 +86,10 @@ cat << EnDoFmEsSaGe
    binary plugin 'dern_ncurses', you don't have to do anything. Otherwise,
    to install development version of library 'ncurses':
 
-       - Haiku: pkgman install ncurses_x86_devel
+       - Syllable Desktop: Download and install DevelopersDelight-8.i586.zip
+                           and SyllableDesktop-x.y.z-development-1.i586.zip
+                           where x.y.z is the version number of yours Syllable
+                           desktop.
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
 echoToDefs
@@ -81,14 +99,14 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_ncurses.so der
 
 
 printf "\nDone.\n$GREEN"
-echo   "============================================================================="
+echo   "=================================================================="
 echo   "Run programs and examples like this:"
-echo   "============================================================================="
+echo   "=================================================================="
 printf "%b1)%b ./octaspire-dern-unit-test-runner\n" $YELLOW $GREEN
 printf "%b2)%b ./embedding-example\n" $YELLOW $GREEN
-printf "%b3)%b LIBRARY_PATH=\$LIBRARY_PATH:. ./octaspire-dern-repl examples/use-mylib.dern\n" $YELLOW $GREEN
+printf "%b3)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/use-mylib.dern\n" $YELLOW $GREEN
 printf "%b4)%b ./octaspire-dern-repl -c\n" $YELLOW $GREEN
-printf "%b5)%b LIBRARY_PATH=\$LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN
-echo "============================================================================="
+printf "%b5)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN
+echo "=================================================================="
 echoToDefs
 

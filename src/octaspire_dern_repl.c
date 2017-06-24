@@ -17,6 +17,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include <assert.h>
 #include <string.h>
+#include <locale.h>
 #include <octaspire/core/octaspire_input.h>
 #include <octaspire/dern/octaspire_dern_config.h>
 #include "external/octaspire_dern_banner_color.h"
@@ -181,6 +182,7 @@ void main(int argc, char *argv[])
 int main(int argc, char *argv[])
 #endif
 {
+    setlocale(LC_ALL, "");
     bool useColors               = false;
     int  userFilesStartIdx       = -1;
     bool enterReplAlways         = false;

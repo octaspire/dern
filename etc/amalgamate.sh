@@ -70,6 +70,7 @@ cat >> $FILE << EnDoFmEsSaGe
 #include <stdarg.h>
 #include <limits.h>
 #include <wchar.h>
+#include <locale.h>
 
 #endif
 

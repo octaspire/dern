@@ -56,6 +56,7 @@ limitations under the License.
 #include <stdarg.h>
 #include <limits.h>
 #include <wchar.h>
+#include <locale.h>
 
 #endif
 
@@ -201,9 +202,9 @@ limitations under the License.
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "44"
-#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "1"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.44.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.44.1"
 
 
 
@@ -3697,7 +3698,7 @@ bool octaspire_container_utf8_string_remove_character_at(
 
     for (size_t i = 0; i < character.numoctets; ++i)
     {
-        if (!octaspire_container_vector_remove_element_at(self->octets, octetsIndex + i))
+        if (!octaspire_container_vector_remove_element_at(self->octets, octetsIndex))
         {
             assert(false);
             return false;
@@ -13334,6 +13335,30 @@ TEST octaspire_container_utf8_string_remove_character_at_test(void)
     PASS();
 }
 
+TEST octaspire_container_utf8_string_remove_character_at_called_on_string_with_two_os_with_diaeresis_test(void)
+{
+    octaspire_container_utf8_string_t *str = octaspire_container_utf8_string_new(
+            "öö",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str);
+    ASSERT_EQ(2, octaspire_container_utf8_string_get_length_in_ucs_characters(str));
+    ASSERT_STR_EQ("öö", octaspire_container_utf8_string_get_c_string(str));
+
+    ASSERT(octaspire_container_utf8_string_remove_character_at(str, 1));
+    ASSERT_EQ(1, octaspire_container_utf8_string_get_length_in_ucs_characters(str));
+    ASSERT_STR_EQ("ö", octaspire_container_utf8_string_get_c_string(str));
+
+    ASSERT(octaspire_container_utf8_string_remove_character_at(str, 0));
+    ASSERT_EQ(0, octaspire_container_utf8_string_get_length_in_ucs_characters(str));
+    ASSERT_STR_EQ("", octaspire_container_utf8_string_get_c_string(str));
+
+    octaspire_container_utf8_string_release(str);
+    str = 0;
+
+    PASS();
+}
+
 TEST octaspire_container_utf8_string_remove_characters_at_test(void)
 {
     octaspire_container_utf8_string_t *str = octaspire_container_utf8_string_new(
@@ -13851,6 +13876,7 @@ GREATEST_SUITE(octaspire_container_utf8_string_suite)
     RUN_TEST(octaspire_container_utf8_string_find_first_substring_abcd_from_123abc456abc_starting_from_index_0_failure_test);
     RUN_TEST(octaspire_container_utf8_string_private_ucs_character_index_to_octets_index_test);
     RUN_TEST(octaspire_container_utf8_string_remove_character_at_test);
+    RUN_TEST(octaspire_container_utf8_string_remove_character_at_called_on_string_with_two_os_with_diaeresis_test);
     RUN_TEST(octaspire_container_utf8_string_remove_characters_at_test);
     RUN_TEST(octaspire_container_utf8_string_remove_all_substrings_kitten_from_string_kitten_cat_kitten_dog_kitten_zebra_kitten_test);
     RUN_TEST(octaspire_container_utf8_string_insert_string_to_bc_into_index_1_of_ade_test);
@@ -15472,10 +15498,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "154"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "156"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.154.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.156.0"
 
 
 
@@ -33825,6 +33851,7 @@ void main(int argc, char *argv[])
 int main(int argc, char *argv[])
 #endif
 {
+    setlocale(LC_ALL, "");
     bool useColors               = false;
     int  userFilesStartIdx       = -1;
     bool enterReplAlways         = false;

@@ -1,16 +1,22 @@
 #include "octaspire-dern-amalgamated.c"
+#include <ctype.h>
+#include <locale.h>
+#include <wctype.h>
 
-#if defined(__NetBSD__)
+#define NCURSES_WIDECHAR 1
+#define _XOPEN_SOURCE_EXTENDED 1
+
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(__minix)
 #include <curses.h>
 #elif defined(__DragonFly__)
 #include <ncurses/curses.h>
 #elif defined(__sun) && defined(__SVR4)
 // Solaris, OpenIndiana
-#define NCURSES_ENABLE_STDBOOL_H 1
-#undef bool
-#include <curses.h>
-#else
+#include <ncurses/curses.h>
+#elif defined(__FreeBSD__) || defined(__HAIKU__) || defined(__MidnightBSD__) || defined(__SYLLABLE__)
 #include <ncurses.h>
+#else
+#include <ncursesw/ncurses.h>
 #endif
 
 static char const * const DERN_NCURSES_PLUGIN_NAME = "dern_ncurses";
@@ -25,6 +31,81 @@ octaspire_dern_value_t *dern_ncurses_initscr(
 
     WINDOW * const window = initscr();
     return octaspire_dern_vm_create_new_value_c_data(vm, DERN_NCURSES_PLUGIN_NAME, "window", window);
+}
+
+
+octaspire_dern_value_t *dern_ncurses_getmaxyx(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    WINDOW *window = stdscr;
+
+    if (numArgs > 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-getmaxyx' expects zero or one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    if (numArgs == 1)
+    {
+        octaspire_dern_value_t const * const firstArg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+        octaspire_helpers_verify_not_null(firstArg);
+
+        if (!octaspire_dern_value_is_c_data(firstArg))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'ncurses-getmaxyx' expects window as first argument. "
+                "Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+        }
+
+        octaspire_dern_c_data_t * const cData = firstArg->value.cData;
+
+        if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+                cData,
+                DERN_NCURSES_PLUGIN_NAME,
+                "window"))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'ncurses-getmaxyx' expects 'dern_ncurses' and 'window' as "
+                "plugin name and payload type name for the C data of the first argument. "
+                "Names '%s' and '%s' were given.",
+                octaspire_dern_c_data_get_plugin_name(cData),
+                octaspire_dern_c_data_get_payload_typename(cData));
+        }
+
+        window = octaspire_dern_c_data_get_payload(cData);
+    }
+
+    int y = 0;
+    int x = 0;
+
+    getmaxyx(window, y, x);
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_vector_from_values(
+        vm,
+        2,
+        octaspire_dern_vm_create_new_value_integer(vm, (int32_t)y),
+        octaspire_dern_vm_create_new_value_integer(vm, (int32_t)x));
 }
 
 octaspire_dern_value_t *dern_ncurses_getch(
@@ -48,15 +129,99 @@ octaspire_dern_value_t *dern_ncurses_getch(
             numArgs);
     }
 
-    int const ch = getch();
+    wint_t wint;
+    /*int const status =*/get_wch(&wint);
 
-    if (ch < 0)
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    switch (wint)
     {
-        abort();
+        case KEY_BREAK: return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_BREAK");
+        case KEY_DOWN:  return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_DOWN");
+        case KEY_UP:    return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_UP");
+        case KEY_LEFT:  return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_LEFT");
+        case KEY_RIGHT: return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_RIGHT");
+
+        // TODO add more special keys
+
+        default:
+        {
+            return octaspire_dern_vm_create_new_value_character_from_uint32t(vm, (uint32_t)wint);
+        }
+        break;
+    }
+}
+
+octaspire_dern_value_t *dern_ncurses_getstr(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-getstr' expects zero arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_container_utf8_string_t *resultStr = octaspire_container_utf8_string_new(
+        "",
+        octaspire_dern_vm_get_allocator(vm));
+
+    octaspire_helpers_verify_not_null(resultStr);
+
+    noecho();
+
+    int y = 0;
+    int x = 0;
+    getyx(stdscr, y, x);
+
+    while (true)
+    {
+        wint_t wint;
+        /*int const status = */get_wch(&wint);
+
+        if (wint == KEY_ENTER || wint == 10)
+        {
+            break;
+        }
+        else if (wint == KEY_BACKSPACE)
+        {
+            if (octaspire_container_utf8_string_pop_back_ucs_character(resultStr))
+            {
+                mvwaddstr(
+                    stdscr,
+                    y,
+                    x,
+                    octaspire_container_utf8_string_get_c_string(resultStr));
+
+                mvdelch(y, x + octaspire_container_utf8_string_get_length_in_ucs_characters(resultStr));
+            }
+        }
+        else if (iswprint(wint))
+        {
+            octaspire_container_utf8_string_push_back_ucs_character(resultStr, (uint32_t)wint);
+
+            mvwaddstr(
+                stdscr,
+                y,
+                x,
+                octaspire_container_utf8_string_get_c_string(resultStr));
+
+            //move(y, x + octaspire_container_utf8_string_get_length_in_ucs_characters(resultStr));
+        }
     }
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-    return octaspire_dern_vm_create_new_value_character_from_uint32t(vm, (uint32_t)ch);
+    return octaspire_dern_vm_create_new_value_string(vm, resultStr);
 }
 
 octaspire_dern_value_t *dern_ncurses_set_raw(
@@ -757,7 +922,6 @@ octaspire_dern_value_t *dern_ncurses_print(
         {
             result = wmove(payload, secondArg->value.integer, currentX);
 
-
             int const tmpResult = dern_ncurses_private_print_symbol(
                 thirdArg,
                 payload);
@@ -836,12 +1000,45 @@ octaspire_dern_value_t *dern_ncurses_print(
         }
         else
         {
-            result = mvwprintw(
+/*
+            wint_t wint = (wint_t)
+                cchar_t outchar;
+                setcchar(&outchar, &wint, 0, 0, 0);
+                add_wch(&outchar);
+            }
+
+#if 0
+            result = mvwins_wstr(
                 payload,
                 secondArg->value.integer,
                 thirdArg->value.integer,
-                "%s",
                 octaspire_dern_value_as_text_get_c_string(fourthArg));
+#endif
+
+            for (size_t i = 0;
+                i < octaspire_container_utf8_string_get_length_in_ucs_characters(fourthArg->value.string); ++i)
+            {
+                uint32_t const ch =
+                    octaspire_container_utf8_string_get_ucs_character_at_index(fourthArg->value.string, i);
+
+                int tmpRes = mvwaddch(
+                    payload,
+                    secondArg->value.integer,
+                    thirdArg->value.integer,
+                    ch);
+
+                if (tmpRes == ERR)
+                {
+                    result = tmpRes;
+                }
+            }
+            */
+
+            result = mvwaddstr(
+                payload,
+                (int)secondArg->value.integer,
+                (int)thirdArg->value.integer,
+                octaspire_container_utf8_string_get_c_string(fourthArg->value.string));
         }
 
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
@@ -1309,14 +1506,38 @@ bool dern_ncurses_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv)
 {
+    setlocale(LC_ALL, "");
+
     octaspire_helpers_verify_true(vm && targetEnv);
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "ncurses-getmaxyx",
+            dern_ncurses_getmaxyx,
+            0,
+            "(ncurses-getmaxyx <optional window>) -> '(rows, cols)",
+            targetEnv))
+    {
+        return false;
+    }
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
             "ncurses-getch",
             dern_ncurses_getch,
             0,
-            "(getch) -> utf-8 character",
+            "(getch) -> <utf-8 character> or <symbol for a special key>",
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "ncurses-getstr",
+            dern_ncurses_getstr,
+            0,
+            "(getsr) -> utf-8 string",
             targetEnv))
     {
         return false;

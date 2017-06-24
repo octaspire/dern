@@ -75,7 +75,7 @@ cat << EnDoFmEsSaGe
 EnDoFmEsSaGe
 echoToDefs
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -I /usr/local/include -c plugins/dern_ncurses.c
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_ncurses.so dern_ncurses.o -L /usr/local/lib/ -lncurses
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_ncurses.so dern_ncurses.o -L /usr/local/lib/ -lncursesw
 
 
 

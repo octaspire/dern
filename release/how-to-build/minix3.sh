@@ -65,20 +65,20 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                 \
 printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
 5. Building the 'dern_ncurses' (binary) plugin.  PLEASE NOTE: This plugin
-   requires development version of 'ncurses' library (i.e. headers) to be
+   requires development version of 'ncursesw' library (i.e. headers) to be
    installed on the system; otherwise compilation will fail. Failure will
    not affect other steps, so if this step fails and you don't want to use
    binary plugin 'dern_ncurses', you don't have to do anything. Otherwise,
-   to install development version of library 'ncurses':
+   to install development version of library 'ncursesw':
 
        - MINIX 3: su root
-                  pkgin install ncurses
+                  pkgin install ncursesw
                   exit
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
 echoToDefs
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_ncurses.c
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_ncurses.so dern_ncurses.o -lncurses
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_ncurses.so dern_ncurses.o -L /usr/pkg/lib -lncursesw
 
 
 
