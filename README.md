@@ -14,15 +14,15 @@ modify Dern itself. To use the amalgamated release, you will need only a C compi
 C standard library supporting C99.
 
 Dern should compile cleanly without any warnings using `-Wall -Wextra`.
-Currently it is tested with *gcc*, *clang*, *Tiny C Compiler (tcc)* and *Portable C compiler
-(pcc)*.
+Currently it is tested with *gcc*, *clang*, *Tiny C Compiler (tcc)*, *Portable C compiler
+(pcc)* and Plan 9's *8c* compiler.
 
 Dern is portable and is tested and known to run in Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana,
-DragonFly BSD, MidnightBSD, MINIX 3, Haiku, and Windows. The `how-to-build`-directory of
-the amalgamated source release contains build script for all tested platforms. More platforms
-and build scripts will be added later.
+DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Syllable Desktop and Windows.
+The `how-to-build`-directory of the amalgamated source release contains build script for all tested
+platforms. More platforms and build scripts will be added later.
 
-### Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku
+### Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Syllable Desktop
 
 ```shell
 curl -O octaspire.com/dern/release.tar.bz2
@@ -34,8 +34,8 @@ sh how-to-build/YOUR_PLATFORM_NAME_HERE.XX
 ```
 
 replace **YOUR_PLATFORM_NAME_HERE.XX** with **FreeBSD.sh**, **NetBSD.sh**, **OpenBSD.sh**,
-**OpenIndiana.sh**, **DragonFlyBSD.sh**, **MidnightBSD.sh**, **linux.sh**, **minix3.sh** or
-**haiku.sh**. More scripts for different platforms will be added later.
+**OpenIndiana.sh**, **DragonFlyBSD.sh**, **MidnightBSD.sh**, **linux.sh**, **minix3.sh**,
+**SyllableDesktop.sh** or **haiku.sh**. More scripts for different platforms will be added later.
 
 
 

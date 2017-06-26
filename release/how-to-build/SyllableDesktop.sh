@@ -79,7 +79,18 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
 
 printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
-5. Building the 'dern_ncurses' (binary) plugin.  PLEASE NOTE: This plugin
+5. Building the 'dern_socket' (binary) plugin.
+-------------------------------------------------------------------------------
+EnDoFmEsSaGe
+echoToDefs
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_socket.c
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_socket.so dern_socket.o -lncursesw
+
+
+
+printf "$YELLOW\n"
+cat << EnDoFmEsSaGe
+6. Building the 'dern_ncurses' (binary) plugin.  PLEASE NOTE: This plugin
    requires development version of 'ncurses' library (i.e. headers) to be
    installed on the system; otherwise compilation will fail. Failure will
    not affect other steps, so if this step fails and you don't want to use
@@ -106,7 +117,8 @@ printf "%b1)%b ./octaspire-dern-unit-test-runner\n" $YELLOW $GREEN
 printf "%b2)%b ./embedding-example\n" $YELLOW $GREEN
 printf "%b3)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/use-mylib.dern\n" $YELLOW $GREEN
 printf "%b4)%b ./octaspire-dern-repl -c\n" $YELLOW $GREEN
-printf "%b5)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN
+printf "%b5)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-sockets-example.dern\n" $YELLOW $GREEN
+printf "%b6)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN
 echo "=================================================================="
 echoToDefs
 

@@ -15,19 +15,30 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ******************************************************************************/
 #include "octaspire/dern/octaspire_dern_c_data.h"
+#include <octaspire/core/octaspire_helpers.h>
+#include "octaspire/dern/octaspire_dern_config.h"
+#include "octaspire/dern/octaspire_dern_lib.h"
+
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+#include <dlfcn.h>
+#endif
 
 struct octaspire_dern_c_data_t
 {
-    octaspire_container_utf8_string_t *pluginName;
-    octaspire_container_utf8_string_t *typeNameForPayload;
-    void                              *payload;
-    octaspire_memory_allocator_t      *allocator;
+    octaspire_container_utf8_string_t         *pluginName;
+    octaspire_dern_lib_t                      *library;
+    octaspire_container_utf8_string_t         *typeNameForPayload;
+    void                                      *payload;
+    octaspire_container_utf8_string_t         *cleanUpCallbackName;
+    octaspire_memory_allocator_t              *allocator;
 };
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const pluginName,
+    octaspire_dern_lib_t * const library,
     char const * const typeNameForPayload,
     void * const payload,
+    char const * const cleanUpCallbackName,
     octaspire_memory_allocator_t *allocator)
 {
     octaspire_dern_c_data_t *self =
@@ -38,10 +49,12 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
         return self;
     }
 
-    self->allocator          = allocator;
-    self->pluginName         = octaspire_container_utf8_string_new(pluginName,         self->allocator);
-    self->typeNameForPayload = octaspire_container_utf8_string_new(typeNameForPayload, self->allocator);
-    self->payload            = payload;
+    self->allocator           = allocator;
+    self->pluginName          = octaspire_container_utf8_string_new(pluginName,         self->allocator);
+    self->library             = library;
+    self->typeNameForPayload  = octaspire_container_utf8_string_new(typeNameForPayload, self->allocator);
+    self->payload             = payload;
+    self->cleanUpCallbackName = octaspire_container_utf8_string_new(cleanUpCallbackName, self->allocator);
 
     return self;
 }
@@ -52,8 +65,10 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
 {
     return octaspire_dern_c_data_new(
         octaspire_container_utf8_string_get_c_string(other->pluginName),
+        other->library,
         octaspire_container_utf8_string_get_c_string(other->typeNameForPayload),
         other->payload,
+        octaspire_container_utf8_string_get_c_string(other->cleanUpCallbackName),
         allocator);
 }
 
@@ -63,6 +78,22 @@ void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
     {
         return;
     }
+
+    octaspire_helpers_verify_not_null(self->cleanUpCallbackName);
+
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+    if (!octaspire_container_utf8_string_is_empty(self->cleanUpCallbackName))
+    {
+        void * const handle = octaspire_dern_lib_get_handle(self->library);
+        void (*func)(void * const payload);
+        func = (void (*)(void * const))dlsym(handle, octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName));
+        octaspire_helpers_verify_not_null(func);
+        func(self->payload);
+    }
+#endif
+
+    octaspire_container_utf8_string_release(self->cleanUpCallbackName);
+    self->cleanUpCallbackName = 0;
 
     octaspire_container_utf8_string_release(self->pluginName);
     self->pluginName = 0;
@@ -79,10 +110,11 @@ octaspire_container_utf8_string_t *octaspire_dern_c_data_to_string(
 {
     return octaspire_container_utf8_string_new_format(
         allocator,
-        "C data (%s : %s) %p",
+        "C data (%s : %s) payload=%p cleanUpCallbackName=%s",
         octaspire_container_utf8_string_get_c_string(self->pluginName),
         octaspire_container_utf8_string_get_c_string(self->typeNameForPayload),
-        (void*)self->payload);
+        (void*)self->payload,
+        octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName));
 }
 
 bool octaspire_dern_c_data_is_equal(

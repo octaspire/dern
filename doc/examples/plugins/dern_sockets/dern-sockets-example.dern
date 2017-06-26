@@ -1,0 +1,4 @@
+(require 'dern_socket)
+
+(define s [socket] (socket-socket 'AF_INET 'SOCK_STREAM 0))
+

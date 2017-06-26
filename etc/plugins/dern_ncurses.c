@@ -30,7 +30,13 @@ octaspire_dern_value_t *dern_ncurses_initscr(
     OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
 
     WINDOW * const window = initscr();
-    return octaspire_dern_vm_create_new_value_c_data(vm, DERN_NCURSES_PLUGIN_NAME, "window", window);
+
+    return octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_NCURSES_PLUGIN_NAME,
+        "window",
+        "",
+        window);
 }
 
 

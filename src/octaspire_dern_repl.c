@@ -182,7 +182,9 @@ void main(int argc, char *argv[])
 int main(int argc, char *argv[])
 #endif
 {
+#ifndef OCTASPIRE_PLAN9_IMPLEMENTATION
     setlocale(LC_ALL, "");
+#endif
     bool useColors               = false;
     int  userFilesStartIdx       = -1;
     bool enterReplAlways         = false;

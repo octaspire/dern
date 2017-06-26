@@ -27,10 +27,14 @@ extern "C" {
 
 typedef struct octaspire_dern_c_data_t octaspire_dern_c_data_t;
 
+struct octaspire_dern_lib_t;
+
 octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const pluginName,
+    struct octaspire_dern_lib_t * const library,
     char const * const typeNameForPayload,
     void * const payload,
+    char const * const cleanUpCallbackName,
     octaspire_memory_allocator_t *allocator);
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(

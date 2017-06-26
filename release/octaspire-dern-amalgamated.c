@@ -15498,10 +15498,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "156"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "168"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.156.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.168.0"
 
 
 
@@ -15699,10 +15699,14 @@ extern "C" {
 
 typedef struct octaspire_dern_c_data_t octaspire_dern_c_data_t;
 
+struct octaspire_dern_lib_t;
+
 octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const pluginName,
+    struct octaspire_dern_lib_t * const library,
     char const * const typeNameForPayload,
     void * const payload,
+    char const * const cleanUpCallbackName,
     octaspire_memory_allocator_t *allocator);
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
@@ -16377,6 +16381,8 @@ bool octaspire_dern_lib_is_good(octaspire_dern_lib_t const * const self);
 
 char const *octaspire_dern_lib_get_error_message(octaspire_dern_lib_t const * const self);
 
+void *octaspire_dern_lib_get_handle(octaspire_dern_lib_t * const self);
+
 #ifdef __cplusplus
 }
 #endif
@@ -16521,6 +16527,7 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     octaspire_dern_vm_t * const self,
     char const * const pluginName,
     char const * const typeNameForPayload,
+    char const * const cleanUpCallbackName,
     void * const payload);
 
 bool octaspire_dern_vm_push_value(octaspire_dern_vm_t *self, struct octaspire_dern_value_t *value);
@@ -16651,6 +16658,10 @@ bool octaspire_dern_vm_add_library(
 
 bool octaspire_dern_vm_has_library(
     octaspire_dern_vm_t const * const self,
+    char const * const name);
+
+octaspire_dern_lib_t *octaspire_dern_vm_get_library(
+    octaspire_dern_vm_t * const self,
     char const * const name);
 
 octaspire_stdio_t *octaspire_dern_vm_get_stdio(octaspire_dern_vm_t * const self);
@@ -20124,8 +20135,8 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
 
                 octaspire_helpers_verify_not_null(self->errorMessage);
 
-                dlclose(self->binaryLibHandle);
-                self->binaryLibHandle = 0;
+                //dlclose(self->binaryLibHandle);
+                //self->binaryLibHandle = 0;
             }
             else
             {
@@ -20143,8 +20154,8 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
 
                     octaspire_helpers_verify_not_null(self->errorMessage);
 
-                    dlclose(self->binaryLibHandle);
-                    self->binaryLibHandle = 0;
+                    //dlclose(self->binaryLibHandle);
+                    //self->binaryLibHandle = 0;
                 }
             }
         }
@@ -20208,6 +20219,11 @@ char const *octaspire_dern_lib_get_error_message(octaspire_dern_lib_t const * co
     return octaspire_container_utf8_string_get_c_string(self->errorMessage);
 }
 
+void *octaspire_dern_lib_get_handle(octaspire_dern_lib_t * const self)
+{
+    return self->binaryLibHandle;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../src/octaspire_dern_lib.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20234,18 +20250,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ******************************************************************************/
 
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+#endif
+
 struct octaspire_dern_c_data_t
 {
-    octaspire_container_utf8_string_t *pluginName;
-    octaspire_container_utf8_string_t *typeNameForPayload;
-    void                              *payload;
-    octaspire_memory_allocator_t      *allocator;
+    octaspire_container_utf8_string_t         *pluginName;
+    octaspire_dern_lib_t                      *library;
+    octaspire_container_utf8_string_t         *typeNameForPayload;
+    void                                      *payload;
+    octaspire_container_utf8_string_t         *cleanUpCallbackName;
+    octaspire_memory_allocator_t              *allocator;
 };
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const pluginName,
+    octaspire_dern_lib_t * const library,
     char const * const typeNameForPayload,
     void * const payload,
+    char const * const cleanUpCallbackName,
     octaspire_memory_allocator_t *allocator)
 {
     octaspire_dern_c_data_t *self =
@@ -20256,10 +20279,12 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
         return self;
     }
 
-    self->allocator          = allocator;
-    self->pluginName         = octaspire_container_utf8_string_new(pluginName,         self->allocator);
-    self->typeNameForPayload = octaspire_container_utf8_string_new(typeNameForPayload, self->allocator);
-    self->payload            = payload;
+    self->allocator           = allocator;
+    self->pluginName          = octaspire_container_utf8_string_new(pluginName,         self->allocator);
+    self->library             = library;
+    self->typeNameForPayload  = octaspire_container_utf8_string_new(typeNameForPayload, self->allocator);
+    self->payload             = payload;
+    self->cleanUpCallbackName = octaspire_container_utf8_string_new(cleanUpCallbackName, self->allocator);
 
     return self;
 }
@@ -20270,8 +20295,10 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
 {
     return octaspire_dern_c_data_new(
         octaspire_container_utf8_string_get_c_string(other->pluginName),
+        other->library,
         octaspire_container_utf8_string_get_c_string(other->typeNameForPayload),
         other->payload,
+        octaspire_container_utf8_string_get_c_string(other->cleanUpCallbackName),
         allocator);
 }
 
@@ -20281,6 +20308,22 @@ void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
     {
         return;
     }
+
+    octaspire_helpers_verify_not_null(self->cleanUpCallbackName);
+
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+    if (!octaspire_container_utf8_string_is_empty(self->cleanUpCallbackName))
+    {
+        void * const handle = octaspire_dern_lib_get_handle(self->library);
+        void (*func)(void * const payload);
+        func = (void (*)(void * const))dlsym(handle, octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName));
+        octaspire_helpers_verify_not_null(func);
+        func(self->payload);
+    }
+#endif
+
+    octaspire_container_utf8_string_release(self->cleanUpCallbackName);
+    self->cleanUpCallbackName = 0;
 
     octaspire_container_utf8_string_release(self->pluginName);
     self->pluginName = 0;
@@ -20297,10 +20340,11 @@ octaspire_container_utf8_string_t *octaspire_dern_c_data_to_string(
 {
     return octaspire_container_utf8_string_new_format(
         allocator,
-        "C data (%s : %s) %p",
+        "C data (%s : %s) payload=%p cleanUpCallbackName=%s",
         octaspire_container_utf8_string_get_c_string(self->pluginName),
         octaspire_container_utf8_string_get_c_string(self->typeNameForPayload),
-        (void*)self->payload);
+        (void*)self->payload,
+        octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName));
 }
 
 bool octaspire_dern_c_data_is_equal(
@@ -30690,15 +30734,15 @@ void octaspire_dern_vm_release(octaspire_dern_vm_t *self)
     // At this point stack had nil and self->globalEnvironment was tried to remove
     //octaspire_dern_vm_pop_value(self, self->globalEnvironment);
 
-    octaspire_container_hash_map_release(self->libraries);
-    self->libraries = 0;
-
     octaspire_container_vector_clear(self->stack);
     octaspire_dern_vm_gc(self);
 
     octaspire_container_vector_release(self->stack);
 
     octaspire_container_vector_release(self->all);
+
+    octaspire_container_hash_map_release(self->libraries);
+    self->libraries = 0;
 
     octaspire_memory_allocator_free(self->allocator, self);
 }
@@ -31285,6 +31329,7 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     octaspire_dern_vm_t * const self,
     char const * const pluginName,
     char const * const typeNameForPayload,
+    char const * const cleanUpCallbackName,
     void * const payload)
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
@@ -31292,8 +31337,16 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     octaspire_dern_value_t * const result =
         octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_C_DATA);
 
-    result->value.cData =
-        octaspire_dern_c_data_new(pluginName, typeNameForPayload, payload, self->allocator);
+    octaspire_dern_lib_t *lib = octaspire_dern_vm_get_library(self, pluginName);
+    octaspire_helpers_verify_not_null(lib);
+
+    result->value.cData = octaspire_dern_c_data_new(
+        pluginName,
+        lib,
+        typeNameForPayload,
+        payload,
+        cleanUpCallbackName,
+        self->allocator);
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
     return result;
@@ -33018,6 +33071,27 @@ bool octaspire_dern_vm_has_library(
     return result;
 }
 
+octaspire_dern_lib_t *octaspire_dern_vm_get_library(
+    octaspire_dern_vm_t * const self,
+    char const * const name)
+{
+    octaspire_container_utf8_string_t *str = octaspire_container_utf8_string_new(
+        name,
+        self->allocator);
+
+    octaspire_helpers_verify_not_null(str);
+
+    octaspire_container_hash_map_element_t *element = octaspire_container_hash_map_get(
+        self->libraries,
+        octaspire_container_utf8_string_get_hash(str),
+        &str);
+
+    octaspire_container_utf8_string_release(str);
+    str = 0;
+
+    return octaspire_container_hash_map_element_get_value(element);
+}
+
 octaspire_stdio_t *octaspire_dern_vm_get_stdio(octaspire_dern_vm_t * const self)
 {
     return self->stdio;
@@ -33851,7 +33925,9 @@ void main(int argc, char *argv[])
 int main(int argc, char *argv[])
 #endif
 {
+#ifndef OCTASPIRE_PLAN9_IMPLEMENTATION
     setlocale(LC_ALL, "");
+#endif
     bool useColors               = false;
     int  userFilesStartIdx       = -1;
     bool enterReplAlways         = false;

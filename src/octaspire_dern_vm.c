@@ -1198,15 +1198,15 @@ void octaspire_dern_vm_release(octaspire_dern_vm_t *self)
     // At this point stack had nil and self->globalEnvironment was tried to remove
     //octaspire_dern_vm_pop_value(self, self->globalEnvironment);
 
-    octaspire_container_hash_map_release(self->libraries);
-    self->libraries = 0;
-
     octaspire_container_vector_clear(self->stack);
     octaspire_dern_vm_gc(self);
 
     octaspire_container_vector_release(self->stack);
 
     octaspire_container_vector_release(self->all);
+
+    octaspire_container_hash_map_release(self->libraries);
+    self->libraries = 0;
 
     octaspire_memory_allocator_free(self->allocator, self);
 }
@@ -1793,6 +1793,7 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     octaspire_dern_vm_t * const self,
     char const * const pluginName,
     char const * const typeNameForPayload,
+    char const * const cleanUpCallbackName,
     void * const payload)
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
@@ -1800,8 +1801,16 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     octaspire_dern_value_t * const result =
         octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_C_DATA);
 
-    result->value.cData =
-        octaspire_dern_c_data_new(pluginName, typeNameForPayload, payload, self->allocator);
+    octaspire_dern_lib_t *lib = octaspire_dern_vm_get_library(self, pluginName);
+    octaspire_helpers_verify_not_null(lib);
+
+    result->value.cData = octaspire_dern_c_data_new(
+        pluginName,
+        lib,
+        typeNameForPayload,
+        payload,
+        cleanUpCallbackName,
+        self->allocator);
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
     return result;
@@ -3524,6 +3533,27 @@ bool octaspire_dern_vm_has_library(
     str = 0;
 
     return result;
+}
+
+octaspire_dern_lib_t *octaspire_dern_vm_get_library(
+    octaspire_dern_vm_t * const self,
+    char const * const name)
+{
+    octaspire_container_utf8_string_t *str = octaspire_container_utf8_string_new(
+        name,
+        self->allocator);
+
+    octaspire_helpers_verify_not_null(str);
+
+    octaspire_container_hash_map_element_t *element = octaspire_container_hash_map_get(
+        self->libraries,
+        octaspire_container_utf8_string_get_hash(str),
+        &str);
+
+    octaspire_container_utf8_string_release(str);
+    str = 0;
+
+    return octaspire_container_hash_map_element_get_value(element);
 }
 
 octaspire_stdio_t *octaspire_dern_vm_get_stdio(octaspire_dern_vm_t * const self)

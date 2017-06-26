@@ -142,8 +142,8 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
 
                 octaspire_helpers_verify_not_null(self->errorMessage);
 
-                dlclose(self->binaryLibHandle);
-                self->binaryLibHandle = 0;
+                //dlclose(self->binaryLibHandle);
+                //self->binaryLibHandle = 0;
             }
             else
             {
@@ -161,8 +161,8 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
 
                     octaspire_helpers_verify_not_null(self->errorMessage);
 
-                    dlclose(self->binaryLibHandle);
-                    self->binaryLibHandle = 0;
+                    //dlclose(self->binaryLibHandle);
+                    //self->binaryLibHandle = 0;
                 }
             }
         }
@@ -224,5 +224,10 @@ char const *octaspire_dern_lib_get_error_message(octaspire_dern_lib_t const * co
     }
 
     return octaspire_container_utf8_string_get_c_string(self->errorMessage);
+}
+
+void *octaspire_dern_lib_get_handle(octaspire_dern_lib_t * const self)
+{
+    return self->binaryLibHandle;
 }
 

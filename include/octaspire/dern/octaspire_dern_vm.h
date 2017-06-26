@@ -25,6 +25,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_environment.h"
 #include "octaspire/dern/octaspire_dern_value.h"
 #include "octaspire/dern/octaspire_dern_lib.h"
+#include "octaspire/dern/octaspire_dern_c_data.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -135,6 +136,7 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     octaspire_dern_vm_t * const self,
     char const * const pluginName,
     char const * const typeNameForPayload,
+    char const * const cleanUpCallbackName,
     void * const payload);
 
 bool octaspire_dern_vm_push_value(octaspire_dern_vm_t *self, struct octaspire_dern_value_t *value);
@@ -265,6 +267,10 @@ bool octaspire_dern_vm_add_library(
 
 bool octaspire_dern_vm_has_library(
     octaspire_dern_vm_t const * const self,
+    char const * const name);
+
+octaspire_dern_lib_t *octaspire_dern_vm_get_library(
+    octaspire_dern_vm_t * const self,
     char const * const name);
 
 octaspire_stdio_t *octaspire_dern_vm_get_stdio(octaspire_dern_vm_t * const self);

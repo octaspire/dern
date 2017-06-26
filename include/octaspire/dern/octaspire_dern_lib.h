@@ -56,6 +56,8 @@ bool octaspire_dern_lib_is_good(octaspire_dern_lib_t const * const self);
 
 char const *octaspire_dern_lib_get_error_message(octaspire_dern_lib_t const * const self);
 
+void *octaspire_dern_lib_get_handle(octaspire_dern_lib_t * const self);
+
 #ifdef __cplusplus
 }
 #endif

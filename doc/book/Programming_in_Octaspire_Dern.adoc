@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.156.0
+Documentation for Octaspire Dern programming language version 0.168.0
 
 == About
 
@@ -88,7 +88,7 @@ The amalgamated source release is the recommended way of using Dern, if you don'
 modify Dern itself. To use the amalgamated release, you will need only a C compiler and
 C standard library supporting C99.
 
-=== Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku
+=== Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Syllable Desktop
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -104,8 +104,9 @@ sh how-to-build/YOUR_PLATFORM_NAME_HERE.XX
 ----
 
 replace *YOUR_PLATFORM_NAME_HERE.XX* with *FreeBSD.sh*, *NetBSD.sh*, *OpenBSD.sh*, *OpenIndiana.sh*,
-*DragonFlyBSD.sh*, *MidnightBSD*, *linux.sh*, *minix3.sh* or *haiku.sh*. More scripts for
-different platforms will be added later.
+*DragonFlyBSD.sh*, *MidnightBSD*, *linux.sh*, *minix3.sh*, *haiku.sh* or *SyllableDesktop.sh*.
+More scripts for different platforms will be added later.
+
 
 
 === Plan9
