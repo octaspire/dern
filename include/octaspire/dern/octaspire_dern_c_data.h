@@ -35,6 +35,8 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const typeNameForPayload,
     void * const payload,
     char const * const cleanUpCallbackName,
+    char const * const stdLibLenCallbackName,
+    char const * const stdLibNthCallbackName,
     octaspire_memory_allocator_t *allocator);
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(

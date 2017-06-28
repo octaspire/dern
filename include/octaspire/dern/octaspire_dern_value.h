@@ -242,6 +242,15 @@ void octaspire_dern_value_print(
 uintmax_t octaspire_dern_value_get_unique_id(
     octaspire_dern_value_t const * const self);
 
+bool octaspire_dern_value_as_boolean_get_value(
+    octaspire_dern_value_t const * const self);
+
+int32_t octaspire_dern_value_as_integer_get_value(
+    octaspire_dern_value_t const * const self);
+
+double octaspire_dern_value_as_real_get_value(
+    octaspire_dern_value_t const * const self);
+
 bool octaspire_dern_value_as_hash_map_add(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const toBeAdded1,
@@ -306,6 +315,9 @@ bool octaspire_dern_value_as_symbol_is_equal_to_c_string(
 char const *octaspire_dern_value_as_text_get_c_string(
     octaspire_dern_value_t const * const self);
 
+size_t octaspire_dern_value_as_text_get_length_in_octets(
+    octaspire_dern_value_t const * const self);
+
 size_t octaspire_dern_value_as_vector_get_length(
     octaspire_dern_value_t const * const self);
 
@@ -361,6 +373,19 @@ octaspire_container_hash_map_element_t *octaspire_dern_value_as_hash_map_get(
     octaspire_dern_value_t * const self,
     uint32_t const hash,
     octaspire_dern_value_t const * const key);
+
+octaspire_container_hash_map_element_t const *octaspire_dern_value_as_hash_map_get_const(
+    octaspire_dern_value_t const * const self,
+    uint32_t const hash,
+    octaspire_dern_value_t const * const key);
+
+octaspire_dern_value_t *octaspire_dern_value_as_hash_map_get_value_for_symbol_key_using_c_string(
+    octaspire_dern_value_t * const self,
+    char const * const keySymbolsContentAsCString);
+
+octaspire_dern_value_t const *octaspire_dern_value_as_hash_map_get_value_for_symbol_key_using_c_string_const(
+    octaspire_dern_value_t const * const self,
+    char const * const keySymbolsContentAsCString);
 
 size_t octaspire_dern_value_get_length(
     octaspire_dern_value_t const * const self);

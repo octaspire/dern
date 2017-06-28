@@ -36,6 +36,8 @@ octaspire_dern_value_t *dern_ncurses_initscr(
         DERN_NCURSES_PLUGIN_NAME,
         "window",
         "",
+        "",
+        "",
         window);
 }
 

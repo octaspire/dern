@@ -137,6 +137,8 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const pluginName,
     char const * const typeNameForPayload,
     char const * const cleanUpCallbackName,
+    char const * const stdLibLenCallbackName,
+    char const * const stdLibNthCallbackName,
     void * const payload);
 
 bool octaspire_dern_vm_push_value(octaspire_dern_vm_t *self, struct octaspire_dern_value_t *value);
@@ -215,6 +217,12 @@ bool octaspire_dern_vm_create_and_register_new_special(
     size_t const numRequiredActualArguments,
     char const * const docStr,
     octaspire_dern_environment_t * const targetEnv);
+
+bool octaspire_dern_vm_create_and_define_new_integer(
+    octaspire_dern_vm_t * const self,
+    char const * const name,
+    char const * const docstr,
+    int32_t const value);
 
 size_t octaspire_dern_vm_get_stack_length(
     octaspire_dern_vm_t const * const self);

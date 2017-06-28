@@ -1794,6 +1794,8 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const pluginName,
     char const * const typeNameForPayload,
     char const * const cleanUpCallbackName,
+    char const * const stdLibLenCallbackName,
+    char const * const stdLibNthCallbackName,
     void * const payload)
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
@@ -1810,6 +1812,8 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
         typeNameForPayload,
         payload,
         cleanUpCallbackName,
+        stdLibLenCallbackName,
+        stdLibNthCallbackName,
         self->allocator);
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
@@ -3010,6 +3014,50 @@ bool octaspire_dern_vm_create_and_register_new_special(
     octaspire_dern_vm_pop_value(self, symbol);
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
     return true;
+}
+
+bool octaspire_dern_vm_create_and_define_new_integer(
+    octaspire_dern_vm_t * const self,
+    char const * const name,
+    char const * const docstr,
+    int32_t const value)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
+
+    octaspire_helpers_verify_not_null(self);
+    octaspire_helpers_verify_not_null(self);
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_helpers_verify_true(strlen(name) > 0);
+    octaspire_helpers_verify_true(strlen(docstr) > 0);
+
+    octaspire_container_utf8_string_t *str = octaspire_container_utf8_string_new_format(
+        octaspire_dern_vm_get_allocator(self),
+        "(define %s [%s] %" PRId32 ")",
+        name,
+        docstr,
+        value);
+
+    octaspire_helpers_verify_not_null(str);
+
+    octaspire_dern_value_t *result =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            self,
+            octaspire_container_utf8_string_get_c_string(str));
+
+    octaspire_helpers_verify_not_null(result);
+
+    octaspire_container_utf8_string_release(str);
+    str = 0;
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
+
+    if (octaspire_dern_value_is_boolean(result) && octaspire_dern_value_as_boolean_get_value(result))
+    {
+        return true;
+    }
+
+    return false;
 }
 
 size_t octaspire_dern_vm_get_stack_length(

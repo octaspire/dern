@@ -1,4 +1,13 @@
+#! This example assumes that you have IRC-server running on your
+   machine
+!#
+
 (require 'dern_socket)
 
-(define s [socket] (socket-socket 'AF_INET 'SOCK_STREAM 0))
+(define s [socket] (socket-new-ipv4-stream-socket [localhost] 6667))
+
+(socket-send s [NICK Mike|newline|])
+(socket-send s [USER mike 8 * : Mike Xyz|newline|])
+(println(socket-receive s false))
+(socket-send s [QUIT|newline|])
 
