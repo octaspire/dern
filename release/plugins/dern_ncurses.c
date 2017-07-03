@@ -170,14 +170,45 @@ octaspire_dern_value_t *dern_ncurses_getstr(
 
     size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
 
-    if (numArgs != 0)
+    if (numArgs != 0 && numArgs != 1)
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Builtin 'ncurses-getstr' expects zero arguments. "
+            "Builtin 'ncurses-getstr' expects zero or one arguments. "
             "%zu arguments were given.",
             numArgs);
+    }
+
+    int delay = -1;
+
+    if (numArgs == 1)
+    {
+        octaspire_dern_value_t const * const arg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+        if (!octaspire_dern_value_is_number(arg))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'ncurses-getstr' expects integer or real argument, if argument is given. "
+                "Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+        }
+
+        if (octaspire_dern_value_is_integer(arg))
+        {
+            // Timeout is milliseconds
+            delay = (int)octaspire_dern_value_as_integer_get_value(arg);
+        }
+        else
+        {
+            // Timeout is seconds
+            delay = (int)(1000.0 * octaspire_dern_value_as_real_get_value(arg));
+        }
+
+        timeout(delay);
     }
 
     octaspire_container_utf8_string_t *resultStr = octaspire_container_utf8_string_new(
@@ -195,7 +226,12 @@ octaspire_dern_value_t *dern_ncurses_getstr(
     while (true)
     {
         wint_t wint;
-        /*int const status = */get_wch(&wint);
+        int const status = get_wch(&wint);
+
+        if (status == ERR)
+        {
+            break;
+        }
 
         if (wint == KEY_ENTER || wint == 10)
         {
@@ -203,6 +239,12 @@ octaspire_dern_value_t *dern_ncurses_getstr(
         }
         else if (wint == KEY_BACKSPACE)
         {
+            if (delay != -1)
+            {
+                delay = -1;
+                timeout(delay);
+            }
+
             if (octaspire_container_utf8_string_pop_back_ucs_character(resultStr))
             {
                 mvwaddstr(
@@ -216,6 +258,12 @@ octaspire_dern_value_t *dern_ncurses_getstr(
         }
         else if (iswprint(wint))
         {
+            if (delay != -1)
+            {
+                delay = -1;
+                timeout(delay);
+            }
+
             octaspire_container_utf8_string_push_back_ucs_character(resultStr, (uint32_t)wint);
 
             mvwaddstr(
@@ -271,6 +319,59 @@ octaspire_dern_value_t *dern_ncurses_set_raw(
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
+}
+
+octaspire_dern_value_t *dern_ncurses_set_timeout(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-set-timeout' expects one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-set-timeout' expects integer or real argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    int delay = 0;
+
+    if (octaspire_dern_value_is_integer(arg))
+    {
+        // Timeout is milliseconds
+        delay = (int)octaspire_dern_value_as_integer_get_value(arg);
+    }
+    else
+    {
+        // Timeout is seconds
+        delay = (int)(1000.0 * octaspire_dern_value_as_real_get_value(arg));
+    }
+
+    timeout(delay);
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_integer(vm, delay);
 }
 
 octaspire_dern_value_t *dern_ncurses_set_cbreak(
@@ -1568,6 +1669,17 @@ bool dern_ncurses_init(
             dern_ncurses_set_raw,
             0,
             "(ncurses-set-raw boolean) -> boolean",
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "ncurses-set-timeout",
+            dern_ncurses_set_timeout,
+            0,
+            "(ncurses-set-timeout number) -> integer",
             targetEnv))
     {
         return false;

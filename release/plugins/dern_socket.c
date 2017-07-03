@@ -392,11 +392,19 @@ octaspire_dern_value_t *dern_socket_receive(
 
         if (recvStatus == -1)
         {
-            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
-                vm,
-                "Builtin 'socket-receive' failed to receive: %s.",
-                strerror(errno));
+            if (waitForData)
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'socket-receive' failed to receive: %s.",
+                    strerror(errno));
+            }
+            else
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_nil(vm);
+            }
         }
         else if (recvStatus == 0)
         {

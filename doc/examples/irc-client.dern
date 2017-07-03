@@ -1,0 +1,71 @@
+(require 'dern_ncurses)
+(require 'dern_socket)
+
+(define win [win] (ncurses-initscr))
+(ncurses-set-keypad win true)
+(ncurses-set-cbreak true)
+
+(define running [should this program be running] true)
+(define current-channel [currently joined channel] nil)
+(define socket [socket] (socket-new-ipv4-stream-socket [localhost] 6667))
+(define num-rows-and-cols [number of rows and cols on screen] (ncurses-getmaxyx win))
+(define lines [messages] '())
+
+(define leave-current-channel [leave the current channel] '() (fn ()
+    (define message [message] (string-format [PART {}|newline|] current-channel))
+    (socket-send socket message)
+))
+
+(define handle-command [handle command, for example /join] '(line [line of text starting with /]) (fn (line)
+    (if (starts-with? line [/join])  (= current-channel [#todo]))
+    (if (starts-with? line [/quit])  (= running false))
+    (if (starts-with? line [/part])  (leave-current-channel))
+))
+
+(define handle-message [handle a line starting without /] '(line [line of text starting with /]) (fn (line)
+    (if (== nil current-channel)
+      (do
+        (ncurses-print win (- (nth 0 num-rows-and-cols) 2) 0 [You must enter a channel first])
+        (return)))
+
+    (define message [message] (string-format [PRIVMSG {} :{}|newline|] current-channel line))
+    (socket-send socket message)
+))
+
+(define read-and-handle-input [get user input and handle it] '() (fn ()
+    (ncurses-print win (- (nth 0 num-rows-and-cols) 1) 0 [> ])
+    (define input [line of text from the user] (ncurses-getstr 2.0))
+
+    (if (== 0 (len input)) (return))
+
+    (define first-char [first character of user input] (nth 0 input))
+
+    (if (== |/| first-char)
+      (handle-command input)
+      (handle-message input))
+))
+
+(define read-socket [read input from socket, if available] '() (fn ()
+    (define input-from-socket [possible input from socket] (socket-receive socket false))
+
+    (if (== nil input-from-socket) (return))
+    (+= lines input-from-socket)
+))
+
+(define print-lines [print messages] '() (fn ()
+    (define row [current row] 1)
+    (for line in lines
+         (do
+           (ncurses-print win row 0 line)
+           (++ row)))
+))
+
+(socket-send socket [NICK XYZ|newline|])
+(socket-send socket [USER xyz 8 * : XY ZZ|newline|])
+
+(while running
+    (ncurses-clear win)
+    (read-socket)
+    (read-and-handle-input)
+    (print-lines))
+
