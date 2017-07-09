@@ -4622,23 +4622,66 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_minus(
     {
         value = octaspire_container_vector_get_element_at(vec, i);
 
-        if (!octaspire_dern_value_is_number(value))
+        if (octaspire_dern_value_is_integer(value))
+        {
+            --(value->value.integer);
+        }
+        else if (octaspire_dern_value_is_real(value))
+        {
+            --(value->value.real);
+        }
+        else if (octaspire_dern_value_is_queue(value))
+        {
+            if (!octaspire_dern_value_as_queue_pop(value))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin '--' failed on %zuth argument (queue)",
+                    i + 1);
+            }
+        }
+        else if (octaspire_dern_value_is_list(value))
+        {
+            if (!octaspire_dern_value_as_list_pop_back(value))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin '--' failed on %zuth argument (list)",
+                    i + 1);
+            }
+        }
+        else if (octaspire_dern_value_is_vector(value))
+        {
+            if (!octaspire_dern_value_as_vector_pop_back_element(value))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin '--' failed on %zuth argument (vector)",
+                    i + 1);
+            }
+        }
+        else if (octaspire_dern_value_is_string(value))
+        {
+            if (!octaspire_dern_value_as_string_pop_back_ucs_character(value))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin '--' failed on %zuth argument (string)",
+                    i + 1);
+            }
+        }
+        else
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
-                "Arguments to builtin '--' must be numbers. %zuth argument has type '%s'.",
+                "%zuth argument to builtin '--' has unsupported type '%s'.",
                 i + 1,
                 octaspire_dern_value_helper_get_type_as_c_string(value->typeTag));
-        }
-
-        if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_INTEGER)
-        {
-            --(value->value.integer);
-        }
-        else
-        {
-            --(value->value.real);
         }
     }
 
@@ -5479,6 +5522,86 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_hash_map(
             octaspire_dern_value_get_hash(keyArg),
             keyArg,
             valArg))
+        {
+            abort();
+        }
+    }
+
+    octaspire_dern_vm_pop_value(vm, result);
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_queue(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_queue(vm);
+    octaspire_dern_vm_push_value(vm, result);
+
+    for (size_t i = 0; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t *arg =
+            octaspire_dern_value_as_vector_get_element_at(arguments, i);
+
+        if (!arg)
+        {
+            octaspire_dern_vm_pop_value(vm, result);
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "Builtin 'queue' expects value here.");
+        }
+
+        if (!octaspire_dern_value_as_queue_push(result, arg))
+        {
+            abort();
+        }
+    }
+
+    octaspire_dern_vm_pop_value(vm, result);
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_list(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_list(vm);
+    octaspire_dern_vm_push_value(vm, result);
+
+    for (size_t i = 0; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t *arg =
+            octaspire_dern_value_as_vector_get_element_at(arguments, i);
+
+        if (!arg)
+        {
+            octaspire_dern_vm_pop_value(vm, result);
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "Builtin 'list' expects value here.");
+        }
+
+        if (!octaspire_dern_value_as_list_push_back(result, arg))
         {
             abort();
         }

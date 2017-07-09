@@ -21,6 +21,8 @@ limitations under the License.
 #include <stdbool.h>
 #include <octaspire/core/octaspire_container_vector.h>
 #include <octaspire/core/octaspire_container_hash_map.h>
+#include <octaspire/core/octaspire_container_queue.h>
+#include <octaspire/core/octaspire_container_list.h>
 #include <octaspire/core/octaspire_container_utf8_string.h>
 #include "octaspire/dern/octaspire_dern_port.h"
 #include "octaspire/dern/octaspire_dern_c_data.h"
@@ -43,6 +45,8 @@ typedef enum
     OCTASPIRE_DERN_VALUE_TAG_ERROR,
     OCTASPIRE_DERN_VALUE_TAG_VECTOR,
     OCTASPIRE_DERN_VALUE_TAG_HASH_MAP,
+    OCTASPIRE_DERN_VALUE_TAG_QUEUE,
+    OCTASPIRE_DERN_VALUE_TAG_LIST,
     OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT,
     OCTASPIRE_DERN_VALUE_TAG_FUNCTION,
     OCTASPIRE_DERN_VALUE_TAG_SPECIAL,
@@ -146,6 +150,8 @@ struct octaspire_dern_value_t
         octaspire_container_utf8_string_t   *error;
         octaspire_container_vector_t        *vector;
         octaspire_container_hash_map_t      *hashMap;
+        octaspire_container_queue_t         *queue;
+        octaspire_container_list_t          *list;
         struct octaspire_dern_environment_t *environment;
         octaspire_dern_function_t           *function;
         octaspire_dern_special_t            *special;
@@ -229,6 +235,12 @@ bool octaspire_dern_value_is_vector(
 bool octaspire_dern_value_is_hash_map(
     octaspire_dern_value_t const * const self);
 
+bool octaspire_dern_value_is_queue(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_list(
+    octaspire_dern_value_t const * const self);
+
 bool octaspire_dern_value_is_port(
     octaspire_dern_value_t const * const self);
 
@@ -259,6 +271,18 @@ bool octaspire_dern_value_as_hash_map_add(
 bool octaspire_dern_value_as_hash_map_remove(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const keyValue);
+
+bool octaspire_dern_value_as_queue_push(
+    octaspire_dern_value_t * const self,
+    octaspire_dern_value_t * const toBeAdded);
+
+bool octaspire_dern_value_as_queue_pop(octaspire_dern_value_t * const self);
+
+bool octaspire_dern_value_as_list_push_back(
+    octaspire_dern_value_t * const self,
+    octaspire_dern_value_t * const toBeAdded);
+
+bool octaspire_dern_value_as_list_pop_back(octaspire_dern_value_t * const self);
 
 bool octaspire_dern_value_as_character_add(
     octaspire_dern_value_t * const self,
@@ -336,6 +360,8 @@ bool octaspire_dern_value_as_vector_push_back_element(
 bool octaspire_dern_value_as_vector_remove_element_at(
     octaspire_dern_value_t *self,
     size_t const index);
+
+bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *self);
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at(
     octaspire_dern_value_t * const self,

@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.175.0
+Documentation for Octaspire Dern programming language version 0.177.0
 
 == About
 
@@ -21,9 +21,9 @@ an *obscure language*. footnote:[https://en.wiktionary.org/wiki/dern]
 
 Dern should support imperative and functional programming. It has atomic types
 *integer*, *real*, (utf-8) *string*, (utf-8) *character*, (utf-8) *symbol*, *boolean*,
-*nil*, (input/output) *port*, *hash-map*, *environment*, first class *function*, *special* and
-*builtin*. As non-atomic type it has *vector*. So, where in scheme `'(1 2 3)` is a list, in Dern
-it is a vector.
+*nil*, (input/output) *port*, *hash-map*, *list*, *queue*, *environment*, first class *function*,
+*special* and *builtin*. As non-atomic type it has *vector*. So, where in scheme `'(1 2 3)`
+is a list, in Dern it is a vector.
 
 Every variable and function definition in Dern must be documented by a *documentation string*.
 Dern also makes sure that every formal function parameter is documented in the

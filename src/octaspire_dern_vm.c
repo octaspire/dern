@@ -806,6 +806,30 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
      }
 
+    // queue
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "queue",
+        octaspire_dern_vm_builtin_queue,
+        0,
+        "Create new queue",
+        env))
+    {
+        abort();
+    }
+
+    // list
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "list",
+        octaspire_dern_vm_builtin_list,
+        0,
+        "Create new list",
+        env))
+    {
+        abort();
+    }
+
     // exit
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
@@ -1404,6 +1428,64 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
         }
         break;
 
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        {
+            result->value.queue = octaspire_container_queue_new(
+                sizeof(octaspire_dern_value_t*),
+                true,
+                0,
+                self->allocator);
+
+            for (size_t i = 0; i < octaspire_container_queue_get_length(valueToBeCopied->value.queue); ++i)
+            {
+                octaspire_dern_value_t * const tmpValToCopy =
+                    octaspire_container_queue_get_at(valueToBeCopied->value.queue, i);
+
+                assert(tmpValToCopy);
+
+                octaspire_dern_value_t * const tmpValCopied =
+                    octaspire_dern_vm_create_new_value_copy(self, tmpValToCopy);
+
+                if (!octaspire_container_queue_push(
+                    result->value.queue,
+                    &tmpValCopied))
+                {
+                    abort();
+                }
+            }
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        {
+            result->value.list = octaspire_container_list_new(
+                sizeof(octaspire_dern_value_t*),
+                true,
+                0,
+                self->allocator);
+
+            // TODO more efficient iteration
+            for (size_t i = 0; i < octaspire_container_list_get_length(valueToBeCopied->value.list); ++i)
+            {
+                octaspire_dern_value_t * const tmpValToCopy =
+                    octaspire_container_list_node_get_element(
+                        octaspire_container_list_get_at(valueToBeCopied->value.list, i));
+
+                assert(tmpValToCopy);
+
+                octaspire_dern_value_t * const tmpValCopied =
+                    octaspire_dern_vm_create_new_value_copy(self, tmpValToCopy);
+
+                if (!octaspire_container_list_push_back(
+                    result->value.list,
+                    &tmpValCopied))
+                {
+                    abort();
+                }
+            }
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         {
             abort();
@@ -1691,6 +1773,20 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_hash_map_from_hash_ma
     return result;
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_queue_from_queue(octaspire_dern_vm_t *self, octaspire_container_queue_t * const queue)
+{
+    octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_QUEUE);
+    result->value.queue = queue;
+    return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_list_from_list(octaspire_dern_vm_t *self, octaspire_container_list_t * const list)
+{
+    octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_LIST);
+    result->value.list = list;
+    return result;
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_create_new_value_hash_map(octaspire_dern_vm_t *self)
 {
     octaspire_container_hash_map_t *hashMap = octaspire_container_hash_map_new(
@@ -1705,6 +1801,28 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_hash_map(octaspire_de
         self->allocator);
 
     return octaspire_dern_vm_create_new_value_hash_map_from_hash_map(self, hashMap);
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_queue(octaspire_dern_vm_t *self)
+{
+    octaspire_container_queue_t *queue = octaspire_container_queue_new(
+        sizeof(octaspire_dern_value_t*),
+        true,
+        0,
+        self->allocator);
+
+    return octaspire_dern_vm_create_new_value_queue_from_queue(self, queue);
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_list(octaspire_dern_vm_t *self)
+{
+    octaspire_container_list_t *list = octaspire_container_list_new(
+        sizeof(octaspire_dern_value_t*),
+        true,
+        0,
+        self->allocator);
+
+    return octaspire_dern_vm_create_new_value_list_from_list(self, list);
 }
 
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_environment (octaspire_dern_vm_t *self, octaspire_dern_value_t *enclosing)
@@ -1896,6 +2014,26 @@ void octaspire_dern_vm_clear_value_to_nil(
             octaspire_container_hash_map_clear(value->value.hashMap);
             octaspire_container_hash_map_release(value->value.hashMap);
             value->value.hashMap = 0;
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        {
+            // Elements are NOT released here, because it would lead to double free.
+            // GC releases the elements (those are stored in the all-vector also).
+            octaspire_container_queue_clear(value->value.queue);
+            octaspire_container_queue_release(value->value.queue);
+            value->value.queue = 0;
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        {
+            // Elements are NOT released here, because it would lead to double free.
+            // GC releases the elements (those are stored in the all-vector also).
+            octaspire_container_list_clear(value->value.list);
+            octaspire_container_list_release(value->value.list);
+            value->value.list = 0;
         }
         break;
 

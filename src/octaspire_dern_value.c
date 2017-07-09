@@ -39,6 +39,8 @@ static char const * const octaspire_dern_value_helper_type_tags_as_c_strings[] =
     "error",
     "vector",
     "hash map",
+    "queue",
+    "list",
     "environment",
     "function",
     "special",
@@ -496,6 +498,68 @@ bool octaspire_dern_value_set(
         }
         break;
 
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        {
+            self->value.queue = octaspire_container_queue_new(
+                sizeof(octaspire_dern_value_t*),
+                true,
+                0,
+                octaspire_dern_vm_get_allocator(self->vm));
+
+            // TODO Add iterator to queue and use it here
+            for (size_t i = 0; i < octaspire_container_queue_get_length(value->value.queue); ++i)
+            {
+                octaspire_dern_value_t * tmpVal =
+                    octaspire_container_queue_get_at(value->value.queue, i);
+
+                if (octaspire_dern_value_is_atom(tmpVal))
+                {
+                    tmpVal = octaspire_dern_vm_create_new_value_copy(self->vm, tmpVal);
+                }
+
+                octaspire_dern_vm_push_value(self->vm, tmpVal);
+
+                if (!octaspire_container_queue_push(self->value.queue, &tmpVal))
+                {
+                    abort();
+                }
+
+                octaspire_dern_vm_pop_value(self->vm, tmpVal);
+            }
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        {
+            self->value.list = octaspire_container_list_new(
+                sizeof(octaspire_dern_value_t*),
+                true,
+                0,
+                octaspire_dern_vm_get_allocator(self->vm));
+
+            // TODO more efficient iteration
+            for (size_t i = 0; i < octaspire_container_list_get_length(value->value.list); ++i)
+            {
+                octaspire_dern_value_t * tmpVal = octaspire_container_list_node_get_element(
+                    octaspire_container_list_get_at(value->value.list, i));
+
+                if (octaspire_dern_value_is_atom(tmpVal))
+                {
+                    tmpVal = octaspire_dern_vm_create_new_value_copy(self->vm, tmpVal);
+                }
+
+                octaspire_dern_vm_push_value(self->vm, tmpVal);
+
+                if (!octaspire_container_list_push_back(self->value.list, &tmpVal))
+                {
+                    abort();
+                }
+
+                octaspire_dern_vm_pop_value(self->vm, tmpVal);
+            }
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         {
             abort();
@@ -650,6 +714,16 @@ bool octaspire_dern_value_set_collection(
             &indexOrKey,
             &tmpValueForInsertion);
     }
+    else if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_QUEUE)
+    {
+        // TODO XXX
+        abort();
+    }
+    else if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST)
+    {
+        // TODO XXX
+        abort();
+    }
     else if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT)
     {
         // TODO XXX Should here a copy of atom be made or not?
@@ -685,6 +759,8 @@ uint32_t octaspire_dern_value_get_hash(
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_get_hash(self->value.error);
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.vector);
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:    return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.hashMap);
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:       return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.queue);
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:        return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.list);
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.environment);
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.function);
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.special);
@@ -754,6 +830,8 @@ bool octaspire_dern_value_is_equal(
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_is_equal(self->value.error, other->value.error);
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return self->value.vector == other->value.vector;
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:    return self->value.hashMap == other->value.hashMap;
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:       return self->value.queue == other->value.queue;
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:        return self->value.list == other->value.list;
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return self->value.environment == other->value.environment;
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return self->value.function == other->value.function;
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special == other->value.special;
@@ -1268,6 +1346,98 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
             }
             break;
 
+            case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+            {
+                octaspire_container_utf8_string_t *result = octaspire_container_utf8_string_new("(queue ", allocator);
+                octaspire_helpers_verify_not_null(result);
+
+                // Add iterator into queue and use it here
+                for (size_t i = 0; i < octaspire_container_queue_get_length(self->value.queue); ++i)
+                {
+                    octaspire_dern_value_t *tmpValue =
+                        octaspire_container_queue_get_at(self->value.queue, i);
+
+                    octaspire_helpers_verify_not_null(tmpValue);
+
+                    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+                        tmpValue,
+                        allocator);
+
+                    octaspire_helpers_verify_not_null(tmpStr);
+
+                    if (!octaspire_container_utf8_string_concatenate_c_string(
+                        result,
+                        octaspire_container_utf8_string_get_c_string(tmpStr)))
+                    {
+                        abort();
+                    }
+
+                    octaspire_container_utf8_string_release(tmpStr);
+                    tmpStr = 0;
+
+                    if ((i+1) < octaspire_container_queue_get_length(self->value.queue))
+                    {
+                        octaspire_container_utf8_string_concatenate_c_string(result, " ");
+                    }
+                }
+
+                if (!octaspire_container_utf8_string_concatenate_c_string(
+                    result,
+                    ")"))
+                {
+                    abort();
+                }
+
+                return result;
+            }
+            break;
+
+            case OCTASPIRE_DERN_VALUE_TAG_LIST:
+            {
+                octaspire_container_utf8_string_t *result = octaspire_container_utf8_string_new("(list ", allocator);
+                octaspire_helpers_verify_not_null(result);
+
+                // More efficient iteration
+                for (size_t i = 0; i < octaspire_container_list_get_length(self->value.list); ++i)
+                {
+                    octaspire_dern_value_t *tmpValue = octaspire_container_list_node_get_element(
+                        octaspire_container_list_get_at(self->value.list, i));
+
+                    octaspire_helpers_verify_not_null(tmpValue);
+
+                    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+                        tmpValue,
+                        allocator);
+
+                    octaspire_helpers_verify_not_null(tmpStr);
+
+                    if (!octaspire_container_utf8_string_concatenate_c_string(
+                        result,
+                        octaspire_container_utf8_string_get_c_string(tmpStr)))
+                    {
+                        abort();
+                    }
+
+                    octaspire_container_utf8_string_release(tmpStr);
+                    tmpStr = 0;
+
+                    if ((i+1) < octaspire_container_list_get_length(self->value.list))
+                    {
+                        octaspire_container_utf8_string_concatenate_c_string(result, " ");
+                    }
+                }
+
+                if (!octaspire_container_utf8_string_concatenate_c_string(
+                    result,
+                    ")"))
+                {
+                    abort();
+                }
+
+                return result;
+            }
+            break;
+
             case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
             {
                 return octaspire_container_utf8_string_new("<function>", allocator);
@@ -1400,6 +1570,18 @@ bool octaspire_dern_value_is_hash_map(
     octaspire_dern_value_t const * const self)
 {
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP;
+}
+
+bool octaspire_dern_value_is_queue(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_QUEUE;
+}
+
+bool octaspire_dern_value_is_list(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST;
 }
 
 bool octaspire_dern_value_is_port(
@@ -1538,6 +1720,36 @@ bool octaspire_dern_value_as_hash_map_add(
     }
 
     return false;
+}
+
+bool octaspire_dern_value_as_queue_push(
+    octaspire_dern_value_t * const self,
+    octaspire_dern_value_t * const toBeAdded)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(toBeAdded);
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_QUEUE);
+    return octaspire_container_queue_push(self->value.queue, &toBeAdded);
+}
+
+bool octaspire_dern_value_as_queue_pop(octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_QUEUE);
+    return octaspire_container_queue_pop(self->value.queue);
+}
+
+bool octaspire_dern_value_as_list_push_back(
+    octaspire_dern_value_t * const self,
+    octaspire_dern_value_t * const toBeAdded)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(toBeAdded);
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST);
+    return octaspire_container_list_push_back(self->value.list, &toBeAdded);
+}
+
+bool octaspire_dern_value_as_list_pop_back(octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST);
+    return octaspire_container_list_pop_back(self->value.list);
 }
 
 bool octaspire_dern_value_as_character_add(
@@ -2266,6 +2478,13 @@ bool octaspire_dern_value_as_vector_remove_element_at(
     return octaspire_container_vector_remove_element_at(self->value.vector, index);
 }
 
+bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    return octaspire_container_vector_pop_back_element(self->value.vector);
+}
+
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at(
     octaspire_dern_value_t * const self,
     size_t const index)
@@ -2443,6 +2662,8 @@ size_t octaspire_dern_value_get_length(
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_get_length_in_ucs_characters(self->value.error);
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return octaspire_container_vector_get_length(self->value.vector);
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:    return octaspire_container_hash_map_get_number_of_elements(self->value.hashMap);
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:       return octaspire_container_queue_get_length(self->value.queue);
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:        return octaspire_container_list_get_length(self->value.list);
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return octaspire_dern_environment_get_length(self->value.environment);
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return octaspire_dern_function_get_number_of_required_arguments(self->value.function);
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special->numRequiredActualArguments;
@@ -2509,6 +2730,38 @@ bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
             }
 
             octaspire_container_hash_map_element_iterator_next(&iter);
+        }
+    }
+    else if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_QUEUE)
+    {
+        // TODO Add iterator into queue and use it here
+        for (size_t i = 0; i < octaspire_container_queue_get_length(self->value.queue); ++i)
+        {
+            octaspire_dern_value_t * const tmpVal =
+                octaspire_container_queue_get_at(self->value.queue, i);
+
+            octaspire_helpers_verify_not_null(tmpVal);
+
+            if (!octaspire_dern_value_mark(tmpVal))
+            {
+                return false;
+            }
+        }
+    }
+    else if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST)
+    {
+        // TODO More efficient iteration
+        for (size_t i = 0; i < octaspire_container_list_get_length(self->value.list); ++i)
+        {
+            octaspire_dern_value_t * const tmpVal = octaspire_container_list_node_get_element(
+                octaspire_container_list_get_at(self->value.list, i));
+
+            octaspire_helpers_verify_not_null(tmpVal);
+
+            if (!octaspire_dern_value_mark(tmpVal))
+            {
+                return false;
+            }
         }
     }
     else if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_FUNCTION)
@@ -2596,6 +2849,8 @@ int octaspire_dern_value_compare(
         }
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return (ptrdiff_t)self->value.vector - (ptrdiff_t)other->value.vector;
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:    return (ptrdiff_t)self->value.hashMap - (ptrdiff_t)other->value.hashMap;
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:       return (ptrdiff_t)self->value.queue - (ptrdiff_t)other->value.queue;
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:        return (ptrdiff_t)self->value.list - (ptrdiff_t)other->value.list;
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return (ptrdiff_t)self->value.environment - (ptrdiff_t)other->value.environment;
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return (ptrdiff_t)self->value.function - (ptrdiff_t)other->value.function;
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return (ptrdiff_t)self->value.special - (ptrdiff_t)other->value.special;
@@ -2638,6 +2893,8 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
 
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
