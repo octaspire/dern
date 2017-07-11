@@ -257,6 +257,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_queue(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_queue_with_max_length(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_list(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

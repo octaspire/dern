@@ -118,6 +118,11 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_vector      (o
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_hash_map    (octaspire_dern_vm_t *self);
 
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_queue       (octaspire_dern_vm_t *self);
+
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_queue_with_max_length (
+        octaspire_dern_vm_t * const self,
+        size_t const maxLength);
+
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_list        (octaspire_dern_vm_t *self);
 
 octaspire_dern_value_t *octaspire_dern_vm_create_new_value_hash_map_from_hash_map(octaspire_dern_vm_t *self, octaspire_container_hash_map_t * const value);

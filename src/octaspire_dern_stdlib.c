@@ -18,6 +18,8 @@ limitations under the License.
 #include <assert.h>
 #include <inttypes.h>
 #include <octaspire/core/octaspire_helpers.h>
+#include <octaspire/core/octaspire_container_list.h>
+#include <octaspire/core/octaspire_container_queue.h>
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include "octaspire/dern/octaspire_dern_config.h"
 
@@ -996,6 +998,8 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
 
         if (container->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING      && 
             container->typeTag != OCTASPIRE_DERN_VALUE_TAG_VECTOR      &&
+            container->typeTag != OCTASPIRE_DERN_VALUE_TAG_LIST        &&
+            container->typeTag != OCTASPIRE_DERN_VALUE_TAG_QUEUE       &&
             container->typeTag != OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT &&
             container->typeTag != OCTASPIRE_DERN_VALUE_TAG_HASH_MAP    &&
             container->typeTag != OCTASPIRE_DERN_VALUE_TAG_PORT)
@@ -1003,7 +1007,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
             octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Third argument to special 'for' using 'in' must be a container "
-                "(string, vector, hash map or environment) or a port. "
+                "(string, vector, list, queue, hash map or environment) or a port. "
                 "Now it has type %s.",
                 octaspire_dern_value_helper_get_type_as_c_string(container->typeTag));
 
@@ -1220,6 +1224,132 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_integer(vm, counter);
         }
+
+
+
+        else if (container->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST)
+        {
+            octaspire_container_list_t * const list = container->value.list;
+            size_t const listLen = octaspire_container_list_get_length(list);
+
+            int32_t counter = 0;
+
+            // TODO more efficient iteration of list
+            for (size_t i = 0; i < listLen; i += stepSize)
+            {
+                octaspire_container_list_node_t *node =
+                    octaspire_container_list_get_at(list, i);
+
+                octaspire_helpers_verify_not_null(node);
+
+                octaspire_dern_environment_set(
+                    extendedEnvironment,
+                    counterSymbol,
+                    octaspire_container_list_node_get_element(node));
+
+                for (size_t j = currentArgIdx; j < numArgs; ++j)
+                {
+                    octaspire_dern_value_t *result = octaspire_dern_vm_eval(
+                        vm,
+                        octaspire_dern_value_as_vector_get_element_at(arguments, j),
+                        extendedEnvVal);
+
+                    octaspire_helpers_verify_not_null(result);
+
+                    if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+                    {
+                        octaspire_dern_vm_pop_value(vm, extendedEnvVal);
+                        octaspire_dern_vm_pop_value(vm, container);
+                        octaspire_dern_vm_pop_value(vm, arguments);
+                        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        return result;
+                    }
+
+                    if (octaspire_dern_vm_get_function_return(vm))
+                    {
+                        result = octaspire_dern_vm_get_function_return(vm);
+                        //octaspire_dern_vm_set_function_return(vm, 0);
+                        octaspire_dern_vm_pop_value(vm, extendedEnvVal);
+                        octaspire_dern_vm_pop_value(vm, container);
+                        octaspire_dern_vm_pop_value(vm, arguments);
+                        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        return result;
+                    }
+                }
+
+                ++counter;
+            }
+
+            octaspire_dern_vm_pop_value(vm, extendedEnvVal);
+            octaspire_dern_vm_pop_value(vm, container);
+            octaspire_dern_vm_pop_value(vm, arguments);
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_integer(vm, counter);
+        }
+        else if (container->typeTag == OCTASPIRE_DERN_VALUE_TAG_QUEUE)
+        {
+            octaspire_container_queue_t * const queue = container->value.queue;
+            size_t const queueLen = octaspire_container_queue_get_length(queue);
+
+            int32_t counter = 0;
+
+            // TODO more efficient iteration of queue
+            for (size_t i = 0; i < queueLen; i += stepSize)
+            {
+                octaspire_dern_environment_set(
+                    extendedEnvironment,
+                    counterSymbol,
+                    octaspire_container_queue_get_at(queue, i));
+
+                for (size_t j = currentArgIdx; j < numArgs; ++j)
+                {
+                    octaspire_dern_value_t *result = octaspire_dern_vm_eval(
+                        vm,
+                        octaspire_dern_value_as_vector_get_element_at(arguments, j),
+                        extendedEnvVal);
+
+                    octaspire_helpers_verify_not_null(result);
+
+                    if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+                    {
+                        octaspire_dern_vm_pop_value(vm, extendedEnvVal);
+                        octaspire_dern_vm_pop_value(vm, container);
+                        octaspire_dern_vm_pop_value(vm, arguments);
+                        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        return result;
+                    }
+
+                    if (octaspire_dern_vm_get_function_return(vm))
+                    {
+                        result = octaspire_dern_vm_get_function_return(vm);
+                        //octaspire_dern_vm_set_function_return(vm, 0);
+                        octaspire_dern_vm_pop_value(vm, extendedEnvVal);
+                        octaspire_dern_vm_pop_value(vm, container);
+                        octaspire_dern_vm_pop_value(vm, arguments);
+                        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        return result;
+                    }
+                }
+
+                ++counter;
+            }
+
+            octaspire_dern_vm_pop_value(vm, extendedEnvVal);
+            octaspire_dern_vm_pop_value(vm, container);
+            octaspire_dern_vm_pop_value(vm, arguments);
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_integer(vm, counter);
+        }
+
+
+
+
+
+
+
+
+
+
         else if (container->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT)
         {
             octaspire_dern_environment_t * const env = container->value.environment;
@@ -4431,6 +4561,30 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
         }
         break;
 
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        {
+            for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
+            {
+                octaspire_dern_value_t * const anotherArg =
+                    octaspire_container_vector_get_element_at(vec, i);
+
+                octaspire_dern_value_as_list_push_back(firstArg, anotherArg);
+            }
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        {
+            for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
+            {
+                octaspire_dern_value_t * const anotherArg =
+                    octaspire_container_vector_get_element_at(vec, i);
+
+                octaspire_dern_value_as_queue_push(firstArg, anotherArg);
+            }
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         {
             for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
@@ -5559,6 +5713,81 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_queue(
             return octaspire_dern_vm_create_new_value_error_from_c_string(
                 vm,
                 "Builtin 'queue' expects value here.");
+        }
+
+        if (!octaspire_dern_value_as_queue_push(result, arg))
+        {
+            abort();
+        }
+    }
+
+    octaspire_dern_vm_pop_value(vm, result);
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_queue_with_max_length(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs < 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'queue-with-max-length' expects at least one argument. "
+            "Now %zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_integer(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The first argument to builtin 'queue-with-max-length' must be integer. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    int32_t const maxQueueLen = octaspire_dern_value_as_integer_get_value(firstArg);
+
+    if (maxQueueLen < 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The first argument to builtin 'queue-with-max-length' must be non negative integer. "
+            "Negative integer %" PRId32 " was given.",
+            maxQueueLen);
+    }
+
+    octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_queue(vm);
+    octaspire_dern_vm_push_value(vm, result);
+
+    for (size_t i = 1; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t *arg =
+            octaspire_dern_value_as_vector_get_element_at(arguments, i);
+
+        if (!arg)
+        {
+            octaspire_dern_vm_pop_value(vm, result);
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "Builtin 'queue-with-max-length' expects value here.");
         }
 
         if (!octaspire_dern_value_as_queue_push(result, arg))

@@ -818,6 +818,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // queue-with-max-length
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "queue-with-max-length",
+        octaspire_dern_vm_builtin_queue_with_max_length,
+        0,
+        "Create new queue with maximum length",
+        env))
+    {
+        abort();
+    }
+
     // list
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
@@ -1806,6 +1818,20 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_hash_map(octaspire_de
 octaspire_dern_value_t *octaspire_dern_vm_create_new_value_queue(octaspire_dern_vm_t *self)
 {
     octaspire_container_queue_t *queue = octaspire_container_queue_new(
+        sizeof(octaspire_dern_value_t*),
+        true,
+        0,
+        self->allocator);
+
+    return octaspire_dern_vm_create_new_value_queue_from_queue(self, queue);
+}
+
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_queue_with_max_length (
+        octaspire_dern_vm_t * const self,
+        size_t const maxLength)
+{
+    octaspire_container_queue_t * const queue = octaspire_container_queue_new_with_max_length(
+        maxLength,
         sizeof(octaspire_dern_value_t*),
         true,
         0,

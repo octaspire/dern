@@ -201,10 +201,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "47"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "49"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.47.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.49.0"
 
 
 
@@ -486,6 +486,11 @@ size_t octaspire_container_vector_get_element_size_in_octets(
     octaspire_container_vector_t const * const self);
 
 bool octaspire_container_vector_insert_element_before_the_element_at_index(
+    octaspire_container_vector_t *self,
+    void const *element,
+    ptrdiff_t const index);
+
+bool octaspire_container_vector_replace_element_at_index_or_push_back(
     octaspire_container_vector_t *self,
     void const *element,
     ptrdiff_t const index);
@@ -970,6 +975,11 @@ bool octaspire_container_utf8_string_pop_back_ucs_character(
     octaspire_container_utf8_string_t *self);
 
 bool octaspire_container_utf8_string_insert_string_to(
+    octaspire_container_utf8_string_t * const self,
+    octaspire_container_utf8_string_t const * const str,
+    ptrdiff_t const indexToPutFirstCharacter);
+
+bool octaspire_container_utf8_string_overwrite_with_string_at(
     octaspire_container_utf8_string_t * const self,
     octaspire_container_utf8_string_t const * const str,
     ptrdiff_t const indexToPutFirstCharacter);
@@ -2916,6 +2926,37 @@ bool octaspire_container_vector_insert_element_before_the_element_at_index(
     return true;
 }
 
+bool octaspire_container_vector_replace_element_at_index_or_push_back(
+    octaspire_container_vector_t *self,
+    void const *element,
+    ptrdiff_t const index)
+{
+    size_t realIndexToUse = 0;
+
+    if (index < 0)
+    {
+        ptrdiff_t const tmpIdx = (ptrdiff_t)octaspire_container_vector_get_length(self) + index;
+
+        if (tmpIdx < 0)
+        {
+            abort();
+        }
+
+        realIndexToUse = (size_t)tmpIdx;
+    }
+    else
+    {
+        realIndexToUse = (size_t)index;
+    }
+
+    if (realIndexToUse >= octaspire_container_vector_get_length(self))
+    {
+        return octaspire_container_vector_push_back_element(self, element);
+    }
+
+    return octaspire_container_vector_insert_element_at(self, element, realIndexToUse);
+}
+
 bool octaspire_container_vector_insert_element_at(
     octaspire_container_vector_t * const self,
     void const * const element,
@@ -3132,7 +3173,7 @@ bool octaspire_container_vector_clear(
 {
     if (octaspire_container_vector_is_empty(self))
     {
-        return false;
+        return true;
     }
 
     self->numElements = 0;
@@ -3626,6 +3667,7 @@ bool octaspire_container_list_remove(
             self->front = self->back;
         }
 
+        octaspire_container_list_node_release(node);
         return true;
     }
 }
@@ -4007,7 +4049,8 @@ struct octaspire_container_utf8_string_t
     octaspire_memory_allocator_t                   *allocator;
     size_t                                          errorAtOctet;
     octaspire_container_utf8_string_error_status_t  errorStatus;
-    char                                            padding[4];
+    bool                                            octetsAreUpToDate;
+    char                                            padding[3];
 };
 
 static char const octaspire_container_utf8_string_private_null_octet = '\0';
@@ -4019,16 +4062,20 @@ static bool octaspire_container_utf8_string_private_check_substring_match_at(
     size_t const startFromIndex,
     octaspire_container_utf8_string_t const * const substring);
 
-static size_t octaspire_container_utf8_string_private_ucs_character_index_to_octets_index(
-    octaspire_container_utf8_string_t const * const self,
-    size_t const index);
-
 static bool octaspire_container_utf8_string_private_is_string_at_index(
     octaspire_container_utf8_string_t const * const self,
     size_t const selfIndex,
     octaspire_container_utf8_string_t const * const str,
     size_t const strFirstIndex,
     size_t const strLastIndex);
+
+static size_t octaspire_container_utf8_string_private_get_real_index_from_user_index(
+    octaspire_container_utf8_string_t * const self,
+    ptrdiff_t userIndex);
+
+static bool octaspire_container_utf8_string_private_bring_octets_up_to_date(
+    octaspire_container_utf8_string_t * const self);
+
 //////////////////////////////////////////////////////////////////////////////
 
 
@@ -4057,20 +4104,6 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_from_buff
 
     self->allocator        = allocator;
 
-    self->octets           = octaspire_container_vector_new_with_preallocated_elements(
-        sizeof(char),
-        false,
-        lengthInOctets,
-        0,
-        self->allocator);
-
-    if (!self->octets)
-    {
-        octaspire_container_utf8_string_release(self);
-        self = 0;
-        return 0;
-    }
-
     // We cannot know how many actual UCS characters there are in buffer, because
     // characters can be encoded between one and four octets. To speed up allocation,
     // without allocating too much space, we preallocate lengthInOctets / 4 characters.
@@ -4088,8 +4121,9 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_from_buff
         return 0;
     }
 
-    self->errorStatus      = OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK;
-    self->errorAtOctet     = 0;
+    self->errorStatus       = OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK;
+    self->octetsAreUpToDate = false;
+    self->errorAtOctet      = 0;
 
     if (buffer && lengthInOctets)
     {
@@ -4111,20 +4145,6 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_from_buff
 
             if (numOctets > 0)
             {
-                for (int i = 0; i < numOctets; ++i)
-                {
-                    if (!octaspire_container_vector_push_back_element(self->octets, buffer + index + i))
-                    {
-                        // This should never happen, because the 'self->octets' is preallocated
-                        // to contain enough space. These lines inside the if-clause are problematic
-                        // to test with an unit test (cannot?). Assert could be used here.
-                        // But maybe this is still a better alternative?
-                        octaspire_container_utf8_string_release(self);
-                        self = 0;
-                        return 0;
-                    }
-                }
-
                 if (!octaspire_container_vector_push_back_element(self->ucsCharacters, &ucsChar))
                 {
                     octaspire_container_utf8_string_release(self);
@@ -4137,10 +4157,7 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_from_buff
         }
     }
 
-    // Append null byte to allow use with libc
-    if (!octaspire_container_vector_push_back_element(
-        self->octets,
-        &octaspire_container_utf8_string_private_null_octet))
+    if (!octaspire_container_utf8_string_private_bring_octets_up_to_date(self))
     {
         octaspire_container_utf8_string_release(self);
         self = 0;
@@ -4191,8 +4208,9 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_vformat(
 
     assert(self->allocator);
 
-    self->octets           = octaspire_container_vector_new(sizeof(char), false, 0, self->allocator);
-    self->ucsCharacters    = octaspire_container_vector_new(sizeof(uint32_t), false, 0, self->allocator);
+    self->octets            = 0;
+    self->octetsAreUpToDate = false;
+    self->ucsCharacters     = octaspire_container_vector_new(sizeof(uint32_t), false, 0, self->allocator);
 
     octaspire_container_utf8_string_reset_error_status(self);
 
@@ -4339,13 +4357,6 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_vformat(
 
     assert(self);
 
-
-    if (octaspire_container_vector_is_empty(self->octets) ||
-            *(char const * const)octaspire_container_vector_peek_back_element_const(self->octets) != octaspire_container_utf8_string_private_null_octet)
-    {
-        octaspire_container_vector_push_back_element(self->octets, &octaspire_container_utf8_string_private_null_octet);
-    }
-
     if (!octaspire_container_utf8_string_is_error(self))
     {
         if (errorStatus != OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK)
@@ -4362,23 +4373,14 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_vformat(
     octaspire_container_vector_release(vec2);
     vec2 = 0;
 
-    assert(!octaspire_container_vector_is_empty(self->octets));
-    assert(octaspire_container_utf8_string_private_null_octet == *(char const * const)octaspire_container_vector_get_element_at(
-        self->octets,
-        octaspire_container_vector_get_length(self->octets) - 1));
+    if (!octaspire_container_utf8_string_private_bring_octets_up_to_date(self))
+    {
+        // TODO
+        abort();
+    }
 
     return self;
 }
-
-
-
-
-
-
-
-
-
-
 
 octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_copy(
     octaspire_container_utf8_string_t const * const other,
@@ -4392,11 +4394,18 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_copy(
         return self;
     }
 
-    self->octets        = octaspire_container_vector_new_shallow_copy(other->octets, allocator);
-    self->ucsCharacters = octaspire_container_vector_new_shallow_copy(other->ucsCharacters, allocator);
-    self->errorStatus   = other->errorStatus;
-    self->errorAtOctet  = other->errorAtOctet;
-    self->allocator     = allocator;
+    self->octets            = octaspire_container_vector_new_shallow_copy(other->octets, allocator);
+    self->octetsAreUpToDate = other->octetsAreUpToDate;
+    self->ucsCharacters     = octaspire_container_vector_new_shallow_copy(other->ucsCharacters, allocator);
+    self->errorStatus       = other->errorStatus;
+    self->errorAtOctet      = other->errorAtOctet;
+    self->allocator         = allocator;
+
+    if (!octaspire_container_utf8_string_private_bring_octets_up_to_date(self))
+    {
+        // TODO
+        abort();
+    }
 
     return self;
 }
@@ -4425,27 +4434,11 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_substring
         return self;
     }
 
-    self->allocator     = allocator;
+    self->allocator         = allocator;
+    self->octets            = 0;
+    self->octetsAreUpToDate = false;
 
-    self->octets           = octaspire_container_vector_new_with_preallocated_elements(
-        sizeof(char),
-        false,
-        lengthInUcsChars, // We don't know exact value, this is the smallest value possible
-        0,
-        self->allocator);
-
-    if (!self->octets)
-    {
-        octaspire_container_utf8_string_release(self);
-        self = 0;
-        return 0;
-    }
-
-    octaspire_container_vector_push_back_element(
-        self->octets,
-        &octaspire_container_utf8_string_private_null_octet);
-
-    self->ucsCharacters    = octaspire_container_vector_new_with_preallocated_elements(
+    self->ucsCharacters     = octaspire_container_vector_new_with_preallocated_elements(
         sizeof(uint32_t),
         false,
         lengthInUcsChars,
@@ -4469,6 +4462,13 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_substring
             octaspire_container_utf8_string_get_ucs_character_at_index(
                 other,
                 ucsCharStartIndex + i));
+    }
+
+    if (!octaspire_container_utf8_string_private_bring_octets_up_to_date(self))
+    {
+        octaspire_container_utf8_string_release(self);
+        self = 0;
+        return 0;
     }
 
     return self;
@@ -4503,9 +4503,10 @@ size_t octaspire_container_utf8_string_get_length_in_ucs_characters(
 size_t octaspire_container_utf8_string_get_length_in_octets(
     octaspire_container_utf8_string_t const * const self)
 {
-    // Must have at least the added NULL-byte
-    assert(octaspire_container_vector_get_length(self->octets));
-    // Subtract one of the length, because of the added NULL-byte.
+    octaspire_helpers_verify_true(self->octetsAreUpToDate);
+    assert(!octaspire_container_vector_is_empty(self->octets));
+    assert(*(char const*)octaspire_container_vector_peek_back_element_const(self->octets) == '\0');
+    // Subtract one because of '\0' at the end
     return octaspire_container_vector_get_length(self->octets) - 1;
 }
 
@@ -4519,6 +4520,7 @@ uint32_t octaspire_container_utf8_string_get_ucs_character_at_index(
 char const * octaspire_container_utf8_string_get_c_string(
     octaspire_container_utf8_string_t const * const self)
 {
+    octaspire_helpers_verify_true(self->octetsAreUpToDate);
     assert(!octaspire_container_vector_is_empty(self->octets));
     assert(*(char const*)octaspire_container_vector_peek_back_element_const(self->octets) == '\0');
     return octaspire_container_vector_peek_front_element_const(self->octets);
@@ -4569,8 +4571,7 @@ bool octaspire_container_utf8_string_concatenate_c_string(
         return true;
     }
 
-    // Make sure NULL char is present at the end
-    assert(!octaspire_container_vector_is_empty(self->octets));
+    self->octetsAreUpToDate = false;
 
     size_t const strLen = strlen(str);
 
@@ -4593,15 +4594,6 @@ bool octaspire_container_utf8_string_concatenate_c_string(
             break;
         }
 
-        for (int i = 0; i < numOctets; ++i)
-        {
-            //if (!octaspire_container_vector_push_back_element(self->octets, str + index + i))
-            if (!octaspire_container_vector_insert_element_before_the_element_at_index(self->octets, str + index + i, (ptrdiff_t)(octaspire_container_vector_get_length(self->octets) - 1)))
-            {
-                result = false;
-            }
-        }
-
         if (!octaspire_container_vector_push_back_element(self->ucsCharacters, &ucsChar))
         {
             result = false;
@@ -4609,15 +4601,11 @@ bool octaspire_container_utf8_string_concatenate_c_string(
 
         index += (size_t)numOctets;
     }
-/*
-    // Append null byte to allow use with libc
-    if (!octaspire_container_vector_push_back_element(
-        self->octets,
-        &octaspire_container_utf8_string_private_null_octet))
+
+    if (!octaspire_container_utf8_string_private_bring_octets_up_to_date(self))
     {
         result = false;
     }
-*/
 
     return result;
 }
@@ -4640,12 +4628,19 @@ bool octaspire_container_utf8_string_concatenate_format(
         return false;
     }
 
-    bool const result = octaspire_container_utf8_string_concatenate_c_string(
+    self->octetsAreUpToDate = false;
+
+    bool result = octaspire_container_utf8_string_concatenate_c_string(
         self,
         octaspire_container_utf8_string_get_c_string(str));
 
     octaspire_container_utf8_string_release(str);
     str = 0;
+
+    if (!octaspire_container_utf8_string_private_bring_octets_up_to_date(self))
+    {
+        result = false;
+    }
 
     return result;
 }
@@ -4695,32 +4690,6 @@ ptrdiff_t octaspire_container_utf8_string_find_first_substring(
     return -1;
 }
 
-size_t octaspire_container_utf8_string_private_ucs_character_index_to_octets_index(
-    octaspire_container_utf8_string_t const * const self,
-    size_t const index)
-{
-    assert(index < octaspire_container_utf8_string_get_length_in_ucs_characters(self));
-
-    size_t resultIndex = 0;
-
-    for (size_t i = 0; i < index; ++i)
-    {
-        // Init this?
-        octaspire_utf8_character_t character;
-
-        if (octaspire_utf8_encode_character(
-            *(uint32_t*)octaspire_container_vector_get_element_at(self->ucsCharacters, i),
-            &character) != OCTASPIRE_UTF8_ENCODE_STATUS_OK)
-        {
-            abort();
-        }
-
-        resultIndex += character.numoctets;
-    }
-
-    return resultIndex;
-}
-
 bool octaspire_container_utf8_string_remove_character_at(
     octaspire_container_utf8_string_t * const self,
     size_t const index)
@@ -4730,28 +4699,7 @@ bool octaspire_container_utf8_string_remove_character_at(
         return false;
     }
 
-    // Init this?
-    octaspire_utf8_character_t character;
-
-    if (octaspire_utf8_encode_character(
-        *(uint32_t*)octaspire_container_vector_get_element_at(self->ucsCharacters, index),
-        &character) != OCTASPIRE_UTF8_ENCODE_STATUS_OK)
-    {
-        assert(false);
-        return false;
-    }
-
-    size_t const octetsIndex =
-        octaspire_container_utf8_string_private_ucs_character_index_to_octets_index(self, index);
-
-    for (size_t i = 0; i < character.numoctets; ++i)
-    {
-        if (!octaspire_container_vector_remove_element_at(self->octets, octetsIndex))
-        {
-            assert(false);
-            return false;
-        }
-    }
+    self->octetsAreUpToDate = false;
 
     if (!octaspire_container_vector_remove_element_at(self->ucsCharacters, index))
     {
@@ -4759,7 +4707,7 @@ bool octaspire_container_utf8_string_remove_character_at(
         return false;
     }
 
-    return true;
+    return octaspire_container_utf8_string_private_bring_octets_up_to_date(self);
 }
 
 size_t octaspire_container_utf8_string_remove_characters_at(
@@ -4768,6 +4716,8 @@ size_t octaspire_container_utf8_string_remove_characters_at(
     size_t const numCharacters)
 {
     assert(numCharacters);
+
+    self->octetsAreUpToDate = false;
 
     size_t result = 0;
 
@@ -4779,6 +4729,11 @@ size_t octaspire_container_utf8_string_remove_characters_at(
         }
     }
 
+    if (!octaspire_container_utf8_string_private_bring_octets_up_to_date(self))
+    {
+        abort();
+    }
+
     return result;
 }
 
@@ -4786,6 +4741,8 @@ size_t octaspire_container_utf8_string_remove_all_substrings(
     octaspire_container_utf8_string_t * const self,
     octaspire_container_utf8_string_t const * const substring)
 {
+    self->octetsAreUpToDate = false;
+
     size_t result = 0;
 
     size_t const substringLength =
@@ -4795,6 +4752,12 @@ size_t octaspire_container_utf8_string_remove_all_substrings(
     {
         if (octaspire_container_utf8_string_is_empty(self))
         {
+            if (!octaspire_container_utf8_string_private_bring_octets_up_to_date(self))
+            {
+                // TODO
+                abort();
+            }
+
             return result;
         }
 
@@ -4803,6 +4766,12 @@ size_t octaspire_container_utf8_string_remove_all_substrings(
 
         if (substringIndex < 0)
         {
+            if (!octaspire_container_utf8_string_private_bring_octets_up_to_date(self))
+            {
+                // TODO
+                abort();
+            }
+
             return result;
         }
 
@@ -4816,20 +4785,18 @@ size_t octaspire_container_utf8_string_remove_all_substrings(
 bool octaspire_container_utf8_string_clear(
     octaspire_container_utf8_string_t * const self)
 {
-    bool const result1 = octaspire_container_vector_clear(self->octets);
-    bool const result2 = octaspire_container_vector_clear(self->ucsCharacters);
+    self->errorStatus       = OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK;
+    self->errorAtOctet      = 0;
+    self->octetsAreUpToDate = false;
 
-    self->errorStatus  = OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK;
-    self->errorAtOctet = 0;
+    bool const result = octaspire_container_vector_clear(self->ucsCharacters);
 
-    if (!octaspire_container_vector_push_back_element(
-        self->octets,
-        &octaspire_container_utf8_string_private_null_octet))
+    if (!octaspire_container_utf8_string_private_bring_octets_up_to_date(self))
     {
         return false;
     }
 
-    return result1 && result2;
+    return result;
 }
 
 bool octaspire_container_utf8_string_is_equal(
@@ -4838,20 +4805,30 @@ bool octaspire_container_utf8_string_is_equal(
 {
     assert(self);
     assert(other);
-    assert(self->octets);
-    assert(other->octets);
 
-    size_t const len = octaspire_container_vector_get_length(self->octets);
+    size_t const myLen = octaspire_container_utf8_string_get_length_in_ucs_characters(self);
 
-    if (octaspire_container_vector_get_length(other->octets) != len)
+    if (myLen != octaspire_container_utf8_string_get_length_in_ucs_characters(other))
     {
         return false;
     }
 
-    return memcmp(
-        octaspire_container_vector_get_element_at(self->octets,  0),
-        octaspire_container_vector_get_element_at(other->octets, 0),
-        len) == 0;
+    for (size_t i = 0; i < myLen; ++i)
+    {
+        uint32_t ucsChar1 =
+            *(uint32_t const * const)octaspire_container_vector_get_element_at(self->ucsCharacters, i);
+
+        uint32_t ucsChar2 =
+            *(uint32_t const * const)octaspire_container_vector_get_element_at(other->ucsCharacters, i);
+
+        if (ucsChar1 != ucsChar2)
+        {
+            return false;
+        }
+
+    }
+
+    return true;
 }
 
 bool octaspire_container_utf8_string_is_equal_to_c_string(
@@ -4860,9 +4837,12 @@ bool octaspire_container_utf8_string_is_equal_to_c_string(
 {
     assert(self);
     assert(str);
-    assert(octaspire_container_vector_get_length(self->octets) > 0);
 
-    size_t const len = octaspire_container_vector_get_length(self->octets) - 1;
+    octaspire_helpers_verify_true(self->octetsAreUpToDate);
+    assert(!octaspire_container_vector_is_empty(self->octets));
+    assert(*(char const*)octaspire_container_vector_peek_back_element_const(self->octets) == '\0');
+
+    size_t const len = octaspire_container_utf8_string_get_length_in_octets(self);
 
     if (strlen(str) != len)
     {
@@ -4878,8 +4858,6 @@ int octaspire_container_utf8_string_compare(
 {
     assert(self);
     assert(other);
-    assert(octaspire_container_vector_get_length(self->octets) > 0);
-    assert(octaspire_container_vector_get_length(other->octets) > 0);
 
     return octaspire_container_utf8_string_compare_to_c_string(
         self,
@@ -4892,7 +4870,10 @@ int octaspire_container_utf8_string_compare_to_c_string(
 {
     assert(self);
     assert(str);
-    assert(octaspire_container_vector_get_length(self->octets) > 0);
+
+    octaspire_helpers_verify_true(self->octetsAreUpToDate);
+    assert(!octaspire_container_vector_is_empty(self->octets));
+    assert(*(char const*)octaspire_container_vector_peek_back_element_const(self->octets) == '\0');
 
     return strcmp(octaspire_container_utf8_string_get_c_string(self), str);
 }
@@ -4929,7 +4910,6 @@ bool octaspire_container_utf8_string_ends_with(
 {
     assert(self && other);
 
-
     size_t const myLen = octaspire_container_utf8_string_get_length_in_ucs_characters(self);
     size_t const otherLen = octaspire_container_utf8_string_get_length_in_ucs_characters(other);
 
@@ -4952,16 +4932,14 @@ bool octaspire_container_utf8_string_ends_with(
     return true;
 }
 
-
-
-
-
-
-
 uint32_t octaspire_container_utf8_string_get_hash(
     octaspire_container_utf8_string_t const * const self)
 {
     uint32_t hash = 0;
+
+    octaspire_helpers_verify_true(self->octetsAreUpToDate);
+    assert(!octaspire_container_vector_is_empty(self->octets));
+    assert(*(char const*)octaspire_container_vector_peek_back_element_const(self->octets) == '\0');
 
     size_t const len = octaspire_container_vector_get_length(self->octets);
 
@@ -4980,39 +4958,14 @@ bool octaspire_container_utf8_string_push_back_ucs_character(
 {
     assert(self);
 
-    octaspire_utf8_character_t encoded;
-
-    octaspire_utf8_encode_status_t const status = octaspire_utf8_encode_character(
-        character,
-        &encoded);
-
-    if (status != OCTASPIRE_UTF8_ENCODE_STATUS_OK)
-    {
-        return false;
-    }
-
-    assert(encoded.numoctets > 0);
-    assert(!octaspire_container_vector_is_empty(self->octets));
-
-    // TODO revert (rollback) changes if addition fails at any stage.
-
-    for (size_t i = 0; i < encoded.numoctets; ++i)
-    {
-        if (!octaspire_container_vector_insert_element_before_the_element_at_index(
-                self->octets,
-                encoded.octets + 4 - encoded.numoctets + i,
-                -1))
-        {
-            return false;
-        }
-    }
-
     if (!octaspire_container_vector_push_back_element(self->ucsCharacters, &character))
     {
         return false;
     }
 
-    return true;
+    self->octetsAreUpToDate = false;
+
+    return octaspire_container_utf8_string_private_bring_octets_up_to_date(self);
 }
 
 bool octaspire_container_utf8_string_pop_back_ucs_character(
@@ -5025,9 +4978,18 @@ bool octaspire_container_utf8_string_pop_back_ucs_character(
         return false;
     }
 
-    return octaspire_container_utf8_string_remove_character_at(
+    self->octetsAreUpToDate = false;
+
+    bool const result = octaspire_container_utf8_string_remove_character_at(
         self,
         octaspire_container_utf8_string_get_length_in_ucs_characters(self) - 1);
+
+    if (!octaspire_container_utf8_string_private_bring_octets_up_to_date(self))
+    {
+        return false;
+    }
+
+    return result;
 }
 
 bool octaspire_container_utf8_string_insert_string_to(
@@ -5035,58 +4997,61 @@ bool octaspire_container_utf8_string_insert_string_to(
     octaspire_container_utf8_string_t const * const str,
     ptrdiff_t const indexToPutFirstCharacter)
 {
-    size_t realIndexToUse = 0;
-
-    if (indexToPutFirstCharacter < 0)
-    {
-        realIndexToUse = (size_t)
-            ((ptrdiff_t)octaspire_container_utf8_string_get_length_in_ucs_characters(self) +
+    size_t const index =
+        octaspire_container_utf8_string_private_get_real_index_from_user_index(
+            self,
             indexToPutFirstCharacter);
 
-        if (realIndexToUse >= octaspire_container_utf8_string_get_length_in_ucs_characters(self))
-        {
-            return false;
-        }
-    }
-    else
+    if (index >= octaspire_container_utf8_string_get_length_in_ucs_characters(self))
     {
-        if ((size_t)indexToPutFirstCharacter >=
-            octaspire_container_utf8_string_get_length_in_ucs_characters(self))
-        {
-            return false;
-        }
-
-        realIndexToUse = (size_t)indexToPutFirstCharacter;
+        return false;
     }
 
-    size_t index = realIndexToUse;
-
-    char const * const strAsCstr = octaspire_container_utf8_string_get_c_string(str);
-
-    for (size_t i = 0; i < octaspire_container_utf8_string_get_length_in_octets(str); ++i)
-    {
-        if (!octaspire_container_vector_insert_element_before_the_element_at_index(self->octets, &(strAsCstr[i]), (ptrdiff_t)index))
-        {
-            return false;
-        }
-
-        ++index;
-    }
-
-    index = realIndexToUse;
+    self->octetsAreUpToDate = false;
 
     for (size_t i = 0; i < octaspire_container_utf8_string_get_length_in_ucs_characters(str); ++i)
     {
         uint32_t const c = octaspire_container_utf8_string_get_ucs_character_at_index(str, i);
-        if (!octaspire_container_vector_insert_element_before_the_element_at_index(self->ucsCharacters, &c, (ptrdiff_t)index))
+
+        if (!octaspire_container_vector_insert_element_before_the_element_at_index(
+            self->ucsCharacters,
+            &c,
+            (ptrdiff_t)(index + i)))
         {
             return false;
         }
-
-        ++index;
     }
 
-    return true;
+    return octaspire_container_utf8_string_private_bring_octets_up_to_date(self);
+}
+
+bool octaspire_container_utf8_string_overwrite_with_string_at(
+    octaspire_container_utf8_string_t * const self,
+    octaspire_container_utf8_string_t const * const str,
+    ptrdiff_t const indexToPutFirstCharacter)
+{
+    self->octetsAreUpToDate = false;
+
+    size_t const index =
+        octaspire_container_utf8_string_private_get_real_index_from_user_index(
+            self,
+            indexToPutFirstCharacter);
+
+    for (size_t i = 0; i < octaspire_container_utf8_string_get_length_in_ucs_characters(str); ++i)
+    {
+        uint32_t const c = octaspire_container_utf8_string_get_ucs_character_at_index(str, i);
+
+        if (!octaspire_container_vector_replace_element_at_index_or_push_back(
+            self->ucsCharacters,
+            &c,
+            (ptrdiff_t)(index + i)))
+        {
+            octaspire_container_utf8_string_private_bring_octets_up_to_date(self);
+            return false;
+        }
+    }
+
+    return octaspire_container_utf8_string_private_bring_octets_up_to_date(self);
 }
 
 octaspire_container_vector_t *octaspire_container_utf8_string_split(
@@ -5280,6 +5245,88 @@ octaspire_container_vector_t *octaspire_container_utf8_string_find_char(
     }
 
     return result;
+}
+
+static size_t octaspire_container_utf8_string_private_get_real_index_from_user_index(
+    octaspire_container_utf8_string_t * const self,
+    ptrdiff_t userIndex)
+{
+    size_t realIndex = 0;
+
+    if (userIndex < 0)
+    {
+        realIndex = (size_t)
+            ((ptrdiff_t)octaspire_container_utf8_string_get_length_in_ucs_characters(self) +
+            userIndex);
+    }
+    else
+    {
+        realIndex = (size_t)userIndex;
+    }
+
+    return realIndex;
+}
+
+static bool octaspire_container_utf8_string_private_bring_octets_up_to_date(
+    octaspire_container_utf8_string_t * const self)
+{
+    if (!self->octets)
+    {
+        self->octets = octaspire_container_vector_new_with_preallocated_elements(
+            sizeof(char),
+            false,
+            octaspire_container_vector_get_length(self->ucsCharacters),
+            0,
+            self->allocator);
+    }
+
+    if (!self->octets)
+    {
+        return false;
+    }
+
+    if (!octaspire_container_vector_clear(self->octets))
+    {
+        return false;
+    }
+
+    for (size_t i = 0; i < octaspire_container_vector_get_length(self->ucsCharacters); ++i)
+    {
+        octaspire_utf8_character_t encoded;
+
+        uint32_t const ucsChar = *(uint32_t const * const)
+            octaspire_container_vector_get_element_at_const(self->ucsCharacters, i);
+
+        octaspire_utf8_encode_status_t const status = octaspire_utf8_encode_character(
+            ucsChar,
+            &encoded);
+
+        if (status != OCTASPIRE_UTF8_ENCODE_STATUS_OK)
+        {
+            return false;
+        }
+
+        for (size_t j = 0; j < encoded.numoctets; ++j)
+        {
+            if (!octaspire_container_vector_push_back_element(
+                    self->octets,
+                    encoded.octets + 4 - encoded.numoctets + j))
+            {
+                return false;
+            }
+        }
+    }
+
+    // Append null byte to allow use with libc
+    if (!octaspire_container_vector_push_back_element(
+        self->octets,
+        &octaspire_container_utf8_string_private_null_octet))
+    {
+        return false;
+    }
+
+    self->octetsAreUpToDate = true;
+    return true;
 }
 
 bool octaspire_container_utf8_string_private_is_string_at_index(
@@ -11988,6 +12035,58 @@ TEST octaspire_container_vector_insert_element_at_test(void)
     PASS();
 }
 
+TEST octaspire_container_vector_replace_element_at_index_or_push_back_test(void)
+{
+    octaspire_container_vector_t *vec =
+        octaspire_container_vector_new(sizeof(size_t), false, 0, octaspireContainerVectorTestAllocator);
+
+    size_t expected = 123;
+
+    ASSERT(octaspire_container_vector_replace_element_at_index_or_push_back(vec, &expected, 0));
+    ASSERT_EQ(1, octaspire_container_vector_get_length(vec));
+    ASSERT_EQ(expected, *(size_t*)octaspire_container_vector_get_element_at(vec, 0));
+
+    expected = 987;
+
+    ASSERT(octaspire_container_vector_replace_element_at_index_or_push_back(vec, &expected, 0));
+    ASSERT_EQ(1, octaspire_container_vector_get_length(vec));
+    ASSERT_EQ(expected, *(size_t*)octaspire_container_vector_get_element_at(vec, 0));
+
+    expected = 297;
+
+    ASSERT(octaspire_container_vector_replace_element_at_index_or_push_back(vec, &expected, 1));
+    ASSERT_EQ(2,        octaspire_container_vector_get_length(vec));
+    ASSERT_EQ(987,      *(size_t*)octaspire_container_vector_get_element_at(vec, 0));
+    ASSERT_EQ(expected, *(size_t*)octaspire_container_vector_get_element_at(vec, 1));
+
+    expected = 777;
+
+    ASSERT(octaspire_container_vector_replace_element_at_index_or_push_back(vec, &expected, 1));
+    ASSERT_EQ(2,        octaspire_container_vector_get_length(vec));
+    ASSERT_EQ(987,      *(size_t*)octaspire_container_vector_get_element_at(vec, 0));
+    ASSERT_EQ(expected, *(size_t*)octaspire_container_vector_get_element_at(vec, 1));
+
+    expected = 222;
+
+    ASSERT(octaspire_container_vector_replace_element_at_index_or_push_back(vec, &expected, 0));
+    ASSERT_EQ(2,        octaspire_container_vector_get_length(vec));
+    ASSERT_EQ(expected, *(size_t*)octaspire_container_vector_get_element_at(vec, 0));
+    ASSERT_EQ(777,      *(size_t*)octaspire_container_vector_get_element_at(vec, 1));
+
+    expected = 1111;
+
+    ASSERT(octaspire_container_vector_replace_element_at_index_or_push_back(vec, &expected, 2));
+    ASSERT_EQ(3,        octaspire_container_vector_get_length(vec));
+    ASSERT_EQ(222,      *(size_t*)octaspire_container_vector_get_element_at(vec, 0));
+    ASSERT_EQ(777,      *(size_t*)octaspire_container_vector_get_element_at(vec, 1));
+    ASSERT_EQ(expected, *(size_t*)octaspire_container_vector_get_element_at(vec, 2));
+
+    octaspire_container_vector_release(vec);
+    vec = 0;
+
+    PASS();
+}
+
 TEST octaspire_container_vector_insert_element_at_index_100_of_empty_vector_test(void)
 {
     octaspire_container_vector_t *vec =
@@ -12596,7 +12695,7 @@ TEST octaspire_container_vector_clear_called_on_empty_vector_test(void)
 
     ASSERT_EQ(0, octaspire_container_vector_get_length(vec));
 
-    ASSERT_FALSE(octaspire_container_vector_clear(vec));
+    ASSERT(octaspire_container_vector_clear(vec));
 
     ASSERT_EQ(0, octaspire_container_vector_get_length(vec));
 
@@ -12658,6 +12757,9 @@ GREATEST_SUITE(octaspire_container_vector_suite)
     RUN_TEST(octaspire_container_vector_insert_element_before_the_element_at_index_allocation_failure_test);
     RUN_TEST(octaspire_container_vector_insert_element_before_the_element_at_index_the_middle_test);
     RUN_TEST(octaspire_container_vector_insert_element_at_test);
+
+    RUN_TEST(octaspire_container_vector_replace_element_at_index_or_push_back_test);
+
     RUN_TEST(octaspire_container_vector_insert_element_at_index_100_of_empty_vector_test);
     RUN_TEST(octaspire_container_vector_insert_element_at_failure_test);
     RUN_TEST(octaspire_container_vector_push_front_element_test);
@@ -15631,25 +15733,6 @@ TEST octaspire_container_utf8_string_find_first_substring_abcd_from_123abc456abc
     PASS();
 }
 
-TEST octaspire_container_utf8_string_private_ucs_character_index_to_octets_index_test(void)
-{
-    octaspire_container_utf8_string_t *str = octaspire_container_utf8_string_new(
-            "0123456789",
-            octaspireContainerUtf8StringTestAllocator);
-
-    ASSERT(str);
-
-    for (size_t i = 0; i < octaspire_container_utf8_string_get_length_in_ucs_characters(str); ++i)
-    {
-        ASSERT_EQ(i, octaspire_container_utf8_string_private_ucs_character_index_to_octets_index(str, i));
-    }
-
-    octaspire_container_utf8_string_release(str);
-    str = 0;
-
-    PASS();
-}
-
 TEST octaspire_container_utf8_string_remove_character_at_test(void)
 {
     octaspire_container_utf8_string_t *str = octaspire_container_utf8_string_new(
@@ -15945,6 +16028,74 @@ TEST octaspire_container_utf8_string_insert_string_to_bc_into_index_2_of_ade_tes
     PASS();
 }
 
+TEST octaspire_container_utf8_string_overwrite_with_string_at_first_test(void)
+{
+    octaspire_container_utf8_string_t *strTarget = octaspire_container_utf8_string_new(
+            "",
+            octaspireContainerUtf8StringTestAllocator);
+
+    octaspire_container_utf8_string_t *strAddition =
+        octaspire_container_utf8_string_new("abö",octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(strTarget && strAddition);
+
+    ASSERT(octaspire_container_utf8_string_overwrite_with_string_at(strTarget, strAddition, 0));
+    ASSERT_EQ(3, octaspire_container_utf8_string_get_length_in_ucs_characters(strTarget));
+    ASSERT_EQ(4, octaspire_container_utf8_string_get_length_in_octets(strTarget));
+    ASSERT_STR_EQ(
+        "abö",
+        octaspire_container_utf8_string_get_c_string(strTarget));
+
+    octaspire_container_utf8_string_release(strAddition);
+    strAddition = 0;
+
+    strAddition = octaspire_container_utf8_string_new("q",octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(strTarget && strAddition);
+
+    ASSERT(octaspire_container_utf8_string_overwrite_with_string_at(strTarget, strAddition, 1));
+    ASSERT_EQ(3, octaspire_container_utf8_string_get_length_in_ucs_characters(strTarget));
+    ASSERT_EQ(4, octaspire_container_utf8_string_get_length_in_octets(strTarget));
+    ASSERT_STR_EQ(
+        "aqö",
+        octaspire_container_utf8_string_get_c_string(strTarget));
+
+    octaspire_container_utf8_string_release(strAddition);
+    strAddition = 0;
+
+    octaspire_container_utf8_string_release(strTarget);
+    strTarget = 0;
+
+    PASS();
+}
+
+TEST octaspire_container_utf8_string_overwrite_with_string_at_second_test(void)
+{
+    octaspire_container_utf8_string_t *strTarget = octaspire_container_utf8_string_new(
+            "abc",
+            octaspireContainerUtf8StringTestAllocator);
+
+    octaspire_container_utf8_string_t *strAddition =
+        octaspire_container_utf8_string_new("ö",octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(strTarget && strAddition);
+
+    ASSERT(octaspire_container_utf8_string_overwrite_with_string_at(strTarget, strAddition, 1));
+    ASSERT_EQ(3, octaspire_container_utf8_string_get_length_in_ucs_characters(strTarget));
+    ASSERT_EQ(4, octaspire_container_utf8_string_get_length_in_octets(strTarget));
+    ASSERT_STR_EQ(
+        "aöc",
+        octaspire_container_utf8_string_get_c_string(strTarget));
+
+    octaspire_container_utf8_string_release(strAddition);
+    strAddition = 0;
+
+    octaspire_container_utf8_string_release(strTarget);
+    strTarget = 0;
+
+    PASS();
+}
+
 TEST octaspire_container_utf8_string_pop_back_ucs_character_test(void)
 {
     octaspire_container_utf8_string_t *str = octaspire_container_utf8_string_new("abc", octaspireContainerUtf8StringTestAllocator);
@@ -16212,7 +16363,6 @@ GREATEST_SUITE(octaspire_container_utf8_string_suite)
     RUN_TEST(octaspire_container_utf8_string_find_first_substring_abc_from_123abc456abc_starting_from_index_0_test);
     RUN_TEST(octaspire_container_utf8_string_find_first_substring_abc_from_123abc456abc_starting_from_index_4_test);
     RUN_TEST(octaspire_container_utf8_string_find_first_substring_abcd_from_123abc456abc_starting_from_index_0_failure_test);
-    RUN_TEST(octaspire_container_utf8_string_private_ucs_character_index_to_octets_index_test);
     RUN_TEST(octaspire_container_utf8_string_remove_character_at_test);
     RUN_TEST(octaspire_container_utf8_string_remove_character_at_called_on_string_with_two_os_with_diaeresis_test);
     RUN_TEST(octaspire_container_utf8_string_remove_characters_at_test);
@@ -16224,6 +16374,10 @@ GREATEST_SUITE(octaspire_container_utf8_string_suite)
     RUN_TEST(octaspire_container_utf8_string_insert_string_to_bc_into_index_3_of_ade_failure_test);
     RUN_TEST(octaspire_container_utf8_string_insert_string_to_bc_into_index_0_of_ade_test);
     RUN_TEST(octaspire_container_utf8_string_insert_string_to_bc_into_index_2_of_ade_test);
+
+    RUN_TEST(octaspire_container_utf8_string_overwrite_with_string_at_first_test);
+    RUN_TEST(octaspire_container_utf8_string_overwrite_with_string_at_second_test);
+
     RUN_TEST(octaspire_container_utf8_string_pop_back_ucs_character_test);
 
     RUN_TEST(octaspire_container_utf8_string_compare_with_two_empty_strings_test);
@@ -17838,10 +17992,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "177"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "178"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.177.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.178.0"
 
 
 
@@ -18900,6 +19054,11 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_vector      (o
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_hash_map    (octaspire_dern_vm_t *self);
 
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_queue       (octaspire_dern_vm_t *self);
+
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_queue_with_max_length (
+        octaspire_dern_vm_t * const self,
+        size_t const maxLength);
+
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_list        (octaspire_dern_vm_t *self);
 
 octaspire_dern_value_t *octaspire_dern_vm_create_new_value_hash_map_from_hash_map(octaspire_dern_vm_t *self, octaspire_container_hash_map_t * const value);
@@ -19336,6 +19495,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_hash_map(
     octaspire_dern_value_t *environment);
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_queue(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_queue_with_max_length(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
@@ -24371,6 +24535,8 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
 
         if (container->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING      && 
             container->typeTag != OCTASPIRE_DERN_VALUE_TAG_VECTOR      &&
+            container->typeTag != OCTASPIRE_DERN_VALUE_TAG_LIST        &&
+            container->typeTag != OCTASPIRE_DERN_VALUE_TAG_QUEUE       &&
             container->typeTag != OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT &&
             container->typeTag != OCTASPIRE_DERN_VALUE_TAG_HASH_MAP    &&
             container->typeTag != OCTASPIRE_DERN_VALUE_TAG_PORT)
@@ -24378,7 +24544,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
             octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_error_format(
                 vm,
                 "Third argument to special 'for' using 'in' must be a container "
-                "(string, vector, hash map or environment) or a port. "
+                "(string, vector, list, queue, hash map or environment) or a port. "
                 "Now it has type %s.",
                 octaspire_dern_value_helper_get_type_as_c_string(container->typeTag));
 
@@ -24595,6 +24761,132 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_integer(vm, counter);
         }
+
+
+
+        else if (container->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST)
+        {
+            octaspire_container_list_t * const list = container->value.list;
+            size_t const listLen = octaspire_container_list_get_length(list);
+
+            int32_t counter = 0;
+
+            // TODO more efficient iteration of list
+            for (size_t i = 0; i < listLen; i += stepSize)
+            {
+                octaspire_container_list_node_t *node =
+                    octaspire_container_list_get_at(list, i);
+
+                octaspire_helpers_verify_not_null(node);
+
+                octaspire_dern_environment_set(
+                    extendedEnvironment,
+                    counterSymbol,
+                    octaspire_container_list_node_get_element(node));
+
+                for (size_t j = currentArgIdx; j < numArgs; ++j)
+                {
+                    octaspire_dern_value_t *result = octaspire_dern_vm_eval(
+                        vm,
+                        octaspire_dern_value_as_vector_get_element_at(arguments, j),
+                        extendedEnvVal);
+
+                    octaspire_helpers_verify_not_null(result);
+
+                    if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+                    {
+                        octaspire_dern_vm_pop_value(vm, extendedEnvVal);
+                        octaspire_dern_vm_pop_value(vm, container);
+                        octaspire_dern_vm_pop_value(vm, arguments);
+                        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        return result;
+                    }
+
+                    if (octaspire_dern_vm_get_function_return(vm))
+                    {
+                        result = octaspire_dern_vm_get_function_return(vm);
+                        //octaspire_dern_vm_set_function_return(vm, 0);
+                        octaspire_dern_vm_pop_value(vm, extendedEnvVal);
+                        octaspire_dern_vm_pop_value(vm, container);
+                        octaspire_dern_vm_pop_value(vm, arguments);
+                        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        return result;
+                    }
+                }
+
+                ++counter;
+            }
+
+            octaspire_dern_vm_pop_value(vm, extendedEnvVal);
+            octaspire_dern_vm_pop_value(vm, container);
+            octaspire_dern_vm_pop_value(vm, arguments);
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_integer(vm, counter);
+        }
+        else if (container->typeTag == OCTASPIRE_DERN_VALUE_TAG_QUEUE)
+        {
+            octaspire_container_queue_t * const queue = container->value.queue;
+            size_t const queueLen = octaspire_container_queue_get_length(queue);
+
+            int32_t counter = 0;
+
+            // TODO more efficient iteration of queue
+            for (size_t i = 0; i < queueLen; i += stepSize)
+            {
+                octaspire_dern_environment_set(
+                    extendedEnvironment,
+                    counterSymbol,
+                    octaspire_container_queue_get_at(queue, i));
+
+                for (size_t j = currentArgIdx; j < numArgs; ++j)
+                {
+                    octaspire_dern_value_t *result = octaspire_dern_vm_eval(
+                        vm,
+                        octaspire_dern_value_as_vector_get_element_at(arguments, j),
+                        extendedEnvVal);
+
+                    octaspire_helpers_verify_not_null(result);
+
+                    if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+                    {
+                        octaspire_dern_vm_pop_value(vm, extendedEnvVal);
+                        octaspire_dern_vm_pop_value(vm, container);
+                        octaspire_dern_vm_pop_value(vm, arguments);
+                        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        return result;
+                    }
+
+                    if (octaspire_dern_vm_get_function_return(vm))
+                    {
+                        result = octaspire_dern_vm_get_function_return(vm);
+                        //octaspire_dern_vm_set_function_return(vm, 0);
+                        octaspire_dern_vm_pop_value(vm, extendedEnvVal);
+                        octaspire_dern_vm_pop_value(vm, container);
+                        octaspire_dern_vm_pop_value(vm, arguments);
+                        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                        return result;
+                    }
+                }
+
+                ++counter;
+            }
+
+            octaspire_dern_vm_pop_value(vm, extendedEnvVal);
+            octaspire_dern_vm_pop_value(vm, container);
+            octaspire_dern_vm_pop_value(vm, arguments);
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_integer(vm, counter);
+        }
+
+
+
+
+
+
+
+
+
+
         else if (container->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT)
         {
             octaspire_dern_environment_t * const env = container->value.environment;
@@ -27806,6 +28098,30 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
         }
         break;
 
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        {
+            for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
+            {
+                octaspire_dern_value_t * const anotherArg =
+                    octaspire_container_vector_get_element_at(vec, i);
+
+                octaspire_dern_value_as_list_push_back(firstArg, anotherArg);
+            }
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        {
+            for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
+            {
+                octaspire_dern_value_t * const anotherArg =
+                    octaspire_container_vector_get_element_at(vec, i);
+
+                octaspire_dern_value_as_queue_push(firstArg, anotherArg);
+            }
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         {
             for (size_t i = 1; i < octaspire_container_vector_get_length(vec); ++i)
@@ -28934,6 +29250,81 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_queue(
             return octaspire_dern_vm_create_new_value_error_from_c_string(
                 vm,
                 "Builtin 'queue' expects value here.");
+        }
+
+        if (!octaspire_dern_value_as_queue_push(result, arg))
+        {
+            abort();
+        }
+    }
+
+    octaspire_dern_vm_pop_value(vm, result);
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_queue_with_max_length(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs < 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'queue-with-max-length' expects at least one argument. "
+            "Now %zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t *firstArg = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_integer(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The first argument to builtin 'queue-with-max-length' must be integer. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    int32_t const maxQueueLen = octaspire_dern_value_as_integer_get_value(firstArg);
+
+    if (maxQueueLen < 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The first argument to builtin 'queue-with-max-length' must be non negative integer. "
+            "Negative integer %" PRId32 " was given.",
+            maxQueueLen);
+    }
+
+    octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_queue(vm);
+    octaspire_dern_vm_push_value(vm, result);
+
+    for (size_t i = 1; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t *arg =
+            octaspire_dern_value_as_vector_get_element_at(arguments, i);
+
+        if (!arg)
+        {
+            octaspire_dern_vm_pop_value(vm, result);
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "Builtin 'queue-with-max-length' expects value here.");
         }
 
         if (!octaspire_dern_value_as_queue_push(result, arg))
@@ -30188,7 +30579,7 @@ bool octaspire_dern_value_set_collection(
             return false;
         }
 
-        return octaspire_container_utf8_string_insert_string_to(
+        return octaspire_container_utf8_string_overwrite_with_string_at(
             self->value.string,
             value->value.character,
             indexOrKey->value.integer);
@@ -33285,6 +33676,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // queue-with-max-length
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "queue-with-max-length",
+        octaspire_dern_vm_builtin_queue_with_max_length,
+        0,
+        "Create new queue with maximum length",
+        env))
+    {
+        abort();
+    }
+
     // list
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
@@ -34273,6 +34676,20 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_hash_map(octaspire_de
 octaspire_dern_value_t *octaspire_dern_vm_create_new_value_queue(octaspire_dern_vm_t *self)
 {
     octaspire_container_queue_t *queue = octaspire_container_queue_new(
+        sizeof(octaspire_dern_value_t*),
+        true,
+        0,
+        self->allocator);
+
+    return octaspire_dern_vm_create_new_value_queue_from_queue(self, queue);
+}
+
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_queue_with_max_length (
+        octaspire_dern_vm_t * const self,
+        size_t const maxLength)
+{
+    octaspire_container_queue_t * const queue = octaspire_container_queue_new_with_max_length(
+        maxLength,
         sizeof(octaspire_dern_value_t*),
         true,
         0,
@@ -44510,6 +44927,44 @@ TEST octaspire_dern_vm_builtin_equals_with_vector_and_empty_vector_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_equals_with_string_and_index_and_character_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [s] [Pong])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(= s 1 |ö|)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("Pöng", octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "s");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("Pöng", octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_minus_equals_with_character_x_and_integer_2_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -51749,6 +52204,7 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_builtin_equals_with_hash_map_and_empty_hash_map_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_with_vector_and_vector_with_elements_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_with_vector_and_empty_vector_test);
+    RUN_TEST(octaspire_dern_vm_builtin_equals_with_string_and_index_and_character_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_equals_with_character_x_and_integer_2_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_equals_with_character_x_and_character_exclamation_mark_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_equals_with_real_3_dot_14_and_reals_1_dot_0_and_zero_dot_14_test);

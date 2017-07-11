@@ -630,7 +630,7 @@ bool octaspire_dern_value_set_collection(
             return false;
         }
 
-        return octaspire_container_utf8_string_insert_string_to(
+        return octaspire_container_utf8_string_overwrite_with_string_at(
             self->value.string,
             value->value.character,
             indexOrKey->value.integer);

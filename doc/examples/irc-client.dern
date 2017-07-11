@@ -9,7 +9,7 @@
 (define current-channel [currently joined channel] nil)
 (define socket [socket] (socket-new-ipv4-stream-socket [localhost] 6667))
 (define num-rows-and-cols [number of rows and cols on screen] (ncurses-getmaxyx win))
-(define lines [messages] '())
+(define lines [messages] (queue-with-max-length (- (nth 0 num-rows-and-cols) 4)))
 
 (define leave-current-channel [leave the current channel] '() (fn ()
     (define message [message] (string-format [PART {}|newline|] current-channel))
@@ -45,10 +45,22 @@
       (handle-message input))
 ))
 
+(define handle-ping [handle PING message from the IRC server] '(message [message]) (fn (message)
+    (= message 1 |O|)
+    (+= lines message) ; TODO remove
+    (socket-send socket message)
+))
+
 (define read-socket [read input from socket, if available] '() (fn ()
     (define input-from-socket [possible input from socket] (socket-receive socket false))
 
     (if (== nil input-from-socket) (return))
+
+    (define first-char [first character of user input] (nth 0 input-from-socket))
+
+    (if (== |P| first-char)
+        (return (handle-ping input-from-socket)))
+
     (+= lines input-from-socket)
 ))
 
@@ -64,8 +76,9 @@
 (socket-send socket [USER xyz 8 * : XY ZZ|newline|])
 
 (while running
-    (ncurses-clear win)
+    ;(ncurses-clear win)
     (read-socket)
     (read-and-handle-input)
+    (ncurses-clear win)
     (print-lines))
 
