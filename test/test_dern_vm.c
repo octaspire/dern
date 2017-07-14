@@ -10898,6 +10898,351 @@ TEST octaspire_dern_vm_hash_map_question_mark_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_queue_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define q [queue] (queue))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(len q)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0,                                evaluatedValue->value.integer);
+
+
+
+    // 1. line
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(+= q [line 1])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_QUEUE, evaluatedValue->typeTag);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string q)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "(queue [line 1])",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+
+
+    // 2. line
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(+= q [line 2])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_QUEUE, evaluatedValue->typeTag);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string q)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "(queue [line 2] [line 1])",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+
+
+    // 3. line
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(+= q [line 3])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_QUEUE, evaluatedValue->typeTag);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string q)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "(queue [line 3] [line 2] [line 1])",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+
+
+    // 4. line
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(+= q [line 4])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_QUEUE, evaluatedValue->typeTag);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string q)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "(queue [line 4] [line 3] [line 2] [line 1])",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_queue_with_max_length_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define q [queue] (queue-with-max-length 3))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(len q)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0,                                evaluatedValue->value.integer);
+
+
+
+    // 1. line
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(+= q [line 1])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_QUEUE, evaluatedValue->typeTag);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string q)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "(queue [line 1])",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+
+
+    // 2. line
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(+= q [line 2])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_QUEUE, evaluatedValue->typeTag);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string q)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "(queue [line 2] [line 1])",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+
+
+    // 3. line
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(+= q [line 3])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_QUEUE, evaluatedValue->typeTag);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string q)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "(queue [line 3] [line 2] [line 1])",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+
+
+    // 4. line
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(+= q [line 4])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_QUEUE, evaluatedValue->typeTag);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string q)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "(queue [line 4] [line 3] [line 2])",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_list_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define l [list] (list))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(len l)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0,                                evaluatedValue->value.integer);
+
+
+
+    // 1. line
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(+= l [line 1])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_LIST, evaluatedValue->typeTag);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string l)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "(list [line 1])",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+
+
+    // 2. line
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(+= l [line 2])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_LIST, evaluatedValue->typeTag);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string l)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "(list [line 1] [line 2])",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+
+
+    // 3. line
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(+= l [line 3])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_LIST, evaluatedValue->typeTag);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string l)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "(list [line 1] [line 2] [line 3])",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+
+
+    // 4. line
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(+= l [line 4])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_LIST, evaluatedValue->typeTag);
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string l)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ(
+        "(list [line 1] [line 2] [line 3] [line 4])",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_copy_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (copy '(1 2 3)))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("(1 2 3)", octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (copy '(1 2 3) (fn (v i) (< i 2))))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("(1 2)", octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (copy '(1 2 3) (fn (v i) (== v 2))))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("(2)", octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (copy [abc] (fn (v i) (< i 2))))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("[ab]", octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (copy [abc] (fn (v i) (== v |b|))))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+    ASSERT_STR_EQ("[b]", octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
@@ -11256,6 +11601,12 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_symbol_question_mark_test);
     RUN_TEST(octaspire_dern_vm_vector_question_mark_test);
     RUN_TEST(octaspire_dern_vm_hash_map_question_mark_test);
+
+    RUN_TEST(octaspire_dern_vm_queue_test);
+    RUN_TEST(octaspire_dern_vm_queue_with_max_length_test);
+    RUN_TEST(octaspire_dern_vm_list_test);
+
+    RUN_TEST(octaspire_dern_vm_copy_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;

@@ -5773,7 +5773,9 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_queue_with_max_length(
             maxQueueLen);
     }
 
-    octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_queue(vm);
+    octaspire_dern_value_t *result =
+        octaspire_dern_vm_create_new_value_queue_with_max_length(vm, maxQueueLen);
+
     octaspire_dern_vm_push_value(vm, result);
 
     for (size_t i = 1; i < numArgs; ++i)
@@ -6409,5 +6411,249 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_hash_map_question_mark(
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
 
     return octaspire_dern_vm_create_new_value_boolean(vm, octaspire_dern_value_is_hash_map(value));
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_copy(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs < 1 || numArgs > 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'copy' expects one or two arguments.");
+    }
+
+    octaspire_dern_value_t * const collectionVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_dern_value_t * predicateVal = 0;
+
+    if (numArgs == 2)
+    {
+        predicateVal = octaspire_dern_value_as_vector_get_element_at(arguments, 1);
+        octaspire_helpers_verify_not_null(predicateVal);
+
+        if (!octaspire_dern_value_is_function(predicateVal))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'copy' expects function (predicate) as second argument. "
+                "Now type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(predicateVal->typeTag));
+        }
+    }
+
+    switch (collectionVal->typeTag)
+    {
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        {
+            octaspire_container_vector_t * const copyVec =
+                octaspire_container_vector_new(
+                    sizeof(octaspire_dern_value_t*),
+                    true,
+                    0,
+                    octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(copyVec);
+
+            octaspire_dern_value_t * const result =
+                octaspire_dern_vm_create_new_value_vector_from_vector(vm, copyVec);
+
+            octaspire_dern_vm_push_value(vm, result);
+
+            for (size_t i = 0; i < octaspire_dern_value_get_length(collectionVal); ++i)
+            {
+                bool doCopy = true;
+
+                octaspire_dern_value_t * valueThatMightBeCopied =
+                    octaspire_dern_value_as_vector_get_element_at(collectionVal, i);
+
+                if (predicateVal)
+                {
+                    octaspire_dern_value_t * callVec =
+                        octaspire_dern_vm_create_new_value_vector(vm);
+
+                    octaspire_helpers_verify_not_null(callVec);
+
+                    octaspire_dern_vm_push_value(vm, callVec);
+
+                    octaspire_dern_value_as_vector_push_back_element(
+                        callVec,
+                        &predicateVal);
+
+                    octaspire_dern_value_as_vector_push_back_element(
+                        callVec,
+                        &valueThatMightBeCopied);
+
+                    octaspire_dern_value_t * const counterVal =
+                        octaspire_dern_vm_create_new_value_integer(vm, (int32_t)i);
+
+                    octaspire_dern_value_as_vector_push_back_element(
+                        callVec,
+                        &counterVal);
+
+                    octaspire_dern_value_t * resultValFromPredicate =
+                        octaspire_dern_vm_eval(vm, callVec, environment);
+
+                    octaspire_dern_vm_pop_value(vm, callVec);
+
+                    octaspire_helpers_verify_not_null(resultValFromPredicate);
+
+                    if (!octaspire_dern_value_is_boolean(resultValFromPredicate))
+                    {
+                        octaspire_dern_vm_pop_value(vm, result);
+
+                        octaspire_helpers_verify_true(stackLength ==
+                            octaspire_dern_vm_get_stack_length(vm));
+
+                        return octaspire_dern_vm_create_new_value_error_format(
+                            vm,
+                            "Second argument to builtin 'copy' must be a function that returns "
+                            "boolean value. Now type '%s' was returned.",
+                            octaspire_dern_value_helper_get_type_as_c_string(
+                                resultValFromPredicate->typeTag));
+                    }
+
+                    doCopy = resultValFromPredicate->value.boolean;
+                }
+
+                if (doCopy)
+                {
+                    octaspire_dern_value_t *copyVal =
+                        octaspire_dern_vm_create_new_value_copy(
+                            vm,
+                            valueThatMightBeCopied);
+
+                    octaspire_helpers_verify_true(
+                        octaspire_dern_value_as_vector_push_back_element(result, &copyVal));
+                }
+            }
+
+            octaspire_dern_vm_pop_value(vm, result);
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return result;
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            if (numArgs == 1)
+            {
+                octaspire_container_utf8_string_t * const copyStr =
+                    octaspire_container_utf8_string_new_copy(
+                        collectionVal->value.string,
+                        octaspire_dern_vm_get_allocator(vm));
+
+                octaspire_helpers_verify_not_null(copyStr);
+
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_string(vm, copyStr);
+            }
+
+            octaspire_container_utf8_string_t * const copyStr =
+                octaspire_container_utf8_string_new("", octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(copyStr);
+
+            for (size_t i = 0; i < octaspire_dern_value_get_length(collectionVal); ++i)
+            {
+                bool doCopy = true;
+
+                octaspire_dern_value_t * valueThatMightBeCopied =
+                    octaspire_dern_vm_create_new_value_character_from_uint32t(
+                        vm,
+                        octaspire_container_utf8_string_get_ucs_character_at_index(
+                            collectionVal->value.string,
+                            i));
+
+                octaspire_helpers_verify_not_null(predicateVal);
+
+                octaspire_dern_vm_push_value(vm, valueThatMightBeCopied);
+
+                octaspire_dern_value_t * callVec =
+                    octaspire_dern_vm_create_new_value_vector(vm);
+
+                octaspire_helpers_verify_not_null(callVec);
+
+                octaspire_dern_vm_push_value(vm, callVec);
+
+                octaspire_dern_value_as_vector_push_back_element(
+                    callVec,
+                    &predicateVal);
+
+                octaspire_dern_value_as_vector_push_back_element(
+                    callVec,
+                    &valueThatMightBeCopied);
+
+                octaspire_dern_value_t * const counterVal =
+                    octaspire_dern_vm_create_new_value_integer(vm, (int32_t)i);
+
+                octaspire_dern_value_as_vector_push_back_element(
+                    callVec,
+                    &counterVal);
+
+                octaspire_dern_value_t * resultValFromPredicate =
+                    octaspire_dern_vm_eval(vm, callVec, environment);
+
+                octaspire_dern_vm_pop_value(vm, callVec);
+
+                octaspire_helpers_verify_not_null(resultValFromPredicate);
+
+                if (!octaspire_dern_value_is_boolean(resultValFromPredicate))
+                {
+                    octaspire_dern_vm_pop_value(vm, valueThatMightBeCopied);
+
+                    octaspire_helpers_verify_true(stackLength ==
+                        octaspire_dern_vm_get_stack_length(vm));
+
+                    return octaspire_dern_vm_create_new_value_error_format(
+                        vm,
+                        "Second argument to builtin 'copy' must be a function that returns "
+                        "boolean value. Now type '%s' was returned.",
+                        octaspire_dern_value_helper_get_type_as_c_string(
+                            resultValFromPredicate->typeTag));
+                }
+
+                octaspire_dern_vm_pop_value(vm, valueThatMightBeCopied);
+
+                doCopy = resultValFromPredicate->value.boolean;
+
+                if (doCopy)
+                {
+                    octaspire_helpers_verify_true(
+                        octaspire_container_utf8_string_push_back_ucs_character(
+                            copyStr,
+                            octaspire_container_utf8_string_get_ucs_character_at_index(
+                                collectionVal->value.string,
+                                i)));
+                }
+            }
+
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_string(vm, copyStr);
+        }
+        break;
+
+        default:
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'copy' does not support copying of type '%s' at the moment.",
+                octaspire_dern_value_helper_get_type_as_c_string(collectionVal->typeTag));
+        }
+        break;
+    }
 }
 

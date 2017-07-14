@@ -902,6 +902,18 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // copy
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "copy",
+        octaspire_dern_vm_builtin_copy,
+        1,
+        "Create full or partial copy of a value",
+        env))
+    {
+        abort();
+    }
+
 
 
     //////////////////////////////////////// Specials ////////////////////////////////////////////

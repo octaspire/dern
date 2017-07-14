@@ -1590,6 +1590,18 @@ bool octaspire_dern_value_is_port(
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_PORT;
 }
 
+bool octaspire_dern_value_is_environment(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT;
+}
+
+bool octaspire_dern_value_is_function(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_FUNCTION;
+}
+
 bool octaspire_dern_value_is_c_data(
     octaspire_dern_value_t const * const self)
 {

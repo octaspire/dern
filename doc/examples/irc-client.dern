@@ -16,8 +16,32 @@
     (socket-send socket message)
 ))
 
+(define substr [substr] '(str [str] startIndex [startIndex]) (fn (str startIndex)
+    (define result [result] [])
+    (for i from startIndex to (- (len str) 1)
+         (+= result (nth i str)))
+    result
+))
+
+(define handle-nick [handle /nick] '(line [line of text starting with /nick]) (fn (line)
+    (define nick [nick] (substr line 6))
+
+    (define message [message] (string-format [NICK {}|newline|] nick))
+    (socket-send socket message)
+))
+
+(define handle-join [handle /join] '(line [line of text starting with /join]) (fn (line)
+    (define channel [channel] (substr line 6))
+
+    (define message [message] (string-format [JOIN {}|newline|] channel))
+    (socket-send socket message)
+
+    (= current-channel channel)
+))
+
 (define handle-command [handle command, for example /join] '(line [line of text starting with /]) (fn (line)
-    (if (starts-with? line [/join])  (= current-channel [#todo]))
+    (if (starts-with? line [/nick])  (handle-nick line))
+    (if (starts-with? line [/join])  (handle-join line))
     (if (starts-with? line [/quit])  (= running false))
     (if (starts-with? line [/part])  (leave-current-channel))
 ))
@@ -61,6 +85,17 @@
     (if (== |P| first-char)
         (return (handle-ping input-from-socket)))
 
+    #!
+    (define line [tmp line] [])
+    (for i from 0 to (- (len input-from-socket) 1)
+         (+= line (nth i input-from-socket))
+         (if (>= (len line) (nth 1 num-rows-and-cols))
+           (do
+             (+= lines line)
+             (= line []))))
+
+    (+= lines line)
+    !#
     (+= lines input-from-socket)
 ))
 

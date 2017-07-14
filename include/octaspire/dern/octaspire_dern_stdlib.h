@@ -411,6 +411,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_hash_map_question_mark(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_copy(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
 #ifdef __cplusplus
 }
 #endif
