@@ -10951,7 +10951,7 @@ TEST octaspire_dern_vm_queue_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "(queue [line 2] [line 1])",
+        "(queue [line 1] [line 2])",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
 
@@ -10969,7 +10969,7 @@ TEST octaspire_dern_vm_queue_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "(queue [line 3] [line 2] [line 1])",
+        "(queue [line 1] [line 2] [line 3])",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
 
@@ -10987,7 +10987,7 @@ TEST octaspire_dern_vm_queue_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "(queue [line 4] [line 3] [line 2] [line 1])",
+        "(queue [line 1] [line 2] [line 3] [line 4])",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
@@ -11049,7 +11049,7 @@ TEST octaspire_dern_vm_queue_with_max_length_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "(queue [line 2] [line 1])",
+        "(queue [line 1] [line 2])",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
 
@@ -11067,7 +11067,7 @@ TEST octaspire_dern_vm_queue_with_max_length_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "(queue [line 3] [line 2] [line 1])",
+        "(queue [line 1] [line 2] [line 3])",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
 
@@ -11085,7 +11085,7 @@ TEST octaspire_dern_vm_queue_with_max_length_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "(queue [line 4] [line 3] [line 2])",
+        "(queue [line 2] [line 3] [line 4])",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);

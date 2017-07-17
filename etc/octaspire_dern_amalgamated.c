@@ -201,10 +201,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "54"
-#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "3"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "55"
+#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.54.3"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.55.0"
 
 
 
@@ -3898,7 +3898,7 @@ void octaspire_container_queue_release(octaspire_container_queue_t *self)
 void *octaspire_container_queue_peek(
     octaspire_container_queue_t * const self)
 {
-    octaspire_container_list_node_t * const node = octaspire_container_list_get_back(self->list);
+    octaspire_container_list_node_t * const node = octaspire_container_list_get_front(self->list);
 
     if (!node)
     {
@@ -3912,7 +3912,7 @@ void const *octaspire_container_queue_peek_const(
     octaspire_container_queue_t const * const self)
 {
     octaspire_container_list_node_t const * const node =
-        octaspire_container_list_get_back(self->list);
+        octaspire_container_list_get_front(self->list);
 
     if (!node)
     {
@@ -3925,14 +3925,14 @@ void const *octaspire_container_queue_peek_const(
 bool octaspire_container_queue_pop(
     octaspire_container_queue_t * const self)
 {
-    return octaspire_container_list_pop_back(self->list);
+    return octaspire_container_list_pop_front(self->list);
 }
 
 bool octaspire_container_queue_push(
     octaspire_container_queue_t *self,
     void const * const element)
 {
-    if (!octaspire_container_list_push_front(self->list, element))
+    if (!octaspire_container_list_push_back(self->list, element))
     {
         return false;
     }
@@ -13602,12 +13602,12 @@ TEST octaspire_container_queue_new_allocation_failure_on_first_allocation_test(v
     PASS();
 }
 
-TEST octaspire_container_queue_new_with_max_length_test(void)
+TEST octaspire_container_queue_new_with_max_length_of_56_with_size_t_elements_test(void)
 {
-    size_t const maxLength = 10;
+    size_t const maxLength = 56;
 
     octaspire_container_queue_t *queue = octaspire_container_queue_new_with_max_length(
-        10,
+        maxLength,
         sizeof(size_t),
         false,
         0,
@@ -13617,7 +13617,7 @@ TEST octaspire_container_queue_new_with_max_length_test(void)
     ASSERT_EQ(maxLength, octaspire_container_queue_get_max_length(queue));
     ASSERT(octaspire_container_queue_has_max_length(queue));
 
-    for (size_t i = 0; i < (2 * maxLength); ++i)
+    for (size_t i = 0; i < (3 * maxLength); ++i)
     {
         octaspire_container_queue_push(queue, &i);
 
@@ -13626,16 +13626,85 @@ TEST octaspire_container_queue_new_with_max_length_test(void)
         ASSERT_EQ(
             i < maxLength ? 0 : (i + 1 - maxLength),
             *(size_t const * const)octaspire_container_queue_peek(queue));
+
+        size_t firstExpectedNumber = 0;
+
+        if (i >= (maxLength-1))
+        {
+            firstExpectedNumber += (i - (maxLength - 1));
+        }
+
+        for (size_t j = 0; j < octaspire_container_queue_get_length(queue); ++j)
+        {
+            size_t const storedNum =
+                *(size_t const * const)octaspire_container_queue_get_at_const(queue, j);
+
+            size_t const expectedNum = firstExpectedNumber + j;
+
+            ASSERT_EQ(expectedNum, storedNum);
+        }
     }
 
     ASSERT_EQ(maxLength, octaspire_container_queue_get_length(queue));
 
-    for (size_t i = 0; i < octaspire_container_queue_get_length(queue); ++i)
+    octaspire_container_queue_release(queue);
+    queue = 0;
+
+    PASS();
+}
+
+TEST octaspire_container_queue_new_with_max_length_of_10_with_ostring_ptr_elements_test(void)
+{
+    size_t const maxLength = 10;
+
+    octaspire_container_queue_t *queue = octaspire_container_queue_new_with_max_length(
+        maxLength,
+        sizeof(octaspire_container_utf8_string_t*),
+        true,
+        (octaspire_container_queue_element_callback_t)octaspire_container_utf8_string_release,
+        octaspireContainerQueueTestAllocator);
+
+    ASSERT(queue);
+    ASSERT_EQ(maxLength, octaspire_container_queue_get_max_length(queue));
+    ASSERT(octaspire_container_queue_has_max_length(queue));
+
+    for (size_t i = 0; i < (3 * maxLength); ++i)
     {
-        ASSERT_EQ(
-            (maxLength * 2) - 1 - i,
-            *(size_t const * const)octaspire_container_queue_get_at_const(queue, i));
+        octaspire_container_utf8_string_t * const str = octaspire_container_utf8_string_new_format(
+            octaspireContainerQueueTestAllocator,
+            "This is string %zu.",
+            i);
+
+        octaspire_container_queue_push(queue, &str);
+
+        ASSERT(octaspire_container_queue_get_length(queue) <= maxLength);
+
+        size_t firstExpectedNumber = 0;
+
+        if (i >= maxLength)
+        {
+            firstExpectedNumber += (i - (maxLength - 1));
+        }
+
+        for (size_t j = 0; j < octaspire_container_queue_get_length(queue); ++j)
+        {
+            octaspire_container_utf8_string_t const * const storedStr =
+                octaspire_container_queue_get_at_const(queue, j);
+
+            octaspire_container_utf8_string_t * expectedStr =
+                octaspire_container_utf8_string_new_format(
+                    octaspireContainerQueueTestAllocator,
+                    "This is string %zu.",
+                    firstExpectedNumber + j);
+
+            ASSERT(octaspire_container_utf8_string_is_equal(expectedStr, storedStr));
+
+            octaspire_container_utf8_string_release(expectedStr);
+            expectedStr = 0;
+        }
     }
+
+    ASSERT_EQ(maxLength, octaspire_container_queue_get_length(queue));
 
     octaspire_container_queue_release(queue);
     queue = 0;
@@ -13776,7 +13845,7 @@ TEST octaspire_container_queue_push_test(void)
             size_t const * const jth =
                 (size_t const * const)octaspire_container_queue_get_at(queue, j);
 
-            ASSERT_EQ(i - j, *jth);
+            ASSERT_EQ(j, *jth);
         }
     }
 
@@ -13956,7 +14025,7 @@ TEST octaspire_container_queue_get_at_test(void)
         {
             size_t const * const ptr = octaspire_container_queue_get_at(queue, j);
             ASSERT(ptr);
-            ASSERT_EQ(i - j, *ptr);
+            ASSERT_EQ(j, *ptr);
         }
     }
 
@@ -14020,7 +14089,7 @@ TEST octaspire_container_queue_get_at_const_test(void)
         {
             size_t const * const ptr = octaspire_container_queue_get_at_const(queue, j);
             ASSERT(ptr);
-            ASSERT_EQ(i - j, *ptr);
+            ASSERT_EQ(j, *ptr);
         }
     }
 
@@ -14081,7 +14150,8 @@ GREATEST_SUITE(octaspire_container_queue_suite)
 
     RUN_TEST(octaspire_container_queue_new_test);
     RUN_TEST(octaspire_container_queue_new_allocation_failure_on_first_allocation_test);
-    RUN_TEST(octaspire_container_queue_new_with_max_length_test);
+    RUN_TEST(octaspire_container_queue_new_with_max_length_of_56_with_size_t_elements_test);
+    RUN_TEST(octaspire_container_queue_new_with_max_length_of_10_with_ostring_ptr_elements_test);
     RUN_TEST(octaspire_container_queue_release_called_with_null_pointer_test);
     RUN_TEST(octaspire_container_queue_peek_test);
     RUN_TEST(octaspire_container_queue_peek_const_test);
@@ -18016,10 +18086,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "180"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "181"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.180.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.181.0"
 
 
 
@@ -31968,8 +32038,16 @@ bool octaspire_dern_value_as_queue_push(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const toBeAdded)
 {
-    OCTASPIRE_HELPERS_UNUSED_PARAMETER(toBeAdded);
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_QUEUE);
+
+    if (octaspire_dern_value_is_atom(toBeAdded))
+    {
+        octaspire_dern_value_t * const copyVal =
+            octaspire_dern_vm_create_new_value_copy(self->vm, toBeAdded);
+
+        return octaspire_container_queue_push(self->value.queue, &copyVal);
+    }
+
     return octaspire_container_queue_push(self->value.queue, &toBeAdded);
 }
 
@@ -31983,8 +32061,16 @@ bool octaspire_dern_value_as_list_push_back(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const toBeAdded)
 {
-    OCTASPIRE_HELPERS_UNUSED_PARAMETER(toBeAdded);
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST);
+
+    if (octaspire_dern_value_is_atom(toBeAdded))
+    {
+        octaspire_dern_value_t * const copyVal =
+            octaspire_dern_vm_create_new_value_copy(self->vm, toBeAdded);
+
+        return octaspire_container_list_push_back(self->value.list, &copyVal);
+    }
+
     return octaspire_container_list_push_back(self->value.list, &toBeAdded);
 }
 
@@ -52411,7 +52497,7 @@ TEST octaspire_dern_vm_queue_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "(queue [line 2] [line 1])",
+        "(queue [line 1] [line 2])",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
 
@@ -52429,7 +52515,7 @@ TEST octaspire_dern_vm_queue_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "(queue [line 3] [line 2] [line 1])",
+        "(queue [line 1] [line 2] [line 3])",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
 
@@ -52447,7 +52533,7 @@ TEST octaspire_dern_vm_queue_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "(queue [line 4] [line 3] [line 2] [line 1])",
+        "(queue [line 1] [line 2] [line 3] [line 4])",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
@@ -52509,7 +52595,7 @@ TEST octaspire_dern_vm_queue_with_max_length_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "(queue [line 2] [line 1])",
+        "(queue [line 1] [line 2])",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
 
@@ -52527,7 +52613,7 @@ TEST octaspire_dern_vm_queue_with_max_length_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "(queue [line 3] [line 2] [line 1])",
+        "(queue [line 1] [line 2] [line 3])",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
 
@@ -52545,7 +52631,7 @@ TEST octaspire_dern_vm_queue_with_max_length_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "(queue [line 4] [line 3] [line 2])",
+        "(queue [line 2] [line 3] [line 4])",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);

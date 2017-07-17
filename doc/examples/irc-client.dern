@@ -9,26 +9,24 @@
 (define current-channel [currently joined channel] nil)
 (define socket [socket] (socket-new-ipv4-stream-socket [localhost] 6667))
 (define num-rows-and-cols [number of rows and cols on screen] (ncurses-getmaxyx win))
-(define lines [messages] (queue-with-max-length (- (nth 0 num-rows-and-cols) 4)))
+(define maxlines [maxlines] (- (nth 0 num-rows-and-cols) 4))
+(define lines [messages] (queue-with-max-length maxlines))
 
 (define leave-current-channel [leave the current channel] '() (fn ()
     (define message [message] (string-format [PART {}|newline|] current-channel))
-    (socket-send socket message)
-))
+    (socket-send socket message)))
 
 (define substr [substr] '(str [str] startIndex [startIndex]) (fn (str startIndex)
     (define result [result] [])
     (for i from startIndex to (- (len str) 1)
          (+= result (nth i str)))
-    result
-))
+    result))
 
 (define handle-nick [handle /nick] '(line [line of text starting with /nick]) (fn (line)
     (define nick [nick] (substr line 6))
 
     (define message [message] (string-format [NICK {}|newline|] nick))
-    (socket-send socket message)
-))
+    (socket-send socket message)))
 
 (define handle-join [handle /join] '(line [line of text starting with /join]) (fn (line)
     (define channel [channel] (substr line 6))
@@ -36,15 +34,13 @@
     (define message [message] (string-format [JOIN {}|newline|] channel))
     (socket-send socket message)
 
-    (= current-channel channel)
-))
+    (= current-channel channel)))
 
 (define handle-command [handle command, for example /join] '(line [line of text starting with /]) (fn (line)
     (if (starts-with? line [/nick])  (handle-nick line))
     (if (starts-with? line [/join])  (handle-join line))
     (if (starts-with? line [/quit])  (= running false))
-    (if (starts-with? line [/part])  (leave-current-channel))
-))
+    (if (starts-with? line [/part])  (leave-current-channel))))
 
 (define handle-message [handle a line starting without /] '(line [line of text starting with /]) (fn (line)
     (if (== nil current-channel)
@@ -54,7 +50,7 @@
 
     (define message [message] (string-format [PRIVMSG {} :{}|newline|] current-channel line))
     (socket-send socket message)
-))
+    (push-text-to-lines message)))
 
 (define read-and-handle-input [get user input and handle it] '() (fn ()
     (ncurses-print win (- (nth 0 num-rows-and-cols) 1) 0 [> ])
@@ -66,14 +62,29 @@
 
     (if (== |/| first-char)
       (handle-command input)
-      (handle-message input))
-))
+      (handle-message input))))
 
 (define handle-ping [handle PING message from the IRC server] '(message [message]) (fn (message)
     (= message 1 |O|)
     (+= lines message) ; TODO remove
-    (socket-send socket message)
-))
+    (socket-send socket message)))
+
+(define push-text-to-lines [push text to lines] '(text [text]) (fn (text)
+    (define line [tmp line] [])
+
+    (for i from 0 to (- (len text) 1)
+         (define c [c] (nth i text))
+         (if (== c |newline|)
+            (do (+= lines line)
+                (=  line  []))
+            (+= line c))
+         (if (>= (len line) (nth 1 num-rows-and-cols))
+           (do
+             (+= lines line)
+             (= line []))))
+
+    (if (> (len lines) 0)
+        (do (+= lines line)))))
 
 (define read-socket [read input from socket, if available] '() (fn ()
     (define input-from-socket [possible input from socket] (socket-receive socket false))
@@ -85,33 +96,19 @@
     (if (== |P| first-char)
         (return (handle-ping input-from-socket)))
 
-    #!
-    (define line [tmp line] [])
-    (for i from 0 to (- (len input-from-socket) 1)
-         (+= line (nth i input-from-socket))
-         (if (>= (len line) (nth 1 num-rows-and-cols))
-           (do
-             (+= lines line)
-             (= line []))))
-
-    (+= lines line)
-    !#
-    (+= lines input-from-socket)
-))
+    (push-text-to-lines input-from-socket)))
 
 (define print-lines [print messages] '() (fn ()
     (define row [current row] 1)
+
     (for line in lines
-         (do
-           (ncurses-print win row 0 line)
-           (++ row)))
-))
+         (ncurses-print win row 1 line)
+         (++ row))))
 
 (socket-send socket [NICK XYZ|newline|])
 (socket-send socket [USER xyz 8 * : XY ZZ|newline|])
 
 (while running
-    ;(ncurses-clear win)
     (read-socket)
     (read-and-handle-input)
     (ncurses-clear win)

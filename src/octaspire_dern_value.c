@@ -1738,8 +1738,16 @@ bool octaspire_dern_value_as_queue_push(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const toBeAdded)
 {
-    OCTASPIRE_HELPERS_UNUSED_PARAMETER(toBeAdded);
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_QUEUE);
+
+    if (octaspire_dern_value_is_atom(toBeAdded))
+    {
+        octaspire_dern_value_t * const copyVal =
+            octaspire_dern_vm_create_new_value_copy(self->vm, toBeAdded);
+
+        return octaspire_container_queue_push(self->value.queue, &copyVal);
+    }
+
     return octaspire_container_queue_push(self->value.queue, &toBeAdded);
 }
 
@@ -1753,8 +1761,16 @@ bool octaspire_dern_value_as_list_push_back(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const toBeAdded)
 {
-    OCTASPIRE_HELPERS_UNUSED_PARAMETER(toBeAdded);
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST);
+
+    if (octaspire_dern_value_is_atom(toBeAdded))
+    {
+        octaspire_dern_value_t * const copyVal =
+            octaspire_dern_vm_create_new_value_copy(self->vm, toBeAdded);
+
+        return octaspire_container_list_push_back(self->value.list, &copyVal);
+    }
+
     return octaspire_container_list_push_back(self->value.list, &toBeAdded);
 }
 
