@@ -147,6 +147,7 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
     char const * const stdLibNthCallbackName,
+    bool const copyingAllowed,
     void * const payload);
 
 bool octaspire_dern_vm_push_value(octaspire_dern_vm_t *self, struct octaspire_dern_value_t *value);

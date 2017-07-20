@@ -7,10 +7,11 @@
 
 (define running [should this program be running] true)
 (define current-channel [currently joined channel] nil)
-(define socket [socket] (socket-new-ipv4-stream-socket [localhost] 6667))
+(define socket [socket] nil)
 (define num-rows-and-cols [number of rows and cols on screen] (ncurses-getmaxyx win))
 (define maxlines [maxlines] (- (nth 0 num-rows-and-cols) 4))
 (define lines [messages] (queue-with-max-length maxlines))
+(define hint [hint] [])
 
 (define leave-current-channel [leave the current channel] '() (fn ()
     (define message [message] (string-format [PART {}|newline|] current-channel))
@@ -36,27 +37,70 @@
 
     (= current-channel channel)))
 
+(define set-hint [set-hint] '(h [new hint]) (fn (h)
+    (= hint h)))
+
+(define handle-connect [handle /connect] '(line [line of text starting with /connect]) (fn (line)
+    (define restOfLine [line without /connect] (substr line 9))
+
+    (define tokens [line split by space] (split restOfLine | |))
+
+    (define address [address] [localhost])
+    (define portnum [portnum] 6667)
+
+    (if (>= (len tokens) 1) (= address (nth 0 tokens)))
+    (if (>= (len tokens) 2) (= portnum (nth 1 tokens)))
+
+    (= portnum (to-integer portnum))
+
+    ; Sockets cannot be copied with '='
+    (define (env-global) socket [socket] (socket-new-ipv4-stream-socket address portnum))
+    (set-hint (string-format [connected to {} at port {}] address portnum))))
+
+(define handle-user [handle /user] '(line [line of text starting with /user]) (fn (line)
+    (define restOfLine [line without /user] (substr line 6))
+
+    (define tokens [line split by space] (split restOfLine | |))
+
+    (define username [username] (nth 0 tokens))
+
+    (socket-send socket (string-format [USER {} 8 * :|newline|] username))))
+
 (define handle-command [handle command, for example /join] '(line [line of text starting with /]) (fn (line)
-    (if (starts-with? line [/nick])  (handle-nick line))
-    (if (starts-with? line [/join])  (handle-join line))
-    (if (starts-with? line [/quit])  (= running false))
-    (if (starts-with? line [/part])  (leave-current-channel))))
+    (if (starts-with? line [/connect]) (do (handle-connect line) (return)))
+
+    (if (== socket nil) (do (set-hint [You must connect first]) (return)))
+
+    (if (starts-with? line [/user])     (handle-user    line))
+    (if (starts-with? line [/nick])     (handle-nick    line))
+    (if (starts-with? line [/join])     (handle-join    line))
+    (if (starts-with? line [/quit])     (= running false))
+    (if (starts-with? line [/part])     (leave-current-channel))))
 
 (define handle-message [handle a line starting without /] '(line [line of text starting with /]) (fn (line)
     (if (== nil current-channel)
       (do
-        (ncurses-print win (- (nth 0 num-rows-and-cols) 2) 0 [You must enter a channel first])
+        (set-hint [You must enter a channel first])
         (return)))
 
     (define message [message] (string-format [PRIVMSG {} :{}|newline|] current-channel line))
     (socket-send socket message)
     (push-text-to-lines message)))
 
+(define show-hint [show help message] '(hint [hint message]) (fn (hint)
+    (ncurses-print win (- (nth 0 num-rows-and-cols) 1) 0 hint)
+))
+
+(define show-empty-hint [show empty hint line] '() (fn ()
+    (define message [message] [])
+    (for i from 0 to (nth 1 num-rows-and-cols) (+= message |-|))
+    (set-hint message)))
+
 (define read-and-handle-input [get user input and handle it] '() (fn ()
-    (ncurses-print win (- (nth 0 num-rows-and-cols) 1) 0 [> ])
+    (ncurses-print win (- (nth 0 num-rows-and-cols) 2) 0 [> ])
     (define input [line of text from the user] (ncurses-getstr 2.0))
 
-    (if (== 0 (len input)) (return))
+    (if (== 0 (len input)) (do (show-empty-hint) (return)))
 
     (define first-char [first character of user input] (nth 0 input))
 
@@ -87,6 +131,8 @@
         (do (+= lines line)))))
 
 (define read-socket [read input from socket, if available] '() (fn ()
+    (if (== socket nil) (return))
+
     (define input-from-socket [possible input from socket] (socket-receive socket false))
 
     (if (== nil input-from-socket) (return))
@@ -99,14 +145,14 @@
     (push-text-to-lines input-from-socket)))
 
 (define print-lines [print messages] '() (fn ()
-    (define row [current row] 1)
+    (show-hint hint)
 
+    (define row [current row] 1)
     (for line in lines
          (ncurses-print win row 1 line)
          (++ row))))
 
-(socket-send socket [NICK XYZ|newline|])
-(socket-send socket [USER xyz 8 * : XY ZZ|newline|])
+(show-empty-hint)
 
 (while running
     (read-socket)

@@ -1943,7 +1943,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_equals(
 
         octaspire_dern_vm_pop_value(vm, arguments);
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_get_value_false(vm);
+        return octaspire_dern_vm_create_new_value_error_from_c_string(vm, "Builtin '=' failed");
     }
     else
     {
@@ -1963,7 +1963,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_equals(
 
         octaspire_dern_vm_pop_value(vm, arguments);
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_get_value_false(vm);
+        return octaspire_dern_vm_create_new_value_error_from_c_string(vm, "Builtin '=' failed");
     }
 }
 
@@ -4096,15 +4096,28 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
                 0);
 
         // TODO other types
-        if (value->typeTag != OCTASPIRE_DERN_VALUE_TAG_REAL)
+        if (octaspire_dern_value_is_real(value))
+        {
+            return octaspire_dern_vm_create_new_value_integer(vm, (int32_t)value->value.real);
+        }
+        else if (octaspire_dern_value_is_string(value))
+        {
+            int32_t valueAsInt = (int32_t)strtoimax(
+                octaspire_dern_value_as_string_get_c_string(value),
+                0,
+                10);
+
+            return octaspire_dern_vm_create_new_value_integer(vm, valueAsInt);
+        }
+        else
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_from_c_string(
+            return octaspire_dern_vm_create_new_value_error_format(
                 vm,
-                "First argument to 'to-integer' is not real number.");
+                "First argument to 'to-integer' is currently unsupported type. "
+                "Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(value->typeTag));
         }
-
-        return octaspire_dern_vm_create_new_value_integer(vm, (int32_t)value->value.real);
     }
     else
     {
@@ -5627,6 +5640,100 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_find(
         octaspire_dern_vm_pop_value(vm, arguments);
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return result;
+    }
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_split(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'split' expects two arguments. %zu arguments was given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t *container = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+    octaspire_helpers_verify_not_null(container);
+
+    octaspire_dern_value_t *splitByArg = octaspire_dern_value_as_vector_get_element_at(arguments, 1);
+    octaspire_helpers_verify_not_null(splitByArg);
+
+    switch (container->typeTag)
+    {
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            if (!octaspire_dern_value_is_character(splitByArg))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "The second argument to builtin 'split' must be a character when the first "
+                    "is a string. Type '%s' was given.",
+                    octaspire_dern_value_helper_get_type_as_c_string(splitByArg->typeTag));
+            }
+
+            octaspire_dern_value_t * const result = octaspire_dern_vm_create_new_value_vector(vm);
+            octaspire_helpers_verify_not_null(result);
+
+            octaspire_dern_vm_push_value(vm, result);
+
+            octaspire_container_utf8_string_t *containerAsStr = container->value.string;
+            octaspire_helpers_verify_not_null(containerAsStr);
+
+            octaspire_container_vector_t *tokens = octaspire_container_utf8_string_split(
+                containerAsStr,
+                octaspire_dern_value_as_character_get_c_string(splitByArg));
+
+            octaspire_helpers_verify_not_null(tokens);
+
+            for (size_t i = 0; i < octaspire_container_vector_get_length(tokens); ++i)
+            {
+                octaspire_container_utf8_string_t const * const token =
+                    (octaspire_container_utf8_string_t const * const)
+                        octaspire_container_vector_get_element_at(tokens, i);
+
+                octaspire_helpers_verify_not_null(token);
+
+                octaspire_container_utf8_string_t * const copy =
+                    octaspire_container_utf8_string_new_copy(
+                        token,
+                        octaspire_dern_vm_get_allocator(vm));
+
+                octaspire_dern_value_t * const copyVal = octaspire_dern_vm_create_new_value_string(
+                    vm,
+                    copy);
+
+                octaspire_dern_value_as_vector_push_back_element(result, &copyVal);
+            }
+
+            octaspire_dern_vm_pop_value(vm, result);
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return result;
+        }
+        break;
+
+        default:
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "The first argument to builtin 'split' must be a container. Currently only "
+                "strings are supported. Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(container->typeTag));
+        }
+        break;
     }
 }
 

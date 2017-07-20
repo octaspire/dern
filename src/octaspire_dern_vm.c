@@ -794,6 +794,19 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // split
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "split",
+        octaspire_dern_vm_builtin_split,
+        2,
+        "Split a collection by value",
+        env))
+    {
+        abort();
+    }
+
+
     // hash-map
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
@@ -1543,6 +1556,30 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
 
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
+            if (!octaspire_dern_c_data_is_copying_allowed(valueToBeCopied->value.cData))
+            {
+                octaspire_dern_vm_pop_value(self, result);
+
+                octaspire_container_utf8_string_t *str =
+                    octaspire_dern_c_data_to_string(valueToBeCopied->value.cData, self->allocator);
+
+                octaspire_helpers_verify_not_null(str);
+
+                octaspire_dern_value_t * const errorVal =
+                    octaspire_dern_vm_create_new_value_error_format(
+                        self,
+                        "C data '%s' cannot be copied.",
+                        octaspire_container_utf8_string_get_c_string(str));
+
+                octaspire_helpers_verify_not_null(errorVal);
+
+                octaspire_container_utf8_string_release(str);
+                str = 0;
+
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
+                return errorVal;
+            }
+
             result->value.cData =
                 octaspire_dern_c_data_new_copy(valueToBeCopied->value.cData, self->allocator);
         }
@@ -1952,6 +1989,7 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
     char const * const stdLibNthCallbackName,
+    bool const copyingAllowed,
     void * const payload)
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
@@ -1970,6 +2008,7 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
         cleanUpCallbackName,
         stdLibLenCallbackName,
         stdLibNthCallbackName,
+        copyingAllowed,
         self->allocator);
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));

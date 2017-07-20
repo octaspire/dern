@@ -592,6 +592,11 @@ bool octaspire_dern_value_set(
 
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
+            if (!octaspire_dern_c_data_is_copying_allowed(value->value.cData))
+            {
+                return false;
+            }
+
             self->value.cData =
                 octaspire_dern_c_data_new_copy(
                     value->value.cData,

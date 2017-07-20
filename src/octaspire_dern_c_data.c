@@ -32,6 +32,7 @@ struct octaspire_dern_c_data_t
     octaspire_container_utf8_string_t         *cleanUpCallbackName;
     octaspire_container_utf8_string_t         *stdLibLenCallbackName;
     octaspire_container_utf8_string_t         *stdLibNthCallbackName;
+    bool                                       copyingAllowed;
     octaspire_memory_allocator_t              *allocator;
 };
 
@@ -43,6 +44,7 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
     char const * const stdLibNthCallbackName,
+    bool const copyingAllowed,
     octaspire_memory_allocator_t *allocator)
 {
     octaspire_dern_c_data_t *self =
@@ -61,6 +63,7 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     self->cleanUpCallbackName   = octaspire_container_utf8_string_new(cleanUpCallbackName, self->allocator);
     self->stdLibLenCallbackName = octaspire_container_utf8_string_new(stdLibLenCallbackName, self->allocator);
     self->stdLibNthCallbackName = octaspire_container_utf8_string_new(stdLibNthCallbackName, self->allocator);
+    self->copyingAllowed        = copyingAllowed;
 
     return self;
 }
@@ -77,6 +80,7 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
         octaspire_container_utf8_string_get_c_string(other->cleanUpCallbackName),
         octaspire_container_utf8_string_get_c_string(other->stdLibLenCallbackName),
         octaspire_container_utf8_string_get_c_string(other->stdLibNthCallbackName),
+        other->copyingAllowed,
         allocator);
 }
 
@@ -227,5 +231,11 @@ void *octaspire_dern_c_data_get_payload(
     octaspire_dern_c_data_t const * const self)
 {
     return self->payload;
+}
+
+bool octaspire_dern_c_data_is_copying_allowed(
+    octaspire_dern_c_data_t const * const self)
+{
+    return self->copyingAllowed;
 }
 

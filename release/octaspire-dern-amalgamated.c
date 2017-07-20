@@ -18086,10 +18086,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "181"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "183"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.181.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.183.0"
 
 
 
@@ -18297,6 +18297,7 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
     char const * const stdLibNthCallbackName,
+    bool const copyingAllowed,
     octaspire_memory_allocator_t *allocator);
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
@@ -18329,6 +18330,9 @@ char const *octaspire_dern_c_data_get_payload_typename(
     octaspire_dern_c_data_t const * const self);
 
 void *octaspire_dern_c_data_get_payload(
+    octaspire_dern_c_data_t const * const self);
+
+bool octaspire_dern_c_data_is_copying_allowed(
     octaspire_dern_c_data_t const * const self);
 
 #ifdef __cplusplus
@@ -19183,6 +19187,7 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
     char const * const stdLibNthCallbackName,
+    bool const copyingAllowed,
     void * const payload);
 
 bool octaspire_dern_vm_push_value(octaspire_dern_vm_t *self, struct octaspire_dern_value_t *value);
@@ -19585,6 +19590,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus(
     octaspire_dern_value_t *environment);
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_find(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_split(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
@@ -22943,6 +22953,7 @@ struct octaspire_dern_c_data_t
     octaspire_container_utf8_string_t         *cleanUpCallbackName;
     octaspire_container_utf8_string_t         *stdLibLenCallbackName;
     octaspire_container_utf8_string_t         *stdLibNthCallbackName;
+    bool                                       copyingAllowed;
     octaspire_memory_allocator_t              *allocator;
 };
 
@@ -22954,6 +22965,7 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
     char const * const stdLibNthCallbackName,
+    bool const copyingAllowed,
     octaspire_memory_allocator_t *allocator)
 {
     octaspire_dern_c_data_t *self =
@@ -22972,6 +22984,7 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     self->cleanUpCallbackName   = octaspire_container_utf8_string_new(cleanUpCallbackName, self->allocator);
     self->stdLibLenCallbackName = octaspire_container_utf8_string_new(stdLibLenCallbackName, self->allocator);
     self->stdLibNthCallbackName = octaspire_container_utf8_string_new(stdLibNthCallbackName, self->allocator);
+    self->copyingAllowed        = copyingAllowed;
 
     return self;
 }
@@ -22988,6 +23001,7 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
         octaspire_container_utf8_string_get_c_string(other->cleanUpCallbackName),
         octaspire_container_utf8_string_get_c_string(other->stdLibLenCallbackName),
         octaspire_container_utf8_string_get_c_string(other->stdLibNthCallbackName),
+        other->copyingAllowed,
         allocator);
 }
 
@@ -23138,6 +23152,12 @@ void *octaspire_dern_c_data_get_payload(
     octaspire_dern_c_data_t const * const self)
 {
     return self->payload;
+}
+
+bool octaspire_dern_c_data_is_copying_allowed(
+    octaspire_dern_c_data_t const * const self)
+{
+    return self->copyingAllowed;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25585,7 +25605,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_equals(
 
         octaspire_dern_vm_pop_value(vm, arguments);
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_get_value_false(vm);
+        return octaspire_dern_vm_create_new_value_error_from_c_string(vm, "Builtin '=' failed");
     }
     else
     {
@@ -25605,7 +25625,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_equals(
 
         octaspire_dern_vm_pop_value(vm, arguments);
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_get_value_false(vm);
+        return octaspire_dern_vm_create_new_value_error_from_c_string(vm, "Builtin '=' failed");
     }
 }
 
@@ -27738,15 +27758,28 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
                 0);
 
         // TODO other types
-        if (value->typeTag != OCTASPIRE_DERN_VALUE_TAG_REAL)
+        if (octaspire_dern_value_is_real(value))
+        {
+            return octaspire_dern_vm_create_new_value_integer(vm, (int32_t)value->value.real);
+        }
+        else if (octaspire_dern_value_is_string(value))
+        {
+            int32_t valueAsInt = (int32_t)strtoimax(
+                octaspire_dern_value_as_string_get_c_string(value),
+                0,
+                10);
+
+            return octaspire_dern_vm_create_new_value_integer(vm, valueAsInt);
+        }
+        else
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_from_c_string(
+            return octaspire_dern_vm_create_new_value_error_format(
                 vm,
-                "First argument to 'to-integer' is not real number.");
+                "First argument to 'to-integer' is currently unsupported type. "
+                "Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(value->typeTag));
         }
-
-        return octaspire_dern_vm_create_new_value_integer(vm, (int32_t)value->value.real);
     }
     else
     {
@@ -29269,6 +29302,100 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_find(
         octaspire_dern_vm_pop_value(vm, arguments);
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return result;
+    }
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_split(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'split' expects two arguments. %zu arguments was given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t *container = octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+    octaspire_helpers_verify_not_null(container);
+
+    octaspire_dern_value_t *splitByArg = octaspire_dern_value_as_vector_get_element_at(arguments, 1);
+    octaspire_helpers_verify_not_null(splitByArg);
+
+    switch (container->typeTag)
+    {
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            if (!octaspire_dern_value_is_character(splitByArg))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "The second argument to builtin 'split' must be a character when the first "
+                    "is a string. Type '%s' was given.",
+                    octaspire_dern_value_helper_get_type_as_c_string(splitByArg->typeTag));
+            }
+
+            octaspire_dern_value_t * const result = octaspire_dern_vm_create_new_value_vector(vm);
+            octaspire_helpers_verify_not_null(result);
+
+            octaspire_dern_vm_push_value(vm, result);
+
+            octaspire_container_utf8_string_t *containerAsStr = container->value.string;
+            octaspire_helpers_verify_not_null(containerAsStr);
+
+            octaspire_container_vector_t *tokens = octaspire_container_utf8_string_split(
+                containerAsStr,
+                octaspire_dern_value_as_character_get_c_string(splitByArg));
+
+            octaspire_helpers_verify_not_null(tokens);
+
+            for (size_t i = 0; i < octaspire_container_vector_get_length(tokens); ++i)
+            {
+                octaspire_container_utf8_string_t const * const token =
+                    (octaspire_container_utf8_string_t const * const)
+                        octaspire_container_vector_get_element_at(tokens, i);
+
+                octaspire_helpers_verify_not_null(token);
+
+                octaspire_container_utf8_string_t * const copy =
+                    octaspire_container_utf8_string_new_copy(
+                        token,
+                        octaspire_dern_vm_get_allocator(vm));
+
+                octaspire_dern_value_t * const copyVal = octaspire_dern_vm_create_new_value_string(
+                    vm,
+                    copy);
+
+                octaspire_dern_value_as_vector_push_back_element(result, &copyVal);
+            }
+
+            octaspire_dern_vm_pop_value(vm, result);
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return result;
+        }
+        break;
+
+        default:
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "The first argument to builtin 'split' must be a container. Currently only "
+                "strings are supported. Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(container->typeTag));
+        }
+        break;
     }
 }
 
@@ -30892,6 +31019,11 @@ bool octaspire_dern_value_set(
 
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
+            if (!octaspire_dern_c_data_is_copying_allowed(value->value.cData))
+            {
+                return false;
+            }
+
             self->value.cData =
                 octaspire_dern_c_data_new_copy(
                     value->value.cData,
@@ -34031,6 +34163,19 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // split
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "split",
+        octaspire_dern_vm_builtin_split,
+        2,
+        "Split a collection by value",
+        env))
+    {
+        abort();
+    }
+
+
     // hash-map
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
@@ -34780,6 +34925,30 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
 
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
+            if (!octaspire_dern_c_data_is_copying_allowed(valueToBeCopied->value.cData))
+            {
+                octaspire_dern_vm_pop_value(self, result);
+
+                octaspire_container_utf8_string_t *str =
+                    octaspire_dern_c_data_to_string(valueToBeCopied->value.cData, self->allocator);
+
+                octaspire_helpers_verify_not_null(str);
+
+                octaspire_dern_value_t * const errorVal =
+                    octaspire_dern_vm_create_new_value_error_format(
+                        self,
+                        "C data '%s' cannot be copied.",
+                        octaspire_container_utf8_string_get_c_string(str));
+
+                octaspire_helpers_verify_not_null(errorVal);
+
+                octaspire_container_utf8_string_release(str);
+                str = 0;
+
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
+                return errorVal;
+            }
+
             result->value.cData =
                 octaspire_dern_c_data_new_copy(valueToBeCopied->value.cData, self->allocator);
         }
@@ -35189,6 +35358,7 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
     char const * const stdLibNthCallbackName,
+    bool const copyingAllowed,
     void * const payload)
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
@@ -35207,6 +35377,7 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
         cleanUpCallbackName,
         stdLibLenCallbackName,
         stdLibNthCallbackName,
+        copyingAllowed,
         self->allocator);
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
@@ -52789,6 +52960,39 @@ TEST octaspire_dern_vm_copy_test(void)
     PASS();
 }
 
+
+TEST octaspire_dern_vm_split_called_with_string_and_char_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(split [here is some text] | |)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
+
+    size_t const expectedNumOfElems = 4;
+
+    ASSERT_EQ(expectedNumOfElems, octaspire_dern_value_as_vector_get_length(evaluatedValue));
+
+    char const * const expected[] = {"here", "is", "some", "text" };
+
+    for (size_t i = 0; i < expectedNumOfElems; ++i)
+    {
+        ASSERT_STR_EQ(
+            expected[i],
+            octaspire_dern_value_as_string_get_c_string(
+                octaspire_dern_value_as_vector_get_element_at_const(evaluatedValue, i)));
+    }
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
@@ -53153,6 +53357,8 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_list_test);
 
     RUN_TEST(octaspire_dern_vm_copy_test);
+
+    RUN_TEST(octaspire_dern_vm_split_called_with_string_and_char_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;

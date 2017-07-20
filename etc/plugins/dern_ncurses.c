@@ -38,6 +38,7 @@ octaspire_dern_value_t *dern_ncurses_initscr(
         "",
         "",
         "",
+        true,
         window);
 }
 

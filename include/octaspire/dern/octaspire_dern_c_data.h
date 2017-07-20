@@ -37,6 +37,7 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
     char const * const stdLibNthCallbackName,
+    bool const copyingAllowed,
     octaspire_memory_allocator_t *allocator);
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
@@ -69,6 +70,9 @@ char const *octaspire_dern_c_data_get_payload_typename(
     octaspire_dern_c_data_t const * const self);
 
 void *octaspire_dern_c_data_get_payload(
+    octaspire_dern_c_data_t const * const self);
+
+bool octaspire_dern_c_data_is_copying_allowed(
     octaspire_dern_c_data_t const * const self);
 
 #ifdef __cplusplus

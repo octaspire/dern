@@ -11243,6 +11243,39 @@ TEST octaspire_dern_vm_copy_test(void)
     PASS();
 }
 
+
+TEST octaspire_dern_vm_split_called_with_string_and_char_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(split [here is some text] | |)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
+
+    size_t const expectedNumOfElems = 4;
+
+    ASSERT_EQ(expectedNumOfElems, octaspire_dern_value_as_vector_get_length(evaluatedValue));
+
+    char const * const expected[] = {"here", "is", "some", "text" };
+
+    for (size_t i = 0; i < expectedNumOfElems; ++i)
+    {
+        ASSERT_STR_EQ(
+            expected[i],
+            octaspire_dern_value_as_string_get_c_string(
+                octaspire_dern_value_as_vector_get_element_at_const(evaluatedValue, i)));
+    }
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
@@ -11607,6 +11640,8 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_list_test);
 
     RUN_TEST(octaspire_dern_vm_copy_test);
+
+    RUN_TEST(octaspire_dern_vm_split_called_with_string_and_char_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;
