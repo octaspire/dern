@@ -5718,6 +5718,9 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_split(
                 octaspire_dern_value_as_vector_push_back_element(result, &copyVal);
             }
 
+            octaspire_container_vector_release(tokens);
+            tokens = 0;
+
             octaspire_dern_vm_pop_value(vm, result);
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return result;
