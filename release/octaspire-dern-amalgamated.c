@@ -18086,10 +18086,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "183"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "184"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.183.1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.184.0"
 
 
 
@@ -18711,6 +18711,9 @@ int32_t octaspire_dern_value_as_integer_get_value(
     octaspire_dern_value_t const * const self);
 
 double octaspire_dern_value_as_real_get_value(
+    octaspire_dern_value_t const * const self);
+
+double octaspire_dern_value_as_number_get_value(
     octaspire_dern_value_t const * const self);
 
 bool octaspire_dern_value_as_hash_map_add(
@@ -27758,9 +27761,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
                 0);
 
         // TODO other types
-        if (octaspire_dern_value_is_real(value))
+        if (octaspire_dern_value_is_number(value))
         {
-            return octaspire_dern_vm_create_new_value_integer(vm, (int32_t)value->value.real);
+            return octaspire_dern_vm_create_new_value_integer(
+                vm,
+                (int32_t)octaspire_dern_value_as_number_get_value(value));
         }
         else if (octaspire_dern_value_is_string(value))
         {
@@ -32077,6 +32082,19 @@ double octaspire_dern_value_as_real_get_value(
     octaspire_dern_value_t const * const self)
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_REAL);
+    return self->value.real;
+}
+
+double octaspire_dern_value_as_number_get_value(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_true(octaspire_dern_value_is_number(self));
+
+    if (octaspire_dern_value_is_integer(self))
+    {
+        return (double)self->value.integer;
+    }
+
     return self->value.real;
 }
 

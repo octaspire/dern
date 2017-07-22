@@ -269,6 +269,9 @@ int32_t octaspire_dern_value_as_integer_get_value(
 double octaspire_dern_value_as_real_get_value(
     octaspire_dern_value_t const * const self);
 
+double octaspire_dern_value_as_number_get_value(
+    octaspire_dern_value_t const * const self);
+
 bool octaspire_dern_value_as_hash_map_add(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const toBeAdded1,

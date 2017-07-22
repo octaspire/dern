@@ -1650,6 +1650,19 @@ double octaspire_dern_value_as_real_get_value(
     return self->value.real;
 }
 
+double octaspire_dern_value_as_number_get_value(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_true(octaspire_dern_value_is_number(self));
+
+    if (octaspire_dern_value_is_integer(self))
+    {
+        return (double)self->value.integer;
+    }
+
+    return self->value.real;
+}
+
 bool octaspire_dern_value_as_hash_map_remove(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const keyValue)

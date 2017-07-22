@@ -19,6 +19,9 @@
 
 (define substr [substr] '(str [str] startIndex [startIndex]) (fn (str startIndex)
     (define result [result] [])
+
+    (if (>= startIndex (len str)) (return result))
+
     (for i from startIndex to (- (len str) 1)
          (+= result (nth i str)))
     result))
@@ -67,15 +70,17 @@
     (socket-send socket (string-format [USER {} 8 * :|newline|] username))))
 
 (define handle-command [handle command, for example /join] '(line [line of text starting with /]) (fn (line)
-    (if (starts-with? line [/connect]) (do (handle-connect line) (return)))
+    (if (starts-with? line [/connect]) (do (handle-connect line)   (return)))
 
-    (if (== socket nil) (do (set-hint [You must connect first]) (return)))
+    (if (== socket nil) (do (set-hint [You must connect first])    (return)))
 
-    (if (starts-with? line [/user])     (handle-user    line))
-    (if (starts-with? line [/nick])     (handle-nick    line))
-    (if (starts-with? line [/join])     (handle-join    line))
-    (if (starts-with? line [/quit])     (= running false))
-    (if (starts-with? line [/part])     (leave-current-channel))))
+    (if (starts-with? line [/user])    (do (handle-user    line)   (return)))
+    (if (starts-with? line [/nick])    (do (handle-nick    line)   (return)))
+    (if (starts-with? line [/join])    (do (handle-join    line)   (return)))
+    (if (starts-with? line [/quit])    (do (= running false)       (return)))
+    (if (starts-with? line [/part])    (do (leave-current-channel) (return)))
+
+    (set-hint (string-format [Unknown command "{}"] line))))
 
 (define handle-message [handle a line starting without /] '(line [line of text starting with /]) (fn (line)
     (if (== nil current-channel)
@@ -159,4 +164,6 @@
     (read-and-handle-input)
     (ncurses-clear win)
     (print-lines))
+
+(ncurses-endwin)
 

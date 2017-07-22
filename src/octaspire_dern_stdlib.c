@@ -4096,9 +4096,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
                 0);
 
         // TODO other types
-        if (octaspire_dern_value_is_real(value))
+        if (octaspire_dern_value_is_number(value))
         {
-            return octaspire_dern_vm_create_new_value_integer(vm, (int32_t)value->value.real);
+            return octaspire_dern_vm_create_new_value_integer(
+                vm,
+                (int32_t)octaspire_dern_value_as_number_get_value(value));
         }
         else if (octaspire_dern_value_is_string(value))
         {
