@@ -12,6 +12,7 @@
 (define maxlines [maxlines] (- (nth 0 num-rows-and-cols) 4))
 (define lines [messages] (queue-with-max-length maxlines))
 (define hint [hint] [])
+(define debug [is debug mode on] false)
 
 (define leave-current-channel [leave the current channel] '() (fn ()
     (define message [message] (string-format [PART {}|newline|] current-channel))
@@ -66,10 +67,18 @@
     (define tokens [line split by space] (split restOfLine | |))
 
     (define username [username] (nth 0 tokens))
+    (define realname [realname] [])
 
-    (socket-send socket (string-format [USER {} 8 * :|newline|] username))))
+    (if (> (len tokens) 1)
+        (for i from 1 to (- (len tokens) 1)
+             (+= realname (nth i tokens))
+             (+= realname | |)))
+
+    (socket-send socket (string-format [USER {} 8 * :{}|newline|] username realname))))
 
 (define handle-command [handle command, for example /join] '(line [line of text starting with /]) (fn (line)
+    (if (starts-with? line [/quit])    (do (= running false)       (return)))
+    (if (starts-with? line [/debug])   (do (= debug (not debug))   (return)))
     (if (starts-with? line [/connect]) (do (handle-connect line)   (return)))
 
     (if (== socket nil) (do (set-hint [You must connect first])    (return)))
@@ -77,7 +86,6 @@
     (if (starts-with? line [/user])    (do (handle-user    line)   (return)))
     (if (starts-with? line [/nick])    (do (handle-nick    line)   (return)))
     (if (starts-with? line [/join])    (do (handle-join    line)   (return)))
-    (if (starts-with? line [/quit])    (do (= running false)       (return)))
     (if (starts-with? line [/part])    (do (leave-current-channel) (return)))
 
     (set-hint (string-format [Unknown command "{}"] line))))
@@ -90,7 +98,7 @@
 
     (define message [message] (string-format [PRIVMSG {} :{}|newline|] current-channel line))
     (socket-send socket message)
-    (push-text-to-lines message)))
+    (push-text-to-lines (string-format [<{}>|newline|{}|newline|] [You] line))))
 
 (define show-hint [show help message] '(hint [hint message]) (fn (hint)
     (ncurses-print win (- (nth 0 num-rows-and-cols) 1) 0 hint)
@@ -98,7 +106,13 @@
 
 (define show-empty-hint [show empty hint line] '() (fn ()
     (define message [message] [])
-    (for i from 0 to (nth 1 num-rows-and-cols) (+= message |-|))
+
+    (if debug
+      (do
+        (+= message [---debug])
+        (for i from 8 to (nth 1 num-rows-and-cols) (+= message |-|)))
+      (for i from 0 to (nth 1 num-rows-and-cols) (+= message |-|)))
+
     (set-hint message)))
 
 (define read-and-handle-input [get user input and handle it] '() (fn ()
@@ -121,6 +135,8 @@
 (define push-text-to-lines [push text to lines] '(text [text]) (fn (text)
     (define line [tmp line] [])
 
+    (if (== 0 (len text)) (return))
+
     (for i from 0 to (- (len text) 1)
          (define c [c] (nth i text))
          (if (== c |newline|)
@@ -135,6 +151,19 @@
     (if (> (len lines) 0)
         (do (+= lines line)))))
 
+(define extract-only-message-from-input [get only the actual message] '(message [message]) (fn (message)
+
+    (define result [result] [])
+    (define numsyms [number of syms] 0)
+
+    (for i from 0 to (- (len message) 1)
+        (define c [c] (nth i message))
+        (if (>= numsyms 2)
+          (+= result c)
+          (if (== c |:|) (++ numsyms))))
+
+    (if (>= numsyms 2) result message)))
+
 (define read-socket [read input from socket, if available] '() (fn ()
     (if (== socket nil) (return))
 
@@ -142,10 +171,38 @@
 
     (if (== nil input-from-socket) (return))
 
+    (if debug (push-text-to-lines input-from-socket))
+
     (define first-char [first character of user input] (nth 0 input-from-socket))
 
     (if (== |P| first-char)
         (return (handle-ping input-from-socket)))
+
+    (define tokens [line split by space] (split input-from-socket | |))
+
+    (define command [command] [])
+
+    (if (>= (len tokens) 2) (= command (nth 1 tokens)))
+
+    (if (== command [PRIVMSG])
+      (do
+        (define receiver [channel or user] [])
+        (define sender   [message is from] [])
+        (if (>= (len tokens) 1) (= sender (substr (nth 0 tokens) 1)))
+        (if (>= (len tokens) 3) (= receiver (nth 2 tokens)))
+        (if (== receiver current-channel)
+          (do
+            (push-text-to-lines (string-format [<{}>] sender))
+            (if (> (len sender) 0)
+              (push-text-to-lines (extract-only-message-from-input input-from-socket))
+              (push-text-to-lines input-from-socket)))
+          (do
+            ; TODO check the nick?
+            (push-text-to-lines (string-format [PRIVATE <{}>] sender))
+            (if (> (len sender) 0)
+              (push-text-to-lines (extract-only-message-from-input input-from-socket))
+              (push-text-to-lines input-from-socket))))
+        (return)))
 
     (push-text-to-lines input-from-socket)))
 
