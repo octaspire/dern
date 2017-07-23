@@ -1427,6 +1427,68 @@ octaspire_dern_value_t *dern_ncurses_has_colors(
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
+octaspire_dern_value_t *dern_ncurses_init_color(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 4)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-init-color' expects four arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+
+    int32_t numbers[4] = {0, 0, 0, 0};
+
+    for (size_t i = 0; i < 4; ++i)
+    {
+        octaspire_dern_value_t const * const arg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
+
+        octaspire_helpers_verify_not_null(arg);
+
+        if (!octaspire_dern_value_is_integer(arg))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'ncurses-init-color' expects integer as %zu. argument. "
+                "Now type '%s' was given.",
+                i,
+                octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+        }
+
+        numbers[i] = octaspire_dern_value_as_integer_get_value(arg);
+    }
+
+    if (numbers[0] < 0 || numbers[0] > COLORS)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-init-color' supports only color numbers between 0 and %zu. "
+            "Now number '%zu' was given.",
+            (size_t)COLORS,
+            (size_t)numbers[0]);
+    }
+
+    int const result = init_color(numbers[0], numbers[1], numbers[2], numbers[3]);
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
+}
+
 octaspire_dern_value_t *dern_ncurses_init_pair(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1473,60 +1535,67 @@ octaspire_dern_value_t *dern_ncurses_init_pair(
 
         octaspire_helpers_verify_not_null(arg);
 
-        if (!octaspire_dern_value_is_symbol(arg))
+        if (!octaspire_dern_value_is_symbol(arg) && !octaspire_dern_value_is_integer(arg))
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
-                "Builtin 'ncurses-init-pair' expects symbol as %zu. argument. "
+                "Builtin 'ncurses-init-pair' expects symbol or integeras %zu. argument. "
                 "Now type '%s' was given.",
                 i + 1,
                 octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
         }
 
-        octaspire_container_utf8_string_t const * const symStr = arg->value.symbol;
-
-        if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "BLACK"))
+        if (octaspire_dern_value_is_integer(arg))
         {
-            colorNums[i-1] = COLOR_BLACK;
-        }
-        else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "RED"))
-        {
-            colorNums[i-1] = COLOR_RED;
-        }
-        else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "GREEN"))
-        {
-            colorNums[i-1] = COLOR_GREEN;
-        }
-        else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "YELLOW"))
-        {
-            colorNums[i-1] = COLOR_YELLOW;
-        }
-        else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "BLUE"))
-        {
-            colorNums[i-1] = COLOR_BLUE;
-        }
-        else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "MAGENTA"))
-        {
-            colorNums[i-1] = COLOR_MAGENTA;
-        }
-        else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "CYAN"))
-        {
-            colorNums[i-1] = COLOR_CYAN;
-        }
-        else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "WHITE"))
-        {
-            colorNums[i-1] = COLOR_WHITE;
+                colorNums[i-1] = octaspire_dern_value_as_integer_get_value(arg);
         }
         else
         {
-            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
-                vm,
-                "Builtin 'ncurses-init-pair' expects color name (a symbol) as %zu. argument. "
-                "Now symbol '%s' was given.",
-                i + 1,
-                octaspire_container_utf8_string_get_c_string(symStr));
+            octaspire_container_utf8_string_t const * const symStr = arg->value.symbol;
+
+            if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "BLACK"))
+            {
+                colorNums[i-1] = COLOR_BLACK;
+            }
+            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "RED"))
+            {
+                colorNums[i-1] = COLOR_RED;
+            }
+            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "GREEN"))
+            {
+                colorNums[i-1] = COLOR_GREEN;
+            }
+            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "YELLOW"))
+            {
+                colorNums[i-1] = COLOR_YELLOW;
+            }
+            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "BLUE"))
+            {
+                colorNums[i-1] = COLOR_BLUE;
+            }
+            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "MAGENTA"))
+            {
+                colorNums[i-1] = COLOR_MAGENTA;
+            }
+            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "CYAN"))
+            {
+                colorNums[i-1] = COLOR_CYAN;
+            }
+            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "WHITE"))
+            {
+                colorNums[i-1] = COLOR_WHITE;
+            }
+            else
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'ncurses-init-pair' expects color name (a symbol) as %zu. argument. "
+                    "Now symbol '%s' was given.",
+                    i + 1,
+                    octaspire_container_utf8_string_get_c_string(symStr));
+            }
         }
     }
 
@@ -1893,6 +1962,18 @@ bool dern_ncurses_init(
             "\n"
             "SEE ALSO\n"
             "",
+            targetEnv))
+    {
+        return false;
+    }
+
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "ncurses-init-color",
+            dern_ncurses_init_color,
+            0,
+            "ncurses-init-color",
             targetEnv))
     {
         return false;

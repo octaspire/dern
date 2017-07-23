@@ -3385,10 +3385,15 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_vector(
 
     for (size_t i = 0; i < octaspire_dern_value_as_vector_get_length(arguments); ++i)
     {
-        octaspire_dern_value_t * const arg =
+        octaspire_dern_value_t * arg =
             octaspire_dern_value_as_vector_get_element_at(
                 arguments,
                 i);
+
+        if (octaspire_dern_value_is_atom(arg))
+        {
+            arg = octaspire_dern_vm_create_new_value_copy(vm, arg);
+        }
 
         octaspire_dern_value_as_vector_push_back_element(result, &arg);
     }
