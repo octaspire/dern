@@ -79,7 +79,7 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
     if (socketFileDescriptor == -1)
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
+        return octaspire_dern_vm_create_new_value_string_format(
             vm,
             "Builtin 'socket-new-ipv4-stream-socket' failed: %s",
             strerror(errno));
@@ -92,7 +92,7 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
         if (!he)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
+            return octaspire_dern_vm_create_new_value_string_format(
                 vm,
                 "Builtin 'socket-new-ipv4-stream-socket' failed: gethostbyname(%s) failed.",
                 address);
@@ -103,7 +103,7 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
         if (addrs[0] == 0)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
+            return octaspire_dern_vm_create_new_value_string_format(
                 vm,
                 "Builtin 'socket-new-ipv4-stream-socket' failed: no addresses for %s",
                 address);
@@ -117,7 +117,7 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
         if (connect(socketFileDescriptor, (struct sockaddr*)&server, sizeof(server)) < 0)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
+            return octaspire_dern_vm_create_new_value_string_format(
                 vm,
                 "Builtin 'socket-new-ipv4-stream-socket' connect failed: %s",
                 strerror(errno));
@@ -133,7 +133,7 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
         if (bind(socketFileDescriptor, (struct sockaddr*)&server, sizeof(server)) < 0)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
+            return octaspire_dern_vm_create_new_value_string_format(
                 vm,
                 "Builtin 'socket-new-ipv4-stream-socket' bind failed: %s",
                 strerror(errno));
@@ -142,7 +142,7 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
         if (listen(socketFileDescriptor, 5) < 0)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
+            return octaspire_dern_vm_create_new_value_string_format(
                 vm,
                 "Builtin 'socket-new-ipv4-stream-socket' listen failed: %s",
                 strerror(errno));

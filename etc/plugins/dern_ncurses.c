@@ -21,6 +21,12 @@
 
 static char const * const DERN_NCURSES_PLUGIN_NAME = "dern_ncurses";
 
+void dern_ncurses_window_clean_up_callback(void *payload)
+{
+    octaspire_helpers_verify_not_null(payload);
+    endwin();
+}
+
 octaspire_dern_value_t *dern_ncurses_initscr(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -35,7 +41,7 @@ octaspire_dern_value_t *dern_ncurses_initscr(
         vm,
         DERN_NCURSES_PLUGIN_NAME,
         "window",
-        "",
+        "dern_ncurses_window_clean_up_callback",
         "",
         "",
         true,

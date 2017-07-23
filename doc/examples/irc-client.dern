@@ -59,6 +59,13 @@
 
     ; Sockets cannot be copied with '='
     (define (env-global) socket [socket] (socket-new-ipv4-stream-socket address portnum))
+
+    (if (string? socket)
+      (do
+        (set-hint socket)
+        (= socket nil)
+        (return)))
+
     (set-hint (string-format [connected to {} at port {}] address portnum))))
 
 (define handle-user [handle /user] '(line [line of text starting with /user]) (fn (line)
