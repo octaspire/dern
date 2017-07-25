@@ -73,6 +73,24 @@
 
     (set-current-channel channel)))
 
+(define handle-msg [handle /msg] '(line [line of text starting with /msg]) (fn (line)
+    (define restOfLine [line without /msg] (substr line 5))
+
+    (define tokens [line split by space] (split restOfLine | |))
+
+    (if (< (len tokens) 2) (do (set-hint [/msg expect target name and message]) (return)))
+
+    (define target [target]  (nth 0 tokens))
+    (define msgtxt [msgtxt] [])
+
+    (for i from 1 to (- (len tokens) 1)
+         (+= msgtxt (nth i tokens))
+         (if (< i (- (len tokens) 1)) (+= msgtxt | |)))
+
+    (define message [message] (string-format [PRIVMSG {} :{}|newline|] target msgtxt))
+    (socket-send socket message)
+    (push-text-to-lines 'PRIVATE-MESSAGE (string-format [<---------------You---------------> {}] msgtxt))))
+
 (define set-hint [set-hint] '(h [new hint]) (fn (h)
     (= hint [--])
     (+= hint h)
@@ -127,6 +145,7 @@
     (if (starts-with? line [/user])    (do (handle-user    line)   (return)))
     (if (starts-with? line [/nick])    (do (handle-nick    line)   (return)))
     (if (starts-with? line [/join])    (do (handle-join    line)   (return)))
+    (if (starts-with? line [/msg])     (do (handle-msg     line)   (return)))
     (if (starts-with? line [/part])    (do (leave-current-channel) (return)))
 
     (set-hint (string-format [Unknown command "{}"] line))))
