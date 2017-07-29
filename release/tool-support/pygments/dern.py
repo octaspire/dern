@@ -14,7 +14,7 @@ class DernLexer(RegexLexer):
     filenames = '*.dern'
     flags = re.MULTILINE | re.DOTALL
 
-    builtins = (
+    builtins = [
         '!=', '*', '+', '++', '+=', '-', '--', '-=', '/', '<', '<=', '=', '==', '>', '>=', 'abort',
         'and', 'define', 'do', 'doc', 'env-current', 'env-global', 'env-new', 'eval', 'exit',
         'find', 'fn', 'for', 'hash-map', 'if', 'len', 'mod', 'not', 'nth', 'or',
@@ -25,7 +25,9 @@ class DernLexer(RegexLexer):
         'port-supports-output?', 'port-supports-input?', 'require', 'queue', 'queue-with-max-length',
         'list'
 
-    )
+    ]
+
+    builtins.sort(reverse=True)
 
     valid_name = r'[\w!$%&*+-/\:;,.<=>?@^~]+'
 
@@ -36,7 +38,7 @@ class DernLexer(RegexLexer):
                 (r'(true|false|nil)',  Name.Constant),
                 (r'-?\d+\.\d+', Number.Float),
                 (r'-?\d+', Number.Integer),
-                ("(?<=\()(%s)" % '|'.join(re.escape(entry) + ' ' for entry in builtins), Name.Builtin),
+                (r'(?<=\()(%s)' % "|".join(re.escape(entry) + '[\s\)]?' for entry in builtins), Name.Builtin),
                 (r'(?<=\()' + valid_name, Name.Function),
                 (valid_name, Name.Variable),
                 (r'(\(|\))', Punctuation), #Parentheses

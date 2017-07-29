@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.188.0
+Documentation for Octaspire Dern programming language version 0.189.0
 
 == About
 
@@ -1032,8 +1032,8 @@ Octaspire Maze and Lightboard are games (work in progress) that are being writte
 
 == Tool support
 
-*etc*-directory of the source distribution contains syntax files for *vim*, *emacs* and
-*pygments*.
+*etc*-directory of the source distribution contains syntax files for *vim*, *emacs*,
+*pygments* and *GNU source-highlight*.
 
 
 
