@@ -38,8 +38,9 @@ class DernLexer(RegexLexer):
                 (r'(true|false|nil)',  Name.Constant),
                 (r'-?\d+\.\d+', Number.Float),
                 (r'-?\d+', Number.Integer),
-                (r'(?<=\()(%s)' % "|".join(re.escape(entry) + '[\s\)]?' for entry in builtins), Name.Builtin),
-                (r'(?<=\()' + valid_name, Name.Function),
+                (r'(?<=\()(%s)' % "|".join(re.escape(entry) + '[\s\)]+' for entry in builtins), Name.Builtin),
+                (r'(?<=\(fn \()' + valid_name, Name.Variable),
+                (r'(?<=[^\']\()' + valid_name, Name.Function),
                 (valid_name, Name.Variable),
                 (r'(\(|\))', Punctuation), #Parentheses
                 ('\[', String, 'string'),
@@ -49,8 +50,10 @@ class DernLexer(RegexLexer):
                 (r'(\|.?\||\|bar\||\|newline\||\|tab\|)', String.Char),
                 ],
                 'string' : [
-                    ('[^\]]+', String),
-                    ('\]', String, '#pop'),
+                    (r'\]', String, '#pop'),
+                    (r"(\|bar\||\|newline\||\|tab\|)", String.Escape),
+                    (r"(\{\})", String.Escape),
+                    (r'[^\]\|\{\}]+', String),
                     ],
                 'comment_multiline' : [
                     ('[^\!\#]+', Comment.Multiline),
