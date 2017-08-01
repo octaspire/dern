@@ -1,0 +1,348 @@
+(require 'dern_ncurses)
+(require 'dern_socket)
+
+(define win [win] (ncurses-initscr))
+(ncurses-set-keypad win true)
+(ncurses-set-cbreak true)
+
+(define running [should this program be running] true)
+(define current-channel  [currently joined channel] nil)
+(define current-username [username] [])
+(define current-realname [realname] [])
+(define socket [socket] nil)
+(define num-rows-and-cols [number of rows and cols on screen] (ncurses-getmaxyx win))
+(define maxlines [maxlines] (- (nth 0 num-rows-and-cols) 3))
+(define lines [messages] (queue-with-max-length maxlines))
+(define hint [hint] [])
+(define title [title] [])
+(define debug [is debug mode on] false)
+
+(define PAIR-BORDER          [PAIR-BORDER]          1)
+(define PAIR-PROMPT          [PAIR-PROMPT]          2)
+(define PAIR-INPUT           [PAIR-INPUT]           3)
+(define PAIR-OTHER           [PAIR-OTHER]           4)
+(define PAIR-DEBUG           [PAIR-DEBUG]           5)
+(define PAIR-USER            [PAIR-USER]            6)
+(define PAIR-MESSAGE         [PAIR-MESSAGE]         7)
+(define PAIR-PRIVATE-MESSAGE [PAIR-PRIVATE-MESSAGE] 8)
+
+(if (ncurses-has-colors)
+    (do
+      (ncurses-start-color)
+      (ncurses-init-pair PAIR-BORDER          'WHITE  'YELLOW)
+      (ncurses-init-pair PAIR-PROMPT          'YELLOW 'BLACK)
+      (ncurses-init-pair PAIR-INPUT           'WHITE  'BLACK)
+      (ncurses-init-pair PAIR-OTHER           'RED    'BLACK)
+      (ncurses-init-pair PAIR-DEBUG           'BLUE   'BLACK)
+      (ncurses-init-pair PAIR-USER            'WHITE  'BLACK)
+      (ncurses-init-pair PAIR-MESSAGE         'GREEN  'BLACK)
+      (ncurses-init-pair PAIR-PRIVATE-MESSAGE 'YELLOW 'BLACK)
+      ))
+
+(define set-current-channel [set current channel] '(channel [channel]) (fn (channel)
+    (= current-channel channel)
+
+    (if (== current-channel nil) (set-title [-]) (set-title current-channel))))
+
+(define leave-current-channel [leave the current channel] '() (fn ()
+    (define message [message] (string-format [PART {}|newline|] current-channel))
+    (socket-send socket message)
+    (set-current-channel nil)))
+
+(define substr [substr] '(str [str] startIndex [startIndex]) (fn (str startIndex)
+    (define result [result] [])
+
+    (if (>= startIndex (len str)) (return result))
+
+    (for i from startIndex to (- (len str) 1)
+         (+= result (nth i str)))
+    result))
+
+(define handle-nick [handle /nick] '(line [line of text starting with /nick]) (fn (line)
+    (= current-username (substr line 6))
+    (send-user-data)))
+
+(define handle-join [handle /join] '(line [line of text starting with /join]) (fn (line)
+    (if (== current-username [])
+      (do (set-hint [Please set a nick first by using /nick or /user]) (return)))
+
+    (define channel [channel] (substr line 6))
+
+    (define message [message] (string-format [JOIN {}|newline|] channel))
+    (socket-send socket message)
+
+    (set-current-channel channel)))
+
+(define handle-msg [handle /msg] '(line [line of text starting with /msg]) (fn (line)
+    (define restOfLine [line without /msg] (substr line 5))
+
+    (define tokens [line split by space] (split restOfLine | |))
+
+    (if (< (len tokens) 2) (do (set-hint [/msg expect target name and message]) (return)))
+
+    (define target [target]  (nth 0 tokens))
+    (define msgtxt [msgtxt] [])
+
+    (for i from 1 to (- (len tokens) 1)
+         (+= msgtxt (nth i tokens))
+         (if (< i (- (len tokens) 1)) (+= msgtxt | |)))
+
+    (define message [message] (string-format [PRIVMSG {} :{}|newline|] target msgtxt))
+    (socket-send socket message)
+    (push-text-to-lines 'PRIVATE-MESSAGE (string-format [<---------------You---------------> {}] msgtxt))))
+
+(define set-hint [set-hint] '(h [new hint]) (fn (h)
+    (= hint [--])
+    (+= hint h)
+    (for i from (len hint) to (- (nth 1 num-rows-and-cols) 1) (+= hint |-|))))
+
+(define handle-connect [handle /connect] '(line [line of text starting with /connect]) (fn (line)
+    (if (== current-username [])
+      (do (set-hint [Please set a nick first by using /nick or nick and a real name using /user]) (return)))
+
+    (define restOfLine [line without /connect] (substr line 9))
+
+    (define tokens [line split by space] (split restOfLine | |))
+
+    (define address [address] [localhost])
+    (define portnum [portnum] 6667)
+
+    (if (>= (len tokens) 1) (= address (nth 0 tokens)))
+    (if (>= (len tokens) 2) (= portnum (nth 1 tokens)))
+
+    (= portnum (to-integer portnum))
+
+    ; Sockets cannot be copied with '='
+    (define (env-global) socket [socket] (socket-new-ipv4-stream-socket address portnum))
+
+    (if (string? socket)
+      (do
+        (set-hint socket)
+        (= socket nil)
+        (return)))
+
+    (read-socket)
+    (send-user-data)
+    (read-socket)
+
+    (set-hint (string-format [connected to {} at port {}] address portnum))))
+
+(define send-user-data [send nick and possible real name to server] '() (fn ()
+    (if (== socket nil) (return))
+
+    (socket-send socket (string-format [NICK {}|newline|] current-username))
+    (socket-send socket (string-format [USER {} 8 * :{}|newline|] current-username current-realname))))
+
+(define handle-user [handle /user] '(line [line of text starting with /user]) (fn (line)
+    (define restOfLine [line without /user] (substr line 6))
+
+    (define tokens [line split by space] (split restOfLine | |))
+
+    (= current-username (nth 0 tokens))
+    (= current-realname [])
+
+    (if (> (len tokens) 1)
+        (for i from 1 to (- (len tokens) 1)
+             (+= current-realname (nth i tokens))
+             (if (< i (- (len tokens) 1)) (+= current-realname | |))))
+
+    (send-user-data)))
+
+(define handle-command [handle command, for example /join] '(line [line of text starting with /]) (fn (line)
+    (if (starts-with? line [/quit])    (do (= running false)       (return)))
+    (if (starts-with? line [/debug])   (do (= debug (not debug))   (return)))
+    (if (starts-with? line [/connect]) (do (handle-connect line)   (return)))
+
+    (if (starts-with? line [/user])    (do (handle-user    line)   (return)))
+    (if (starts-with? line [/nick])    (do (handle-nick    line)   (return)))
+
+    (if (== socket nil) (do (set-hint [You must connect first])    (return)))
+
+    (if (starts-with? line [/join])    (do (handle-join    line)   (return)))
+    (if (starts-with? line [/msg])     (do (handle-msg     line)   (return)))
+    (if (starts-with? line [/part])    (do (leave-current-channel) (return)))
+
+    (set-hint (string-format [Unknown command "{}"] line))))
+
+(define handle-message [handle a line starting without /] '(line [line of text starting with /]) (fn (line)
+    (if (== nil current-channel)
+      (do
+        (set-hint [You must enter a channel first])
+        (return)))
+
+    (define message [message] (string-format [PRIVMSG {} :{}|newline|] current-channel line))
+    (socket-send socket message)
+    (push-text-to-lines 'USER (string-format [<---------------You---------------> {}] line))))
+
+(define show-title [show title bar] '(t [title message]) (fn (t)
+    (ncurses-attron 'BOLD)
+    (if (ncurses-has-colors) (ncurses-attron PAIR-BORDER))
+    (ncurses-print win 0 0 t)
+    (if (ncurses-has-colors) (ncurses-attroff PAIR-BORDER))
+    (ncurses-attroff 'BOLD)
+))
+
+(define show-hint [show help message] '(h [hint message]) (fn (h)
+    (ncurses-attron 'BOLD)
+    (if (ncurses-has-colors) (ncurses-attron PAIR-BORDER))
+    (ncurses-print win (- (nth 0 num-rows-and-cols) 2) 0 h)
+    (if (ncurses-has-colors) (ncurses-attroff PAIR-BORDER))
+    (ncurses-attroff 'BOLD)
+))
+
+(define show-empty-hint [show empty hint line] '() (fn ()
+    (define message [message] (string-format [/{}/{}/] current-username current-realname))
+    (if debug (+= message [--debug]))
+    (set-hint message)))
+
+(define show-empty-title [show empty title line] '() (fn ()
+    (= title [])
+    (for i from 1 to (- (nth 1 num-rows-and-cols) 1) (+= title |-|))))
+
+(define set-title [show title message] '(m [title message]) (fn (m)
+    (= title (string-format [--{}] m))
+    (for i from (len title) to (- (nth 1 num-rows-and-cols) 1) (+= title |-|))))
+
+(define read-and-handle-input [get user input and handle it] '() (fn ()
+    (ncurses-attron 'BOLD)
+    (ncurses-attron PAIR-PROMPT)
+    (ncurses-print win (- (nth 0 num-rows-and-cols) 1) 0 [> ])
+    (ncurses-attroff PAIR-PROMPT)
+    (ncurses-attroff 'BOLD)
+    (ncurses-attron PAIR-INPUT)
+    (define input [line of text from the user] (ncurses-getstr 1.0))
+    (ncurses-attroff PAIR-INPUT)
+
+    (if (== 0 (len input)) (do (show-empty-hint) (return)))
+
+    (define first-char [first character of user input] (nth 0 input))
+
+    (if (== |/| first-char)
+      (handle-command input)
+      (handle-message input))))
+
+(define handle-ping [handle PING message from the IRC server] '(message [message]) (fn (message)
+    (= message 1 |O|)
+    ;(+= lines message) ; TODO remove
+    (socket-send socket message)))
+
+(define push-text-to-lines [push text to lines] '(type [type] text [text]) (fn (type text)
+    (define line [tmp line] [])
+
+    (if (== 0 (len text)) (return))
+
+    (for i from 0 to (- (len text) 1)
+         (define c [c] (nth i text))
+         (if (== c |newline|)
+            (do (+= lines (vector type line))
+                (=  line []))
+            (+= line c))
+         (if (>= (len line) (nth 1 num-rows-and-cols))
+           (do
+             (+= lines (vector type line))
+             (= line []))))
+
+    (if (> (len line) 0)
+        (do (+= lines (vector type line))))))
+
+(define extract-only-message-from-input [get only the actual message] '(message [message]) (fn (message)
+
+    (define result [result] [])
+    (define numsyms [number of syms] 0)
+
+    (for i from 0 to (- (len message) 1)
+        (define c [c] (nth i message))
+        (if (>= numsyms 2)
+          (+= result c)
+          (if (== c |:|) (++ numsyms))))
+
+    (if (>= numsyms 2) result message)))
+
+(define read-socket [read input from socket, if available] '() (fn ()
+    (if (== socket nil) (return))
+
+    (define input-from-socket [possible input from socket] (socket-receive socket false))
+
+    (if (== nil input-from-socket) (return))
+
+    (if debug (push-text-to-lines 'DEBUG input-from-socket))
+
+    (define first-char [first character of user input] (nth 0 input-from-socket))
+
+    (if (== |P| first-char)
+        (return (handle-ping input-from-socket)))
+
+    (define tokens [line split by space] (split input-from-socket | |))
+
+    (define command [command] [])
+
+    (if (>= (len tokens) 2) (= command (nth 1 tokens)))
+
+    (if (== command [PRIVMSG])
+      (do
+        (define receiver [channel or user] [])
+        (define sender   [message is from] [])
+
+        (if (>= (len tokens) 1) (= sender (substr (nth 0 tokens) 1)))
+        (if (>= (len tokens) 3) (= receiver (nth 2 tokens)))
+
+        (if (> (len sender) 32)
+          (do
+            (for i from 0 to 3 (-- sender))
+            (+= sender [...])))
+
+        ; TODO XXX fix crash on (++ sender | |)
+        (if (< (len sender) 32)
+            (for i from (len sender) to 32 (+= sender |-|)))
+
+        (define msgToShow [msgToShow]
+            (string-format [<{}> {}] sender (extract-only-message-from-input input-from-socket)))
+
+        (push-text-to-lines (if (== receiver current-channel) 'MESSAGE 'PRIVATE-MESSAGE) msgToShow)
+
+        (return)))
+
+    (push-text-to-lines 'OTHER input-from-socket)))
+
+(define print-lines [print messages] '() (fn ()
+    (show-title title)
+    (show-hint  hint)
+
+    (define row [current row] 1)
+    (for line in lines
+         (define type [type] (nth 0 line))
+
+         (if (== type 'OTHER)           (ncurses-attron PAIR-OTHER))
+         (if (== type 'DEBUG)           (ncurses-attron PAIR-DEBUG))
+         (if (== type 'USER)            (ncurses-attron PAIR-USER))
+         (if (== type 'MESSAGE)         (ncurses-attron PAIR-MESSAGE))
+
+         (if (== type 'PRIVATE-MESSAGE) (do (ncurses-attron PAIR-PRIVATE-MESSAGE)
+                                            (ncurses-attron 'BOLD)))
+
+         (ncurses-print win row 1 (nth 1 line))
+
+         (if (== type 'OTHER)           (ncurses-attroff PAIR-OTHER))
+         (if (== type 'DEBUG)           (ncurses-attroff PAIR-DEBUG))
+         (if (== type 'USER)            (ncurses-attroff PAIR-USER))
+         (if (== type 'MESSAGE)         (ncurses-attroff PAIR-MESSAGE))
+
+         (if (== type 'PRIVATE-MESSAGE) (do (ncurses-attroff PAIR-PRIVATE-MESSAGE)
+                                            (ncurses-attroff 'BOLD)))
+
+         (++ row))
+
+         (ncurses-refresh)
+    ))
+
+(show-empty-hint)
+(show-empty-title)
+
+(while running
+    (read-socket)
+    (read-and-handle-input)
+    (ncurses-clear win)
+    (print-lines))
+
+(ncurses-endwin)
+

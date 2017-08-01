@@ -102,6 +102,7 @@ printf "%b3)%b ./octaspire-dern-repl examples/use-mylib.dern\n" $YELLOW $GREEN
 printf "%b4)%b ./octaspire-dern-repl -c\n" $YELLOW $GREEN
 printf "%b5)%b ./octaspire-dern-repl examples/dern-sockets-example.dern\n" $YELLOW $GREEN
 printf "%b6)%b ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN
+printf "%b7)%b ./octaspire-dern-repl examples/irc-client.dern\n" $YELLOW $GREEN
 echo "=================================================================="
 echoToDefs
 

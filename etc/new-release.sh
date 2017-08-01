@@ -157,6 +157,10 @@ octaspire.com/dern\n" > "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR
     cp "$PROJECT_PATH/doc/examples/embedding-example.c" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
+    echo "\nCopying IRC client example...\n--------------------------\n"
+    cp "$PROJECT_PATH/doc/examples/irc-client.dern" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+
     echo "\nCopying build scripts to the release directory...\n--------------------------\n"
     cp -r "$PROJECT_PATH/etc/how-to-build/" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
