@@ -7,7 +7,6 @@
 
 (define running [should this program be running] true)
 (define current-channel  [currently joined channel] nil)
-(define current-nick     [current nick] [])
 (define current-username [username] [])
 (define current-realname [realname] [])
 (define socket [socket] nil)
@@ -60,12 +59,13 @@
     result))
 
 (define handle-nick [handle /nick] '(line [line of text starting with /nick]) (fn (line)
-    (= current-nick (substr line 6))
-
-    (define message [message] (string-format [NICK {}|newline|] current-nick))
-    (socket-send socket message)))
+    (= current-username (substr line 6))
+    (send-user-data)))
 
 (define handle-join [handle /join] '(line [line of text starting with /join]) (fn (line)
+    (if (== current-username [])
+      (do (set-hint [Please set a nick first by using /nick or /user]) (return)))
+
     (define channel [channel] (substr line 6))
 
     (define message [message] (string-format [JOIN {}|newline|] channel))
@@ -97,6 +97,9 @@
     (for i from (len hint) to (- (nth 1 num-rows-and-cols) 1) (+= hint |-|))))
 
 (define handle-connect [handle /connect] '(line [line of text starting with /connect]) (fn (line)
+    (if (== current-username [])
+      (do (set-hint [Please set a nick first by using /nick or nick and a real name using /user]) (return)))
+
     (define restOfLine [line without /connect] (substr line 9))
 
     (define tokens [line split by space] (split restOfLine | |))
@@ -118,7 +121,17 @@
         (= socket nil)
         (return)))
 
+    (read-socket)
+    (send-user-data)
+    (read-socket)
+
     (set-hint (string-format [connected to {} at port {}] address portnum))))
+
+(define send-user-data [send nick and possible real name to server] '() (fn ()
+    (if (== socket nil) (return))
+
+    (socket-send socket (string-format [NICK {}|newline|] current-username))
+    (socket-send socket (string-format [USER {} 8 * :{}|newline|] current-username current-realname))))
 
 (define handle-user [handle /user] '(line [line of text starting with /user]) (fn (line)
     (define restOfLine [line without /user] (substr line 6))
@@ -133,17 +146,18 @@
              (+= current-realname (nth i tokens))
              (if (< i (- (len tokens) 1)) (+= current-realname | |))))
 
-    (socket-send socket (string-format [USER {} 8 * :{}|newline|] current-username current-realname))))
+    (send-user-data)))
 
 (define handle-command [handle command, for example /join] '(line [line of text starting with /]) (fn (line)
     (if (starts-with? line [/quit])    (do (= running false)       (return)))
     (if (starts-with? line [/debug])   (do (= debug (not debug))   (return)))
     (if (starts-with? line [/connect]) (do (handle-connect line)   (return)))
 
-    (if (== socket nil) (do (set-hint [You must connect first])    (return)))
-
     (if (starts-with? line [/user])    (do (handle-user    line)   (return)))
     (if (starts-with? line [/nick])    (do (handle-nick    line)   (return)))
+
+    (if (== socket nil) (do (set-hint [You must connect first])    (return)))
+
     (if (starts-with? line [/join])    (do (handle-join    line)   (return)))
     (if (starts-with? line [/msg])     (do (handle-msg     line)   (return)))
     (if (starts-with? line [/part])    (do (leave-current-channel) (return)))
@@ -177,7 +191,7 @@
 ))
 
 (define show-empty-hint [show empty hint line] '() (fn ()
-    (define message [message] (string-format [/{}/{}/{}/] current-nick current-username current-realname))
+    (define message [message] (string-format [/{}/{}/] current-username current-realname))
     (if debug (+= message [--debug]))
     (set-hint message)))
 

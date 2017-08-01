@@ -8,13 +8,14 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <unistd.h>
+#include <stdint.h>
 
 static char const * const DERN_SOCKET_PLUGIN_NAME = "dern_socket";
 
 void dern_socket_socket_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
-    close((int)payload);
+    close((intptr_t)payload);
     payload = 0;
 }
 
@@ -74,7 +75,7 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
         ? 0
         : (int)octaspire_dern_value_as_integer_get_value(secondArg);
 
-    int const socketFileDescriptor = socket(AF_INET, SOCK_STREAM, 0);
+    intptr_t const socketFileDescriptor = socket(AF_INET, SOCK_STREAM, 0);
 
     if (socketFileDescriptor == -1)
     {
@@ -215,7 +216,8 @@ octaspire_dern_value_t *dern_socket_close(
             octaspire_dern_c_data_get_payload_typename(cData));
     }
 
-    int const socketFileDescriptor = (int)octaspire_dern_c_data_get_payload(cData);
+    intptr_t const socketFileDescriptor =
+        (intptr_t)octaspire_dern_c_data_get_payload(cData);
 
     int result = close(socketFileDescriptor);
 
@@ -285,11 +287,14 @@ octaspire_dern_value_t *dern_socket_accept(
             octaspire_dern_c_data_get_payload_typename(cData));
     }
 
-    int const socketFileDescriptor = (int)octaspire_dern_c_data_get_payload(cData);
+    intptr_t const socketFileDescriptor =
+        (intptr_t)octaspire_dern_c_data_get_payload(cData);
 
     struct sockaddr_in client;
     int const clientLen = sizeof(struct sockaddr_in);
-    int result = accept(socketFileDescriptor, (struct sockaddr*)&client, (socklen_t*)&clientLen);
+
+    intptr_t result =
+        accept(socketFileDescriptor, (struct sockaddr*)&client, (socklen_t*)&clientLen);
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -382,7 +387,8 @@ octaspire_dern_value_t *dern_socket_receive(
 
     bool const waitForData = octaspire_dern_value_as_boolean_get_value(secondArg);
 
-    int const socketFileDescriptor = (int)octaspire_dern_c_data_get_payload(cData);
+    intptr_t const socketFileDescriptor =
+        (intptr_t)octaspire_dern_c_data_get_payload(cData);
 
     octaspire_container_utf8_string_t *str = 0;
 
@@ -482,7 +488,8 @@ octaspire_dern_value_t *dern_socket_send(
             octaspire_dern_c_data_get_payload_typename(cData));
     }
 
-    int const socketFileDescriptor = (int)octaspire_dern_c_data_get_payload(cData);
+    intptr_t const socketFileDescriptor =
+        (intptr_t)octaspire_dern_c_data_get_payload(cData);
 
     octaspire_dern_value_t const * const secondArg =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
@@ -499,7 +506,7 @@ octaspire_dern_value_t *dern_socket_send(
 
     char const * ptr = octaspire_dern_value_as_text_get_c_string(secondArg);
     size_t       len = octaspire_dern_value_as_text_get_length_in_octets(secondArg);
-    int32_t      result = 0;
+    intptr_t     result = 0;
 
     while (true)
     {
