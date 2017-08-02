@@ -436,7 +436,27 @@ int main(int argc, char **argv)
         "\n"
         "  > ");
 
-    int const c = getchar();
+    int c = 0;
+
+    if (argc >= 2)
+    {
+        if (strcmp(argv[1], "--write-test-files") == 0)
+        {
+            --argc;
+            ++argv;
+            c = (int)'a';
+        }
+        else
+        {
+            printf("Unknown option '%s'\n", argv[1]);
+            return EXIT_FAILURE;
+        }
+        printf("Option '%c' given with command line argument.\n", (char)c);
+    }
+    else
+    {
+        c = getchar();
+    }
 
     switch (c)
     {
