@@ -15,7 +15,7 @@ before_script:
 
 script:
     - $CC -O2 -std=c99 -Wall -Wextra --coverage -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS -DGREATEST_ENABLE_ANSI_COLORS -I . octaspire-dern-amalgamated.c -Wl,-export-dynamic -ldl -lm -o octaspire-dern-unit-test-runner
-    - valgrind --leak-check=full --error-exitcode=1 octaspire-dern-unit-test-runner --write-test-files
+    - valgrind --leak-check=full --error-exitcode=1 ./octaspire-dern-unit-test-runner --write-test-files
     - ./octaspire-dern-unit-test-runner --write-test-files
     - gcov octaspire-dern-amalgamated.gcno
 
