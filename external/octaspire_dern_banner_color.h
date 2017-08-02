@@ -1,4 +1,4 @@
-/***********************************************************************
+/*-----------------------------------------------------------------------------
  * This banner is generated with toilet using font standard.flf and by
  * coloring the result with lolcat. The header of font standard.flf is:
  *
@@ -36,7 +36,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
     ******************************************************************************
-***********************************************************************/
+-----------------------------------------------------------------------------*/
+extern unsigned char octaspire_dern_banner_color[];
+extern unsigned int octaspire_dern_banner_color_len;
+
 unsigned char octaspire_dern_banner_color[] = {
   0x1b, 0x5b, 0x33, 0x38, 0x3b, 0x35, 0x3b, 0x39, 0x33, 0x6d, 0x20, 0x1b,
   0x5b, 0x30, 0x6d, 0x1b, 0x5b, 0x33, 0x38, 0x3b, 0x35, 0x3b, 0x39, 0x39,

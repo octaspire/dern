@@ -31,7 +31,6 @@ struct octaspire_dern_lexer_token_t
     octaspire_dern_lexer_token_position_t *line;
     octaspire_dern_lexer_token_position_t *column;
     octaspire_dern_lexer_token_position_t *ucsIndex;
-    octaspire_dern_lexer_token_tag_t       typeTag;
 
     union
     {
@@ -45,6 +44,9 @@ struct octaspire_dern_lexer_token_t
         double                             real;
     }
     value;
+
+    octaspire_dern_lexer_token_tag_t       typeTag;
+    char                                   padding[4];
 };
 
 static char const * const octaspire_dern_lexer_private_token_tag_types_as_c_strings[] =
@@ -320,14 +322,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
             assert(octaspire_container_utf8_string_get_error_status(self->value.error) == OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
         }
         break;
-
-        default:
-        {
-            octaspire_dern_lexer_token_release(self);
-            self = 0;
-            return 0;
-        }
-        break;
     }
 
     return self;
@@ -415,7 +409,14 @@ void octaspire_dern_lexer_token_release(
         }
         break;
 
-        default:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_LPAREN:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_QUOTE:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_TRUE:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_FALSE:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_NIL:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_REAL:
         {
             // Nothing to be done here
         }
@@ -549,25 +550,21 @@ bool octaspire_dern_lexer_token_is_equal(
         {
             return octaspire_container_utf8_string_is_equal(self->value.string, other->value.string);
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER:
         {
             return octaspire_container_utf8_string_is_equal(self->value.character, other->value.character);
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SYMBOL:
         {
             return octaspire_container_utf8_string_is_equal(self->value.symbol, other->value.symbol);
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR:
         {
             return octaspire_container_utf8_string_is_equal(self->value.error, other->value.error);
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED:
         {
@@ -575,31 +572,38 @@ bool octaspire_dern_lexer_token_is_equal(
                 self->value.moreInputRequired,
                 other->value.moreInputRequired);
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER:
         {
             return self->value.integer == other->value.integer;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_REAL:
         {
-            return self->value.real == other->value.real;
+            // To prevent clang compiler warning on level
+            // -Weverything without using #pragma
+            return
+                (self->value.real >= other->value.real) &&
+                (self->value.real <= other->value.real);
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT:
         {
             return octaspire_container_utf8_string_is_equal(self->value.comment, other->value.comment);
         }
-        break;
 
-        default:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_LPAREN:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_QUOTE:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_TRUE:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_FALSE:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_NIL:
         {
             return true;
         }
     }
+
+    abort();
 }
 
 octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
@@ -626,7 +630,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN:
         {
@@ -637,7 +640,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_QUOTE:
         {
@@ -648,7 +650,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_TRUE:
         {
@@ -659,7 +660,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_FALSE:
         {
@@ -670,7 +670,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_NIL:
         {
@@ -681,7 +680,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER:
         {
@@ -695,7 +693,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_REAL:
         {
@@ -709,7 +706,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_STRING:
         {
@@ -723,7 +719,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER:
         {
@@ -761,7 +756,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SYMBOL:
         {
@@ -775,7 +769,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR:
         {
@@ -789,7 +782,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT:
         {
@@ -803,7 +795,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED:
         {
@@ -817,7 +808,6 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
             return result;
         }
-        break;
     }
 
     if (!octaspire_container_utf8_string_concatenate_format(
@@ -1525,7 +1515,8 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
             allocator);
     }
 
-    int32_t const resultValue = atol(octaspire_container_utf8_string_get_c_string(tmpStr));
+    int32_t const resultValue =
+        (int32_t)atol(octaspire_container_utf8_string_get_c_string(tmpStr));
 
     octaspire_container_utf8_string_release(tmpStr);
     tmpStr = 0;
@@ -1963,7 +1954,10 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
 
             if (!octaspire_container_utf8_string_push_back_ucs_character(
                 unicodeChar,
-                strtol(octaspire_container_utf8_string_get_c_string(tmpStr), 0, 16)))
+                (uint32_t)strtol(
+                    octaspire_container_utf8_string_get_c_string(tmpStr),
+                    0,
+                    16)))
             {
                 abort();
             }
@@ -2238,7 +2232,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
                             startColumn,
                             startIndexInInput);
                     }
-                    break;
 
                     default:
                     {
@@ -2249,10 +2242,8 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
                             startColumn,
                             startIndexInInput);
                     }
-                    break;
                 }
             }
-            break;
 
             case '(':
             {
@@ -2263,7 +2254,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
                     startColumn,
                     startIndexInInput);
             }
-            break;
 
             case ')':
             {
@@ -2274,7 +2264,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
                     startColumn,
                     startIndexInInput);
             }
-            break;
 
             case '\'':
             {
@@ -2285,7 +2274,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
                     startColumn,
                     startIndexInInput);
             }
-            break;
 
             case '-':
             {
@@ -2309,7 +2297,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
                             startColumn,
                             startIndexInInput);
                     }
-                    break;
 
                     default:
                     {
@@ -2320,10 +2307,8 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
                             startColumn,
                             startIndexInInput);
                     }
-                    break;
                 }
             }
-            break;
 
             case '0':
             case '1':
@@ -2343,7 +2328,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
                     startColumn,
                     startIndexInInput);
             }
-            break;
 
             /*
             case '|':
@@ -2367,7 +2351,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
                     startColumn,
                     startIndexInInput);
             }
-            break;
 
             case '|':
             {
@@ -2378,7 +2361,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
                     startColumn,
                     startIndexInInput);
             }
-            break;
 
             case 't':
             case 'f':
@@ -2392,7 +2374,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
                     startColumn,
                     startIndexInInput);
             }
-            break;
         }
     }
 

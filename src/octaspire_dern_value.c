@@ -49,6 +49,22 @@ static char const * const octaspire_dern_value_helper_type_tags_as_c_strings[] =
     "C data"
 };
 
+static octaspire_container_utf8_string_t *octaspire_dern_function_private_is_string_in_vector(
+    octaspire_memory_allocator_t *allocator,
+    octaspire_container_utf8_string_t const * const str,
+    octaspire_container_vector_t const * const vec);
+
+static octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
+    octaspire_dern_value_t const * const self,
+    bool const plain,
+    octaspire_memory_allocator_t * const allocator);
+
+static int octaspire_dern_value_private_compare_void_pointers(
+    void const * const a,
+    void const * const b);
+
+
+
 octaspire_dern_function_t *octaspire_dern_function_new(
     struct octaspire_dern_value_t *formals,
     struct octaspire_dern_value_t *body,
@@ -97,7 +113,7 @@ size_t octaspire_dern_function_get_number_of_required_arguments(
     {
         octaspire_dern_value_t *formal = octaspire_container_vector_get_element_at(
             self->formals->value.vector,
-            i);
+            (ptrdiff_t)i);
 
         octaspire_helpers_verify_true(formal->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
 
@@ -126,7 +142,7 @@ octaspire_container_utf8_string_t *octaspire_dern_function_private_is_string_in_
     for (size_t i = 0; i < octaspire_container_vector_get_length(vec); i += 2)
     {
         octaspire_dern_value_t const * const symbol =
-            octaspire_container_vector_get_element_at_const(vec, i);
+            octaspire_container_vector_get_element_at_const(vec, (ptrdiff_t)i);
 
         octaspire_helpers_verify_true(symbol && symbol->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
 
@@ -142,7 +158,9 @@ octaspire_container_utf8_string_t *octaspire_dern_function_private_is_string_in_
             }
 
             octaspire_dern_value_t const * const docstr =
-                octaspire_container_vector_get_element_at_const(vec, i + 1);
+                octaspire_container_vector_get_element_at_const(
+                    vec,
+                    (ptrdiff_t)(i + 1));
 
             if (!docstr)
             {
@@ -182,8 +200,13 @@ octaspire_container_utf8_string_t *octaspire_dern_function_are_all_formals_menti
     octaspire_dern_function_t const * const self,
     octaspire_dern_value_t const * const docvec)
 {
-    octaspire_helpers_verify_true(docvec && docvec->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    octaspire_helpers_verify_true(self && self->formals && self->formals->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(
+        docvec &&
+        docvec->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        self &&
+        self->formals && self->formals->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
 
     octaspire_container_utf8_string_t *result =
         octaspire_container_utf8_string_new("", self->allocator);
@@ -195,13 +218,17 @@ octaspire_container_utf8_string_t *octaspire_dern_function_are_all_formals_menti
 
     for (size_t i = 0; i < octaspire_dern_value_get_length(self->formals); ++i)
     {
-        octaspire_dern_value_t const * const formal = octaspire_dern_value_as_vector_get_element_at_const(
-            self->formals,
-            i);
+        octaspire_dern_value_t const * const formal =
+            octaspire_dern_value_as_vector_get_element_at_const(
+                self->formals,
+                (ptrdiff_t)i);
 
-        octaspire_helpers_verify_true(formal && formal->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+        octaspire_helpers_verify_true(
+            formal &&
+            formal->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
 
-        octaspire_container_utf8_string_t *errorString = octaspire_dern_function_private_is_string_in_vector(
+        octaspire_container_utf8_string_t *errorString =
+            octaspire_dern_function_private_is_string_in_vector(
                 self->allocator,
                 formal->value.symbol,
                 docvec->value.vector);
@@ -318,6 +345,13 @@ char const * octaspire_dern_value_helper_get_type_as_c_string(octaspire_dern_val
     return octaspire_dern_value_helper_type_tags_as_c_strings[typeTag];
 }
 
+octaspire_dern_value_tag_t octaspire_dern_value_get_type(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_not_null(self);
+    return self->typeTag;
+}
+
 bool octaspire_dern_value_set(
     octaspire_dern_value_t  * const self,
     octaspire_dern_value_t  * const value)
@@ -337,7 +371,6 @@ bool octaspire_dern_value_set(
         {
             abort();
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
         {
@@ -419,7 +452,9 @@ bool octaspire_dern_value_set(
             for (size_t i = 0; i < octaspire_container_vector_get_length(value->value.vector); ++i)
             {
                 octaspire_dern_value_t * tmpVal =
-                    octaspire_container_vector_get_element_at(value->value.vector, i);
+                    octaspire_container_vector_get_element_at(
+                        value->value.vector,
+                        (ptrdiff_t)i);
 
                 if (octaspire_dern_value_is_atom(tmpVal))
                 {
@@ -452,11 +487,14 @@ bool octaspire_dern_value_set(
                 octaspire_dern_vm_get_allocator(self->vm));
 
             for (size_t i = 0;
-                 i < octaspire_container_hash_map_get_number_of_elements(value->value.hashMap);
+                 i < octaspire_container_hash_map_get_number_of_elements(
+                     value->value.hashMap);
                  ++i)
             {
                 octaspire_container_hash_map_element_t * const element =
-                    octaspire_container_hash_map_get_at_index(value->value.hashMap, i);
+                    octaspire_container_hash_map_get_at_index(
+                        value->value.hashMap,
+                        (ptrdiff_t)i);
 
                 octaspire_dern_value_t *key = octaspire_container_hash_map_element_get_key(element);
                 octaspire_dern_value_t *val = octaspire_container_hash_map_element_get_value(element);
@@ -507,10 +545,14 @@ bool octaspire_dern_value_set(
                 octaspire_dern_vm_get_allocator(self->vm));
 
             // TODO Add iterator to queue and use it here
-            for (size_t i = 0; i < octaspire_container_queue_get_length(value->value.queue); ++i)
+            for (size_t i = 0;
+                 i < octaspire_container_queue_get_length(value->value.queue);
+                 ++i)
             {
                 octaspire_dern_value_t * tmpVal =
-                    octaspire_container_queue_get_at(value->value.queue, i);
+                    octaspire_container_queue_get_at(
+                        value->value.queue,
+                        (ptrdiff_t)i);
 
                 if (octaspire_dern_value_is_atom(tmpVal))
                 {
@@ -538,10 +580,15 @@ bool octaspire_dern_value_set(
                 octaspire_dern_vm_get_allocator(self->vm));
 
             // TODO more efficient iteration
-            for (size_t i = 0; i < octaspire_container_list_get_length(value->value.list); ++i)
+            for (size_t i = 0;
+                 i < octaspire_container_list_get_length(value->value.list);
+                 ++i)
             {
-                octaspire_dern_value_t * tmpVal = octaspire_container_list_node_get_element(
-                    octaspire_container_list_get_at(value->value.list, i));
+                octaspire_dern_value_t * tmpVal =
+                    octaspire_container_list_node_get_element(
+                        octaspire_container_list_get_at(
+                            value->value.list,
+                            (ptrdiff_t)i));
 
                 if (octaspire_dern_value_is_atom(tmpVal))
                 {
@@ -561,34 +608,13 @@ bool octaspire_dern_value_set(
         break;
 
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
-        {
-            abort();
-        }
-        break;
-
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
-        {
-            abort();
-        }
-        break;
-
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
-        {
-            abort();
-        }
-        break;
-
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
-        {
-            abort();
-        }
-        break;
-
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         {
             abort();
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
@@ -751,7 +777,6 @@ uint32_t octaspire_dern_value_get_hash(
         {
             abort();
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:         return octaspire_helpers_calculate_hash_for_bool_argument(false);
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     return octaspire_helpers_calculate_hash_for_bool_argument(self->value.boolean);
@@ -774,7 +799,6 @@ uint32_t octaspire_dern_value_get_hash(
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:      return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.cData);
     }
 
-    abort();
     return 0;
 }
 
@@ -803,7 +827,6 @@ bool octaspire_dern_value_is_equal(
         {
             abort();
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:         return true;
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     return self->value.boolean == other->value.boolean;
@@ -815,17 +838,20 @@ bool octaspire_dern_value_is_equal(
                 return self->value.integer == other->value.integer;
             }
 
-            return self->value.integer == other->value.real;
+            return self->value.integer >= other->value.real &&
+                   self->value.integer <= other->value.real;
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         {
             if (other->typeTag == self->typeTag)
             {
-                return self->value.real == other->value.real;
+                return self->value.real >= other->value.real &&
+                       self->value.real <= other->value.real;
             }
 
-            return self->value.real == other->value.integer;
+            return self->value.real >= other->value.integer &&
+                   self->value.real <= other->value.integer;
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_STRING:      return octaspire_container_utf8_string_is_equal(self->value.string, other->value.string);
@@ -878,10 +904,17 @@ bool octaspire_dern_value_is_less_than(
         {
             abort();
         }
-        break;
 
-        case OCTASPIRE_DERN_VALUE_TAG_NIL:         return false;
-        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     return self->value.boolean < other->value.boolean;
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        {
+            return false;
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        {
+            return self->value.boolean < other->value.boolean;
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         {
             if (other->typeTag == self->typeTag)
@@ -901,27 +934,43 @@ bool octaspire_dern_value_is_less_than(
 
             return self->value.real < other->value.integer;
         }
-
-        // TODO XXX implement below
-        /*
-        case OCTASPIRE_DERN_VALUE_TAG_STRING:      return octaspire_container_utf8_string_is_equal(self->value.string, other->value.string);
-        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:   return octaspire_container_utf8_string_is_equal(self->value.character, other->value.character);
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:      return octaspire_container_utf8_string_is_equal(self->value.symbol, other->value.symbol);
-        case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_is_equal(self->value.error, other->value.error);
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return self->value.vector == other->value.vector;
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return self->value.environment == other->value.environment;
-        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return self->value.function == other->value.function;
-        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special == other->value.special;
-        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin == other->value.builtin;
-        */
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
-            octaspire_helpers_verify_not_null(false);
+            return (octaspire_container_utf8_string_compare(
+                    self->value.string,
+                    other->value.string) < 0);
         }
-        break;
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.character,
+                    other->value.character) < 0);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.symbol,
+                    other->value.symbol) < 0);
+        }
+
+        // TODO XXX implement the rest
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            abort();
+        }
     }
 
-    abort();
     return false;
 }
 
@@ -950,10 +999,15 @@ bool octaspire_dern_value_is_greater_than(
         {
             abort();
         }
-        break;
 
-        case OCTASPIRE_DERN_VALUE_TAG_NIL:         return false;
-        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     return self->value.boolean > other->value.boolean;
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        {
+            return false;
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        {
+            return self->value.boolean > other->value.boolean;
+        }
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         {
             if (other->typeTag == self->typeTag)
@@ -974,26 +1028,43 @@ bool octaspire_dern_value_is_greater_than(
             return self->value.real > other->value.integer;
         }
 
-        // TODO XXX implement below
-        /*
-        case OCTASPIRE_DERN_VALUE_TAG_STRING:      return octaspire_container_utf8_string_is_equal(self->value.string, other->value.string);
-        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:   return octaspire_container_utf8_string_is_equal(self->value.character, other->value.character);
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:      return octaspire_container_utf8_string_is_equal(self->value.symbol, other->value.symbol);
-        case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_is_equal(self->value.error, other->value.error);
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return self->value.vector == other->value.vector;
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return self->value.environment == other->value.environment;
-        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return self->value.function == other->value.function;
-        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special == other->value.special;
-        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin == other->value.builtin;
-        */
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
-            octaspire_helpers_verify_not_null(false);
+            return (octaspire_container_utf8_string_compare(
+                    self->value.string,
+                    other->value.string) > 0);
         }
-        break;
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.character,
+                    other->value.character) > 0);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.symbol,
+                    other->value.symbol) > 0);
+        }
+
+        // TODO XXX implement the rest
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            abort();
+        }
     }
 
-    abort();
     return false;
 }
 
@@ -1022,7 +1093,6 @@ bool octaspire_dern_value_is_less_than_or_equal(
         {
             abort();
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:         return true;
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     return self->value.boolean <= other->value.boolean;
@@ -1046,23 +1116,41 @@ bool octaspire_dern_value_is_less_than_or_equal(
             return self->value.real <= other->value.integer;
         }
 
-        // TODO XXX implement below
-        /*
-        case OCTASPIRE_DERN_VALUE_TAG_STRING:      return octaspire_container_utf8_string_is_equal(self->value.string, other->value.string);
-        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:   return octaspire_container_utf8_string_is_equal(self->value.character, other->value.character);
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:      return octaspire_container_utf8_string_is_equal(self->value.symbol, other->value.symbol);
-        case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_is_equal(self->value.error, other->value.error);
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return self->value.vector == other->value.vector;
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return self->value.environment == other->value.environment;
-        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return self->value.function == other->value.function;
-        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special == other->value.special;
-        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin == other->value.builtin;
-        */
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
-            octaspire_helpers_verify_not_null(false);
+            return (octaspire_container_utf8_string_compare(
+                    self->value.string,
+                    other->value.string) <= 0);
         }
-        break;
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.character,
+                    other->value.character) <= 0);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.symbol,
+                    other->value.symbol) <= 0);
+        }
+
+        // TODO XXX implement the rest
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            abort();
+        }
     }
 
     abort();
@@ -1094,7 +1182,6 @@ bool octaspire_dern_value_is_greater_than_or_equal(
         {
             abort();
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:         return true;
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     return self->value.boolean >= other->value.boolean;
@@ -1118,26 +1205,43 @@ bool octaspire_dern_value_is_greater_than_or_equal(
             return self->value.real >= other->value.integer;
         }
 
-        // TODO XXX implement below
-        /*
-        case OCTASPIRE_DERN_VALUE_TAG_STRING:      return octaspire_container_utf8_string_is_equal(self->value.string, other->value.string);
-        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:   return octaspire_container_utf8_string_is_equal(self->value.character, other->value.character);
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:      return octaspire_container_utf8_string_is_equal(self->value.symbol, other->value.symbol);
-        case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_is_equal(self->value.error, other->value.error);
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return self->value.vector == other->value.vector;
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return self->value.environment == other->value.environment;
-        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return self->value.function == other->value.function;
-        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special == other->value.special;
-        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin == other->value.builtin;
-        */
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
-            octaspire_helpers_verify_not_null(false);
+            return (octaspire_container_utf8_string_compare(
+                    self->value.string,
+                    other->value.string) >= 0);
         }
-        break;
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.character,
+                    other->value.character) >= 0);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.symbol,
+                    other->value.symbol) >= 0);
+        }
+
+        // TODO XXX implement the rest
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            abort();
+        }
     }
 
-    abort();
     return false;
 }
 
@@ -1154,45 +1258,38 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
         {
             abort();
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
         {
             return octaspire_container_utf8_string_new("nil", allocator);
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         {
             return octaspire_container_utf8_string_new_format(allocator, "%s", self->value.boolean ? "true" : "false");
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
             {
                 return octaspire_container_utf8_string_new_format(allocator, "%" PRId32 "", self->value.integer);
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_REAL:
             {
                 return octaspire_container_utf8_string_new_format(allocator, "%g", self->value.real);
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_STRING:
             {
                 return octaspire_container_utf8_string_new_format(allocator, plain ? "%s" :"[%s]",
                     octaspire_container_utf8_string_get_c_string(self->value.string));
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
             {
                 return octaspire_container_utf8_string_new_format(allocator, "#!\n%s\n!#",
                     octaspire_container_utf8_string_get_c_string(self->value.comment));
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
             {
@@ -1216,21 +1313,18 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
                         octaspire_container_utf8_string_get_c_string(self->value.character));
                 }
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
             {
                 return octaspire_container_utf8_string_new_format(allocator, "%s",
                     octaspire_container_utf8_string_get_c_string(self->value.symbol));
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_ERROR:
             {
                 return octaspire_container_utf8_string_new_format(allocator, "<error>: %s",
                     octaspire_container_utf8_string_get_c_string(self->value.error));
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
             {
@@ -1240,7 +1334,9 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
                 for (size_t i = 0; i < octaspire_container_vector_get_length(self->value.vector); ++i)
                 {
                     octaspire_dern_value_t *tmpValue =
-                        octaspire_container_vector_get_element_at(self->value.vector, i);
+                        octaspire_container_vector_get_element_at(
+                            self->value.vector,
+                            (ptrdiff_t)i);
 
                     octaspire_helpers_verify_not_null(tmpValue);
 
@@ -1275,7 +1371,6 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
 
                 return result;
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
             {
@@ -1285,11 +1380,14 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
                 octaspire_helpers_verify_not_null(result);
 
                 for (size_t i = 0;
-                    i < octaspire_container_hash_map_get_number_of_elements(self->value.hashMap);
+                     i < octaspire_container_hash_map_get_number_of_elements(
+                         self->value.hashMap);
                     ++i)
                 {
                     octaspire_container_hash_map_element_t *element = 
-                        octaspire_container_hash_map_get_at_index(self->value.hashMap, i);
+                        octaspire_container_hash_map_get_at_index(
+                            self->value.hashMap,
+                            (ptrdiff_t)i);
 
                     // Key
                     octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
@@ -1349,7 +1447,6 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
 
                 return result;
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
             {
@@ -1360,7 +1457,9 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
                 for (size_t i = 0; i < octaspire_container_queue_get_length(self->value.queue); ++i)
                 {
                     octaspire_dern_value_t *tmpValue =
-                        octaspire_container_queue_get_at(self->value.queue, i);
+                        octaspire_container_queue_get_at(
+                            self->value.queue,
+                            (ptrdiff_t)i);
 
                     octaspire_helpers_verify_not_null(tmpValue);
 
@@ -1395,7 +1494,6 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
 
                 return result;
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_LIST:
             {
@@ -1405,8 +1503,11 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
                 // More efficient iteration
                 for (size_t i = 0; i < octaspire_container_list_get_length(self->value.list); ++i)
                 {
-                    octaspire_dern_value_t *tmpValue = octaspire_container_list_node_get_element(
-                        octaspire_container_list_get_at(self->value.list, i));
+                    octaspire_dern_value_t *tmpValue =
+                        octaspire_container_list_node_get_element(
+                            octaspire_container_list_get_at(
+                                self->value.list,
+                                (ptrdiff_t)i));
 
                     octaspire_helpers_verify_not_null(tmpValue);
 
@@ -1441,55 +1542,39 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
 
                 return result;
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
             {
                 return octaspire_container_utf8_string_new("<function>", allocator);
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             {
                 return octaspire_container_utf8_string_new("<builtin>", allocator);
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_PORT:
             {
                 return octaspire_dern_port_to_string(self->value.port, allocator);
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
             {
                 return octaspire_dern_c_data_to_string(self->value.cData, allocator);
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
             {
                 return octaspire_container_utf8_string_new("<special>", allocator);
             }
-            break;
 
             case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
             {
                 octaspire_helpers_verify_not_null(self->value.environment);
                 return octaspire_dern_environment_to_string(self->value.environment);
             }
-            break;
-
-            default:
-            {
-                printf(">>>>>>>typeTag problem %i\n", (int)self->typeTag);
-                // TODO XXX add support for rest of the value-types
-                octaspire_helpers_verify_not_null(false);
-            }
-            break;
         }
 
-    abort();
     return 0;
 }
 
@@ -1684,6 +1769,11 @@ bool octaspire_dern_value_as_hash_map_add(
 
     switch (toBeAdded1->typeTag)
     {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         {
             octaspire_helpers_verify_null(toBeAdded2);
@@ -1692,7 +1782,6 @@ bool octaspire_dern_value_as_hash_map_add(
                 self->value.hashMap,
                 toBeAdded1->value.hashMap);
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         {
@@ -1708,8 +1797,15 @@ bool octaspire_dern_value_as_hash_map_add(
             bool result = true;
             for (size_t i = 0; i < vecLen; i += 2)
             {
-                octaspire_dern_value_t *key = octaspire_dern_value_as_vector_get_element_at(toBeAdded1, i);
-                octaspire_dern_value_t *val = octaspire_dern_value_as_vector_get_element_at(toBeAdded1, i + 1);
+                octaspire_dern_value_t * const key =
+                    octaspire_dern_value_as_vector_get_element_at(
+                        toBeAdded1,
+                        (ptrdiff_t)i);
+
+                octaspire_dern_value_t * const val =
+                    octaspire_dern_value_as_vector_get_element_at(
+                        toBeAdded1,
+                        (ptrdiff_t)(i + 1));
 
                 uint32_t const hash = octaspire_dern_value_get_hash(key);
 
@@ -1725,9 +1821,24 @@ bool octaspire_dern_value_as_hash_map_add(
 
             return result;
         }
-        break;
 
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             if (!toBeAdded2)
             {
@@ -1757,8 +1868,7 @@ bool octaspire_dern_value_as_queue_push(
     octaspire_dern_value_t * const toBeAdded)
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_QUEUE);
-
-    if (octaspire_dern_value_is_atom(toBeAdded))
+if (octaspire_dern_value_is_atom(toBeAdded))
     {
         octaspire_dern_value_t * const copyVal =
             octaspire_dern_vm_create_new_value_copy(self->vm, toBeAdded);
@@ -1806,6 +1916,11 @@ bool octaspire_dern_value_as_character_add(
 
     switch (other->typeTag)
     {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
         // TODO should adding of char, string and vector be allowed?
         // It could turn this character into a string.
 
@@ -1819,11 +1934,10 @@ bool octaspire_dern_value_as_character_add(
 
             octaspire_container_utf8_string_push_back_ucs_character(
                 self->value.character, 
-                charAsInt + other->value.integer);
+                (uint32_t)((int32_t)charAsInt + other->value.integer));
 
             return true;
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
@@ -1842,13 +1956,30 @@ bool octaspire_dern_value_as_character_add(
 
             return true;
         }
-        break;
 
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             return false;
         }
     }
+
+    abort();
 }
 
 bool octaspire_dern_value_as_character_subtract(
@@ -1859,21 +1990,26 @@ bool octaspire_dern_value_as_character_subtract(
 
     switch (other->typeTag)
     {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         {
-            uint32_t const charAsInt = octaspire_container_utf8_string_get_ucs_character_at_index(
-                self->value.character,
-                0);
+            uint32_t const charAsInt =
+                octaspire_container_utf8_string_get_ucs_character_at_index(
+                    self->value.character,
+                    0);
 
             octaspire_container_utf8_string_clear(self->value.character);
 
             octaspire_container_utf8_string_push_back_ucs_character(
                 self->value.character,
-                charAsInt - other->value.integer);
+                (uint32_t)((int32_t)charAsInt - other->value.integer));
 
             return true;
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
@@ -1893,13 +2029,30 @@ bool octaspire_dern_value_as_character_subtract(
 
             return true;
         }
-        break;
 
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             return false;
         }
     }
+
+    abort();
 }
 
 bool octaspire_dern_value_as_integer_add(
@@ -1910,6 +2063,11 @@ bool octaspire_dern_value_as_integer_add(
 
     switch (other->typeTag)
     {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
             octaspire_container_utf8_string_t *chars = octaspire_container_utf8_string_new(
@@ -1941,14 +2099,12 @@ bool octaspire_dern_value_as_integer_add(
                 return false;
             }
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         {
             self->value.integer += other->value.integer;
             return true;
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         {
@@ -1957,7 +2113,6 @@ bool octaspire_dern_value_as_integer_add(
             self->value.real += other->value.real;
             return true;
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         {
@@ -1966,7 +2121,9 @@ bool octaspire_dern_value_as_integer_add(
             {
                 if (!octaspire_dern_value_as_integer_add(
                         self,
-                        octaspire_dern_value_as_vector_get_element_at(other, i)))
+                        octaspire_dern_value_as_vector_get_element_at(
+                            other,
+                            (ptrdiff_t)i)))
                 {
                     result = false;
                 }
@@ -1974,13 +2131,28 @@ bool octaspire_dern_value_as_integer_add(
 
             return result;
         }
-        break;
 
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             return false;
         }
     }
+
+    abort();
 }
 
 bool octaspire_dern_value_as_integer_subtract(
@@ -1991,6 +2163,11 @@ bool octaspire_dern_value_as_integer_subtract(
 
     switch (other->typeTag)
     {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
             octaspire_container_utf8_string_t *chars = octaspire_container_utf8_string_new(
@@ -2022,14 +2199,12 @@ bool octaspire_dern_value_as_integer_subtract(
                 return false;
             }
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         {
             self->value.integer -= other->value.integer;
             return true;
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         {
@@ -2038,7 +2213,6 @@ bool octaspire_dern_value_as_integer_subtract(
             self->value.real -= other->value.real;
             return true;
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         {
@@ -2047,7 +2221,9 @@ bool octaspire_dern_value_as_integer_subtract(
             {
                 if (!octaspire_dern_value_as_integer_subtract(
                         self,
-                        octaspire_dern_value_as_vector_get_element_at(other, i)))
+                        octaspire_dern_value_as_vector_get_element_at(
+                            other,
+                            (ptrdiff_t)i)))
                 {
                     result = false;
                 }
@@ -2055,13 +2231,28 @@ bool octaspire_dern_value_as_integer_subtract(
 
             return result;
         }
-        break;
 
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             return false;
         }
     }
+
+    return false;
 }
 
 bool octaspire_dern_value_as_real_add(
@@ -2072,6 +2263,11 @@ bool octaspire_dern_value_as_real_add(
 
     switch (other->typeTag)
     {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
             octaspire_container_utf8_string_t *chars = octaspire_container_utf8_string_new(
@@ -2100,21 +2296,18 @@ bool octaspire_dern_value_as_real_add(
                 return false;
             }
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         {
             self->value.real += other->value.integer;
             return true;
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         {
             self->value.real += other->value.real;
             return true;
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         {
@@ -2123,7 +2316,9 @@ bool octaspire_dern_value_as_real_add(
             {
                 if (!octaspire_dern_value_as_real_add(
                         self,
-                        octaspire_dern_value_as_vector_get_element_at(other, i)))
+                        octaspire_dern_value_as_vector_get_element_at(
+                            other,
+                            (ptrdiff_t)i)))
                 {
                     result = false;
                 }
@@ -2131,13 +2326,28 @@ bool octaspire_dern_value_as_real_add(
 
             return result;
         }
-        break;
 
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             return false;
         }
     }
+
+    abort();
 }
 
 bool octaspire_dern_value_as_real_subtract(
@@ -2148,6 +2358,11 @@ bool octaspire_dern_value_as_real_subtract(
 
     switch (other->typeTag)
     {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
             octaspire_container_utf8_string_t *chars = octaspire_container_utf8_string_new(
@@ -2176,21 +2391,18 @@ bool octaspire_dern_value_as_real_subtract(
                 return false;
             }
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         {
             self->value.real -= other->value.integer;
             return true;
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         {
             self->value.real -= other->value.real;
             return true;
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         {
@@ -2199,7 +2411,9 @@ bool octaspire_dern_value_as_real_subtract(
             {
                 if (!octaspire_dern_value_as_real_subtract(
                         self,
-                        octaspire_dern_value_as_vector_get_element_at(other, i)))
+                        octaspire_dern_value_as_vector_get_element_at(
+                            other,
+                            (ptrdiff_t)i)))
                 {
                     result = false;
                 }
@@ -2207,13 +2421,28 @@ bool octaspire_dern_value_as_real_subtract(
 
             return result;
         }
-        break;
 
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             return false;
         }
     }
+
+    abort();
 }
 
 char const *octaspire_dern_value_as_character_get_c_string(
@@ -2231,13 +2460,17 @@ bool octaspire_dern_value_as_string_push_back(
 
     switch (value->typeTag)
     {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
             return octaspire_container_utf8_string_concatenate(
                 self->value.string,
                 value->value.string);
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         {
@@ -2245,7 +2478,6 @@ bool octaspire_dern_value_as_string_push_back(
                 self->value.string,
                 value->value.symbol);
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
@@ -2253,7 +2485,6 @@ bool octaspire_dern_value_as_string_push_back(
                 self->value.string,
                 value->value.character);
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         {
@@ -2262,7 +2493,9 @@ bool octaspire_dern_value_as_string_push_back(
             {
                 if (!octaspire_dern_value_as_string_push_back(
                         self,
-                        octaspire_dern_value_as_vector_get_element_at(value, i)))
+                        octaspire_dern_value_as_vector_get_element_at(
+                            value,
+                            (ptrdiff_t)i)))
                 {
                     result = false;
                 }
@@ -2270,9 +2503,22 @@ bool octaspire_dern_value_as_string_push_back(
 
             return result;
         }
-        break;
 
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             octaspire_container_utf8_string_t *tmpStr =
                 octaspire_dern_value_to_string(value, octaspire_dern_vm_get_allocator(self->vm));
@@ -2285,6 +2531,8 @@ bool octaspire_dern_value_as_string_push_back(
             return result;
         }
     }
+
+    return false;
 }
 
 bool octaspire_dern_value_as_symbol_push_back(
@@ -2295,13 +2543,17 @@ bool octaspire_dern_value_as_symbol_push_back(
 
     switch (value->typeTag)
     {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
             return octaspire_container_utf8_string_concatenate(
                 self->value.symbol,
                 value->value.string);
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         {
@@ -2309,7 +2561,6 @@ bool octaspire_dern_value_as_symbol_push_back(
                 self->value.symbol,
                 value->value.symbol);
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
@@ -2317,7 +2568,6 @@ bool octaspire_dern_value_as_symbol_push_back(
                 self->value.symbol,
                 value->value.character);
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         {
@@ -2326,7 +2576,9 @@ bool octaspire_dern_value_as_symbol_push_back(
             {
                 if (!octaspire_dern_value_as_symbol_push_back(
                         self,
-                        octaspire_dern_value_as_vector_get_element_at(value, i)))
+                        octaspire_dern_value_as_vector_get_element_at(
+                            value,
+                            (ptrdiff_t)i)))
                 {
                     result = false;
                 }
@@ -2334,14 +2586,31 @@ bool octaspire_dern_value_as_symbol_push_back(
 
             return result;
         }
-        break;
 
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             octaspire_container_utf8_string_t *tmpStr =
-                octaspire_dern_value_to_string(value, octaspire_dern_vm_get_allocator(self->vm));
+                octaspire_dern_value_to_string(
+                    value,
+                    octaspire_dern_vm_get_allocator(self->vm));
 
-            bool result = octaspire_container_utf8_string_concatenate(self->value.symbol, tmpStr);
+            bool const result = octaspire_container_utf8_string_concatenate(
+                self->value.symbol,
+                tmpStr);
 
             octaspire_container_utf8_string_release(tmpStr);
             tmpStr = 0;
@@ -2349,6 +2618,8 @@ bool octaspire_dern_value_as_symbol_push_back(
             return result;
         }
     }
+
+    return false;
 }
 
 bool octaspire_dern_value_as_string_pop_back_ucs_character(
@@ -2367,6 +2638,11 @@ bool octaspire_dern_value_as_string_remove_all_substrings(
 
     switch (value->typeTag)
     {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
             octaspire_container_utf8_string_remove_all_substrings(
@@ -2383,7 +2659,23 @@ bool octaspire_dern_value_as_string_remove_all_substrings(
         }
         break;
 
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             return false;
         }
@@ -2414,30 +2706,98 @@ bool octaspire_dern_value_as_symbol_is_equal_to_c_string(
     return octaspire_container_utf8_string_is_equal_to_c_string(self->value.symbol, str);
 }
 
+bool octaspire_dern_value_as_text_is_equal_to_c_string(
+    octaspire_dern_value_t const * const self,
+    char const * const str)
+{
+    switch (self->typeTag)
+    {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        {
+            return octaspire_container_utf8_string_is_equal_to_c_string(self->value.character, str);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            return octaspire_container_utf8_string_is_equal_to_c_string(self->value.string, str);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            return octaspire_container_utf8_string_is_equal_to_c_string(self->value.symbol, str);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            octaspire_helpers_verify_true(false);
+        }
+        break;
+    }
+
+    return 0;
+}
+
 char const *octaspire_dern_value_as_text_get_c_string(
     octaspire_dern_value_t const * const self)
 {
     switch (self->typeTag)
     {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
             return octaspire_container_utf8_string_get_c_string(self->value.character);
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
             return octaspire_container_utf8_string_get_c_string(self->value.string);
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         {
             return octaspire_container_utf8_string_get_c_string(self->value.symbol);
         }
-        break;
 
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             octaspire_helpers_verify_true(false);
         }
@@ -2452,25 +2812,45 @@ size_t octaspire_dern_value_as_text_get_length_in_octets(
 {
     switch (self->typeTag)
     {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
-            return octaspire_container_utf8_string_get_length_in_octets(self->value.character);
+            return octaspire_container_utf8_string_get_length_in_octets(
+                self->value.character);
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
-            return octaspire_container_utf8_string_get_length_in_octets(self->value.string);
+            return octaspire_container_utf8_string_get_length_in_octets(
+                self->value.string);
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         {
-            return octaspire_container_utf8_string_get_length_in_octets(self->value.symbol);
+            return octaspire_container_utf8_string_get_length_in_octets(
+                self->value.symbol);
         }
-        break;
 
-        default:
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             octaspire_helpers_verify_true(false);
         }
@@ -2517,11 +2897,13 @@ bool octaspire_dern_value_as_vector_push_back_element(
 
 bool octaspire_dern_value_as_vector_remove_element_at(
     octaspire_dern_value_t *self,
-    size_t const index)
+    ptrdiff_t const possiblyNegativeIndex)
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
 
-    return octaspire_container_vector_remove_element_at(self->value.vector, index);
+    return octaspire_container_vector_remove_element_at(
+        self->value.vector,
+        possiblyNegativeIndex);
 }
 
 bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *self)
@@ -2533,28 +2915,35 @@ bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *sel
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at(
     octaspire_dern_value_t * const self,
-    size_t const index)
+    ptrdiff_t const possiblyNegativeIndex)
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
 
-    return octaspire_container_vector_get_element_at(self->value.vector, index);
+    return octaspire_container_vector_get_element_at(
+        self->value.vector,
+        possiblyNegativeIndex);
 }
 
 octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_const(
     octaspire_dern_value_t const * const self,
-    size_t const index)
+    ptrdiff_t const possiblyNegativeIndex)
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
 
-    return octaspire_container_vector_get_element_at_const(self->value.vector, index);
+    return octaspire_container_vector_get_element_at_const(
+        self->value.vector,
+        possiblyNegativeIndex);
 }
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_tag_t const typeTag,
-    size_t const index)
+    ptrdiff_t const possiblyNegativeIndex)
 {
-    octaspire_dern_value_t * result = octaspire_dern_value_as_vector_get_element_at(self, index);
+    octaspire_dern_value_t * result =
+        octaspire_dern_value_as_vector_get_element_at(
+            self,
+            possiblyNegativeIndex);
 
     octaspire_helpers_verify_not_null(result);
 
@@ -2569,10 +2958,12 @@ octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
 octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_of_type_at_const(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_tag_t const typeTag,
-    size_t const index)
+    ptrdiff_t const possiblyNegativeIndex)
 {
     octaspire_dern_value_t const *result =
-        octaspire_dern_value_as_vector_get_element_at_const(self,index);
+        octaspire_dern_value_as_vector_get_element_at_const(
+            self,
+            possiblyNegativeIndex);
 
     octaspire_helpers_verify_not_null(result);
 
@@ -2582,6 +2973,23 @@ octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_of_type
     }
 
     return 0;
+}
+
+octaspire_dern_value_t *octaspire_dern_value_as_list_get_element_at(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST);
+
+    octaspire_container_list_node_t * const node =
+        octaspire_container_list_get_at(self->value.list, possiblyNegativeIndex);
+
+    if (!node)
+    {
+        return 0;
+    }
+
+    return octaspire_container_list_node_get_element(node);
 }
 
 // TODO how about as_vector, should it have void* replaced with octaspire_dern_value_t*?
@@ -2604,10 +3012,13 @@ size_t octaspire_dern_value_as_hash_map_get_number_of_elements(
 
 octaspire_container_hash_map_element_t *octaspire_dern_value_as_hash_map_get_at_index(
     octaspire_dern_value_t * const self,
-    size_t const index)
+    ptrdiff_t const possiblyNegativeIndex)
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP);
-    return octaspire_container_hash_map_get_at_index(self->value.hashMap, index);
+
+    return octaspire_container_hash_map_get_at_index(
+        self->value.hashMap,
+        possiblyNegativeIndex);
 }
 
 octaspire_container_hash_map_element_t *octaspire_dern_value_as_hash_map_get(
@@ -2695,34 +3106,77 @@ size_t octaspire_dern_value_get_length(
         {
             abort();
         }
-        break;
 
-        case OCTASPIRE_DERN_VALUE_TAG_NIL:         return 1;
-        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     return 1;
-        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:     return 1;
-        case OCTASPIRE_DERN_VALUE_TAG_REAL:        return 1;
-        case OCTASPIRE_DERN_VALUE_TAG_STRING:      return octaspire_container_utf8_string_get_length_in_ucs_characters(self->value.string);
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:      return octaspire_container_utf8_string_get_length_in_ucs_characters(self->value.comment);
-        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:   return 1;
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:      return octaspire_container_utf8_string_get_length_in_ucs_characters(self->value.symbol);
-        case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_get_length_in_ucs_characters(self->value.error);
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return octaspire_container_vector_get_length(self->value.vector);
-        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:    return octaspire_container_hash_map_get_number_of_elements(self->value.hashMap);
-        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:       return octaspire_container_queue_get_length(self->value.queue);
-        case OCTASPIRE_DERN_VALUE_TAG_LIST:        return octaspire_container_list_get_length(self->value.list);
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return octaspire_dern_environment_get_length(self->value.environment);
-        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return octaspire_dern_function_get_number_of_required_arguments(self->value.function);
-        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special->numRequiredActualArguments;
-        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin->numRequiredActualArguments;
-        case OCTASPIRE_DERN_VALUE_TAG_PORT:        return (size_t)octaspire_dern_port_get_length_in_octets(self->value.port);
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
-           // TODO continue from here
-           return 1;
+            return 1;
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            return octaspire_container_utf8_string_get_length_in_ucs_characters(
+                self->value.string);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        {
+            return octaspire_container_utf8_string_get_length_in_ucs_characters(
+                self->value.comment);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            return octaspire_container_utf8_string_get_length_in_ucs_characters(
+                self->value.symbol);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        {
+            return octaspire_container_utf8_string_get_length_in_ucs_characters(
+                self->value.error);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        {
+            return octaspire_container_vector_get_length(self->value.vector);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        {
+            return octaspire_container_hash_map_get_number_of_elements(
+                self->value.hashMap);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        {
+            return octaspire_container_queue_get_length(self->value.queue);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        {
+            return octaspire_container_list_get_length(self->value.list);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        {
+            return octaspire_dern_environment_get_length(self->value.environment);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        {
+            return octaspire_dern_function_get_number_of_required_arguments(
+                self->value.function);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        {
+            return self->value.special->numRequiredActualArguments;
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        {
+            return self->value.builtin->numRequiredActualArguments;
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        {
+            return (size_t)octaspire_dern_port_get_length_in_octets(self->value.port);
         }
     }
 
-    abort();
     return 0;
 }
 
@@ -2745,10 +3199,14 @@ bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
 
     if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR)
     {
-        for (size_t i = 0; i < octaspire_container_vector_get_length(self->value.vector); ++i)
+        for (size_t i = 0;
+             i < octaspire_container_vector_get_length(self->value.vector);
+             ++i)
         {
             octaspire_dern_value_t * const tmpVal =
-                octaspire_container_vector_get_element_at(self->value.vector, i);
+                octaspire_container_vector_get_element_at(
+                    self->value.vector,
+                    (ptrdiff_t)i);
 
             octaspire_helpers_verify_not_null(tmpVal);
 
@@ -2784,7 +3242,9 @@ bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
         for (size_t i = 0; i < octaspire_container_queue_get_length(self->value.queue); ++i)
         {
             octaspire_dern_value_t * const tmpVal =
-                octaspire_container_queue_get_at(self->value.queue, i);
+                octaspire_container_queue_get_at(
+                    self->value.queue,
+                    (ptrdiff_t)i);
 
             octaspire_helpers_verify_not_null(tmpVal);
 
@@ -2797,10 +3257,15 @@ bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
     else if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST)
     {
         // TODO More efficient iteration
-        for (size_t i = 0; i < octaspire_container_list_get_length(self->value.list); ++i)
+        for (size_t i = 0;
+             i < octaspire_container_list_get_length(self->value.list);
+             ++i)
         {
-            octaspire_dern_value_t * const tmpVal = octaspire_container_list_node_get_element(
-                octaspire_container_list_get_at(self->value.list, i));
+            octaspire_dern_value_t * const tmpVal =
+                octaspire_container_list_node_get_element(
+                    octaspire_container_list_get_at(
+                        self->value.list,
+                        (ptrdiff_t)i));
 
             octaspire_helpers_verify_not_null(tmpVal);
 
@@ -2839,6 +3304,25 @@ bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
     return true;
 }
 
+static int octaspire_dern_value_private_compare_void_pointers(
+    void const * const a,
+    void const * const b)
+{
+    ptrdiff_t const tmp = (ptrdiff_t)a - (ptrdiff_t)b;
+
+    if (tmp < 0)
+    {
+        return -1;
+    }
+
+    if (tmp > 0)
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
 int octaspire_dern_value_compare(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_t const * const other)
@@ -2857,12 +3341,23 @@ int octaspire_dern_value_compare(
         {
             abort();
         }
-        break;
 
-        case OCTASPIRE_DERN_VALUE_TAG_NIL:         return 0;
-        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     return self->value.boolean - other->value.boolean;
-        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:     return self->value.integer - other->value.integer;
-        case OCTASPIRE_DERN_VALUE_TAG_REAL:        return self->value.real    - other->value.real;
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        {
+            return 0;
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        {
+            return self->value.boolean - other->value.boolean;
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        {
+            return self->value.integer - other->value.integer;
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        {
+            return (int)(self->value.real - other->value.real);
+        }
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
             return strcmp(
@@ -2893,23 +3388,66 @@ int octaspire_dern_value_compare(
                 octaspire_container_utf8_string_get_c_string(self->value.error),
                 octaspire_container_utf8_string_get_c_string(other->value.error));
         }
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return (ptrdiff_t)self->value.vector - (ptrdiff_t)other->value.vector;
-        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:    return (ptrdiff_t)self->value.hashMap - (ptrdiff_t)other->value.hashMap;
-        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:       return (ptrdiff_t)self->value.queue - (ptrdiff_t)other->value.queue;
-        case OCTASPIRE_DERN_VALUE_TAG_LIST:        return (ptrdiff_t)self->value.list - (ptrdiff_t)other->value.list;
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return (ptrdiff_t)self->value.environment - (ptrdiff_t)other->value.environment;
-        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return (ptrdiff_t)self->value.function - (ptrdiff_t)other->value.function;
-        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return (ptrdiff_t)self->value.special - (ptrdiff_t)other->value.special;
-        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return (ptrdiff_t)self->value.builtin - (ptrdiff_t)other->value.builtin;
-        case OCTASPIRE_DERN_VALUE_TAG_PORT:        return (ptrdiff_t)self->value.port - (ptrdiff_t)other->value.port;
-
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        {
+            return
+                octaspire_dern_value_private_compare_void_pointers(
+                    self->value.vector, other->value.vector);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        {
+            return
+                octaspire_dern_value_private_compare_void_pointers(
+                    self->value.hashMap, other->value.hashMap);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        {
+            return
+                octaspire_dern_value_private_compare_void_pointers(
+                    self->value.queue, other->value.queue);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        {
+            return
+                octaspire_dern_value_private_compare_void_pointers(
+                    self->value.list, other->value.list);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        {
+            return
+                octaspire_dern_value_private_compare_void_pointers(
+                    self->value.environment, other->value.environment);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        {
+            return
+                octaspire_dern_value_private_compare_void_pointers(
+                    self->value.function, other->value.function);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        {
+            return
+                octaspire_dern_value_private_compare_void_pointers(
+                    self->value.special, other->value.special);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        {
+            return
+                octaspire_dern_value_private_compare_void_pointers(
+                    self->value.builtin, other->value.builtin);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        {
+            return
+                octaspire_dern_value_private_compare_void_pointers(
+                    self->value.port, other->value.port);
+        }
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             return octaspire_dern_c_data_compare(self->value.cData, other->value.cData);
         }
     }
 
-    abort();
     return 0;
 }
 
@@ -2921,7 +3459,6 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
         {
             abort();
         }
-        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:

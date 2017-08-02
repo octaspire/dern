@@ -375,24 +375,6 @@ TEST octaspire_dern_lexer_token_to_string_with_error_token_test(void)
     PASS();
 }
 
-TEST octaspire_dern_lexer_token_to_string_with_unknow_token_test(void)
-{
-    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_token_new(
-        128,
-        0,
-        octaspire_dern_lexer_token_position_init(987, 987),
-        octaspire_dern_lexer_token_position_init(123, 123),
-        octaspire_dern_lexer_token_position_init(300, 300),
-        octaspireDernLexerTestAllocator);
-
-    ASSERT_FALSE(token);
-
-    octaspire_dern_lexer_token_release(token);
-    token = 0;
-
-    PASS();
-}
-
 TEST octaspire_dern_lexer_pop_next_token_left_parenthesis_no_whitespace_test(void)
 {
     octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
@@ -2267,7 +2249,6 @@ GREATEST_SUITE(octaspire_dern_lexer_suite)
     RUN_TEST(octaspire_dern_lexer_token_to_string_with_rparen_token_test);
     RUN_TEST(octaspire_dern_lexer_token_to_string_with_integer_token_test);
     RUN_TEST(octaspire_dern_lexer_token_to_string_with_error_token_test);
-    RUN_TEST(octaspire_dern_lexer_token_to_string_with_unknow_token_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_left_parenthesis_no_whitespace_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_right_parenthesis_no_whitespace_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_left_parenthesis_amid_whitespace_test);

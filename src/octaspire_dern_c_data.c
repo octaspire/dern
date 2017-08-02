@@ -32,8 +32,9 @@ struct octaspire_dern_c_data_t
     octaspire_container_utf8_string_t         *cleanUpCallbackName;
     octaspire_container_utf8_string_t         *stdLibLenCallbackName;
     octaspire_container_utf8_string_t         *stdLibNthCallbackName;
-    bool                                       copyingAllowed;
     octaspire_memory_allocator_t              *allocator;
+    bool                                       copyingAllowed;
+    char                                       padding[7];
 };
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new(
@@ -99,7 +100,7 @@ void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
         void * const handle = octaspire_dern_lib_get_handle(self->library);
         void (*func)(void * const payload);
         func = (void (*)(void * const))dlsym(handle, octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName));
-        octaspire_helpers_verify_not_null(func);
+        octaspire_helpers_verify_not_null_void_funptr_void_ptr_const(func);
         func(self->payload);
     }
 #endif

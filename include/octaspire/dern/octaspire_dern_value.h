@@ -131,8 +131,6 @@ struct octaspire_dern_environment_t;
 
 struct octaspire_dern_value_t
 {
-    bool                         mark;
-    octaspire_dern_value_tag_t   typeTag;
     octaspire_dern_value_t      *docstr;
     octaspire_dern_value_t      *docvec;
     struct octaspire_dern_vm_t  *vm;
@@ -160,7 +158,14 @@ struct octaspire_dern_value_t
         octaspire_dern_c_data_t             *cData;
     }
     value;
+
+    octaspire_dern_value_tag_t   typeTag;
+    bool                         mark;
+    char                         padding[3];
 };
+
+octaspire_dern_value_tag_t octaspire_dern_value_get_type(
+    octaspire_dern_value_t const * const self);
 
 bool octaspire_dern_value_set(
     octaspire_dern_value_t  * const self,
@@ -345,6 +350,10 @@ bool octaspire_dern_value_as_symbol_is_equal_to_c_string(
     octaspire_dern_value_t const * const self,
     char const * const str);
 
+bool octaspire_dern_value_as_text_is_equal_to_c_string(
+    octaspire_dern_value_t const * const self,
+    char const * const str);
+
 char const *octaspire_dern_value_as_text_get_c_string(
     octaspire_dern_value_t const * const self);
 
@@ -368,27 +377,31 @@ bool octaspire_dern_value_as_vector_push_back_element(
 
 bool octaspire_dern_value_as_vector_remove_element_at(
     octaspire_dern_value_t *self,
-    size_t const index);
+    ptrdiff_t const possiblyNegativeIndex);
 
 bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *self);
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at(
     octaspire_dern_value_t * const self,
-    size_t const index);
+    ptrdiff_t const possiblyNegativeIndex);
 
 octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_const(
     octaspire_dern_value_t const * const self,
-    size_t const index);
+    ptrdiff_t const possiblyNegativeIndex);
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_tag_t const typeTag,
-    size_t const index);
+    ptrdiff_t const possiblyNegativeIndex);
 
 octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_of_type_at_const(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_tag_t const typeTag,
-    size_t const index);
+    ptrdiff_t const possiblyNegativeIndex);
+
+octaspire_dern_value_t *octaspire_dern_value_as_list_get_element_at(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex);
 
 // TODO how about as_vector, should it have void* replaced with octaspire_dern_value_t*?
 bool octaspire_dern_value_as_hash_map_put(
@@ -402,7 +415,7 @@ size_t octaspire_dern_value_as_hash_map_get_number_of_elements(
 
 octaspire_container_hash_map_element_t *octaspire_dern_value_as_hash_map_get_at_index(
     octaspire_dern_value_t * const self,
-    size_t const index);
+    ptrdiff_t const possiblyNegativeIndex);
 
 octaspire_container_hash_map_element_t *octaspire_dern_value_as_hash_map_get(
     octaspire_dern_value_t * const self,

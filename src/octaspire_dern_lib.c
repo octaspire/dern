@@ -28,9 +28,10 @@ struct octaspire_dern_lib_t
     octaspire_memory_allocator_t      *allocator;
     octaspire_dern_vm_t               *vm;
     octaspire_container_utf8_string_t *name;
-    octaspire_dern_lib_tag_t           typeTag;
     octaspire_container_utf8_string_t *errorMessage;
     void                              *binaryLibHandle;
+    octaspire_dern_lib_tag_t           typeTag;
+    char                               padding[4];
 };
 
 octaspire_dern_lib_t *octaspire_dern_lib_new_source(

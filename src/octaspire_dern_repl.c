@@ -26,7 +26,6 @@ limitations under the License.
 #define ANSI_COLOR_RED    "\x1B[31m"
 #define ANSI_COLOR_GREEN  "\x1B[32m"
 #define ANSI_COLOR_YELLOW "\x1B[33m"
-#define ANSI_COLOR_WHITE  "\x1B[37m"
 #define ANSI_COLOR_DGRAY  "\x1B[1;30m"
 #define ANSI_COLOR_RESET  "\x1B[0m"
 
@@ -39,7 +38,27 @@ typedef enum
 }
 octaspire_dern_repl_message_t;
 
-void octaspire_dern_repl_print_message_c_str(
+static void octaspire_dern_repl_print_message_c_str(
+    char const * const message,
+    octaspire_dern_repl_message_t const messageType,
+    bool const useColors);
+
+static void octaspire_dern_repl_print_message(
+    octaspire_container_utf8_string_t const * const message,
+    octaspire_dern_repl_message_t const messageType,
+    bool const useColors);
+
+static void octaspire_dern_repl_print_version(bool const useColors);
+
+static void octaspire_dern_repl_print_banner(bool const useColors);
+
+static void octaspire_dern_repl_print_usage(
+    char const * const binaryName,
+    bool const useColors);
+
+
+
+static void octaspire_dern_repl_print_message_c_str(
     char const * const message,
     octaspire_dern_repl_message_t const messageType,
     bool const useColors)
@@ -147,13 +166,13 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
 
 
 // Globals for the REPL. ////////////////////////////
-octaspire_container_vector_t      *stringsToBeEvaluated = 0;
-octaspire_memory_allocator_t      *allocatorBootOnly    = 0;
-octaspire_container_utf8_string_t *line                 = 0;
-octaspire_stdio_t                 *stdio                = 0;
-octaspire_input_t                 *input                = 0;
-octaspire_dern_vm_t               *vm                   = 0;
-octaspire_memory_allocator_t      *allocator            = 0;
+static octaspire_container_vector_t      *stringsToBeEvaluated = 0;
+static octaspire_memory_allocator_t      *allocatorBootOnly    = 0;
+static octaspire_container_utf8_string_t *line                 = 0;
+static octaspire_stdio_t                 *stdio                = 0;
+static octaspire_input_t                 *input                = 0;
+static octaspire_dern_vm_t               *vm                   = 0;
+static octaspire_memory_allocator_t      *allocator            = 0;
 
 static void octaspire_dern_repl_private_cleanup(void)
 {
@@ -324,7 +343,9 @@ int main(int argc, char *argv[])
     for (size_t i = 0; i < octaspire_container_vector_get_length(stringsToBeEvaluated); ++i)
     {
         octaspire_container_utf8_string_t const * const str =
-            octaspire_container_vector_get_element_at_const(stringsToBeEvaluated, i);
+            octaspire_container_vector_get_element_at_const(
+                stringsToBeEvaluated,
+                (ptrdiff_t)i);
 
         octaspire_dern_value_t *value =
             octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -335,14 +356,15 @@ int main(int argc, char *argv[])
 
         if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
         {
-            octaspire_container_utf8_string_t *str = octaspire_dern_value_to_string(value, allocator);
+            octaspire_container_utf8_string_t *tmpStr =
+                octaspire_dern_value_to_string(value, allocator);
 
-            octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
+            octaspire_dern_repl_print_message(tmpStr, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
 
             printf("\n");
 
-            octaspire_container_utf8_string_release(str);
-            str = 0;
+            octaspire_container_utf8_string_release(tmpStr);
+            tmpStr = 0;
 
             exit(EXIT_FAILURE);
         }
@@ -442,7 +464,6 @@ moreInput:
                     octaspire_input_rewind(input);
                     octaspire_dern_repl_print_message_c_str("+ ", OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
                     goto moreInput;
-                    break;
                 }
                 else if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                 {

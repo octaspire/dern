@@ -22,14 +22,16 @@ struct octaspire_dern_port_t
 {
     octaspire_memory_allocator_t      *allocator;
     octaspire_container_utf8_string_t *name;
-    size_t                             lengthInOctets;
-    octaspire_dern_port_tag_t          typeTag;
+    ptrdiff_t                          lengthInOctets;
 
     union
     {
         FILE *file;
     }
     value;
+
+    octaspire_dern_port_tag_t          typeTag;
+    char                               padding[4];
 };
 
 octaspire_dern_port_t *octaspire_dern_port_new_copy(
@@ -276,13 +278,11 @@ bool octaspire_dern_port_close(
             self->typeTag = OCTASPIRE_DERN_PORT_TAG_NOT_OPEN;
             return (res == 0);
         }
-        break;
 
         case OCTASPIRE_DERN_PORT_TAG_NOT_OPEN:
         {
             return false;
         }
-        break;
     }
 
     abort();
@@ -309,7 +309,6 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
                 octaspire_container_utf8_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
-        break;
 
         case OCTASPIRE_DERN_PORT_TAG_OUTPUT_FILE:
         {
@@ -319,7 +318,6 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
                 octaspire_container_utf8_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
-        break;
 
         case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         {
@@ -329,7 +327,6 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
                 octaspire_container_utf8_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
-        break;
 
         case OCTASPIRE_DERN_PORT_TAG_NOT_OPEN:
         {
@@ -339,10 +336,8 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
                 octaspire_container_utf8_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
-        break;
     }
 
-    abort();
     return 0;
 }
 
@@ -376,13 +371,11 @@ bool octaspire_dern_port_seek(
                 return fseek(self->value.file, offset, fromCurrentPos ? SEEK_CUR : SEEK_SET) == 0;
             }
         }
-        break;
 
         case OCTASPIRE_DERN_PORT_TAG_NOT_OPEN:
         {
             return false;
         }
-        break;
     }
 
     return false;
@@ -402,13 +395,11 @@ bool octaspire_dern_port_flush(octaspire_dern_port_t * const self)
 
             return fflush(self->value.file) == 0;
         }
-        break;
 
         case OCTASPIRE_DERN_PORT_TAG_NOT_OPEN:
         {
             return false;
         }
-        break;
     }
 
     return false;
@@ -428,13 +419,11 @@ ptrdiff_t octaspire_dern_port_distance(octaspire_dern_port_t const * const self)
 
             return (ptrdiff_t)ftell(self->value.file);
         }
-        break;
 
         case OCTASPIRE_DERN_PORT_TAG_NOT_OPEN:
         {
             return -1;
         }
-        break;
     }
 
     return -1;
@@ -453,14 +442,12 @@ bool octaspire_dern_port_supports_output(
             octaspire_helpers_verify_not_null(self->value.file);
             return true;
         }
-        break;
 
         case OCTASPIRE_DERN_PORT_TAG_INPUT_FILE:
         case OCTASPIRE_DERN_PORT_TAG_NOT_OPEN:
         {
             return false;
         }
-        break;
     }
 
     return false;
@@ -479,14 +466,12 @@ bool octaspire_dern_port_supports_input(
             octaspire_helpers_verify_not_null(self->value.file);
             return true;
         }
-        break;
 
         case OCTASPIRE_DERN_PORT_TAG_OUTPUT_FILE:
         case OCTASPIRE_DERN_PORT_TAG_NOT_OPEN:
         {
             return false;
         }
-        break;
     }
 
     return false;

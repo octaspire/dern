@@ -69,8 +69,8 @@ size_t octaspire_dern_environment_get_length(
     octaspire_dern_environment_t const * const self);
 
 octaspire_container_hash_map_element_t *octaspire_dern_environment_get_at_index(
-    octaspire_dern_environment_t *self,
-    size_t const index);
+    octaspire_dern_environment_t * const self,
+    ptrdiff_t const index);
 
 bool octaspire_dern_environment_mark(octaspire_dern_environment_t *self);
 
