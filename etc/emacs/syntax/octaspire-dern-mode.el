@@ -13,17 +13,17 @@
 
 (defconst octaspire-dern-lock-keywords-1
   (list
-   (cons (regexp-opt '("\!\=" "\*" "\+" "\+\+" "\+\=" "\-" "\-\-" "\-\=" "\/" "\<" "\<\=" "\="
-                       "\=\=" "\>" "\>\=" "abort" "and" "define" "do" "doc" "env-current"
+   (cons (concat "\\_<" (regexp-opt '("!=" "*" "+" "++" "+=" "-" "--" "-=" "/" "<" "<=" "="
+                       "==" ">" ">=" "abort" "and" "define" "do" "doc" "env-current"
                        "env-global" "env-new" "eval" "exit" "find" "fn" "for" "hash-map" "if"
                        "input-file-open" "io-file-open" "len" "mod" "not" "nth" "or" "pop-front"
                        "port-close" "port-dist" "port-flush" "port-length" "port-read" "port-seek"
                        "port-write" "print" "println" "quote" "read-and-eval-path"
-                       "read-and-eval-string" "return" "select" "starts-with\?"
+                       "read-and-eval-string" "return" "select" "starts-with?"
                        "string-format" "to-integer" "to-string" "uid" "vector" "while"
                        "output-file-open" "port-supports-output?" "port-supports-input?" "require"
                        "queue" "queue-with-max-length" "list"
-                       ) t) font-lock-builtin-face)
+                       ) t) "\\_>") font-lock-builtin-face)
    (cons (regexp-opt '("nil" "false" "true") t) font-lock-constant-face)
    (cons "\\('\\w*'\\)" font-lock-variable-name-face)
    (cons "\\('\\d*'\\)" font-lock-constant-face)

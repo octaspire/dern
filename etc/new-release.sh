@@ -111,7 +111,8 @@ of this amalgamated source release can be downloaded from:\n\
 \n\
 Directory 'tool-support' contains files that help working with the Dern\n\
 language using different tools; there are, for example, syntax files\n\
-to allow Dern code to be syntax highlighted in Vim, Emacs and Pygments.\n\
+to allow Dern code to be syntax highlighted in Vim, Emacs, Pygments and\n\
+GNU source-highlight.\n\
 \n\
 Directory 'documentation' contains the book 'Programming in Octaspire Dern'\n\
 and directory 'examples' has some short examples.\n\
@@ -171,6 +172,8 @@ octaspire.com/dern\n" > "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR
     cp -r "$PROJECT_PATH/etc/vim" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     cp -r "$PROJECT_PATH/etc/pygments" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    cp -r "$PROJECT_PATH/etc/source-highlight" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "\nCompressing release directory into tar.bz2...\n--------------------------\n"
