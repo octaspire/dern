@@ -44,6 +44,7 @@ octaspire_dern_value_t *dern_ncurses_initscr(
         "dern_ncurses_window_clean_up_callback",
         "",
         "",
+        "",
         true,
         window);
 }

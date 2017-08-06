@@ -34,6 +34,7 @@ extern "C" {
 typedef struct octaspire_dern_vm_config_t
 {
     bool fileSystemAccessAllowed;
+    bool debugModeOn;
 }
 octaspire_dern_vm_config_t;
 
@@ -146,7 +147,8 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const typeNameForPayload,
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
-    char const * const stdLibNthCallbackName,
+    char const * const stdLibLinkAtCallbackName,
+    char const * const stdLibCopyAtCallbackName,
     bool const copyingAllowed,
     void * const payload);
 

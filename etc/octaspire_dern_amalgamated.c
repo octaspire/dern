@@ -19201,10 +19201,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "201"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "203"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.201.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.203.0"
 
 
 
@@ -19411,7 +19411,8 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     void * const payload,
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
-    char const * const stdLibNthCallbackName,
+    char const * const stdLibLinkAtCallbackName,
+    char const * const stdLibCopyAtCallbackName,
     bool const copyingAllowed,
     octaspire_memory_allocator_t *allocator);
 
@@ -20213,6 +20214,7 @@ extern "C" {
 typedef struct octaspire_dern_vm_config_t
 {
     bool fileSystemAccessAllowed;
+    bool debugModeOn;
 }
 octaspire_dern_vm_config_t;
 
@@ -20325,7 +20327,8 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const typeNameForPayload,
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
-    char const * const stdLibNthCallbackName,
+    char const * const stdLibLinkAtCallbackName,
+    char const * const stdLibCopyAtCallbackName,
     bool const copyingAllowed,
     void * const payload);
 
@@ -20604,11 +20607,6 @@ octaspire_dern_value_t *octaspire_dern_vm_special_or(
     octaspire_dern_value_t *environment);
 
 octaspire_dern_value_t *octaspire_dern_vm_special_do(
-    octaspire_dern_vm_t *vm,
-    octaspire_dern_value_t *arguments,
-    octaspire_dern_value_t *environment);
-
-octaspire_dern_value_t *octaspire_dern_vm_builtin_nth(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
@@ -24101,7 +24099,8 @@ struct octaspire_dern_c_data_t
     void                                      *payload;
     octaspire_container_utf8_string_t         *cleanUpCallbackName;
     octaspire_container_utf8_string_t         *stdLibLenCallbackName;
-    octaspire_container_utf8_string_t         *stdLibNthCallbackName;
+    octaspire_container_utf8_string_t         *stdLibLinkAtCallbackName;
+    octaspire_container_utf8_string_t         *stdLibCopyAtCallbackName;
     octaspire_memory_allocator_t              *allocator;
     bool                                       copyingAllowed;
     char                                       padding[7];
@@ -24114,7 +24113,8 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     void * const payload,
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
-    char const * const stdLibNthCallbackName,
+    char const * const stdLibLinkAtCallbackName,
+    char const * const stdLibCopyAtCallbackName,
     bool const copyingAllowed,
     octaspire_memory_allocator_t *allocator)
 {
@@ -24133,7 +24133,8 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     self->payload               = payload;
     self->cleanUpCallbackName   = octaspire_container_utf8_string_new(cleanUpCallbackName, self->allocator);
     self->stdLibLenCallbackName = octaspire_container_utf8_string_new(stdLibLenCallbackName, self->allocator);
-    self->stdLibNthCallbackName = octaspire_container_utf8_string_new(stdLibNthCallbackName, self->allocator);
+    self->stdLibLinkAtCallbackName = octaspire_container_utf8_string_new(stdLibLinkAtCallbackName, self->allocator);
+    self->stdLibCopyAtCallbackName = octaspire_container_utf8_string_new(stdLibCopyAtCallbackName, self->allocator);
     self->copyingAllowed        = copyingAllowed;
 
     return self;
@@ -24150,7 +24151,8 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
         other->payload,
         octaspire_container_utf8_string_get_c_string(other->cleanUpCallbackName),
         octaspire_container_utf8_string_get_c_string(other->stdLibLenCallbackName),
-        octaspire_container_utf8_string_get_c_string(other->stdLibNthCallbackName),
+        octaspire_container_utf8_string_get_c_string(other->stdLibLinkAtCallbackName),
+        octaspire_container_utf8_string_get_c_string(other->stdLibCopyAtCallbackName),
         other->copyingAllowed,
         allocator);
 }
@@ -24181,8 +24183,11 @@ void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
     octaspire_container_utf8_string_release(self->stdLibLenCallbackName);
     self->stdLibLenCallbackName = 0;
 
-    octaspire_container_utf8_string_release(self->stdLibNthCallbackName);
-    self->stdLibNthCallbackName = 0;
+    octaspire_container_utf8_string_release(self->stdLibLinkAtCallbackName);
+    self->stdLibLinkAtCallbackName = 0;
+
+    octaspire_container_utf8_string_release(self->stdLibCopyAtCallbackName);
+    self->stdLibCopyAtCallbackName = 0;
 
     octaspire_container_utf8_string_release(self->pluginName);
     self->pluginName = 0;
@@ -24200,13 +24205,14 @@ octaspire_container_utf8_string_t *octaspire_dern_c_data_to_string(
     return octaspire_container_utf8_string_new_format(
         allocator,
         "C data (%s : %s) payload=%p cleanUpCallbackName=%s stdLibLenCallbackName=%s "
-        "stdLibNthCallbackName=%s",
+        "stdLibLinkAtCallbackName=%s stdLibCopyAtCallbackName=%s",
         octaspire_container_utf8_string_get_c_string(self->pluginName),
         octaspire_container_utf8_string_get_c_string(self->typeNameForPayload),
         (void*)self->payload,
         octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName),
         octaspire_container_utf8_string_get_c_string(self->stdLibLenCallbackName),
-        octaspire_container_utf8_string_get_c_string(self->stdLibNthCallbackName));
+        octaspire_container_utf8_string_get_c_string(self->stdLibLinkAtCallbackName),
+        octaspire_container_utf8_string_get_c_string(self->stdLibCopyAtCallbackName));
 }
 
 bool octaspire_dern_c_data_is_equal(
@@ -28459,120 +28465,6 @@ octaspire_dern_value_t *octaspire_dern_vm_special_do(
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
-}
-
-octaspire_dern_value_t *octaspire_dern_vm_builtin_nth(
-    octaspire_dern_vm_t *vm,
-    octaspire_dern_value_t *arguments,
-    octaspire_dern_value_t *environment)
-{
-    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
-
-    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
-
-    if (octaspire_dern_value_as_vector_get_length(arguments) != 2)
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
-            vm,
-            "Builtin 'nth' expects two arguments.");
-    }
-
-    octaspire_dern_value_t const * const firstArg =
-        octaspire_dern_value_as_vector_get_element_at_const(
-            arguments,
-            0);
-
-    octaspire_helpers_verify_not_null(firstArg);
-
-    if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_INTEGER)
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "First argument to builtin 'nth' must be integer. Type '%s' was given.",
-            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
-    }
-
-    ptrdiff_t const index = (ptrdiff_t)firstArg->value.integer;
-
-    octaspire_dern_value_t * const secondArg =
-        octaspire_dern_value_as_vector_get_element_at(arguments, 1);
-
-    octaspire_helpers_verify_not_null(secondArg);
-
-    if (secondArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING)
-    {
-        if (index >=
-            (ptrdiff_t)octaspire_container_utf8_string_get_length_in_ucs_characters(
-                secondArg->value.string))
-        {
-            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
-                vm,
-                "Builtin 'nth' cannot index string of length %zu from index %zu.",
-                octaspire_container_utf8_string_get_length_in_ucs_characters(
-                    secondArg->value.string),
-                index);
-        }
-
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_character_from_uint32t(
-            vm,
-            octaspire_container_utf8_string_get_ucs_character_at_index(
-                secondArg->value.string,
-                index));
-    }
-    else if (secondArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR)
-    {
-        if (index >=
-            (ptrdiff_t)octaspire_container_vector_get_length(secondArg->value.vector))
-        {
-            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
-                vm,
-                "Builtin 'nth' cannot index vector of length %zu from index %td.",
-                octaspire_container_vector_get_length(secondArg->value.vector),
-                index);
-        }
-
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_container_vector_get_element_at(
-            secondArg->value.vector,
-            index);
-    }
-    else if (secondArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_HASH_MAP)
-    {
-        if (index >=
-            (ptrdiff_t)octaspire_container_hash_map_get_number_of_elements(
-                secondArg->value.hashMap))
-        {
-            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
-                vm,
-                "Builtin 'nth' cannot index hash map of length %zu from index %zu.",
-                octaspire_container_hash_map_get_number_of_elements(secondArg->value.hashMap),
-                index);
-        }
-
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-
-        octaspire_container_hash_map_element_t *element =
-            octaspire_container_hash_map_get_at_index(secondArg->value.hashMap, index);
-
-        octaspire_helpers_verify_not_null(element);
-
-        return octaspire_container_hash_map_element_get_value(element);
-    }
-    else
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Second argument to builtin 'nth' must be one of the collection types. Type '%s' was given.",
-            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
-    }
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_exit(
@@ -36144,7 +36036,7 @@ struct octaspire_dern_vm_t
     bool                            preventGc;
     bool                            quit;
     bool                            fileSystemAccessAllowed;
-    char                            padding[1];
+    bool                            debugModeOn;
 };
 
 octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(octaspire_dern_vm_t* self, octaspire_dern_value_tag_t const typeTag);
@@ -36161,7 +36053,8 @@ octaspire_dern_vm_config_t octaspire_dern_vm_config_default(void)
 {
     octaspire_dern_vm_config_t result =
     {
-        .fileSystemAccessAllowed = false
+        .fileSystemAccessAllowed = false,
+        .debugModeOn             = false
     };
 
     return result;
@@ -36201,6 +36094,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
     self->nextFreeUniqueIdForValues = 0;
     self->functionReturn = 0;
     self->fileSystemAccessAllowed = config.fileSystemAccessAllowed;
+    self->debugModeOn             = config.debugModeOn;
 
     self->libraries = octaspire_container_hash_map_new_with_octaspire_container_utf8_string_keys(
         sizeof(octaspire_dern_lib_t*),
@@ -36637,19 +36531,6 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_special_do,
         1,
         "Evaluate sequence of values and return the value of the last evaluation",
-        env))
-    {
-        abort();
-    }
-
-    // nth
-    if (!octaspire_dern_vm_create_and_register_new_builtin(
-        self,
-        "nth",
-        octaspire_dern_vm_builtin_nth,
-        2,
-        " ============= DEPRECATED! Use 'cp@' or 'ln@' instead!. =============\n"
-        "Index collection; get element at the given index on the given collection",
         env))
     {
         abort();
@@ -38092,7 +37973,8 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const typeNameForPayload,
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
-    char const * const stdLibNthCallbackName,
+    char const * const stdLibLinkAtCallbackName,
+    char const * const stdLibCopyAtCallbackName,
     bool const copyingAllowed,
     void * const payload)
 {
@@ -38111,7 +37993,8 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
         payload,
         cleanUpCallbackName,
         stdLibLenCallbackName,
-        stdLibNthCallbackName,
+        stdLibLinkAtCallbackName,
+        stdLibCopyAtCallbackName,
         copyingAllowed,
         self->allocator);
 
@@ -38690,6 +38573,21 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
     octaspire_dern_value_t *environment)
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
+
+    if (self->debugModeOn)
+    {
+        octaspire_container_utf8_string_t *str =
+            octaspire_dern_value_to_string(
+                value,
+                octaspire_dern_vm_get_allocator(self));
+
+        fprintf(stderr,
+            "[:::DEBUG:::] %s\n",
+            octaspire_container_utf8_string_get_c_string(str));
+
+        octaspire_container_utf8_string_release(str);
+        str = 0;
+    }
 
     octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
@@ -40838,12 +40736,13 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
     printf("\nwhere [option] is one of the values listed below and every\n");
     printf("[file] is loaded and evaluated before the REPL is started or closed.\n");
     printf("If any of -e string or [file] is used, REPL is not started unless -i is used.\n\n");
-    printf("-c        --color-diagnostics             : use colors on unix like systems\n");
-    printf("-i        --interactive                   : start REPL after any -e string or [file]s are evaluated\n");
-    printf("-e string --evaluate string               : evaluate a string without entering the REPL (unless -i is given)\n");
-    printf("-f        --allow-file-system-access      : Allow code to access file system (read and write files)\n");
-    printf("-v        --version                       : print version information and exit\n");
-    printf("-h        --help                          : print this help message and exit\n");
+    printf("-c        --color-diagnostics        : use colors on unix like systems\n");
+    printf("-i        --interactive              : start REPL after any -e string or [file]s are evaluated\n");
+    printf("-e string --evaluate string          : evaluate a string without entering the REPL (see -i)\n");
+    printf("-f        --allow-file-system-access : Allow code to access file system (read and write files)\n");
+    printf("-v        --version                  : print version information and exit\n");
+    printf("-h        --help                     : print this help message and exit\n");
+    printf("-g        --debug                    : print every form to stderr before it is evaluated\n");
 }
 
 
@@ -40984,6 +40883,10 @@ int main(int argc, char *argv[])
             {
                 octaspire_dern_repl_print_usage(argv[0], useColors);
                 exit(EXIT_SUCCESS);
+            }
+            else if (strcmp(argv[i], "-g") == 0 || strcmp(argv[i], "--debug") == 0)
+            {
+                vmConfig.debugModeOn = true;
             }
             else
             {

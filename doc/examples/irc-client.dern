@@ -11,7 +11,7 @@
 (define current-realname [realname] [])
 (define socket [socket] nil)
 (define num-rows-and-cols [number of rows and cols on screen] (ncurses-getmaxyx win))
-(define maxlines [maxlines] (- (ln@ num-rows-and-cols 0) 3))
+(define maxlines [maxlines] (- (cp@ num-rows-and-cols 0) 3))
 (define lines [messages] (queue-with-max-length maxlines))
 (define hint [hint] [])
 (define title [title] [])
@@ -55,7 +55,7 @@
     (if (>= startIndex (len str)) (return result))
 
     (for i from startIndex to (- (len str) 1)
-         (+= result (ln@ str i)))
+         (+= result (cp@ str i)))
     result))
 
 (define handle-nick [handle /nick] '(line [line of text starting with /nick]) (fn (line)
@@ -94,7 +94,7 @@
 (define set-hint [set-hint] '(h [new hint]) (fn (h)
     (= hint [--])
     (+= hint h)
-    (for i from (len hint) to (- (ln@ num-rows-and-cols 1) 1) (+= hint |-|))))
+    (for i from (len hint) to (- (cp@ num-rows-and-cols 1) 1) (+= hint |-|))))
 
 (define handle-connect [handle /connect] '(line [line of text starting with /connect]) (fn (line)
     (if (== current-username [])
@@ -138,12 +138,12 @@
 
     (define tokens [line split by space] (split restOfLine | |))
 
-    (= current-username (ln@ tokens 0))
+    (= current-username (cp@ tokens 0))
     (= current-realname [])
 
     (if (> (len tokens) 1)
         (for i from 1 to (- (len tokens) 1)
-             (+= current-realname (ln@ tokens i))
+             (+= current-realname (cp@ tokens i))
              (if (< i (- (len tokens) 1)) (+= current-realname | |))))
 
     (send-user-data)))
@@ -185,7 +185,7 @@
 (define show-hint [show help message] '(h [hint message]) (fn (h)
     (ncurses-attron 'BOLD)
     (if (ncurses-has-colors) (ncurses-attron PAIR-BORDER))
-    (ncurses-print win (- (ln@ num-rows-and-cols 0) 2) 0 h)
+    (ncurses-print win (- (cp@ num-rows-and-cols 0) 2) 0 h)
     (if (ncurses-has-colors) (ncurses-attroff PAIR-BORDER))
     (ncurses-attroff 'BOLD)
 ))
@@ -197,16 +197,16 @@
 
 (define show-empty-title [show empty title line] '() (fn ()
     (= title [])
-    (for i from 1 to (- (ln@  num-rows-and-cols 1) 1) (+= title |-|))))
+    (for i from 1 to (- (cp@  num-rows-and-cols 1) 1) (+= title |-|))))
 
 (define set-title [show title message] '(m [title message]) (fn (m)
     (= title (string-format [--{}] m))
-    (for i from (len title) to (- (ln@ num-rows-and-cols 1) 1) (+= title |-|))))
+    (for i from (len title) to (- (cp@ num-rows-and-cols 1) 1) (+= title |-|))))
 
 (define read-and-handle-input [get user input and handle it] '() (fn ()
     (ncurses-attron 'BOLD)
     (ncurses-attron PAIR-PROMPT)
-    (ncurses-print win (- (ln@ num-rows-and-cols 0) 1) 0 [> ])
+    (ncurses-print win (- (cp@ num-rows-and-cols 0) 1) 0 [> ])
     (ncurses-attroff PAIR-PROMPT)
     (ncurses-attroff 'BOLD)
     (ncurses-attron PAIR-INPUT)
@@ -215,7 +215,7 @@
 
     (if (== 0 (len input)) (do (show-empty-hint) (return)))
 
-    (define first-char [first character of user input] (ln@ input 0))
+    (define first-char [first character of user input] (cp@ input 0))
 
     (if (== |/| first-char)
       (handle-command input)
@@ -232,12 +232,12 @@
     (if (== 0 (len text)) (return))
 
     (for i from 0 to (- (len text) 1)
-         (define c [c] (ln@ text i))
+         (define c [c] (cp@ text i))
          (if (== c |newline|)
             (do (+= lines (vector type line))
                 (=  line []))
             (+= line c))
-         (if (>= (len line) (ln@ num-rows-and-cols 1))
+         (if (>= (len line) (cp@ num-rows-and-cols 1))
            (do
              (+= lines (vector type line))
              (= line []))))
@@ -251,7 +251,7 @@
     (define numsyms [number of syms] 0)
 
     (for i from 0 to (- (len message) 1)
-        (define c [c] (ln@ message i))
+        (define c [c] (cp@ message i))
         (if (>= numsyms 2)
           (+= result c)
           (if (== c |:|) (++ numsyms))))
@@ -267,7 +267,7 @@
 
     (if debug (push-text-to-lines 'DEBUG input-from-socket))
 
-    (define first-char [first character of user input] (ln@ input-from-socket 0))
+    (define first-char [first character of user input] (cp@ input-from-socket 0))
 
     (if (== |P| first-char)
         (return (handle-ping input-from-socket)))
@@ -310,7 +310,7 @@
 
     (define row [current row] 1)
     (for line in lines
-         (define type [type] (ln@ line 0))
+         (define type [type] (cp@ line 0))
 
          (if (== type 'OTHER)           (ncurses-attron PAIR-OTHER))
          (if (== type 'DEBUG)           (ncurses-attron PAIR-DEBUG))

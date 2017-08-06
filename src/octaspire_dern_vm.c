@@ -64,7 +64,7 @@ struct octaspire_dern_vm_t
     bool                            preventGc;
     bool                            quit;
     bool                            fileSystemAccessAllowed;
-    char                            padding[1];
+    bool                            debugModeOn;
 };
 
 octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(octaspire_dern_vm_t* self, octaspire_dern_value_tag_t const typeTag);
@@ -81,7 +81,8 @@ octaspire_dern_vm_config_t octaspire_dern_vm_config_default(void)
 {
     octaspire_dern_vm_config_t result =
     {
-        .fileSystemAccessAllowed = false
+        .fileSystemAccessAllowed = false,
+        .debugModeOn             = false
     };
 
     return result;
@@ -121,6 +122,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
     self->nextFreeUniqueIdForValues = 0;
     self->functionReturn = 0;
     self->fileSystemAccessAllowed = config.fileSystemAccessAllowed;
+    self->debugModeOn             = config.debugModeOn;
 
     self->libraries = octaspire_container_hash_map_new_with_octaspire_container_utf8_string_keys(
         sizeof(octaspire_dern_lib_t*),
@@ -557,19 +559,6 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_special_do,
         1,
         "Evaluate sequence of values and return the value of the last evaluation",
-        env))
-    {
-        abort();
-    }
-
-    // nth
-    if (!octaspire_dern_vm_create_and_register_new_builtin(
-        self,
-        "nth",
-        octaspire_dern_vm_builtin_nth,
-        2,
-        " ============= DEPRECATED! Use 'cp@' or 'ln@' instead!. =============\n"
-        "Index collection; get element at the given index on the given collection",
         env))
     {
         abort();
@@ -2012,7 +2001,8 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const typeNameForPayload,
     char const * const cleanUpCallbackName,
     char const * const stdLibLenCallbackName,
-    char const * const stdLibNthCallbackName,
+    char const * const stdLibLinkAtCallbackName,
+    char const * const stdLibCopyAtCallbackName,
     bool const copyingAllowed,
     void * const payload)
 {
@@ -2031,7 +2021,8 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
         payload,
         cleanUpCallbackName,
         stdLibLenCallbackName,
-        stdLibNthCallbackName,
+        stdLibLinkAtCallbackName,
+        stdLibCopyAtCallbackName,
         copyingAllowed,
         self->allocator);
 
@@ -2610,6 +2601,21 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
     octaspire_dern_value_t *environment)
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
+
+    if (self->debugModeOn)
+    {
+        octaspire_container_utf8_string_t *str =
+            octaspire_dern_value_to_string(
+                value,
+                octaspire_dern_vm_get_allocator(self));
+
+        fprintf(stderr,
+            "[:::DEBUG:::] %s\n",
+            octaspire_container_utf8_string_get_c_string(str));
+
+        octaspire_container_utf8_string_release(str);
+        str = 0;
+    }
 
     octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 

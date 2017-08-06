@@ -156,12 +156,13 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
     printf("\nwhere [option] is one of the values listed below and every\n");
     printf("[file] is loaded and evaluated before the REPL is started or closed.\n");
     printf("If any of -e string or [file] is used, REPL is not started unless -i is used.\n\n");
-    printf("-c        --color-diagnostics             : use colors on unix like systems\n");
-    printf("-i        --interactive                   : start REPL after any -e string or [file]s are evaluated\n");
-    printf("-e string --evaluate string               : evaluate a string without entering the REPL (unless -i is given)\n");
-    printf("-f        --allow-file-system-access      : Allow code to access file system (read and write files)\n");
-    printf("-v        --version                       : print version information and exit\n");
-    printf("-h        --help                          : print this help message and exit\n");
+    printf("-c        --color-diagnostics        : use colors on unix like systems\n");
+    printf("-i        --interactive              : start REPL after any -e string or [file]s are evaluated\n");
+    printf("-e string --evaluate string          : evaluate a string without entering the REPL (see -i)\n");
+    printf("-f        --allow-file-system-access : Allow code to access file system (read and write files)\n");
+    printf("-v        --version                  : print version information and exit\n");
+    printf("-h        --help                     : print this help message and exit\n");
+    printf("-g        --debug                    : print every form to stderr before it is evaluated\n");
 }
 
 
@@ -302,6 +303,10 @@ int main(int argc, char *argv[])
             {
                 octaspire_dern_repl_print_usage(argv[0], useColors);
                 exit(EXIT_SUCCESS);
+            }
+            else if (strcmp(argv[i], "-g") == 0 || strcmp(argv[i], "--debug") == 0)
+            {
+                vmConfig.debugModeOn = true;
             }
             else
             {
