@@ -526,6 +526,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_iteration">Iteration</a></li>
 <li><a href="#_comparing_and_changing_values_predicates">Comparing and changing values, predicates</a></li>
 <li><a href="#_branching_and_selection">Branching and selection</a></li>
+<li><a href="#_selecting_values_from_collections">Selecting values from collections</a></li>
 <li><a href="#_formatted_and_regular_printing">Formatted and regular printing</a></li>
 <li><a href="#_formatted_string_creation">Formatted string creation</a></li>
 <li><a href="#_functions_with_variable_number_of_arguments">Functions with variable number of arguments</a></li>
@@ -566,7 +567,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Documentation for Octaspire Dern programming language version 0.200.0</p>
+<p>Documentation for Octaspire Dern programming language version 0.201.0</p>
 </div>
 </div>
 </div>
@@ -808,7 +809,7 @@ of it directly to the interactive REPL.</p>
                                               <span class="tok-ss">&#39;Lola</span> <span class="tok-ss">&#39;Hello</span>
                                               <span class="tok-ss">&#39;Mike</span> <span class="tok-ss">&#39;Bonjour</span><span class="tok-p">))</span>
 
-<span class="tok-p">(</span><span class="tok-nb">for </span><span class="tok-nv">i</span> <span class="tok-nv">in</span> <span class="tok-nv">names</span> <span class="tok-p">(</span><span class="tok-nf">greeter</span> <span class="tok-p">(</span><span class="tok-nb">nth </span><span class="tok-mi">1</span> <span class="tok-nv">i</span><span class="tok-p">)</span> <span class="tok-p">(</span><span class="tok-nb">nth </span><span class="tok-mi">0</span> <span class="tok-nv">i</span><span class="tok-p">)))</span></code></pre>
+<span class="tok-p">(</span><span class="tok-nb">for </span><span class="tok-nv">i</span> <span class="tok-nv">in</span> <span class="tok-nv">names</span> <span class="tok-p">(</span><span class="tok-nf">greeter</span> <span class="tok-p">(</span><span class="tok-nb">ln@ </span><span class="tok-nv">i</span> <span class="tok-mi">1</span><span class="tok-p">)</span> <span class="tok-p">(</span><span class="tok-nb">ln@ </span><span class="tok-nv">i</span> <span class="tok-mi">0</span><span class="tok-p">)))</span></code></pre>
 </div>
 </div>
 </div>
@@ -1124,6 +1125,21 @@ for the above operators should be implemented in the standard library eventually
         <span class="tok-no">false</span> <span class="tok-mf">3.14</span>
         <span class="tok-no">false</span> <span class="tok-sc">|a|</span>
         <span class="tok-no">false</span> <span class="tok-s">[There can be as many selectors as needed]</span><span class="tok-p">)</span>   <span class="tok-c tok-c-Singleline">; Prints: Sun is shining</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_selecting_values_from_collections">Selecting values from collections</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Values can be selected from collections using <code>ln@</code> and copied with <code>cp@</code>.
+<code>ln@</code> is pronounced <strong>link at</strong> and <code>cp@</code> is pronounced <strong>copy at</strong>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="dern"><span></span><span class="tok-p">(</span><span class="tok-nb">++ </span><span class="tok-p">(</span><span class="tok-nb">ln@ </span><span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">)</span> <span class="tok-mi">1</span><span class="tok-p">))</span>  <span class="tok-c tok-c-Singleline">; 3</span>
+<span class="tok-p">(</span><span class="tok-nb">+= </span><span class="tok-p">(</span><span class="tok-nb">cp@ </span><span class="tok-s">[abc]</span> <span class="tok-mi">1</span><span class="tok-p">)</span> <span class="tok-mi">2</span><span class="tok-p">))</span>  <span class="tok-c tok-c-Singleline">; |d|</span></code></pre>
 </div>
 </div>
 </div>
@@ -1809,7 +1825,7 @@ can be used to (by giving different compiler flags):</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-08-06 15:13:03 EEST
+Last updated 2017-08-06 21:36:08 EEST
 </div>
 </div>
 </body>

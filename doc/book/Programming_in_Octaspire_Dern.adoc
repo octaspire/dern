@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.200.0
+Documentation for Octaspire Dern programming language version 0.201.0
 
 == About
 
@@ -221,7 +221,7 @@ This is a multiline comment.    !#
                                               'Lola 'Hello
                                               'Mike 'Bonjour))
 
-(for i in names (greeter (nth 1 i) (nth 0 i)))
+(for i in names (greeter (ln@ i 1) (ln@ i 0)))
 ----
 
 
@@ -534,6 +534,24 @@ Here are some examples using `select`:
         false |a|
         false [There can be as many selectors as needed])   ; Prints: Sun is shining
 ----
+
+
+
+
+== Selecting values from collections
+
+Values can be selected from collections using `ln@` and copied with `cp@`.
+`ln@` is pronounced *link at* and `cp@` is pronounced *copy at*.
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(++ (ln@ '(1 2 3) 1))  ; 3
+(+= (cp@ [abc] 1) 2))  ; |d|
+----
+
 
 
 

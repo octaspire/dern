@@ -48,5 +48,5 @@ This is a multiline comment.    !#
                                               'Lola 'Hello
                                               'Mike 'Bonjour))
 
-(for i in names (greeter (nth 1 i) (nth 0 i)))
+(for i in names (greeter (ln@ i 1) (ln@ i 0)))
 

@@ -16,7 +16,7 @@
    (cons (concat "\\_<" (regexp-opt '("!=" "*" "+" "++" "+=" "-" "--" "-=" "/" "<" "<=" "="
                        "==" ">" ">=" "abort" "and" "define" "do" "doc" "env-current"
                        "env-global" "env-new" "eval" "exit" "find" "fn" "for" "hash-map" "if"
-                       "input-file-open" "io-file-open" "len" "mod" "not" "nth" "or" "pop-front"
+                       "input-file-open" "io-file-open" "len" "mod" "not" "ln@" "cp@" "or" "pop-front"
                        "port-close" "port-dist" "port-flush" "port-length" "port-read" "port-seek"
                        "port-write" "print" "println" "quote" "read-and-eval-path"
                        "read-and-eval-string" "return" "select" "starts-with?"

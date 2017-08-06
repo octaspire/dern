@@ -30,9 +30,9 @@
 
 (ncurses-print win 10 10 (to-string num-rows-and-cols))
 
-(ncurses-print win (- (nth 0 num-rows-and-cols) 1)  0                               [X])
-(ncurses-print win (- (nth 0 num-rows-and-cols) 1)  (- (nth 1 num-rows-and-cols) 1) [X])
-(ncurses-print win 0                                (- (nth 1 num-rows-and-cols) 1) [X])
+(ncurses-print win (- (ln@ num-rows-and-cols 0) 1)  0                               [X])
+(ncurses-print win (- (ln@ num-rows-and-cols 0) 1)  (- (ln@ num-rows-and-cols 1) 1) [X])
+(ncurses-print win 0                                (- (ln@ num-rows-and-cols 1) 1) [X])
 
 (ncurses-refresh)
 
