@@ -293,13 +293,25 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
 
     //////////////////////////////////////// Builtins ////////////////////////////////////////////
 
-    // rf@
+    // ln@
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
-        "rf@",
-        octaspire_dern_vm_builtin_rf_at_sign,
+        "ln@",
+        octaspire_dern_vm_builtin_ln_at_sign,
         2,
-        "Get reference to a value",
+        "Get reference to a value in a given collection at the given index",
+        env))
+    {
+        abort();
+    }
+
+    // cp@
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "cp@",
+        octaspire_dern_vm_builtin_cp_at_sign,
+        2,
+        "Get copy of a value in a given collection at the given index",
         env))
     {
         abort();
@@ -556,6 +568,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         "nth",
         octaspire_dern_vm_builtin_nth,
         2,
+        " ============= DEPRECATED! Use 'cp@' or 'ln@' instead!. =============\n"
         "Index collection; get element at the given index on the given collection",
         env))
     {

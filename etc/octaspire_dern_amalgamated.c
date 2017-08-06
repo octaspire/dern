@@ -201,10 +201,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "58"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "59"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.58.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.59.0"
 
 
 
@@ -887,6 +887,10 @@ size_t octaspire_container_utf8_string_get_length_in_ucs_characters(
 
 size_t octaspire_container_utf8_string_get_length_in_octets(
     octaspire_container_utf8_string_t const * const self);
+
+bool octaspire_container_utf8_string_is_index_valid(
+    octaspire_container_utf8_string_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex);
 
 uint32_t octaspire_container_utf8_string_get_ucs_character_at_index(
     octaspire_container_utf8_string_t const * const self,
@@ -4628,6 +4632,18 @@ static octaspire_container_utf8_string_private_index_t octaspire_container_utf8_
     }
 
     return result;
+}
+
+bool octaspire_container_utf8_string_is_index_valid(
+    octaspire_container_utf8_string_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex)
+{
+    const octaspire_container_utf8_string_private_index_t index =
+        octaspire_container_utf8_string_private_is_index_valid(
+            self,
+            possiblyNegativeIndex);
+
+    return index.isValid;
 }
 
 uint32_t octaspire_container_utf8_string_get_ucs_character_at_index(
@@ -17356,6 +17372,44 @@ TEST octaspire_container_utf8_string_compare_with_string_abb_and_abc_test(void)
 
 TEST octaspire_container_utf8_string_compare_with_string_abc_and_abca_test(void)
 {
+    octaspire_container_utf8_string_t *str =
+        octaspire_container_utf8_string_new(
+            "",
+            octaspireContainerUtf8StringTestAllocator);
+
+    for (ptrdiff_t i = -64; i < 64; ++i)
+    {
+        ASSERT_FALSE(octaspire_container_utf8_string_is_index_valid(str, i));
+    }
+
+    octaspire_container_utf8_string_concatenate_c_string(str, "a");
+
+    for (ptrdiff_t i = -64; i < 64; ++i)
+    {
+        ASSERT_EQ(
+            i== -1 || i == 0,
+            octaspire_container_utf8_string_is_index_valid(str, i));
+    }
+
+    octaspire_container_utf8_string_concatenate_c_string(str, "b");
+
+    for (ptrdiff_t i = -64; i < 64; ++i)
+    {
+        ASSERT_EQ(
+            i == -1 || i == -2 || i == 0 || i == 1,
+            octaspire_container_utf8_string_is_index_valid(str, i));
+    }
+
+    ASSERT(str);
+
+    octaspire_container_utf8_string_release(str);
+    str = 0;
+
+    PASS();
+}
+
+TEST octaspire_container_utf8_string_is_index_valid_test(void)
+{
     octaspire_container_utf8_string_t *str1 =
         octaspire_container_utf8_string_new("abc", octaspireContainerUtf8StringTestAllocator);
 
@@ -17470,6 +17524,8 @@ GREATEST_SUITE(octaspire_container_utf8_string_suite)
     RUN_TEST(octaspire_container_utf8_string_compare_with_string_abca_and_abc_test);
     RUN_TEST(octaspire_container_utf8_string_compare_with_string_abb_and_abc_test);
     RUN_TEST(octaspire_container_utf8_string_compare_with_string_abc_and_abca_test);
+
+    RUN_TEST(octaspire_container_utf8_string_is_index_valid_test);
 
     octaspire_memory_allocator_release(octaspireContainerUtf8StringTestAllocator);
     octaspireContainerUtf8StringTestAllocator = 0;
@@ -19145,10 +19201,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "199"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "200"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.199.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.200.0"
 
 
 
@@ -19843,6 +19899,10 @@ bool octaspire_dern_value_as_string_remove_all_substrings(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const value);
 
+bool octaspire_dern_value_as_string_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex);
+
 char const *octaspire_dern_value_as_string_get_c_string(
     octaspire_dern_value_t const * const self);
 
@@ -19862,6 +19922,10 @@ char const *octaspire_dern_value_as_text_get_c_string(
 
 size_t octaspire_dern_value_as_text_get_length_in_octets(
     octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_as_vector_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex);
 
 size_t octaspire_dern_value_as_vector_get_length(
     octaspire_dern_value_t const * const self);
@@ -20783,7 +20847,12 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_uid(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
-octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
+octaspire_dern_value_t *octaspire_dern_vm_builtin_ln_at_sign(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
@@ -31359,7 +31428,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_binary_file(
     return result;
 }
 
-octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
+octaspire_dern_value_t *octaspire_dern_vm_builtin_ln_at_sign(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment)
@@ -31376,7 +31445,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
-            "Builtin 'rf@' expects at least two arguments.");
+            "Builtin 'ln@' expects at least two arguments.");
     }
 
     octaspire_dern_value_t * const collectionVal =
@@ -31391,6 +31460,16 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
             abort();
         }
 
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "Builtin 'ln@' cannot be used with strings. Use 'cp@' instead.");
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         {
             if (numArgs > 2)
@@ -31398,7 +31477,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
                 octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_from_c_string(
                     vm,
-                    "Builtin 'rf@' expects exactly two arguments when used with vector.");
+                    "Builtin 'ln@' expects exactly two arguments when used with vector.");
             }
 
             octaspire_dern_value_t const * const indexVal =
@@ -31411,10 +31490,27 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
                 octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'rf@' expects integer as second argument when indexing a vector. "
+                    "Builtin 'ln@' expects integer as second argument when indexing a vector. "
                     "Now type '%s' was given.",
                     octaspire_dern_value_helper_get_type_as_c_string(
                         indexVal->typeTag));
+            }
+
+            ptrdiff_t const index =
+                (ptrdiff_t)octaspire_dern_value_as_integer_get_value(indexVal);
+
+            if (!octaspire_dern_value_as_vector_is_index_valid(
+                    collectionVal,
+                    index))
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Index to builtin 'ln@' is not valid for the given vector. "
+                    "Index '%td' was given.",
+                    index);
             }
 
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
@@ -31430,7 +31526,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
                 octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_from_c_string(
                     vm,
-                    "Builtin 'rf@' expects exactly three arguments when used with hash map.");
+                    "Builtin 'ln@' expects exactly three arguments when used with hash map.");
             }
 
             octaspire_dern_value_t const * const symbolVal =
@@ -31443,7 +31539,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
                 octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'rf@' expects symbol as third argument when indexing a hash map. "
+                    "Builtin 'ln@' expects symbol as third argument when indexing a hash map. "
                     "Now type '%s' was given.",
                     octaspire_dern_value_helper_get_type_as_c_string(
                         symbolVal->typeTag));
@@ -31463,7 +31559,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
                     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                     return octaspire_dern_vm_create_new_value_error_format(
                         vm,
-                        "Builtin 'rf@' expects integer as second argument when indexing a hash map with given symbol 'index'. "
+                        "Builtin 'ln@' expects integer as second argument when indexing a hash map with given symbol 'index'. "
                         "Now type '%s' was given.",
                         octaspire_dern_value_helper_get_type_as_c_string(
                             indexVal->typeTag));
@@ -31479,7 +31575,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
                     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                     return octaspire_dern_vm_create_new_value_error_from_c_string(
                         vm,
-                        "Builtin 'rf@' could not find the requested element from hash map.");
+                        "Builtin 'ln@' could not find the requested element from hash map.");
 
                 }
 
@@ -31501,7 +31597,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
                     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                     return octaspire_dern_vm_create_new_value_error_from_c_string(
                         vm,
-                        "Builtin 'rf@' could not find the requested element from hash map.");
+                        "Builtin 'ln@' could not find the requested element from hash map.");
 
                 }
 
@@ -31513,7 +31609,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
                 octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'rf@' expects symbol 'hash' or 'index' as third argument when indexing a hash map. "
+                    "Builtin 'ln@' expects symbol 'hash' or 'index' as third argument when indexing a hash map. "
                     "Now symbol '%s' was given.",
                     octaspire_dern_value_as_text_get_c_string(symbolVal));
             }
@@ -31531,7 +31627,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
                 octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_from_c_string(
                     vm,
-                    "Builtin 'rf@' expects exactly two arguments when used with list.");
+                    "Builtin 'ln@' expects exactly two arguments when used with list.");
             }
 
             octaspire_dern_value_t const * const indexVal =
@@ -31544,7 +31640,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
                 octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'rf@' expects integer as second argument when indexing a list. "
+                    "Builtin 'ln@' expects integer as second argument when indexing a list. "
                     "Now type '%s' was given.",
                     octaspire_dern_value_helper_get_type_as_c_string(
                         indexVal->typeTag));
@@ -31560,7 +31656,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
-        case OCTASPIRE_DERN_VALUE_TAG_STRING:
         case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
@@ -31575,7 +31670,292 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
-                "Builtin 'rf@' expects vector, hash map, queue or list as first argument. "
+                "Builtin 'ln@' expects vector, hash map, queue or list as first argument. "
+                "Now type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(collectionVal->typeTag));
+        }
+    }
+
+    abort();
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs < 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'cp@' expects at least two arguments.");
+    }
+
+    octaspire_dern_value_t * const collectionVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(collectionVal);
+
+    switch (octaspire_dern_value_get_type(collectionVal))
+    {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            if (numArgs > 2)
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_from_c_string(
+                    vm,
+                    "Builtin 'cp@' expects exactly two arguments when used with string.");
+            }
+
+            octaspire_dern_value_t const * const indexVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+            octaspire_helpers_verify_not_null(indexVal);
+
+            if (!octaspire_dern_value_is_integer(indexVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'cp@' expects integer as second argument when indexing a string. "
+                    "Now type '%s' was given.",
+                    octaspire_dern_value_helper_get_type_as_c_string(
+                        indexVal->typeTag));
+            }
+
+            ptrdiff_t const index =
+                (ptrdiff_t)octaspire_dern_value_as_integer_get_value(indexVal);
+
+            if (!octaspire_dern_value_as_string_is_index_valid(
+                    collectionVal,
+                    index))
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Index to builtin 'cp@' is not valid for the given string. "
+                    "Index '%td' was given.",
+                    index);
+            }
+
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_character_from_uint32t(
+                vm,
+                octaspire_container_utf8_string_get_ucs_character_at_index(
+                    collectionVal->value.string,
+                    index));
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        {
+            if (numArgs > 2)
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_from_c_string(
+                    vm,
+                    "Builtin 'cp@' expects exactly two arguments when used with vector.");
+            }
+
+            octaspire_dern_value_t const * const indexVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+            octaspire_helpers_verify_not_null(indexVal);
+
+            if (!octaspire_dern_value_is_integer(indexVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'cp@' expects integer as second argument when indexing a vector. "
+                    "Now type '%s' was given.",
+                    octaspire_dern_value_helper_get_type_as_c_string(
+                        indexVal->typeTag));
+            }
+
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_copy(
+                    vm,
+                    octaspire_dern_value_as_vector_get_element_at(
+                        collectionVal,
+                        octaspire_dern_value_as_integer_get_value(indexVal)));
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        {
+            if (numArgs != 3)
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_from_c_string(
+                    vm,
+                    "Builtin 'cp@' expects exactly three arguments when used with hash map.");
+            }
+
+            octaspire_dern_value_t const * const symbolVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+
+            octaspire_helpers_verify_not_null(symbolVal);
+
+            if (!octaspire_dern_value_is_symbol(symbolVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'cp@' expects symbol as third argument when indexing a hash map. "
+                    "Now type '%s' was given.",
+                    octaspire_dern_value_helper_get_type_as_c_string(
+                        symbolVal->typeTag));
+            }
+
+            octaspire_dern_value_t const * const indexVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+            octaspire_helpers_verify_not_null(indexVal);
+
+            if (octaspire_dern_value_as_text_is_equal_to_c_string(
+                    symbolVal,
+                    "index"))
+            {
+                if (!octaspire_dern_value_is_integer(indexVal))
+                {
+                    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    return octaspire_dern_vm_create_new_value_error_format(
+                        vm,
+                        "Builtin 'cp@' expects integer as second argument when indexing a hash map with given symbol 'index'. "
+                        "Now type '%s' was given.",
+                        octaspire_dern_value_helper_get_type_as_c_string(
+                            indexVal->typeTag));
+                }
+
+                octaspire_container_hash_map_element_t * const element =
+                    octaspire_dern_value_as_hash_map_get_at_index(
+                        collectionVal,
+                        octaspire_dern_value_as_integer_get_value(indexVal));
+
+                if (!element)
+                {
+                    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    return octaspire_dern_vm_create_new_value_error_from_c_string(
+                        vm,
+                        "Builtin 'cp@' could not find the requested element from hash map.");
+
+                }
+
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_copy(
+                    vm,
+                    octaspire_container_hash_map_element_get_value(element));
+            }
+            else if (octaspire_dern_value_as_text_is_equal_to_c_string(
+                    symbolVal,
+                    "hash"))
+            {
+                octaspire_container_hash_map_element_t * const element =
+                    octaspire_dern_value_as_hash_map_get(
+                        collectionVal,
+                        octaspire_dern_value_get_hash(indexVal),
+                        indexVal);
+
+                if (!element)
+                {
+                    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    return octaspire_dern_vm_create_new_value_error_from_c_string(
+                        vm,
+                        "Builtin 'cp@' could not find the requested element from hash map.");
+
+                }
+
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_copy(
+                    vm,
+                    octaspire_container_hash_map_element_get_value(element));
+            }
+            else
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'cp@' expects symbol 'hash' or 'index' as third argument when indexing a hash map. "
+                    "Now symbol '%s' was given.",
+                    octaspire_dern_value_as_text_get_c_string(symbolVal));
+            }
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        {
+            abort();
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        {
+            if (numArgs > 2)
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_from_c_string(
+                    vm,
+                    "Builtin 'cp@' expects exactly two arguments when used with list.");
+            }
+
+            octaspire_dern_value_t const * const indexVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+            octaspire_helpers_verify_not_null(indexVal);
+
+            if (!octaspire_dern_value_is_integer(indexVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'cp@' expects integer as second argument when indexing a list. "
+                    "Now type '%s' was given.",
+                    octaspire_dern_value_helper_get_type_as_c_string(
+                        indexVal->typeTag));
+            }
+
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_copy(
+                vm,
+                octaspire_dern_value_as_list_get_element_at(
+                    collectionVal,
+                    octaspire_dern_value_as_integer_get_value(indexVal)));
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'cp@' expects vector, hash map, queue or list as first argument. "
                 "Now type '%s' was given.",
                 octaspire_dern_value_helper_get_type_as_c_string(collectionVal->typeTag));
         }
@@ -34871,6 +35251,17 @@ bool octaspire_dern_value_as_string_remove_all_substrings(
     return true;
 }
 
+bool octaspire_dern_value_as_string_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
+
+    return octaspire_container_utf8_string_is_index_valid(
+        self->value.string,
+        possiblyNegativeIndex);
+}
+
 char const *octaspire_dern_value_as_string_get_c_string(
     octaspire_dern_value_t const * const self)
 {
@@ -35045,6 +35436,16 @@ size_t octaspire_dern_value_as_text_get_length_in_octets(
     }
 
     return 0;
+}
+
+bool octaspire_dern_value_as_vector_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    return octaspire_container_vector_is_valid_index(
+        self->value.vector,
+        possiblyNegativeIndex);
 }
 
 size_t octaspire_dern_value_as_vector_get_length(
@@ -35972,13 +36373,25 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
 
     //////////////////////////////////////// Builtins ////////////////////////////////////////////
 
-    // rf@
+    // ln@
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
-        "rf@",
-        octaspire_dern_vm_builtin_rf_at_sign,
+        "ln@",
+        octaspire_dern_vm_builtin_ln_at_sign,
         2,
-        "Get reference to a value",
+        "Get reference to a value in a given collection at the given index",
+        env))
+    {
+        abort();
+    }
+
+    // cp@
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "cp@",
+        octaspire_dern_vm_builtin_cp_at_sign,
+        2,
+        "Get copy of a value in a given collection at the given index",
         env))
     {
         abort();
@@ -36235,6 +36648,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         "nth",
         octaspire_dern_vm_builtin_nth,
         2,
+        " ============= DEPRECATED! Use 'cp@' or 'ln@' instead!. =============\n"
         "Index collection; get element at the given index on the given collection",
         env))
     {
@@ -49732,7 +50146,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(for i in e (define e2 (nth 0 i) [-] (nth 1 i)))");
+            "(for i in e (define e2 (ln@ i 0) [-] (ln@ i 1)))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -49819,7 +50233,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_2_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(for i in e step 2 (define e2 (nth 0 i) [-] (nth 1 i)))");
+            "(for i in e step 2 (define e2 (ln@ i 0) [-] (ln@ i 1)))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -49893,13 +50307,13 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_minus_2_failure_test
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(for i in e step -2 (define e2 (nth 0 i) [-] (nth 1 i)))");
+            "(for i in e step -2 (define e2 (ln@ i 0) [-] (ln@ i 1)))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
-        "\tAt form: >>>>>>>>>>(for i in e step -2 (define e2 (nth 0 i) [-] (nth 1 i)))<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(for i in e step -2 (define e2 (ln@ i 0) [-] (ln@ i 1)))<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -49933,7 +50347,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(for i in h (define e (nth 0 i) [-] (nth 1 i)))");
+            "(for i in h (define e (ln@ i 0) [-] (ln@ i 1)))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -49986,7 +50400,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_2_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(for i in h step 2 (define e (nth 0 i) [-] (nth 1 i)))");
+            "(for i in h step 2 (define e (ln@ i 0) [-] (ln@ i 1)))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -50026,14 +50440,14 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_minus_2_failure_test(vo
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(for i in h step -2 (define e (nth 0 i) [-] (nth 1 i)))");
+            "(for i in h step -2 (define e (ln@ i 0) [-] (ln@ i 1)))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
-        "\tAt form: >>>>>>>>>>(for i in h step -2 (define e (nth 0 i) [-] (nth 1 i)))<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(for i in h step -2 (define e (ln@ i 0) [-] (ln@ i 1)))<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -50168,14 +50582,14 @@ TEST octaspire_dern_vm_error_in_function_body_is_reported_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_builtin_nth_called_with_0_and_string_abc_test(void)
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_0_and_string_abc_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(nth 0 [abc])");
+            "(cp@ [abc] 0)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, evaluatedValue->typeTag);
@@ -50190,14 +50604,14 @@ TEST octaspire_dern_vm_builtin_nth_called_with_0_and_string_abc_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_builtin_nth_called_with_1_and_string_abc_test(void)
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_1_and_string_abc_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(nth 1 [abc])");
+            "(cp@ [abc] 1)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, evaluatedValue->typeTag);
@@ -50212,14 +50626,14 @@ TEST octaspire_dern_vm_builtin_nth_called_with_1_and_string_abc_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_builtin_nth_called_with_2_and_string_abc_test(void)
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_string_abc_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(nth 2 [abc])");
+            "(cp@ [abc] 2)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, evaluatedValue->typeTag);
@@ -50234,21 +50648,22 @@ TEST octaspire_dern_vm_builtin_nth_called_with_2_and_string_abc_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_builtin_nth_called_with_3_and_string_abc_failure_test(void)
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_string_abc_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(nth 3 [abc])");
+            "(cp@ [abc] 3)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Builtin 'nth' cannot index string of length 3 from index 3.\n"
-        "\tAt form: >>>>>>>>>>(nth 3 [abc])<<<<<<<<<<\n",
+        "Index to builtin 'cp@' is not valid for the given string. "
+        "Index '3' was given.\n"
+        "\tAt form: >>>>>>>>>>(cp@ [abc] 3)<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -50257,14 +50672,14 @@ TEST octaspire_dern_vm_builtin_nth_called_with_3_and_string_abc_failure_test(voi
     PASS();
 }
 
-TEST octaspire_dern_vm_builtin_nth_called_with_0_and_vector_1_2_3_test(void)
+TEST octaspire_dern_vm_builtin_ln_at_sign_called_with_0_and_vector_1_2_3_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(nth 0 '(1 2 3))");
+            "(ln@ '(1 2 3) 0)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -50276,14 +50691,14 @@ TEST octaspire_dern_vm_builtin_nth_called_with_0_and_vector_1_2_3_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_builtin_nth_called_with_1_and_vector_1_2_3_test(void)
+TEST octaspire_dern_vm_builtin_ln_at_sign_called_with_1_and_vector_1_2_3_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(nth 1 '(1 2 3))");
+            "(ln@ '(1 2 3) 1)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -50295,14 +50710,14 @@ TEST octaspire_dern_vm_builtin_nth_called_with_1_and_vector_1_2_3_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_builtin_nth_called_with_2_and_vector_1_2_3_test(void)
+TEST octaspire_dern_vm_builtin_ln_at_sign_called_with_2_and_vector_1_2_3_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(nth 2 '(1 2 3))");
+            "(ln@ '(1 2 3) 2)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -50314,21 +50729,22 @@ TEST octaspire_dern_vm_builtin_nth_called_with_2_and_vector_1_2_3_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_builtin_nth_called_with_3_and_vector_1_2_3_failure_test(void)
+TEST octaspire_dern_vm_builtin_ln_at_sign_called_with_3_and_vector_1_2_3_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(nth 3 '(1 2 3))");
+            "(ln@ '(1 2 3) 3)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Builtin 'nth' cannot index vector of length 3 from index 3.\n"
-        "\tAt form: >>>>>>>>>>(nth 3 (quote (1 2 3)))<<<<<<<<<<\n",
+        "Index to builtin 'ln@' is not valid for the given vector. "
+        "Index '3' was given.\n"
+        "\tAt form: >>>>>>>>>>(ln@ (quote (1 2 3)) 3)<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -55428,7 +55844,10 @@ TEST octaspire_dern_vm_split_called_with_string_and_char_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_rf_at_sign_with_vector_test(void)
+
+
+
+TEST octaspire_dern_vm_cp_at_sign_with_vector_test(void)
 {
     octaspire_dern_vm_t *vm =
         octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -55445,7 +55864,193 @@ TEST octaspire_dern_vm_rf_at_sign_with_vector_test(void)
     {
         evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(++ (rf@ v 1))");
+            "(++ (cp@ v 1))");
+
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+        ASSERT_EQ(3,                               evaluatedValue->value.integer);
+    }
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string v)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "(1 2 3)",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_cp_at_sign_with_string_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [s] [abc])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    for (int32_t i = 0; i < 10; ++i)
+    {
+        evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+= (cp@ s 1) 2)");
+
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, evaluatedValue->typeTag);
+
+        ASSERT_STR_EQ(
+            "d",
+            octaspire_container_utf8_string_get_c_string(
+                evaluatedValue->value.character));
+    }
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "s");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "abc",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_cp_at_sign_with_hash_map_of_size_one_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define h [h] (hash-map [a] 2))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    for (int32_t i = 0; i < 5; ++i)
+    {
+        evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(++ (cp@ h 0 'index))");
+
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+        ASSERT_EQ(3,                                evaluatedValue->value.integer);
+    }
+
+    for (int32_t i = 0; i < 5; ++i)
+    {
+        evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(++ (cp@ h [a] 'hash))");
+
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+        ASSERT_EQ(3,                                evaluatedValue->value.integer);
+    }
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(to-string h)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "(hash-map [a] 2)",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_cp_at_sign_with_hash_map_of_size_three_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define h [h] (hash-map [a] 1   [b] 2   [c] 3))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    for (int32_t i = 0; i < 10; ++i)
+    {
+        evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(++ (cp@ h [b] 'hash))");
+
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+        ASSERT_EQ(3,                                evaluatedValue->value.integer);
+    }
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(find h [a])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(1, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(find h [b])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(2, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+        vm,
+        "(find h [c])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(3, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+
+
+
+
+
+TEST octaspire_dern_vm_ln_at_sign_with_vector_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define v [v] '(1 2 3))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    for (int32_t i = 0; i < 10; ++i)
+    {
+        evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(++ (ln@ v 1))");
 
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
         ASSERT_EQ(3 + i,                            evaluatedValue->value.integer);
@@ -55467,7 +56072,38 @@ TEST octaspire_dern_vm_rf_at_sign_with_vector_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_rf_at_sign_with_hash_map_of_size_one_test(void)
+TEST octaspire_dern_vm_ln_at_sign_with_string_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s [s] [abc])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(ln@ [abc] 1)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'ln@' cannot be used with strings. Use 'cp@' instead.\n"
+        "\tAt form: >>>>>>>>>>(ln@ [abc] 1)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_ln_at_sign_with_hash_map_of_size_one_test(void)
 {
     octaspire_dern_vm_t *vm =
         octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -55484,7 +56120,7 @@ TEST octaspire_dern_vm_rf_at_sign_with_hash_map_of_size_one_test(void)
     {
         evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(++ (rf@ h 0 'index))");
+            "(++ (ln@ h 0 'index))");
 
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
         ASSERT_EQ(3 + i,                            evaluatedValue->value.integer);
@@ -55494,7 +56130,7 @@ TEST octaspire_dern_vm_rf_at_sign_with_hash_map_of_size_one_test(void)
     {
         evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(++ (rf@ h [a] 'hash))");
+            "(++ (ln@ h [a] 'hash))");
 
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
         ASSERT_EQ(3 + 5 + i,                        evaluatedValue->value.integer);
@@ -55516,7 +56152,7 @@ TEST octaspire_dern_vm_rf_at_sign_with_hash_map_of_size_one_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_rf_at_sign_with_hash_map_of_size_three_test(void)
+TEST octaspire_dern_vm_ln_at_sign_with_hash_map_of_size_three_test(void)
 {
     octaspire_dern_vm_t *vm =
         octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -55533,7 +56169,7 @@ TEST octaspire_dern_vm_rf_at_sign_with_hash_map_of_size_three_test(void)
     {
         evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(++ (rf@ h [b] 'hash))");
+            "(++ (ln@ h [b] 'hash))");
 
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
         ASSERT_EQ(3 + i,                            evaluatedValue->value.integer);
@@ -55777,14 +56413,14 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
 
 
     RUN_TEST(octaspire_dern_vm_error_in_function_body_is_reported_test);
-    RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_0_and_string_abc_test);
-    RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_1_and_string_abc_test);
-    RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_2_and_string_abc_test);
-    RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_3_and_string_abc_failure_test);
-    RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_0_and_vector_1_2_3_test);
-    RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_1_and_vector_1_2_3_test);
-    RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_2_and_vector_1_2_3_test);
-    RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_3_and_vector_1_2_3_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_0_and_string_abc_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_1_and_string_abc_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_string_abc_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_string_abc_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_ln_at_sign_called_with_0_and_vector_1_2_3_test);
+    RUN_TEST(octaspire_dern_vm_builtin_ln_at_sign_called_with_1_and_vector_1_2_3_test);
+    RUN_TEST(octaspire_dern_vm_builtin_ln_at_sign_called_with_2_and_vector_1_2_3_test);
+    RUN_TEST(octaspire_dern_vm_builtin_ln_at_sign_called_with_3_and_vector_1_2_3_failure_test);
     RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_0_and_hash_map_1a_2b_3c_test);
     RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_1_and_hash_map_1a_2b_3c_test);
     RUN_TEST(octaspire_dern_vm_builtin_nth_called_with_2_and_hash_map_1a_2b_3c_test);
@@ -55933,9 +56569,15 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
 
     RUN_TEST(octaspire_dern_vm_split_called_with_string_and_char_test);
 
-    RUN_TEST(octaspire_dern_vm_rf_at_sign_with_vector_test);
-    RUN_TEST(octaspire_dern_vm_rf_at_sign_with_hash_map_of_size_one_test);
-    RUN_TEST(octaspire_dern_vm_rf_at_sign_with_hash_map_of_size_three_test);
+    RUN_TEST(octaspire_dern_vm_cp_at_sign_with_vector_test);
+    RUN_TEST(octaspire_dern_vm_cp_at_sign_with_string_test);
+    RUN_TEST(octaspire_dern_vm_cp_at_sign_with_hash_map_of_size_one_test);
+    RUN_TEST(octaspire_dern_vm_cp_at_sign_with_hash_map_of_size_three_test);
+
+    RUN_TEST(octaspire_dern_vm_ln_at_sign_with_vector_test);
+    RUN_TEST(octaspire_dern_vm_ln_at_sign_with_string_test);
+    RUN_TEST(octaspire_dern_vm_ln_at_sign_with_hash_map_of_size_one_test);
+    RUN_TEST(octaspire_dern_vm_ln_at_sign_with_hash_map_of_size_three_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;

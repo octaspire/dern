@@ -2684,6 +2684,17 @@ bool octaspire_dern_value_as_string_remove_all_substrings(
     return true;
 }
 
+bool octaspire_dern_value_as_string_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
+
+    return octaspire_container_utf8_string_is_index_valid(
+        self->value.string,
+        possiblyNegativeIndex);
+}
+
 char const *octaspire_dern_value_as_string_get_c_string(
     octaspire_dern_value_t const * const self)
 {
@@ -2858,6 +2869,16 @@ size_t octaspire_dern_value_as_text_get_length_in_octets(
     }
 
     return 0;
+}
+
+bool octaspire_dern_value_as_vector_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    return octaspire_container_vector_is_valid_index(
+        self->value.vector,
+        possiblyNegativeIndex);
 }
 
 size_t octaspire_dern_value_as_vector_get_length(

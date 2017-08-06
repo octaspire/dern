@@ -340,6 +340,10 @@ bool octaspire_dern_value_as_string_remove_all_substrings(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const value);
 
+bool octaspire_dern_value_as_string_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex);
+
 char const *octaspire_dern_value_as_string_get_c_string(
     octaspire_dern_value_t const * const self);
 
@@ -359,6 +363,10 @@ char const *octaspire_dern_value_as_text_get_c_string(
 
 size_t octaspire_dern_value_as_text_get_length_in_octets(
     octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_as_vector_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex);
 
 size_t octaspire_dern_value_as_vector_get_length(
     octaspire_dern_value_t const * const self);

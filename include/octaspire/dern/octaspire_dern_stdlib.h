@@ -361,7 +361,12 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_uid(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
-octaspire_dern_value_t *octaspire_dern_vm_builtin_rf_at_sign(
+octaspire_dern_value_t *octaspire_dern_vm_builtin_ln_at_sign(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
