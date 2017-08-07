@@ -3489,6 +3489,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_vector(
     octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
     octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_vector(vm);
+    octaspire_dern_vm_push_value(vm, result);
 
     for (size_t i = 0; i < octaspire_dern_value_as_vector_get_length(arguments); ++i)
     {
@@ -3505,6 +3506,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_vector(
         octaspire_dern_value_as_vector_push_back_element(result, &arg);
     }
 
+    octaspire_dern_vm_pop_value(vm, result);
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
 }
