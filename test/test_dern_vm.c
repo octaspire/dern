@@ -11662,6 +11662,105 @@ TEST octaspire_dern_vm_ln_at_sign_with_hash_map_of_size_three_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_host_command_line_arguments_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    // Test with missing command line arguments
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (host-get-command-line-arguments))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "()",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    // Test with existing command line arguments
+    char const * const expected[] =
+    {
+        "a",
+        "\"this is 2. argument\"",
+        "--do-something",
+        "1234",
+        "-c"
+    };
+
+    for (size_t i = 0; i < 5; ++i)
+    {
+        ASSERT(octaspire_dern_vm_add_command_line_argument(vm, expected[i]));
+    }
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (host-get-command-line-arguments))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "([a] [\"this is 2. argument\"] [--do-something] [1234] [-c])",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_host_environment_variables_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    // Test with missing environment variables
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (host-get-environment-variables))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "()",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    // Test with existing environment variables
+    char const * const expected[] =
+    {
+        "a=0",
+        "LD_LIBRARY_PATH=/some_path/xyz",
+        "b=1",
+        "LANGUAGE=en_US:en",
+        "_=/usr/bin/env"
+    };
+
+    for (size_t i = 0; i < 5; ++i)
+    {
+        ASSERT(octaspire_dern_vm_add_environment_variable(vm, expected[i]));
+    }
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (host-get-environment-variables))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "([a=0] [LD_LIBRARY_PATH=/some_path/xyz] [b=1] "
+        "[LANGUAGE=en_US:en] [_=/usr/bin/env])",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
@@ -12039,6 +12138,9 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_ln_at_sign_with_string_test);
     RUN_TEST(octaspire_dern_vm_ln_at_sign_with_hash_map_of_size_one_test);
     RUN_TEST(octaspire_dern_vm_ln_at_sign_with_hash_map_of_size_three_test);
+
+    RUN_TEST(octaspire_dern_vm_host_command_line_arguments_test);
+    RUN_TEST(octaspire_dern_vm_host_environment_variables_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;

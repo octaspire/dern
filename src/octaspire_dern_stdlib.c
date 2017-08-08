@@ -7657,3 +7657,105 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_copy(
     abort();
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_host_get_command_line_arguments(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'host-get-command-line-arguments' expects zero arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_vector(
+        vm);
+
+    octaspire_dern_vm_push_value(vm, result);
+
+    for (size_t i = 0;
+         i < octaspire_dern_vm_get_number_of_command_line_arguments(vm);
+         ++i)
+    {
+        char const * const str =
+            octaspire_dern_vm_get_command_line_argument_at(vm, (ptrdiff_t)i);
+
+        octaspire_helpers_verify_not_null(str);
+
+        octaspire_dern_value_t * const value =
+            octaspire_dern_vm_create_new_value_string_from_c_string(vm, str);
+
+        octaspire_helpers_verify_not_null(value);
+
+        octaspire_dern_value_as_vector_push_back_element(
+            result,
+            &value);
+    }
+
+    octaspire_dern_vm_pop_value(vm, result);
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_host_get_environment_variables(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'host-get-environment-variables' expects zero arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_vector(
+        vm);
+
+    octaspire_dern_vm_push_value(vm, result);
+
+    for (size_t i = 0;
+         i < octaspire_dern_vm_get_number_of_environment_variables(vm);
+         ++i)
+    {
+        char const * const str =
+            octaspire_dern_vm_get_environment_variable_at(vm, (ptrdiff_t)i);
+
+        octaspire_helpers_verify_not_null(str);
+
+        octaspire_dern_value_t * const value =
+            octaspire_dern_vm_create_new_value_string_from_c_string(vm, str);
+
+        octaspire_helpers_verify_not_null(value);
+
+        octaspire_dern_value_as_vector_push_back_element(
+            result,
+            &value);
+    }
+
+    octaspire_dern_vm_pop_value(vm, result);
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+

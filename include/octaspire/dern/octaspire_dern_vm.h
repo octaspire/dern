@@ -292,7 +292,29 @@ octaspire_dern_lib_t *octaspire_dern_vm_get_library(
     octaspire_dern_vm_t * const self,
     char const * const name);
 
+bool octaspire_dern_vm_add_command_line_argument(
+    octaspire_dern_vm_t * const self,
+    char const * const argument);
+
+bool octaspire_dern_vm_add_environment_variable(
+    octaspire_dern_vm_t * const self,
+    char const * const variable);
+
 octaspire_stdio_t *octaspire_dern_vm_get_stdio(octaspire_dern_vm_t * const self);
+
+size_t octaspire_dern_vm_get_number_of_command_line_arguments(
+    octaspire_dern_vm_t const * const self);
+
+char const *octaspire_dern_vm_get_command_line_argument_at(
+    octaspire_dern_vm_t const * const self,
+    ptrdiff_t const index);
+
+size_t octaspire_dern_vm_get_number_of_environment_variables(
+    octaspire_dern_vm_t const * const self);
+
+char const *octaspire_dern_vm_get_environment_variable_at(
+    octaspire_dern_vm_t const * const self,
+    ptrdiff_t const index);
 
 #ifdef __cplusplus
 }

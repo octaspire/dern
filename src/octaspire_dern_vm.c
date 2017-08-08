@@ -57,6 +57,8 @@ struct octaspire_dern_vm_t
     void                           *userData;
     octaspire_dern_value_t         *functionReturn;
     octaspire_container_hash_map_t *libraries;
+    octaspire_container_vector_t   *commandLineArguments;
+    octaspire_container_vector_t   *environmentVariables;
     size_t                          numAllocatedWithoutGc;
     size_t                          gcTriggerLimit;
     uintmax_t                       nextFreeUniqueIdForValues;
@@ -131,6 +133,24 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         self->allocator);
 
     octaspire_helpers_verify_not_null(self->libraries);
+
+    self->commandLineArguments = octaspire_container_vector_new(
+        sizeof(octaspire_container_utf8_string_t*),
+        true,
+        (octaspire_container_vector_element_callback_t)
+            octaspire_container_utf8_string_release,
+        self->allocator);
+
+    octaspire_helpers_verify_not_null(self->commandLineArguments);
+
+    self->environmentVariables = octaspire_container_vector_new(
+        sizeof(octaspire_container_utf8_string_t*),
+        true,
+        (octaspire_container_vector_element_callback_t)
+            octaspire_container_utf8_string_release,
+        self->allocator);
+
+    octaspire_helpers_verify_not_null(self->environmentVariables);
 
     self->stack = octaspire_container_vector_new_with_preallocated_elements(
         sizeof(octaspire_dern_value_t*),
@@ -294,6 +314,30 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
 
 
     //////////////////////////////////////// Builtins ////////////////////////////////////////////
+
+    // host-get-command-line-arguments
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "host-get-command-line-arguments",
+        octaspire_dern_vm_builtin_host_get_command_line_arguments,
+        0,
+        "Get vector containing the host command line arguments",
+        env))
+    {
+        abort();
+    }
+
+    // host-get-environment-variables
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "host-get-environment-variables",
+        octaspire_dern_vm_builtin_host_get_environment_variables,
+        0,
+        "Get vector containing the host environment variables",
+        env))
+    {
+        abort();
+    }
 
     // ln@
     if (!octaspire_dern_vm_create_and_register_new_builtin(
@@ -1279,6 +1323,12 @@ void octaspire_dern_vm_release(octaspire_dern_vm_t *self)
     {
         return;
     }
+
+    octaspire_container_vector_release(self->commandLineArguments);
+    self->commandLineArguments = 0;
+
+    octaspire_container_vector_release(self->environmentVariables);
+    self->environmentVariables = 0;
 
     // At this point stack had nil and self->globalEnvironment was tried to remove
     //octaspire_dern_vm_pop_value(self, self->globalEnvironment);
@@ -3956,3 +4006,102 @@ octaspire_stdio_t *octaspire_dern_vm_get_stdio(octaspire_dern_vm_t * const self)
     return self->stdio;
 }
 
+bool octaspire_dern_vm_add_command_line_argument(
+    octaspire_dern_vm_t * const self,
+    char const * const argument)
+{
+    octaspire_container_utf8_string_t *str =
+        octaspire_container_utf8_string_new(
+            argument,
+            self->allocator);
+
+    if (!str)
+    {
+        return false;
+    }
+
+    const bool result = octaspire_container_vector_push_back_element(
+        self->commandLineArguments,
+        &str);
+
+    if (!result)
+    {
+        octaspire_container_utf8_string_release(str);
+        str = 0;
+    }
+
+    return result;
+}
+
+bool octaspire_dern_vm_add_environment_variable(
+    octaspire_dern_vm_t * const self,
+    char const * const variable)
+{
+    octaspire_container_utf8_string_t *str =
+        octaspire_container_utf8_string_new(
+            variable,
+            self->allocator);
+
+    if (!str)
+    {
+        return false;
+    }
+
+    const bool result = octaspire_container_vector_push_back_element(
+        self->environmentVariables,
+        &str);
+
+    if (!result)
+    {
+        octaspire_container_utf8_string_release(str);
+        str = 0;
+    }
+
+    return result;
+}
+
+size_t octaspire_dern_vm_get_number_of_command_line_arguments(
+    octaspire_dern_vm_t const * const self)
+{
+    return octaspire_container_vector_get_length(
+        self->commandLineArguments);
+}
+
+char const *octaspire_dern_vm_get_command_line_argument_at(
+    octaspire_dern_vm_t const * const self,
+    ptrdiff_t const index)
+{
+    octaspire_container_utf8_string_t *str =
+        octaspire_container_vector_get_element_at(
+            self->commandLineArguments, index);
+
+    if (!str)
+    {
+        return 0;
+    }
+
+    return octaspire_container_utf8_string_get_c_string(str);
+}
+
+size_t octaspire_dern_vm_get_number_of_environment_variables(
+    octaspire_dern_vm_t const * const self)
+{
+    return octaspire_container_vector_get_length(
+        self->environmentVariables);
+}
+
+char const *octaspire_dern_vm_get_environment_variable_at(
+    octaspire_dern_vm_t const * const self,
+    ptrdiff_t const index)
+{
+    octaspire_container_utf8_string_t *str =
+        octaspire_container_vector_get_element_at(
+            self->environmentVariables, index);
+
+    if (!str)
+    {
+        return 0;
+    }
+
+    return octaspire_container_utf8_string_get_c_string(str);
+}

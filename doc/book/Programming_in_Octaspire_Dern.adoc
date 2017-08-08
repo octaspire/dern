@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.203.1
+Documentation for Octaspire Dern programming language version 0.204.0
 
 == About
 
@@ -548,9 +548,29 @@ Values can be selected from collections using `ln@` and copied with `cp@`.
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(++ (ln@ '(1 2 3) 1))  ; 3
-(+= (cp@ [abc] 1) 2))  ; |d|
+(++ (ln@ '(1 2 3) 1))                  ; 3
+(+= (cp@ [abc] 1) 2))                  ; |d|
+(ln@ (hash-map |a| [abc]) |a| 'hash)   ; [abc]
+(ln@ (hash-map |a| [abc]) 0   'index)  ; [abc]
 ----
+
+
+
+
+== Accessing and manipulating command line arguments and environment variables
+
+This section is not ready yet. See the example below. More information will
+be added later.
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(host-get-command-line-arguments)
+(host-get-environment-variables)
+----
+
 
 
 

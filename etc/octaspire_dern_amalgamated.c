@@ -19201,10 +19201,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "203"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "204"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.203.1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.204.0"
 
 
 
@@ -20472,7 +20472,29 @@ octaspire_dern_lib_t *octaspire_dern_vm_get_library(
     octaspire_dern_vm_t * const self,
     char const * const name);
 
+bool octaspire_dern_vm_add_command_line_argument(
+    octaspire_dern_vm_t * const self,
+    char const * const argument);
+
+bool octaspire_dern_vm_add_environment_variable(
+    octaspire_dern_vm_t * const self,
+    char const * const variable);
+
 octaspire_stdio_t *octaspire_dern_vm_get_stdio(octaspire_dern_vm_t * const self);
+
+size_t octaspire_dern_vm_get_number_of_command_line_arguments(
+    octaspire_dern_vm_t const * const self);
+
+char const *octaspire_dern_vm_get_command_line_argument_at(
+    octaspire_dern_vm_t const * const self,
+    ptrdiff_t const index);
+
+size_t octaspire_dern_vm_get_number_of_environment_variables(
+    octaspire_dern_vm_t const * const self);
+
+char const *octaspire_dern_vm_get_environment_variable_at(
+    octaspire_dern_vm_t const * const self,
+    ptrdiff_t const index);
 
 #ifdef __cplusplus
 }
@@ -20911,6 +20933,16 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_hash_map_question_mark(
     octaspire_dern_value_t *environment);
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_copy(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_host_get_command_line_arguments(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_host_get_environment_variables(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
@@ -32460,6 +32492,108 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_copy(
     abort();
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_host_get_command_line_arguments(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'host-get-command-line-arguments' expects zero arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_vector(
+        vm);
+
+    octaspire_dern_vm_push_value(vm, result);
+
+    for (size_t i = 0;
+         i < octaspire_dern_vm_get_number_of_command_line_arguments(vm);
+         ++i)
+    {
+        char const * const str =
+            octaspire_dern_vm_get_command_line_argument_at(vm, (ptrdiff_t)i);
+
+        octaspire_helpers_verify_not_null(str);
+
+        octaspire_dern_value_t * const value =
+            octaspire_dern_vm_create_new_value_string_from_c_string(vm, str);
+
+        octaspire_helpers_verify_not_null(value);
+
+        octaspire_dern_value_as_vector_push_back_element(
+            result,
+            &value);
+    }
+
+    octaspire_dern_vm_pop_value(vm, result);
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_host_get_environment_variables(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'host-get-environment-variables' expects zero arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_vector(
+        vm);
+
+    octaspire_dern_vm_push_value(vm, result);
+
+    for (size_t i = 0;
+         i < octaspire_dern_vm_get_number_of_environment_variables(vm);
+         ++i)
+    {
+        char const * const str =
+            octaspire_dern_vm_get_environment_variable_at(vm, (ptrdiff_t)i);
+
+        octaspire_helpers_verify_not_null(str);
+
+        octaspire_dern_value_t * const value =
+            octaspire_dern_vm_create_new_value_string_from_c_string(vm, str);
+
+        octaspire_helpers_verify_not_null(value);
+
+        octaspire_dern_value_as_vector_push_back_element(
+            result,
+            &value);
+    }
+
+    octaspire_dern_vm_pop_value(vm, result);
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../src/octaspire_dern_stdlib.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36031,6 +36165,8 @@ struct octaspire_dern_vm_t
     void                           *userData;
     octaspire_dern_value_t         *functionReturn;
     octaspire_container_hash_map_t *libraries;
+    octaspire_container_vector_t   *commandLineArguments;
+    octaspire_container_vector_t   *environmentVariables;
     size_t                          numAllocatedWithoutGc;
     size_t                          gcTriggerLimit;
     uintmax_t                       nextFreeUniqueIdForValues;
@@ -36105,6 +36241,24 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         self->allocator);
 
     octaspire_helpers_verify_not_null(self->libraries);
+
+    self->commandLineArguments = octaspire_container_vector_new(
+        sizeof(octaspire_container_utf8_string_t*),
+        true,
+        (octaspire_container_vector_element_callback_t)
+            octaspire_container_utf8_string_release,
+        self->allocator);
+
+    octaspire_helpers_verify_not_null(self->commandLineArguments);
+
+    self->environmentVariables = octaspire_container_vector_new(
+        sizeof(octaspire_container_utf8_string_t*),
+        true,
+        (octaspire_container_vector_element_callback_t)
+            octaspire_container_utf8_string_release,
+        self->allocator);
+
+    octaspire_helpers_verify_not_null(self->environmentVariables);
 
     self->stack = octaspire_container_vector_new_with_preallocated_elements(
         sizeof(octaspire_dern_value_t*),
@@ -36268,6 +36422,30 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
 
 
     //////////////////////////////////////// Builtins ////////////////////////////////////////////
+
+    // host-get-command-line-arguments
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "host-get-command-line-arguments",
+        octaspire_dern_vm_builtin_host_get_command_line_arguments,
+        0,
+        "Get vector containing the host command line arguments",
+        env))
+    {
+        abort();
+    }
+
+    // host-get-environment-variables
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "host-get-environment-variables",
+        octaspire_dern_vm_builtin_host_get_environment_variables,
+        0,
+        "Get vector containing the host environment variables",
+        env))
+    {
+        abort();
+    }
 
     // ln@
     if (!octaspire_dern_vm_create_and_register_new_builtin(
@@ -37253,6 +37431,12 @@ void octaspire_dern_vm_release(octaspire_dern_vm_t *self)
     {
         return;
     }
+
+    octaspire_container_vector_release(self->commandLineArguments);
+    self->commandLineArguments = 0;
+
+    octaspire_container_vector_release(self->environmentVariables);
+    self->environmentVariables = 0;
 
     // At this point stack had nil and self->globalEnvironment was tried to remove
     //octaspire_dern_vm_pop_value(self, self->globalEnvironment);
@@ -39930,6 +40114,105 @@ octaspire_stdio_t *octaspire_dern_vm_get_stdio(octaspire_dern_vm_t * const self)
     return self->stdio;
 }
 
+bool octaspire_dern_vm_add_command_line_argument(
+    octaspire_dern_vm_t * const self,
+    char const * const argument)
+{
+    octaspire_container_utf8_string_t *str =
+        octaspire_container_utf8_string_new(
+            argument,
+            self->allocator);
+
+    if (!str)
+    {
+        return false;
+    }
+
+    const bool result = octaspire_container_vector_push_back_element(
+        self->commandLineArguments,
+        &str);
+
+    if (!result)
+    {
+        octaspire_container_utf8_string_release(str);
+        str = 0;
+    }
+
+    return result;
+}
+
+bool octaspire_dern_vm_add_environment_variable(
+    octaspire_dern_vm_t * const self,
+    char const * const variable)
+{
+    octaspire_container_utf8_string_t *str =
+        octaspire_container_utf8_string_new(
+            variable,
+            self->allocator);
+
+    if (!str)
+    {
+        return false;
+    }
+
+    const bool result = octaspire_container_vector_push_back_element(
+        self->environmentVariables,
+        &str);
+
+    if (!result)
+    {
+        octaspire_container_utf8_string_release(str);
+        str = 0;
+    }
+
+    return result;
+}
+
+size_t octaspire_dern_vm_get_number_of_command_line_arguments(
+    octaspire_dern_vm_t const * const self)
+{
+    return octaspire_container_vector_get_length(
+        self->commandLineArguments);
+}
+
+char const *octaspire_dern_vm_get_command_line_argument_at(
+    octaspire_dern_vm_t const * const self,
+    ptrdiff_t const index)
+{
+    octaspire_container_utf8_string_t *str =
+        octaspire_container_vector_get_element_at(
+            self->commandLineArguments, index);
+
+    if (!str)
+    {
+        return 0;
+    }
+
+    return octaspire_container_utf8_string_get_c_string(str);
+}
+
+size_t octaspire_dern_vm_get_number_of_environment_variables(
+    octaspire_dern_vm_t const * const self)
+{
+    return octaspire_container_vector_get_length(
+        self->environmentVariables);
+}
+
+char const *octaspire_dern_vm_get_environment_variable_at(
+    octaspire_dern_vm_t const * const self,
+    ptrdiff_t const index)
+{
+    octaspire_container_utf8_string_t *str =
+        octaspire_container_vector_get_element_at(
+            self->environmentVariables, index);
+
+    if (!str)
+    {
+        return 0;
+    }
+
+    return octaspire_container_utf8_string_get_c_string(str);
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../src/octaspire_dern_vm.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40903,6 +41186,7 @@ int main(int argc, char *argv[])
                     if (userFilesStartIdx < 0)
                     {
                         userFilesStartIdx = i;
+                        break;
                     }
                 }
             }
@@ -40925,6 +41209,13 @@ int main(int argc, char *argv[])
     stdio = octaspire_stdio_new(allocator);
     input = octaspire_input_new_from_c_string("", allocator);
     vm    = octaspire_dern_vm_new_with_config(allocator, stdio, vmConfig);
+
+    extern char **environ;
+
+    for (char **var = environ; *var; ++var)
+    {
+        octaspire_dern_vm_add_environment_variable(vm, *var);
+    }
 
     // Eval all files given as cmdline args
     for (size_t i = 0; i < octaspire_container_vector_get_length(stringsToBeEvaluated); ++i)
@@ -40959,28 +41250,31 @@ int main(int argc, char *argv[])
 
     if (userFilesStartIdx >= 0)
     {
-        for (int i = userFilesStartIdx; i < argc; ++i)
+        for (int i = userFilesStartIdx + 1; i < argc; ++i)
         {
-            octaspire_dern_value_t *value =
-                octaspire_dern_vm_read_from_path_and_eval_in_global_environment(vm, argv[i]);
-
-            assert(value);
-
-            if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
-            {
-                octaspire_container_utf8_string_t *str = octaspire_dern_value_to_string(value, allocator);
-
-                octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
-
-                printf("\n");
-
-                octaspire_container_utf8_string_release(str);
-                str = 0;
-
-                exit(EXIT_FAILURE);
-            }
+            octaspire_dern_vm_add_command_line_argument(vm, argv[i]);
         }
 
+        octaspire_dern_value_t *value =
+            octaspire_dern_vm_read_from_path_and_eval_in_global_environment(
+                vm,
+                argv[userFilesStartIdx]);
+
+        assert(value);
+
+        if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+        {
+            octaspire_container_utf8_string_t *str = octaspire_dern_value_to_string(value, allocator);
+
+            octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
+
+            printf("\n");
+
+            octaspire_container_utf8_string_release(str);
+            str = 0;
+
+            exit(EXIT_FAILURE);
+        }
     }
 
     if (octaspire_container_vector_get_length(stringsToBeEvaluated) > 0 || userFilesStartIdx >= 0)
@@ -56129,6 +56423,105 @@ TEST octaspire_dern_vm_ln_at_sign_with_hash_map_of_size_three_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_host_command_line_arguments_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    // Test with missing command line arguments
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (host-get-command-line-arguments))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "()",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    // Test with existing command line arguments
+    char const * const expected[] =
+    {
+        "a",
+        "\"this is 2. argument\"",
+        "--do-something",
+        "1234",
+        "-c"
+    };
+
+    for (size_t i = 0; i < 5; ++i)
+    {
+        ASSERT(octaspire_dern_vm_add_command_line_argument(vm, expected[i]));
+    }
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (host-get-command-line-arguments))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "([a] [\"this is 2. argument\"] [--do-something] [1234] [-c])",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_host_environment_variables_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    // Test with missing environment variables
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (host-get-environment-variables))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "()",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    // Test with existing environment variables
+    char const * const expected[] =
+    {
+        "a=0",
+        "LD_LIBRARY_PATH=/some_path/xyz",
+        "b=1",
+        "LANGUAGE=en_US:en",
+        "_=/usr/bin/env"
+    };
+
+    for (size_t i = 0; i < 5; ++i)
+    {
+        ASSERT(octaspire_dern_vm_add_environment_variable(vm, expected[i]));
+    }
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (host-get-environment-variables))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "([a=0] [LD_LIBRARY_PATH=/some_path/xyz] [b=1] "
+        "[LANGUAGE=en_US:en] [_=/usr/bin/env])",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
@@ -56506,6 +56899,9 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_ln_at_sign_with_string_test);
     RUN_TEST(octaspire_dern_vm_ln_at_sign_with_hash_map_of_size_one_test);
     RUN_TEST(octaspire_dern_vm_ln_at_sign_with_hash_map_of_size_three_test);
+
+    RUN_TEST(octaspire_dern_vm_host_command_line_arguments_test);
+    RUN_TEST(octaspire_dern_vm_host_environment_variables_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;

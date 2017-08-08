@@ -16,7 +16,9 @@ limitations under the License.
 ******************************************************************************/
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <locale.h>
 #include <octaspire/core/octaspire_input.h>
 #include <octaspire/dern/octaspire_dern_config.h>
@@ -321,6 +323,7 @@ int main(int argc, char *argv[])
                     if (userFilesStartIdx < 0)
                     {
                         userFilesStartIdx = i;
+                        break;
                     }
                 }
             }
@@ -343,6 +346,13 @@ int main(int argc, char *argv[])
     stdio = octaspire_stdio_new(allocator);
     input = octaspire_input_new_from_c_string("", allocator);
     vm    = octaspire_dern_vm_new_with_config(allocator, stdio, vmConfig);
+
+    extern char **environ;
+
+    for (char **var = environ; *var; ++var)
+    {
+        octaspire_dern_vm_add_environment_variable(vm, *var);
+    }
 
     // Eval all files given as cmdline args
     for (size_t i = 0; i < octaspire_container_vector_get_length(stringsToBeEvaluated); ++i)
@@ -377,28 +387,31 @@ int main(int argc, char *argv[])
 
     if (userFilesStartIdx >= 0)
     {
-        for (int i = userFilesStartIdx; i < argc; ++i)
+        for (int i = userFilesStartIdx + 1; i < argc; ++i)
         {
-            octaspire_dern_value_t *value =
-                octaspire_dern_vm_read_from_path_and_eval_in_global_environment(vm, argv[i]);
-
-            assert(value);
-
-            if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
-            {
-                octaspire_container_utf8_string_t *str = octaspire_dern_value_to_string(value, allocator);
-
-                octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
-
-                printf("\n");
-
-                octaspire_container_utf8_string_release(str);
-                str = 0;
-
-                exit(EXIT_FAILURE);
-            }
+            octaspire_dern_vm_add_command_line_argument(vm, argv[i]);
         }
 
+        octaspire_dern_value_t *value =
+            octaspire_dern_vm_read_from_path_and_eval_in_global_environment(
+                vm,
+                argv[userFilesStartIdx]);
+
+        assert(value);
+
+        if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+        {
+            octaspire_container_utf8_string_t *str = octaspire_dern_value_to_string(value, allocator);
+
+            octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
+
+            printf("\n");
+
+            octaspire_container_utf8_string_release(str);
+            str = 0;
+
+            exit(EXIT_FAILURE);
+        }
     }
 
     if (octaspire_container_vector_get_length(stringsToBeEvaluated) > 0 || userFilesStartIdx >= 0)

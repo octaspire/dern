@@ -527,6 +527,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_comparing_and_changing_values_predicates">Comparing and changing values, predicates</a></li>
 <li><a href="#_branching_and_selection">Branching and selection</a></li>
 <li><a href="#_selecting_values_from_collections">Selecting values from collections</a></li>
+<li><a href="#_accessing_and_manipulating_command_line_arguments_and_environment_variables">Accessing and manipulating command line arguments and environment variables</a></li>
 <li><a href="#_formatted_and_regular_printing">Formatted and regular printing</a></li>
 <li><a href="#_formatted_string_creation">Formatted string creation</a></li>
 <li><a href="#_functions_with_variable_number_of_arguments">Functions with variable number of arguments</a></li>
@@ -567,7 +568,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Documentation for Octaspire Dern programming language version 0.203.1</p>
+<p>Documentation for Octaspire Dern programming language version 0.204.0</p>
 </div>
 </div>
 </div>
@@ -1138,8 +1139,25 @@ for the above operators should be implemented in the standard library eventually
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="dern"><span></span><span class="tok-p">(</span><span class="tok-nb">++ </span><span class="tok-p">(</span><span class="tok-nb">ln@ </span><span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">)</span> <span class="tok-mi">1</span><span class="tok-p">))</span>  <span class="tok-c tok-c-Singleline">; 3</span>
-<span class="tok-p">(</span><span class="tok-nb">+= </span><span class="tok-p">(</span><span class="tok-nb">cp@ </span><span class="tok-s">[abc]</span> <span class="tok-mi">1</span><span class="tok-p">)</span> <span class="tok-mi">2</span><span class="tok-p">))</span>  <span class="tok-c tok-c-Singleline">; |d|</span></code></pre>
+<pre class="pygments highlight"><code data-lang="dern"><span></span><span class="tok-p">(</span><span class="tok-nb">++ </span><span class="tok-p">(</span><span class="tok-nb">ln@ </span><span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">)</span> <span class="tok-mi">1</span><span class="tok-p">))</span>                  <span class="tok-c tok-c-Singleline">; 3</span>
+<span class="tok-p">(</span><span class="tok-nb">+= </span><span class="tok-p">(</span><span class="tok-nb">cp@ </span><span class="tok-s">[abc]</span> <span class="tok-mi">1</span><span class="tok-p">)</span> <span class="tok-mi">2</span><span class="tok-p">))</span>                  <span class="tok-c tok-c-Singleline">; |d|</span>
+<span class="tok-p">(</span><span class="tok-nb">ln@ </span><span class="tok-p">(</span><span class="tok-nb">hash-map </span><span class="tok-sc">|a|</span> <span class="tok-s">[abc]</span><span class="tok-p">)</span> <span class="tok-sc">|a|</span> <span class="tok-ss">&#39;hash</span><span class="tok-p">)</span>   <span class="tok-c tok-c-Singleline">; [abc]</span>
+<span class="tok-p">(</span><span class="tok-nb">ln@ </span><span class="tok-p">(</span><span class="tok-nb">hash-map </span><span class="tok-sc">|a|</span> <span class="tok-s">[abc]</span><span class="tok-p">)</span> <span class="tok-mi">0</span>   <span class="tok-ss">&#39;index</span><span class="tok-p">)</span>  <span class="tok-c tok-c-Singleline">; [abc]</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_accessing_and_manipulating_command_line_arguments_and_environment_variables">Accessing and manipulating command line arguments and environment variables</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section is not ready yet. See the example below. More information will
+be added later.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="dern"><span></span><span class="tok-p">(</span><span class="tok-nv">host-get-command-line-arguments</span><span class="tok-p">)</span>
+<span class="tok-p">(</span><span class="tok-nf">host-get-environment-variables</span><span class="tok-p">)</span></code></pre>
 </div>
 </div>
 </div>
@@ -1825,7 +1843,7 @@ can be used to (by giving different compiler flags):</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-08-08 00:01:29 EEST
+Last updated 2017-08-08 23:50:26 EEST
 </div>
 </div>
 </body>
