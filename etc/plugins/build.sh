@@ -5,3 +5,7 @@ gcc -g -Wall -Wextra -std=c99 -shared -o libdern_ncurses.so dern_ncurses.o -lncu
 echo "--- plugin socket  ---"
 gcc -g -Wall -Wextra -std=gnu99 -c -fPIC -I ../../release dern_socket.c
 gcc -g -Wall -Wextra -std=gnu99 -shared -o libdern_socket.so dern_socket.o
+
+echo "--- plugin openssl  ---"
+gcc -g -Wall -Wextra -std=c99 -c -fPIC -I ../../release dern_openssl.c
+gcc -g -Wall -Wextra -std=c99 -shared -o libdern_socket.so dern_openssl.o
