@@ -194,6 +194,124 @@ octaspire_dern_value_t *dern_openssl_new_ssl_connect(
         (void*)bio);
 }
 
+octaspire_dern_value_t *dern_openssl_connection_read(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+#define NAME_OF_DERN_FUNCTION "'openssl-connection-read'"
+
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin " NAME_OF_DERN_FUNCTION " expects two arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin " NAME_OF_DERN_FUNCTION " expects user data for BIO as "
+            "first argument. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cData = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_OPENSSL_PLUGIN_NAME,
+            "BIO"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin " NAME_OF_DERN_FUNCTION " expects 'dern_openssl' and "
+            "'BIO' as plugin name and payload type name for the C data of "
+            "the first argument. Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+    }
+
+    BIO * bio = (BIO*)octaspire_dern_c_data_get_payload(cData);
+
+
+    char buffer[1025] = {0};
+
+    size_t numTimesRead = 0;
+    while (numTimesRead < 10)
+    {
+        ++numTimesRead;
+        int const numRead = BIO_read(bio, buffer, 1014 * sizeof(char));
+
+        if (numRead == 0)
+        {
+            // Connection closed
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_symbol_from_c_string(
+                vm,
+                "CONNECTION_CLOSED");
+
+        }
+        else if (numRead < 0)
+        {
+            // Read failed
+            if (!BIO_should_retry(bio))
+            {
+                // Cannot retry
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_symbol_from_c_string(
+                    vm,
+                    "READ_FAILED_CANNOT_RETRY");
+            }
+        }
+        else
+        {
+            // Return new user data for this secure connection
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            octaspire_container_utf8_string_t * const str =
+                octaspire_container_utf8_string_new_from_buffer(
+                    buffer,
+                    numRead,
+                    octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(str);
+
+            return octaspire_dern_vm_create_new_value_string(vm, str);
+        }
+    }
+
+    // Failed
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_symbol_from_c_string(
+        vm,
+        "READ_FAILED");
+}
+
 octaspire_dern_value_t *dern_openssl_close_ssl_connection(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -292,6 +410,35 @@ bool dern_openssl_init(
             "\n"
             "SEE ALSO\n"
             "openssl-close-ssl-connection",
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "openssl-connection-read",
+            dern_openssl_connection_read,
+            1,
+            "NAME\n"
+            "\topenssl-connection-read\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_openssl)\n"
+            "\n"
+            "\t(openssl-bio-read connection) -> message string or error symbol\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tReads from secure connection.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tconnection          Connection created with 'openssl-new-ssl-connect'\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tThe message read or error symbol\n"
+            "\n"
+            "SEE ALSO\n"
+            "openssl-new-ssl-connect",
             targetEnv))
     {
         return false;
