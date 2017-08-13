@@ -8,4 +8,4 @@ gcc -g -Wall -Wextra -std=gnu99 -shared -o libdern_socket.so dern_socket.o
 
 echo "--- plugin openssl ---"
 gcc -g -Wall -Wextra -std=c99 -c -fPIC -I ../../release dern_openssl.c
-gcc -g -Wall -Wextra -std=c99 -shared -o libdern_socket.so dern_openssl.o
+gcc -g -Wall -Wextra -std=c99 -shared -o libdern_openssl.so dern_openssl.o -lssl -lcrypto

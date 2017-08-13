@@ -1,0 +1,11 @@
+(require 'dern_openssl)
+
+(define s [s]
+  (openssl-new-ssl-connect
+    [/home/octaspire/tmp/TLS/test-public.pem]
+    [/home/octaspire/tmp/TLS]
+    [localhost:4433]))
+
+(openssl-connection-write s [Hello, world! This should travel encrypted...])
+(println (openssl-connection-read s))
+
