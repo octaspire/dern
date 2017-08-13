@@ -212,7 +212,7 @@ octaspire_dern_value_t *dern_openssl_connection_read(
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Builtin " NAME_OF_DERN_FUNCTION " expects two arguments. "
+            "Builtin " NAME_OF_DERN_FUNCTION " expects one argument. "
             "%zu arguments were given.",
             numArgs);
     }
@@ -310,6 +310,126 @@ octaspire_dern_value_t *dern_openssl_connection_read(
     return octaspire_dern_vm_create_new_value_symbol_from_c_string(
         vm,
         "READ_FAILED");
+}
+
+octaspire_dern_value_t *dern_openssl_connection_write(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+#undef  NAME_OF_DERN_FUNCTION
+#define NAME_OF_DERN_FUNCTION "'openssl-connection-write'"
+
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin " NAME_OF_DERN_FUNCTION " expects two arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin " NAME_OF_DERN_FUNCTION " expects user data for BIO as "
+            "first argument. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cData = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_OPENSSL_PLUGIN_NAME,
+            "BIO"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin " NAME_OF_DERN_FUNCTION " expects 'dern_openssl' and "
+            "'BIO' as plugin name and payload type name for the C data of "
+            "the first argument. Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+    }
+
+    BIO * bio = (BIO*)octaspire_dern_c_data_get_payload(cData);
+
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    if (!octaspire_dern_value_is_text(secondArg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin " NAME_OF_DERN_FUNCTION " expects string or symbol "
+            "as second argument. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    char const * const message =
+        octaspire_dern_value_as_text_get_c_string(secondArg);
+
+    size_t const messageLenInOctets =
+        octaspire_dern_value_as_text_get_length_in_octets(secondArg);
+
+    size_t numTimesWritten = 0;
+    while (numTimesWritten < 10)
+    {
+        ++numTimesWritten;
+
+        int32_t const numWritten = BIO_write(bio, message, (int)messageLenInOctets);
+
+        if (numWritten <= 0)
+        {
+            // Read failed
+            if (!BIO_should_retry(bio))
+            {
+                // Cannot retry
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_symbol_from_c_string(
+                    vm,
+                    "WRITE_FAILED_CANNOT_RETRY");
+            }
+        }
+        else
+        {
+            // Return new user data for this secure connection
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_integer(vm, numWritten);
+        }
+    }
+
+    // Failed
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_symbol_from_c_string(
+        vm,
+        "WRITE_FAILED");
 }
 
 octaspire_dern_value_t *dern_openssl_close_ssl_connection(
@@ -426,7 +546,7 @@ bool dern_openssl_init(
             "SYNOPSIS\n"
             "\t(require 'dern_openssl)\n"
             "\n"
-            "\t(openssl-bio-read connection) -> message string or error symbol\n"
+            "\t(openssl-connection-read connection) -> message string or error symbol\n"
             "\n"
             "DESCRIPTION\n"
             "\tReads from secure connection.\n"
@@ -438,7 +558,37 @@ bool dern_openssl_init(
             "\tThe message read or error symbol\n"
             "\n"
             "SEE ALSO\n"
-            "openssl-new-ssl-connect",
+            "openssl-new-ssl-connect, openssl-connection-write",
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "openssl-connection-write",
+            dern_openssl_connection_write,
+            1,
+            "NAME\n"
+            "\topenssl-connection-write\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_openssl)\n"
+            "\n"
+            "\t(openssl-connection-write connection message) -> number of octets written or error symbol\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tWrites into secure connection.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tconnection          Connection created with 'openssl-new-ssl-connect'\n"
+            "\tmessage             String to be sent.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tNumber of octets written or error symbol\n"
+            "\n"
+            "SEE ALSO\n"
+            "openssl-new-ssl-connect, openssl-connection-read",
             targetEnv))
     {
         return false;
