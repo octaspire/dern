@@ -18,7 +18,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(octaspire-dern C)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 209)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 210)
 set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
 
 message("== Building ${PROJECT_NAME} ${OCTASPIRE_DERN_CONFIG_VERSION_MAJOR}.${OCTASPIRE_DERN_CONFIG_VERSION_MINOR}.${OCTASPIRE_DERN_CONFIG_VERSION_PATCH}")
@@ -142,6 +142,10 @@ add_custom_target(
 add_custom_target(
     new-release-dern
     COMMAND "${CMAKE_SOURCE_DIR}/etc/new-release.sh" "${CMAKE_SOURCE_DIR}")
+
+add_custom_target(
+    publish-release-dern
+    COMMAND "${CMAKE_SOURCE_DIR}/etc/publish-release.sh" "${CMAKE_SOURCE_DIR}")
 
 add_custom_target(
     book-dern
