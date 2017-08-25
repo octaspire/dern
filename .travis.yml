@@ -19,7 +19,7 @@ before_script:
 script:
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ulimit -c unlimited -S; how-to-build/linux.sh; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then how-to-build/macOS.sh; fi
-    - valgrind --leak-check=full --error-exitcode=1 ./octaspire-dern-unit-test-runner --write-test-files
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then valgrind --leak-check=full --error-exitcode=1 ./octaspire-dern-unit-test-runner --write-test-files; fi
     - ./octaspire-dern-unit-test-runner --write-test-files
     - if [ "$CC" == "gcc" ]; then gcov octaspire-dern-amalgamated.gcno; fi
 
