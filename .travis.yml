@@ -9,16 +9,16 @@ compiler:
     - gcc
 
 before_install:
-    - sudo apt-get install gdb expect valgrind -y
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install gdb expect valgrind -y; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install valgrind; fi
 
 before_script:
     - cd release/
     - DERN_TRAVIS_BUILD_DIR=$(pwd)
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]] then brew install valgrind; fi
 
 script:
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]] then ulimit -c unlimited -S; how-to-build/linux.sh; fi
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]] then how-to-build/osx.sh; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ulimit -c unlimited -S; how-to-build/linux.sh; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then how-to-build/osx.sh; fi
     - valgrind --leak-check=full --error-exitcode=1 ./octaspire-dern-unit-test-runner --write-test-files
     - ./octaspire-dern-unit-test-runner --write-test-files
     - if [ "$CC" == "gcc" ]; then gcov octaspire-dern-amalgamated.gcno; fi
