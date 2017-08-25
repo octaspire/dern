@@ -1,5 +1,9 @@
 language: c
 
+os:
+    - linux
+    - osx
+
 compiler:
     - clang
     - gcc
@@ -10,11 +14,11 @@ before_install:
 before_script:
     - cd release/
     - DERN_TRAVIS_BUILD_DIR=$(pwd)
-    - ulimit -c unlimited -S
-    - how-to-build/linux.sh
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]] then brew install valgrind; fi
 
 script:
-    - $CC -O2 -std=c99 -Wall -Wextra --coverage -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS -DGREATEST_ENABLE_ANSI_COLORS -I . octaspire-dern-amalgamated.c -Wl,-export-dynamic -ldl -lm -o octaspire-dern-unit-test-runner
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]] then ulimit -c unlimited -S; how-to-build/linux.sh; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]] then how-to-build/osx.sh; fi
     - valgrind --leak-check=full --error-exitcode=1 ./octaspire-dern-unit-test-runner --write-test-files
     - ./octaspire-dern-unit-test-runner --write-test-files
     - if [ "$CC" == "gcc" ]; then gcov octaspire-dern-amalgamated.gcno; fi
