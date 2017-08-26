@@ -25,6 +25,7 @@ script:
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "gcc" ]]; then gcov octaspire-dern-amalgamated.gcno; fi
 
 after_success:
+    - cd ..
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "gcc" ]]; then bash <(curl -s https://codecov.io/bash); fi
 
 # 'after_failure'-hook in modified form from:
