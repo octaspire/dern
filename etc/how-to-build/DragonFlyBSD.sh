@@ -4,10 +4,14 @@ YELLOW='\033[1;33m'
 GREEN='\033[1;32m'
 NOCOLOR='\033[0m'
 
+CC=gcc
+
 echoAndRun() { echo "$@" ; "$@" ; }
 echoToDefs() { printf "$NOCOLOR\n" ; }
 
-CC=gcc
+if [ "$#" -ge "1" ]; then CC=$1; fi
+
+
 
 printf "$YELLOW\n"
 cat << EnDoFmEsSaGe

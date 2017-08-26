@@ -4,10 +4,14 @@ YELLOW="$(tput setaf 3 ; tput bold)"
 GREEN="$(tput setaf 2 ; tput bold)"
 NOCOLOR="$(tput setaf 9 ; tput sgr0)"
 
+CC=gcc-x86
+
 echoAndRun() { echo "$@" ; "$@" ; }
 echoToDefs() { printf "$NOCOLOR\n" ; }
 
-CC=gcc-x86
+if [ "$#" -ge "1" ]; then CC=$1; fi
+
+
 
 printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
