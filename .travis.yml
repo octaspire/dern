@@ -22,10 +22,10 @@ script:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then how-to-build/macOS.sh $CC; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then valgrind --leak-check=full --error-exitcode=1 ./octaspire-dern-unit-test-runner --write-test-files; fi
     - ./octaspire-dern-unit-test-runner --write-test-files
-    - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "gcc" ]]; then gcov octaspire-dern-amalgamated.gcno; fi
+      #- if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "gcc" ]]; then gcov octaspire-dern-amalgamated.gcno; fi
 
 after_success:
-    - cd ..
+    #- cd ..
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "gcc" ]]; then bash <(curl -s https://codecov.io/bash); fi
 
 # 'after_failure'-hook in modified form from:
