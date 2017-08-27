@@ -201,10 +201,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "64"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "66"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.64.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.66.0"
 
 
 
@@ -19085,7 +19085,27 @@ int main(int argc, char **argv)
         "\n"
         "  > ");
 
-    int const c = getchar();
+    int c = 0;
+
+    if (argc >= 2)
+    {
+        if (strcmp(argv[1], "--write-test-files") == 0)
+        {
+            --argc;
+            ++argv;
+            c = (int)'a';
+        }
+        else
+        {
+            printf("Unknown option '%s'\n", argv[1]);
+            return EXIT_FAILURE;
+        }
+        printf("Option '%c' given with command line argument.\n", (char)c);
+    }
+    else
+    {
+        c = getchar();
+    }
 
     switch (c)
     {
@@ -19201,10 +19221,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "214"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "215"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.214.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.215.0"
 
 
 

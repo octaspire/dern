@@ -5,11 +5,13 @@ GREEN="$(tput setaf 2 ; tput bold)"
 NOCOLOR="$(tput setaf 9 ; tput sgr0)"
 
 CC=clang
+COVERAGE=""
 
 echoAndRun() { echo "$@" ; "$@" ; }
 echoToDefs() { printf "$NOCOLOR\n" ; }
 
 if [ "$#" -ge "1" ]; then CC=$1; fi
+if [ "$2" = "--coverage" ]; then COVERAGE=$2; fi
 
 
 
@@ -23,6 +25,7 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                 \
     -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION \
     -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                \
     -DGREATEST_ENABLE_ANSI_COLORS                         \
+    $COVERAGE                                             \
 -I . octaspire-dern-amalgamated.c -lm                     \
 -o octaspire-dern-unit-test-runner
 
