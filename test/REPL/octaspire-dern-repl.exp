@@ -3,7 +3,7 @@ set timeout 4
 
 spawn ../../build/octaspire-dern-repl -v
 expect {
-    "Octaspire Dern version 0.217.2"
+    "Octaspire Dern version 0.217.4"
     {puts "\n\x1B\[32m---------- TEST PASS ----------\x1B\[0m\n"         }
 
     default
