@@ -24,12 +24,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************
 
-  This file is amalgamated version of the header files of Octaspire Dern.
-  It is created automatically by a script.
+  This file is amalgamated version of the header files, implementation files
+  and unit tests of Octaspire Dern. It is created automatically by a script.
 
                             DO NOT EDIT MANUALLY!
 
-  Edit the separate header files and then let the script create this file.
+  Edit the separate .h and .c files in the source distribution and then let
+  the script create this file again with the modifications.
 
 ******************************************************************************/
 #ifndef OCTASPIRE_DERN_AMALGAMATED_H

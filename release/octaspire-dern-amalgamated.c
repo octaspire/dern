@@ -15,12 +15,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 *******************************************************************************
 
-  This file is amalgamated version of the header files of Octaspire Dern.
-  It is created automatically by a script.
+  This file is amalgamated version of the header files, implementation files
+  and unit tests of Octaspire Dern. It is created automatically by a script.
 
                             DO NOT EDIT MANUALLY!
 
-  Edit the separate header files and then let the script create this file.
+  Edit the separate .h and .c files in the source distribution and then let
+  the script create this file again with the modifications.
 
 ******************************************************************************/
 #ifndef OCTASPIRE_DERN_AMALGAMATED_H
@@ -201,10 +202,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "66"
-#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "69"
+#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "3"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.66.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.69.3"
 
 
 
@@ -19221,10 +19222,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "217"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "4"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "219"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.217.4"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.219.0"
 
 
 
