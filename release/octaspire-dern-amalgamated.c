@@ -202,10 +202,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "69"
-#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "3"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "71"
+#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.69.3"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.71.0"
 
 
 
@@ -2846,7 +2846,14 @@ bool octaspire_container_vector_remove_element_at(
     {
         if (self->elementIsPointer)
         {
-            self->elementReleaseCallback(*(void**)octaspire_container_vector_private_index_to_pointer(self, realIndex.index));
+            void* const * const tmpPtr =
+                octaspire_container_vector_private_index_to_pointer(
+                    self,
+                    realIndex.index);
+
+            octaspire_helpers_verify_not_null(tmpPtr);
+
+            self->elementReleaseCallback(*tmpPtr);
         }
         else
         {
@@ -2887,6 +2894,7 @@ void *octaspire_container_vector_get_element_at(
 
     if (self->elementIsPointer)
     {
+        octaspire_helpers_verify_not_null(result);
         return *(void**)result;
     }
 
@@ -2911,6 +2919,7 @@ void const *octaspire_container_vector_get_element_at_const(
 
     if (self->elementIsPointer)
     {
+        octaspire_helpers_verify_not_null(result);
         return *(void const * const *)result;
     }
 
@@ -3051,7 +3060,13 @@ bool octaspire_container_vector_replace_element_at(
     {
         if (self->elementIsPointer)
         {
-            self->elementReleaseCallback(*(void**)octaspire_container_vector_private_index_to_pointer(self, realIndex.index));
+            void* const * const tmpPtr =
+                octaspire_container_vector_private_index_to_pointer(
+                    self,
+                    realIndex.index);
+
+            octaspire_helpers_verify_not_null(tmpPtr);
+            self->elementReleaseCallback(*tmpPtr);
         }
         else
         {
@@ -4668,8 +4683,12 @@ char const * octaspire_container_utf8_string_get_c_string(
     octaspire_container_utf8_string_t const * const self)
 {
     octaspire_helpers_verify_true(self->octetsAreUpToDate);
-    assert(!octaspire_container_vector_is_empty(self->octets));
-    assert(*(char const*)octaspire_container_vector_peek_back_element_const(self->octets) == '\0');
+    octaspire_helpers_verify_true(!octaspire_container_vector_is_empty(self->octets));
+
+    octaspire_helpers_verify_true(
+        *(char const*)octaspire_container_vector_peek_back_element_const(self->octets) ==
+            '\0');
+
     return octaspire_container_vector_peek_front_element_const(self->octets);
 }
 
@@ -19222,10 +19241,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "220"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "221"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.220.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.221.0"
 
 
 
@@ -20244,8 +20263,14 @@ limitations under the License.
 extern "C" {
 #endif
 
+typedef octaspire_input_t*
+    (*octaspire_dern_vm_custom_require_source_file_loader_t)(
+            char const * const,
+            octaspire_memory_allocator_t * const allocator);
+
 typedef struct octaspire_dern_vm_config_t
 {
+    octaspire_dern_vm_custom_require_source_file_loader_t preLoaderForRequireSrc;
     bool fileSystemAccessAllowed;
     bool debugModeOn;
 }
@@ -20495,6 +20520,10 @@ void octaspire_dern_vm_set_gc_trigger_limit(
     size_t const numAllocs);
 
 bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self);
+
+octaspire_dern_vm_custom_require_source_file_loader_t
+octaspire_dern_vm_get_custom_require_source_file_pre_loader(
+        octaspire_dern_vm_t * const self);
 
 bool octaspire_dern_vm_add_library(
     octaspire_dern_vm_t *self,
@@ -31245,10 +31274,22 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_source_file(
 
     octaspire_helpers_verify_not_null(fileName);
 
-    octaspire_input_t *input = octaspire_input_new_from_path(
-        octaspire_container_utf8_string_get_c_string(fileName),
-        octaspire_dern_vm_get_allocator(vm),
-        octaspire_dern_vm_get_stdio(vm));
+    octaspire_input_t *input = 0;
+
+    if (octaspire_dern_vm_get_custom_require_source_file_pre_loader(vm))
+    {
+        input =
+            octaspire_dern_vm_get_custom_require_source_file_pre_loader(vm)(
+                octaspire_container_utf8_string_get_c_string(fileName),
+                octaspire_dern_vm_get_allocator(vm));
+    }
+    else
+    {
+        input = octaspire_input_new_from_path(
+            octaspire_container_utf8_string_get_c_string(fileName),
+            octaspire_dern_vm_get_allocator(vm),
+            octaspire_dern_vm_get_stdio(vm));
+    }
 
     if (!input)
     {
@@ -31301,9 +31342,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_source_file(
     octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_string(vm, fileName);
 
     octaspire_helpers_verify_not_null(result);
-
-    octaspire_container_utf8_string_release(fileName);
-    fileName = 0;
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
@@ -36286,8 +36324,7 @@ struct octaspire_dern_vm_t
     int32_t                         exitCode;
     bool                            preventGc;
     bool                            quit;
-    bool                            fileSystemAccessAllowed;
-    bool                            debugModeOn;
+    octaspire_dern_vm_config_t      config;
 };
 
 octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(octaspire_dern_vm_t* self, octaspire_dern_value_tag_t const typeTag);
@@ -36304,6 +36341,7 @@ octaspire_dern_vm_config_t octaspire_dern_vm_config_default(void)
 {
     octaspire_dern_vm_config_t result =
     {
+        .preLoaderForRequireSrc  = 0,
         .fileSystemAccessAllowed = false,
         .debugModeOn             = false
     };
@@ -36334,24 +36372,25 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         return 0;
     }
 
-    self->allocator = allocator;
-    self->stdio     = octaspireStdio;
-    self->numAllocatedWithoutGc = 0;
-    self->preventGc = false;
-    self->gcTriggerLimit = 1024;
-    self->exitCode = 0;
-    self->quit = false;
-    self->userData = 0;
+    self->allocator                 = allocator;
+    self->stdio                     = octaspireStdio;
+    self->numAllocatedWithoutGc     = 0;
+    self->preventGc                 = false;
+    self->gcTriggerLimit            = 1024;
+    self->exitCode                  = 0;
+    self->quit                      = false;
+    self->userData                  = 0;
     self->nextFreeUniqueIdForValues = 0;
-    self->functionReturn = 0;
-    self->fileSystemAccessAllowed = config.fileSystemAccessAllowed;
-    self->debugModeOn             = config.debugModeOn;
+    self->functionReturn            = 0;
+    self->config                    = config;
 
-    self->libraries = octaspire_container_hash_map_new_with_octaspire_container_utf8_string_keys(
-        sizeof(octaspire_dern_lib_t*),
-        true,
-        (octaspire_container_hash_map_element_callback_function_t)octaspire_dern_lib_release,
-        self->allocator);
+    self->libraries =
+        octaspire_container_hash_map_new_with_octaspire_container_utf8_string_keys(
+            sizeof(octaspire_dern_lib_t*),
+            true,
+            (octaspire_container_hash_map_element_callback_function_t)
+                octaspire_dern_lib_release,
+            self->allocator);
 
     octaspire_helpers_verify_not_null(self->libraries);
 
@@ -36387,7 +36426,11 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         return 0;
     }
 
-    self->all = octaspire_container_vector_new(sizeof(octaspire_dern_value_t*), true, 0, self->allocator);
+    self->all = octaspire_container_vector_new(
+        sizeof(octaspire_dern_value_t*),
+        true,
+        0,
+        self->allocator);
 
     if (!self->all)
     {
@@ -36396,7 +36439,8 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         return 0;
     }
 
-    octaspire_dern_environment_t *env = octaspire_dern_environment_new(0, self, self->allocator);
+    octaspire_dern_environment_t *env =
+        octaspire_dern_environment_new(0, self, self->allocator);
 
     if (!env)
     {
@@ -36405,7 +36449,8 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         return 0;
     }
 
-    self->globalEnvironment = octaspire_dern_vm_create_new_value_environment_from_environment(self, env);
+    self->globalEnvironment =
+        octaspire_dern_vm_create_new_value_environment_from_environment(self, env);
 
     if (!self->globalEnvironment)
     {
@@ -38891,7 +38936,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
 
-    if (self->debugModeOn)
+    if (self->config.debugModeOn)
     {
         octaspire_container_utf8_string_t *str =
             octaspire_dern_value_to_string(
@@ -40175,7 +40220,15 @@ void octaspire_dern_vm_set_gc_trigger_limit(octaspire_dern_vm_t * const self, si
 
 bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self)
 {
-    return self->fileSystemAccessAllowed;
+    return self->config.fileSystemAccessAllowed;
+}
+
+octaspire_dern_vm_custom_require_source_file_loader_t
+octaspire_dern_vm_get_custom_require_source_file_pre_loader(
+        octaspire_dern_vm_t * const self)
+
+{
+    return self->config.preLoaderForRequireSrc;
 }
 
 bool octaspire_dern_vm_add_library(
@@ -56803,6 +56856,90 @@ TEST octaspire_dern_vm_copy_user_data_test(void)
     PASS();
 }
 
+octaspire_input_t *octaspire_test_dern_vm_custom_require_file_loader(
+    char const * const name,
+    octaspire_memory_allocator_t * const allocator)
+{
+    if (strcmp("test1.dern", name) == 0)
+    {
+        return octaspire_input_new_from_c_string(
+            "(define f1 [f1] '(a [a] b [b]) (fn (a b) (+ a b)))",
+            allocator);
+    }
+    else if (strcmp("test2.dern", name) == 0)
+    {
+        return octaspire_input_new_from_c_string(
+            "(define f2 [f2] '(a [a] b [b]) (fn (a b) (* a b)))",
+            allocator);
+    }
+
+    return 0;
+}
+
+TEST octaspire_dern_vm_require_a_source_library_test(void)
+{
+    octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
+    config.preLoaderForRequireSrc = octaspire_test_dern_vm_custom_require_file_loader;
+
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new_with_config(
+            octaspireDernVmTestAllocator,
+            octaspireDernVmTestStdio,
+            config);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(require 'test1)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "test1.dern",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+
+
+    // Test function from the 'test1' library
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(f1 2 10)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(12, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+
+
+    // Load 'test2' library
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(require 'test2)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "test2.dern",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+
+
+    // Test function from the 'test2' library
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(f2 2 10)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(20, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
@@ -57186,6 +57323,8 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
 
     RUN_TEST(octaspire_dern_vm_create_user_data_test);
     RUN_TEST(octaspire_dern_vm_copy_user_data_test);
+
+    RUN_TEST(octaspire_dern_vm_require_a_source_library_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;

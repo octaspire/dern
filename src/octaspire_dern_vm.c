@@ -65,8 +65,7 @@ struct octaspire_dern_vm_t
     int32_t                         exitCode;
     bool                            preventGc;
     bool                            quit;
-    bool                            fileSystemAccessAllowed;
-    bool                            debugModeOn;
+    octaspire_dern_vm_config_t      config;
 };
 
 octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(octaspire_dern_vm_t* self, octaspire_dern_value_tag_t const typeTag);
@@ -83,6 +82,7 @@ octaspire_dern_vm_config_t octaspire_dern_vm_config_default(void)
 {
     octaspire_dern_vm_config_t result =
     {
+        .preLoaderForRequireSrc  = 0,
         .fileSystemAccessAllowed = false,
         .debugModeOn             = false
     };
@@ -113,24 +113,25 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         return 0;
     }
 
-    self->allocator = allocator;
-    self->stdio     = octaspireStdio;
-    self->numAllocatedWithoutGc = 0;
-    self->preventGc = false;
-    self->gcTriggerLimit = 1024;
-    self->exitCode = 0;
-    self->quit = false;
-    self->userData = 0;
+    self->allocator                 = allocator;
+    self->stdio                     = octaspireStdio;
+    self->numAllocatedWithoutGc     = 0;
+    self->preventGc                 = false;
+    self->gcTriggerLimit            = 1024;
+    self->exitCode                  = 0;
+    self->quit                      = false;
+    self->userData                  = 0;
     self->nextFreeUniqueIdForValues = 0;
-    self->functionReturn = 0;
-    self->fileSystemAccessAllowed = config.fileSystemAccessAllowed;
-    self->debugModeOn             = config.debugModeOn;
+    self->functionReturn            = 0;
+    self->config                    = config;
 
-    self->libraries = octaspire_container_hash_map_new_with_octaspire_container_utf8_string_keys(
-        sizeof(octaspire_dern_lib_t*),
-        true,
-        (octaspire_container_hash_map_element_callback_function_t)octaspire_dern_lib_release,
-        self->allocator);
+    self->libraries =
+        octaspire_container_hash_map_new_with_octaspire_container_utf8_string_keys(
+            sizeof(octaspire_dern_lib_t*),
+            true,
+            (octaspire_container_hash_map_element_callback_function_t)
+                octaspire_dern_lib_release,
+            self->allocator);
 
     octaspire_helpers_verify_not_null(self->libraries);
 
@@ -166,7 +167,11 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         return 0;
     }
 
-    self->all = octaspire_container_vector_new(sizeof(octaspire_dern_value_t*), true, 0, self->allocator);
+    self->all = octaspire_container_vector_new(
+        sizeof(octaspire_dern_value_t*),
+        true,
+        0,
+        self->allocator);
 
     if (!self->all)
     {
@@ -175,7 +180,8 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         return 0;
     }
 
-    octaspire_dern_environment_t *env = octaspire_dern_environment_new(0, self, self->allocator);
+    octaspire_dern_environment_t *env =
+        octaspire_dern_environment_new(0, self, self->allocator);
 
     if (!env)
     {
@@ -184,7 +190,8 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         return 0;
     }
 
-    self->globalEnvironment = octaspire_dern_vm_create_new_value_environment_from_environment(self, env);
+    self->globalEnvironment =
+        octaspire_dern_vm_create_new_value_environment_from_environment(self, env);
 
     if (!self->globalEnvironment)
     {
@@ -2670,7 +2677,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
 
-    if (self->debugModeOn)
+    if (self->config.debugModeOn)
     {
         octaspire_container_utf8_string_t *str =
             octaspire_dern_value_to_string(
@@ -3954,7 +3961,15 @@ void octaspire_dern_vm_set_gc_trigger_limit(octaspire_dern_vm_t * const self, si
 
 bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self)
 {
-    return self->fileSystemAccessAllowed;
+    return self->config.fileSystemAccessAllowed;
+}
+
+octaspire_dern_vm_custom_require_source_file_loader_t
+octaspire_dern_vm_get_custom_require_source_file_pre_loader(
+        octaspire_dern_vm_t * const self)
+
+{
+    return self->config.preLoaderForRequireSrc;
 }
 
 bool octaspire_dern_vm_add_library(

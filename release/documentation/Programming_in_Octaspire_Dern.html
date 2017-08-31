@@ -546,6 +546,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_building_and_using_a_binary_library_in_netbsd">Building and using a binary library in NetBSD</a></li>
 </ul>
 </li>
+<li><a href="#_using_custom_library_loader_with_code_require_code">Using custom library loader with <code>require</code></a></li>
 <li><a href="#_embedding_in_c_programs">Embedding in C programs</a></li>
 <li><a href="#_tool_support">Tool support</a></li>
 <li><a href="#_building_the_development_repository">Building the development repository</a>
@@ -568,7 +569,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Documentation for Octaspire Dern programming language version 0.220.0</p>
+<p>Documentation for Octaspire Dern programming language version 0.221.0</p>
 </div>
 </div>
 </div>
@@ -1631,6 +1632,58 @@ for different systems.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_using_custom_library_loader_with_code_require_code">Using custom library loader with <code>require</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Sometimes you might want to override the default library searching and loading
+functionality and use a custom loader instead. For example, when writing a game
+that contains all the resources in a compressed archive or inside the executable
+program, or maybe the library must be first downloaded through a socket.</p>
+</div>
+<div class="listingblock">
+<div class="title">main.c</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c"><span></span><span class="tok-c1">// ...</span>
+
+<span class="tok-n">octaspire_input_t</span> <span class="tok-o">*</span><span class="tok-nf">my_custom_loader</span><span class="tok-p">(</span>
+    <span class="tok-kt">char</span> <span class="tok-k">const</span> <span class="tok-o">*</span> <span class="tok-k">const</span> <span class="tok-n">name</span><span class="tok-p">,</span>
+    <span class="tok-n">octaspire_memory_allocator_t</span> <span class="tok-o">*</span> <span class="tok-k">const</span> <span class="tok-n">allocator</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">strcmp</span><span class="tok-p">(</span><span class="tok-s">&quot;test1.dern&quot;</span><span class="tok-p">,</span> <span class="tok-n">name</span><span class="tok-p">)</span> <span class="tok-o">==</span> <span class="tok-mi">0</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-k">return</span> <span class="tok-n">octaspire_input_new_from_c_string</span><span class="tok-p">(</span>
+            <span class="tok-s">&quot;(define f1 [f1] &#39;(a [a] b [b]) (fn (a b) (+ a b)))&quot;</span><span class="tok-p">,</span>
+            <span class="tok-n">allocator</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+    <span class="tok-k">else</span> <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">strcmp</span><span class="tok-p">(</span><span class="tok-s">&quot;test2.dern&quot;</span><span class="tok-p">,</span> <span class="tok-n">name</span><span class="tok-p">)</span> <span class="tok-o">==</span> <span class="tok-mi">0</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-k">return</span> <span class="tok-n">octaspire_input_new_from_c_string</span><span class="tok-p">(</span>
+            <span class="tok-s">&quot;(define f2 [f2] &#39;(a [a] b [b]) (fn (a b) (* a b)))&quot;</span><span class="tok-p">,</span>
+            <span class="tok-n">allocator</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+<span class="tok-p">}</span>
+
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">void</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">octaspire_dern_vm_config_t</span> <span class="tok-n">config</span> <span class="tok-o">=</span> <span class="tok-n">octaspire_dern_vm_config_default</span><span class="tok-p">();</span>
+    <span class="tok-n">config</span><span class="tok-p">.</span><span class="tok-n">preLoaderForRequireSrc</span> <span class="tok-o">=</span> <span class="tok-n">my_custom_loader</span><span class="tok-p">;</span>
+
+    <span class="tok-n">octaspire_dern_vm_t</span> <span class="tok-o">*</span><span class="tok-n">vm</span> <span class="tok-o">=</span>
+        <span class="tok-n">octaspire_dern_vm_new_with_config</span><span class="tok-p">(</span><span class="tok-n">myAllocator</span><span class="tok-p">,</span> <span class="tok-n">myStdio</span><span class="tok-p">,</span> <span class="tok-n">config</span><span class="tok-p">);</span>
+
+
+    <span class="tok-c1">// In Dern:</span>
+    <span class="tok-c1">// (require &#39;test1)</span>
+    <span class="tok-c1">// (require &#39;test2)</span>
+    <span class="tok-c1">// ...</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_embedding_in_c_programs">Embedding in C programs</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -1814,10 +1867,10 @@ Man pages are not ready yet.
 <h2 id="_using_the_amalgamated_source">Using the amalgamated source</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><strong>etc</strong>-directory of the source distribution contains amalgamated version
-of the source code. All the headers, implementation files and unit tests
-are concatenated with a script into a single file. This one file
-is all that is needed to use Octaspire Dern. The same single file
+<p><strong>release</strong>-directory of the development source distribution contains
+amalgamated version of the source code. All the headers, implementation
+files and unit tests are concatenated with a script into a single file.
+This one file is all that is needed to use Octaspire Dern. The same single file
 can be used to (by giving different compiler flags):</p>
 </div>
 <div class="ulist">
@@ -1833,6 +1886,19 @@ can be used to (by giving different compiler flags):</p>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>The amalgamated source release can also be downloaded from:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://www.octaspire.com/dern" class="bare">http://www.octaspire.com/dern</a></p>
+</li>
+<li>
+<p><a href="https://octaspire.io/dern" class="bare">https://octaspire.io/dern</a></p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
@@ -1844,7 +1910,7 @@ can be used to (by giving different compiler flags):</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-08-31 21:25:02 EEST
+Last updated 2017-09-01 20:46:59 EEST
 </div>
 </div>
 </body>

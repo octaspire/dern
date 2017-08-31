@@ -11906,6 +11906,90 @@ TEST octaspire_dern_vm_copy_user_data_test(void)
     PASS();
 }
 
+octaspire_input_t *octaspire_test_dern_vm_custom_require_file_loader(
+    char const * const name,
+    octaspire_memory_allocator_t * const allocator)
+{
+    if (strcmp("test1.dern", name) == 0)
+    {
+        return octaspire_input_new_from_c_string(
+            "(define f1 [f1] '(a [a] b [b]) (fn (a b) (+ a b)))",
+            allocator);
+    }
+    else if (strcmp("test2.dern", name) == 0)
+    {
+        return octaspire_input_new_from_c_string(
+            "(define f2 [f2] '(a [a] b [b]) (fn (a b) (* a b)))",
+            allocator);
+    }
+
+    return 0;
+}
+
+TEST octaspire_dern_vm_require_a_source_library_test(void)
+{
+    octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
+    config.preLoaderForRequireSrc = octaspire_test_dern_vm_custom_require_file_loader;
+
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new_with_config(
+            octaspireDernVmTestAllocator,
+            octaspireDernVmTestStdio,
+            config);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(require 'test1)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "test1.dern",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+
+
+    // Test function from the 'test1' library
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(f1 2 10)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(12, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+
+
+    // Load 'test2' library
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(require 'test2)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "test2.dern",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+
+
+    // Test function from the 'test2' library
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(f2 2 10)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(20, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
@@ -12289,6 +12373,8 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
 
     RUN_TEST(octaspire_dern_vm_create_user_data_test);
     RUN_TEST(octaspire_dern_vm_copy_user_data_test);
+
+    RUN_TEST(octaspire_dern_vm_require_a_source_library_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;

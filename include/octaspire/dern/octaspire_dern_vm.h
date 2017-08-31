@@ -31,8 +31,14 @@ limitations under the License.
 extern "C" {
 #endif
 
+typedef octaspire_input_t*
+    (*octaspire_dern_vm_custom_require_source_file_loader_t)(
+            char const * const,
+            octaspire_memory_allocator_t * const allocator);
+
 typedef struct octaspire_dern_vm_config_t
 {
+    octaspire_dern_vm_custom_require_source_file_loader_t preLoaderForRequireSrc;
     bool fileSystemAccessAllowed;
     bool debugModeOn;
 }
@@ -282,6 +288,10 @@ void octaspire_dern_vm_set_gc_trigger_limit(
     size_t const numAllocs);
 
 bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self);
+
+octaspire_dern_vm_custom_require_source_file_loader_t
+octaspire_dern_vm_get_custom_require_source_file_pre_loader(
+        octaspire_dern_vm_t * const self);
 
 bool octaspire_dern_vm_add_library(
     octaspire_dern_vm_t *self,

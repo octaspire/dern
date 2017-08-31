@@ -6372,10 +6372,22 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_source_file(
 
     octaspire_helpers_verify_not_null(fileName);
 
-    octaspire_input_t *input = octaspire_input_new_from_path(
-        octaspire_container_utf8_string_get_c_string(fileName),
-        octaspire_dern_vm_get_allocator(vm),
-        octaspire_dern_vm_get_stdio(vm));
+    octaspire_input_t *input = 0;
+
+    if (octaspire_dern_vm_get_custom_require_source_file_pre_loader(vm))
+    {
+        input =
+            octaspire_dern_vm_get_custom_require_source_file_pre_loader(vm)(
+                octaspire_container_utf8_string_get_c_string(fileName),
+                octaspire_dern_vm_get_allocator(vm));
+    }
+    else
+    {
+        input = octaspire_input_new_from_path(
+            octaspire_container_utf8_string_get_c_string(fileName),
+            octaspire_dern_vm_get_allocator(vm),
+            octaspire_dern_vm_get_stdio(vm));
+    }
 
     if (!input)
     {
@@ -6428,9 +6440,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_source_file(
     octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_string(vm, fileName);
 
     octaspire_helpers_verify_not_null(result);
-
-    octaspire_container_utf8_string_release(fileName);
-    fileName = 0;
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
