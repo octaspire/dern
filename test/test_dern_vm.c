@@ -11761,6 +11761,151 @@ TEST octaspire_dern_vm_host_environment_variables_test(void)
     PASS();
 }
 
+static char const * const octaspireDernVmTestCreateNewUserDataTestPluginName =
+    "octaspireDernUnitTestPluginName";
+
+static char const * const octaspireDernVmTestCreateNewUserDataTestPayloadTypeName =
+    "payloadTypeName";
+
+static char const * const octaspireDernVmTestCreateNewUserDataTestPayload =
+    "This is the payload...";
+
+octaspire_dern_value_t *octaspire_dern_test_dern_vm_create_new_user_data(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(arguments);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    return octaspire_dern_vm_create_new_value_c_data(
+            vm,
+            octaspireDernVmTestCreateNewUserDataTestPluginName,
+            octaspireDernVmTestCreateNewUserDataTestPayloadTypeName,
+            "",
+            "",
+            "",
+            "",
+            true,
+            (void*)octaspireDernVmTestCreateNewUserDataTestPayload);
+}
+
+TEST octaspire_dern_vm_create_user_data_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    ASSERT(octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "octaspire-dern-test-dern-vm-create-new-user-data",
+            octaspire_dern_test_dern_vm_create_new_user_data,
+            0,
+            "...",
+            octaspire_dern_value_as_environment_get_value(
+                octaspire_dern_vm_get_global_environment(vm))));
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(octaspire-dern-test-dern-vm-create-new-user-data)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_C_DATA, evaluatedValue->typeTag);
+
+    octaspire_dern_c_data_t const * const cData =
+        octaspire_dern_value_as_c_data_get_value(evaluatedValue);
+
+    ASSERT_STR_EQ(
+        octaspireDernVmTestCreateNewUserDataTestPluginName,
+        octaspire_dern_c_data_get_plugin_name(cData));
+
+    ASSERT_STR_EQ(
+        octaspireDernVmTestCreateNewUserDataTestPayloadTypeName,
+        octaspire_dern_c_data_get_payload_typename(cData));
+
+    ASSERT_EQ(
+        octaspireDernVmTestCreateNewUserDataTestPayload,
+        octaspire_dern_c_data_get_payload(cData));
+
+    ASSERT_STR_EQ(
+        (char const * const)octaspireDernVmTestCreateNewUserDataTestPayload,
+        (char const * const)octaspire_dern_c_data_get_payload(cData));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_copy_user_data_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    ASSERT(octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "octaspire-dern-test-dern-vm-create-new-user-data",
+            octaspire_dern_test_dern_vm_create_new_user_data,
+            0,
+            "...",
+            octaspire_dern_value_as_environment_get_value(
+                octaspire_dern_vm_get_global_environment(vm))));
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define a [a] (octaspire-dern-test-dern-vm-create-new-user-data))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true, octaspire_dern_value_as_boolean_get_value(evaluatedValue));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define b [b] (copy a))");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true, octaspire_dern_value_as_boolean_get_value(evaluatedValue));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(= a 1)");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(1, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "b");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_C_DATA, evaluatedValue->typeTag);
+
+    octaspire_dern_c_data_t const * const cData =
+        octaspire_dern_value_as_c_data_get_value(evaluatedValue);
+
+    ASSERT_STR_EQ(
+        octaspireDernVmTestCreateNewUserDataTestPluginName,
+        octaspire_dern_c_data_get_plugin_name(cData));
+
+    ASSERT_STR_EQ(
+        octaspireDernVmTestCreateNewUserDataTestPayloadTypeName,
+        octaspire_dern_c_data_get_payload_typename(cData));
+
+    ASSERT_EQ(
+        octaspireDernVmTestCreateNewUserDataTestPayload,
+        octaspire_dern_c_data_get_payload(cData));
+
+    ASSERT_STR_EQ(
+        (char const * const)octaspireDernVmTestCreateNewUserDataTestPayload,
+        (char const * const)octaspire_dern_c_data_get_payload(cData));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
@@ -12141,6 +12286,9 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
 
     RUN_TEST(octaspire_dern_vm_host_command_line_arguments_test);
     RUN_TEST(octaspire_dern_vm_host_environment_variables_test);
+
+    RUN_TEST(octaspire_dern_vm_create_user_data_test);
+    RUN_TEST(octaspire_dern_vm_copy_user_data_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;

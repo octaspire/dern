@@ -152,6 +152,10 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     bool const copyingAllowed,
     void * const payload);
 
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data_from_existing(
+    octaspire_dern_vm_t * const self,
+    octaspire_dern_c_data_t * const cData);
+
 bool octaspire_dern_vm_push_value(octaspire_dern_vm_t *self, struct octaspire_dern_value_t *value);
 bool octaspire_dern_vm_pop_value (octaspire_dern_vm_t *self, struct octaspire_dern_value_t *valueForBalanceCheck);
     void const * octaspire_dern_vm_get_top_value(octaspire_dern_vm_t const * const self);

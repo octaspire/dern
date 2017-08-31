@@ -1686,6 +1686,20 @@ bool octaspire_dern_value_is_environment(
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT;
 }
 
+octaspire_dern_environment_t *octaspire_dern_value_as_environment_get_value(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    return self->value.environment;
+}
+
+octaspire_dern_environment_t const *octaspire_dern_value_as_environment_get_value_const(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    return self->value.environment;
+}
+
 bool octaspire_dern_value_is_function(
     octaspire_dern_value_t const * const self)
 {
@@ -1696,6 +1710,20 @@ bool octaspire_dern_value_is_c_data(
     octaspire_dern_value_t const * const self)
 {
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_C_DATA;
+}
+
+octaspire_dern_c_data_t *octaspire_dern_value_as_c_data_get_value(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_C_DATA);
+    return self->value.cData;
+}
+
+octaspire_dern_c_data_t const *octaspire_dern_value_as_c_data_get_value_const(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_C_DATA);
+    return self->value.cData;
 }
 
 void octaspire_dern_value_print(

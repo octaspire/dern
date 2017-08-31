@@ -99,7 +99,8 @@ void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
     octaspire_helpers_verify_not_null(self->cleanUpCallbackName);
 
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
-    if (!octaspire_container_utf8_string_is_empty(self->cleanUpCallbackName))
+    if (!octaspire_container_utf8_string_is_empty(self->cleanUpCallbackName) &&
+         self->library)
     {
         void * const handle = octaspire_dern_lib_get_handle(self->library);
         void (*func)(void * const payload);

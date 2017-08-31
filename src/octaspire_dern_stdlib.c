@@ -7628,6 +7628,54 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_copy(
             return octaspire_dern_vm_create_new_value_string(vm, copyStr);
         }
 
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        {
+            if (numArgs == 1)
+            {
+                octaspire_dern_c_data_t *originalCData =
+                    octaspire_dern_value_as_c_data_get_value(collectionVal);
+
+                if (!octaspire_dern_c_data_is_copying_allowed(originalCData))
+                {
+                    octaspire_container_utf8_string_t *tmpStr =
+                        octaspire_dern_c_data_to_string(
+                            originalCData,
+                            octaspire_dern_vm_get_allocator(vm));
+
+                    octaspire_dern_value_t * const result =
+                        octaspire_dern_vm_create_new_value_error_format(
+                            vm,
+                            "Copying of C data '%s' is not allowed (it forbids copying)",
+                            octaspire_container_utf8_string_get_c_string(tmpStr));
+
+                    octaspire_container_utf8_string_release(tmpStr);
+                    tmpStr = 0;
+
+                    octaspire_helpers_verify_true(
+                        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                    return result;
+                }
+
+                octaspire_dern_c_data_t * const copyCData =
+                    octaspire_dern_c_data_new_copy(
+                        octaspire_dern_value_as_c_data_get_value(collectionVal),
+                        octaspire_dern_vm_get_allocator(vm));
+
+                octaspire_helpers_verify_not_null(copyCData);
+
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_c_data_from_existing(
+                    vm,
+                    copyCData);
+            }
+
+            // TODO XXX
+            abort();
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
@@ -7644,7 +7692,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_copy(
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
-        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(

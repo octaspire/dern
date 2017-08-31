@@ -2062,7 +2062,6 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
         octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_C_DATA);
 
     octaspire_dern_lib_t *lib = octaspire_dern_vm_get_library(self, pluginName);
-    octaspire_helpers_verify_not_null(lib);
 
     result->value.cData = octaspire_dern_c_data_new(
         pluginName,
@@ -2077,6 +2076,25 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
         self->allocator);
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
+    return result;
+}
+
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data_from_existing(
+    octaspire_dern_vm_t * const self,
+    octaspire_dern_c_data_t * const cData)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
+
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_private_create_new_value_struct(
+            self,
+            OCTASPIRE_DERN_VALUE_TAG_C_DATA);
+
+    result->value.cData = cData;
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(self));
+
     return result;
 }
 
@@ -3997,6 +4015,11 @@ octaspire_dern_lib_t *octaspire_dern_vm_get_library(
 
     octaspire_container_utf8_string_release(str);
     str = 0;
+
+    if (!element)
+    {
+        return 0;
+    }
 
     return octaspire_container_hash_map_element_get_value(element);
 }

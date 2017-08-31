@@ -252,10 +252,22 @@ bool octaspire_dern_value_is_port(
 bool octaspire_dern_value_is_environment(
     octaspire_dern_value_t const * const self);
 
+struct octaspire_dern_environment_t *octaspire_dern_value_as_environment_get_value(
+    octaspire_dern_value_t * const self);
+
+struct octaspire_dern_environment_t const *octaspire_dern_value_as_environment_get_value_const(
+    octaspire_dern_value_t const * const self);
+
 bool octaspire_dern_value_is_function(
     octaspire_dern_value_t const * const self);
 
 bool octaspire_dern_value_is_c_data(
+    octaspire_dern_value_t const * const self);
+
+octaspire_dern_c_data_t *octaspire_dern_value_as_c_data_get_value(
+    octaspire_dern_value_t * const self);
+
+octaspire_dern_c_data_t const *octaspire_dern_value_as_c_data_get_value_const(
     octaspire_dern_value_t const * const self);
 
 void octaspire_dern_value_print(
