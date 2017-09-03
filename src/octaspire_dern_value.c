@@ -257,7 +257,10 @@ octaspire_container_utf8_string_t *octaspire_dern_function_are_all_formals_menti
 octaspire_dern_special_t *octaspire_dern_special_new(
     octaspire_dern_c_function const cFunction,
     octaspire_memory_allocator_t *allocator,
-    size_t const numRequiredActualArguments)
+    char const * const name,
+    size_t const numRequiredActualArguments,
+    char const * const docstr,
+    bool const howtoAllowed)
 {
     octaspire_dern_special_t *self =
         octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_special_t));
@@ -267,9 +270,18 @@ octaspire_dern_special_t *octaspire_dern_special_new(
         return 0;
     }
 
-    self->cFunction = cFunction;
-    self->allocator = allocator;
+    self->cFunction                  = cFunction;
+    self->allocator                  = allocator;
+
+    self->name                       = 
+        octaspire_container_utf8_string_new(name, allocator);
+
     self->numRequiredActualArguments = numRequiredActualArguments;
+
+    self->docstr                     = 
+        octaspire_container_utf8_string_new(docstr, allocator);
+
+    self->howtoAllowed               = howtoAllowed;
 
     return self;
 }
@@ -281,6 +293,12 @@ void octaspire_dern_special_release(octaspire_dern_special_t *self)
         return;
     }
 
+    octaspire_container_utf8_string_release(self->name);
+    self->name = 0;
+
+    octaspire_container_utf8_string_release(self->docstr);
+    self->docstr = 0;
+
     octaspire_memory_allocator_free(self->allocator, self);
 }
 
@@ -291,7 +309,22 @@ size_t octaspire_dern_special_get_number_of_required_arguments(
     return self->numRequiredActualArguments;
 }
 
+bool octaspire_dern_special_is_howto_allowed(
+    octaspire_dern_special_t const * const self)
+{
+    return self->howtoAllowed;
+}
 
+octaspire_container_utf8_string_t *octaspire_dern_special_to_string(
+    octaspire_dern_special_t const * const self,
+    octaspire_memory_allocator_t * const allocator)
+{
+    return octaspire_container_utf8_string_new_format(
+        allocator,
+        "<builtin %s %s>",
+        octaspire_container_utf8_string_get_c_string(self->name),
+        octaspire_container_utf8_string_get_c_string(self->docstr));
+}
 
 
 
@@ -299,7 +332,10 @@ size_t octaspire_dern_special_get_number_of_required_arguments(
 octaspire_dern_builtin_t *octaspire_dern_builtin_new(
     octaspire_dern_c_function const cFunction,
     octaspire_memory_allocator_t *allocator,
-    size_t const numRequiredActualArguments)
+    char const * const name,
+    size_t const numRequiredActualArguments,
+    char const * const docstr,
+    bool const howtoAllowed)
 {
     octaspire_dern_builtin_t *self =
         octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_builtin_t));
@@ -309,9 +345,18 @@ octaspire_dern_builtin_t *octaspire_dern_builtin_new(
         return 0;
     }
 
-    self->cFunction = cFunction;
-    self->allocator = allocator;
+    self->cFunction                  = cFunction;
+    self->allocator                  = allocator;
+
+    self->name                       =
+        octaspire_container_utf8_string_new(name, allocator);
+
     self->numRequiredActualArguments = numRequiredActualArguments;
+
+    self->docstr                     =
+        octaspire_container_utf8_string_new(docstr, allocator);
+
+    self->howtoAllowed               = howtoAllowed;
 
     return self;
 }
@@ -323,6 +368,12 @@ void octaspire_dern_builtin_release(octaspire_dern_builtin_t *self)
         return;
     }
 
+    octaspire_container_utf8_string_release(self->name);
+    self->name = 0;
+
+    octaspire_container_utf8_string_release(self->docstr);
+    self->docstr = 0;
+
     octaspire_memory_allocator_free(self->allocator, self);
 }
 
@@ -333,7 +384,22 @@ size_t octaspire_dern_builtin_get_number_of_required_arguments(
     return self->numRequiredActualArguments;
 }
 
+bool octaspire_dern_builtin_is_howto_allowed(
+    octaspire_dern_builtin_t const * const self)
+{
+    return self->howtoAllowed;
+}
 
+octaspire_container_utf8_string_t *octaspire_dern_builtin_to_string(
+    octaspire_dern_builtin_t const * const self,
+    octaspire_memory_allocator_t * const allocator)
+{
+    return octaspire_container_utf8_string_new_format(
+        allocator,
+        "<special %s %s>",
+        octaspire_container_utf8_string_get_c_string(self->name),
+        octaspire_container_utf8_string_get_c_string(self->docstr));
+}
 
 
 char const * octaspire_dern_value_helper_get_type_as_c_string(octaspire_dern_value_tag_t const typeTag)
@@ -1550,7 +1616,7 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
 
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             {
-                return octaspire_container_utf8_string_new("<builtin>", allocator);
+                return octaspire_dern_builtin_to_string(self->value.builtin, allocator);
             }
 
             case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -1565,7 +1631,7 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
 
             case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
             {
-                return octaspire_container_utf8_string_new("<special>", allocator);
+                return octaspire_dern_special_to_string(self->value.special, allocator);
             }
 
             case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
@@ -1704,6 +1770,30 @@ bool octaspire_dern_value_is_function(
     octaspire_dern_value_t const * const self)
 {
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_FUNCTION;
+}
+
+bool octaspire_dern_value_is_builtin(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_BUILTIN;
+}
+
+bool octaspire_dern_value_is_special(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SPECIAL;
+}
+
+bool octaspire_dern_value_is_howto_allowed(
+    octaspire_dern_value_t const * const self)
+{
+    // TODO XXX make user functions to support setting
+    // howto
+    octaspire_helpers_verify_true(
+        octaspire_dern_value_is_builtin(self) ||
+        octaspire_dern_value_is_special(self));
+
+    return self->howtoAllowed;
 }
 
 bool octaspire_dern_value_is_c_data(

@@ -229,6 +229,7 @@ bool octaspire_dern_vm_create_and_register_new_builtin(
     octaspire_dern_c_function const funcPointer,
     size_t const numRequiredActualArguments,
     char const * const docStr,
+    bool const howtoAllowed,
     octaspire_dern_environment_t * const targetEnv);
 
 bool octaspire_dern_vm_create_and_register_new_special(
@@ -237,6 +238,7 @@ bool octaspire_dern_vm_create_and_register_new_special(
     octaspire_dern_c_function const funcPointer,
     size_t const numRequiredActualArguments,
     char const * const docStr,
+    bool const howtoAllowed,
     octaspire_dern_environment_t * const targetEnv);
 
 bool octaspire_dern_vm_create_and_define_new_integer(

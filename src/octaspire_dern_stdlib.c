@@ -1974,7 +1974,10 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_starts_with_question_mark(
     if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
     {
         // TODO XXX implement rest of the fitting types
-        abort();
+        //abort();
+        octaspire_dern_vm_pop_value(vm, arguments);
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_get_value_false(vm);
     }
 
     bool const result = octaspire_container_utf8_string_starts_with(
@@ -7811,6 +7814,238 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_host_get_environment_variables
     }
 
     octaspire_dern_vm_pop_value(vm, result);
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+
+
+
+
+
+bool octaspire_dern_stdlib_private_builtin_howto_helper(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t * const expectedArgs,
+    octaspire_dern_value_t * const expectedtResult,
+    octaspire_dern_value_t * const environment,
+    octaspire_dern_value_t * const result)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_dern_environment_t * const actualEnv =
+        octaspire_dern_value_as_environment_get_value(environment);
+
+    for (size_t i = 0; i < octaspire_dern_environment_get_length(actualEnv); ++i)
+    {
+        octaspire_container_hash_map_element_t * const element =
+            octaspire_dern_environment_get_at_index(actualEnv, i);
+
+        //octaspire_dern_value_t *name =
+        //    octaspire_container_hash_map_element_get_key(element);
+
+        //printf("\nNAME: ");
+        //octaspire_dern_value_print(name, octaspire_dern_vm_get_allocator(vm));
+
+        octaspire_dern_value_t * const value =
+            octaspire_container_hash_map_element_get_value(element);
+
+        if (octaspire_dern_value_is_builtin(value) ||
+            octaspire_dern_value_is_special(value))
+        {
+            if (octaspire_dern_value_is_howto_allowed(value))
+            {
+                // TODO preallocate into correct size to speed things up
+                octaspire_dern_value_t * const form =
+                    octaspire_dern_vm_create_new_value_vector(vm);
+
+                if (!form)
+                {
+                    octaspire_helpers_verify_true(
+                        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                    return false;
+                }
+
+                octaspire_dern_vm_push_value(vm, form);
+
+                // Add operator into the form
+                octaspire_dern_value_as_vector_push_back_element(form, &value);
+
+                // Add arguments into the form
+                for (size_t i = 0;
+                     i < octaspire_dern_value_as_vector_get_length(expectedArgs);
+                     ++i)
+                {
+                    octaspire_dern_value_t * const tmpArg =
+                        octaspire_dern_value_as_vector_get_element_at(expectedArgs, i);
+
+                    octaspire_dern_value_as_vector_push_back_element(form, &tmpArg);
+                }
+
+                //octaspire_dern_value_print(form, octaspire_dern_vm_get_allocator(vm));
+
+                octaspire_dern_value_t * const evaluatedValue =
+                    octaspire_dern_vm_eval(
+                        vm,
+                        form,
+                        environment);
+
+
+
+                octaspire_dern_vm_push_value(vm, evaluatedValue);
+
+                //printf("EXPECTED: ");
+                //octaspire_dern_value_print(expectedtResult, octaspire_dern_vm_get_allocator(vm));
+                //printf("EVALUATED: ");
+                //octaspire_dern_value_print(evaluatedValue, octaspire_dern_vm_get_allocator(vm));
+
+                if (octaspire_dern_value_is_equal(expectedtResult, evaluatedValue))
+                {
+                    // This builtin or special is added as suggestion
+                    octaspire_dern_value_as_vector_push_back_element(
+                        result,
+                        &value);
+                }
+
+                octaspire_dern_vm_pop_value(vm, evaluatedValue);
+
+
+
+                octaspire_dern_vm_pop_value(vm, form);
+            }
+        }
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return true;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_howto(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs < 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'howto' expects at least two arguments.");
+    }
+
+    octaspire_dern_value_t *result =
+        octaspire_dern_vm_create_new_value_vector(vm);
+
+    octaspire_dern_vm_push_value(vm, result);
+
+
+
+
+    octaspire_dern_value_t *exampleArgs =
+        octaspire_dern_vm_create_new_value_vector(vm);
+
+    octaspire_dern_vm_push_value(vm, exampleArgs);
+
+    for (size_t i = 0; i < numArgs - 1; ++i)
+    {
+        octaspire_dern_value_t * const value =
+            octaspire_dern_value_as_vector_get_element_at(arguments, i);
+
+        octaspire_dern_value_as_vector_push_back_element(exampleArgs, &value);
+    }
+
+    octaspire_dern_value_t * const exampleResult =
+        octaspire_dern_value_as_vector_get_element_at(arguments, numArgs - 1);
+
+    //printf("-----example args are-------\n");
+    //octaspire_dern_value_print(exampleArgs, octaspire_dern_vm_get_allocator(vm));
+
+
+
+    // Permutations are generated with Heap's algorithm
+    octaspire_container_vector_t *counts = octaspire_container_vector_new(
+        sizeof(int),
+        false,
+        0,
+        octaspire_dern_vm_get_allocator(vm));
+
+
+    for (size_t i = 0; i < octaspire_dern_value_as_vector_get_length(exampleArgs); ++i)
+    {
+        int const zero = 0;
+        octaspire_container_vector_push_back_element(counts, &zero);
+    }
+
+    octaspire_dern_stdlib_private_builtin_howto_helper(
+        vm,
+        exampleArgs,
+        exampleResult,
+        environment,
+        result);
+
+    size_t i = 0;
+    while (i < octaspire_dern_value_as_vector_get_length(exampleArgs))
+    {
+        int ci = *(int const * const)
+            octaspire_container_vector_get_element_at(counts, i);
+
+        if (ci < (int)i)
+        {
+            if (i % 2 == 0)
+            {
+                octaspire_helpers_verify_true(octaspire_container_vector_swap(
+                    exampleArgs->value.vector,
+                    0,
+                    i));
+            }
+            else
+            {
+                octaspire_helpers_verify_true(octaspire_container_vector_swap(
+                    exampleArgs->value.vector,
+                    ci,
+                    i));
+            }
+
+            octaspire_dern_stdlib_private_builtin_howto_helper(
+                vm,
+                exampleArgs,
+                exampleResult,
+                environment,
+                result);
+
+            ++ci;
+
+            octaspire_helpers_verify_true(
+                octaspire_container_vector_replace_element_at(counts, i, &ci));
+
+            i = 0;
+        }
+        else
+        {
+            ci = 0;
+
+            octaspire_helpers_verify_true(
+                octaspire_container_vector_replace_element_at(counts, i, &ci));
+
+            ++i;
+        }
+    }
+
+    octaspire_container_vector_release(counts);
+    counts = 0;
+
+    octaspire_dern_vm_pop_value(vm, exampleArgs);
+    octaspire_dern_vm_pop_value(vm, result);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
 }

@@ -95,37 +95,63 @@ typedef struct octaspire_dern_special_t
 {
     octaspire_dern_c_function          cFunction;
     octaspire_memory_allocator_t      *allocator;
+    octaspire_container_utf8_string_t *name;
     size_t                             numRequiredActualArguments;
+    octaspire_container_utf8_string_t *docstr;
+    bool                               howtoAllowed;
 }
 octaspire_dern_special_t;
 
 octaspire_dern_special_t *octaspire_dern_special_new(
     octaspire_dern_c_function const cFunction,
     octaspire_memory_allocator_t *allocator,
-    size_t const numRequiredActualArguments);
+    char const * const name,
+    size_t const numRequiredActualArguments,
+    char const * const docstr,
+    bool const howtoAllowed);
 
 void octaspire_dern_special_release(octaspire_dern_special_t *self);
 
 size_t octaspire_dern_special_get_number_of_required_arguments(
     octaspire_dern_special_t const * const self);
 
+bool octaspire_dern_special_is_howto_allowed(
+    octaspire_dern_special_t const * const self);
+
+octaspire_container_utf8_string_t *octaspire_dern_special_to_string(
+    octaspire_dern_special_t const * const self,
+    octaspire_memory_allocator_t * const allocator);
+
 typedef struct octaspire_dern_builtin_t
 {
     octaspire_dern_c_function          cFunction;
     octaspire_memory_allocator_t      *allocator;
+    octaspire_container_utf8_string_t *name;
     size_t                             numRequiredActualArguments;
+    octaspire_container_utf8_string_t *docstr;
+    bool                               howtoAllowed;
 }
 octaspire_dern_builtin_t;
 
 octaspire_dern_builtin_t *octaspire_dern_builtin_new(
     octaspire_dern_c_function const cFunction,
     octaspire_memory_allocator_t *allocator,
-    size_t const numRequiredActualArguments);
+    char const * const name,
+    size_t const numRequiredActualArguments,
+    char const * const docstr,
+    bool const howtoAllowed);
 
 void octaspire_dern_builtin_release(octaspire_dern_builtin_t *self);
 
 size_t octaspire_dern_builtin_get_number_of_required_arguments(
     octaspire_dern_builtin_t const * const self);
+
+bool octaspire_dern_builtin_is_howto_allowed(
+    octaspire_dern_builtin_t const * const self);
+
+octaspire_container_utf8_string_t *octaspire_dern_builtin_to_string(
+    octaspire_dern_builtin_t const * const self,
+    octaspire_memory_allocator_t * const allocator);
 
 struct octaspire_dern_environment_t;
 
@@ -161,7 +187,8 @@ struct octaspire_dern_value_t
 
     octaspire_dern_value_tag_t   typeTag;
     bool                         mark;
-    char                         padding[3];
+    bool                         howtoAllowed;
+    char                         padding[2];
 };
 
 octaspire_dern_value_tag_t octaspire_dern_value_get_type(
@@ -259,6 +286,15 @@ struct octaspire_dern_environment_t const *octaspire_dern_value_as_environment_g
     octaspire_dern_value_t const * const self);
 
 bool octaspire_dern_value_is_function(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_builtin(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_special(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_howto_allowed(
     octaspire_dern_value_t const * const self);
 
 bool octaspire_dern_value_is_c_data(

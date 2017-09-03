@@ -11801,6 +11801,7 @@ TEST octaspire_dern_vm_create_user_data_test(void)
             octaspire_dern_test_dern_vm_create_new_user_data,
             0,
             "...",
+            false,
             octaspire_dern_value_as_environment_get_value(
                 octaspire_dern_vm_get_global_environment(vm))));
 
@@ -11847,6 +11848,7 @@ TEST octaspire_dern_vm_copy_user_data_test(void)
             octaspire_dern_test_dern_vm_create_new_user_data,
             0,
             "...",
+            false,
             octaspire_dern_value_as_environment_get_value(
                 octaspire_dern_vm_get_global_environment(vm))));
 

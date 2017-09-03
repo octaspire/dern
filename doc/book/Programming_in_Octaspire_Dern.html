@@ -532,6 +532,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_formatted_string_creation">Formatted string creation</a></li>
 <li><a href="#_functions_with_variable_number_of_arguments">Functions with variable number of arguments</a></li>
 <li><a href="#_environments">Environments</a></li>
+<li><a href="#_getting_help_with_code_howto_code">Getting help with <code>howto</code></a></li>
 <li><a href="#_returning_from_functions_early">Returning from functions early</a></li>
 <li><a href="#_evaluating_values">Evaluating values</a></li>
 <li><a href="#_input_and_output_ports">Input and output ports</a></li>
@@ -569,7 +570,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Documentation for Octaspire Dern programming language version 0.221.0</p>
+<p>Documentation for Octaspire Dern programming language version 0.223.0</p>
 </div>
 </div>
 </div>
@@ -580,7 +581,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <a href="https://octaspire.io/dern/coverage"><img src="https://img.shields.io/badge/coverage-80\%25-red.svg?colorB=aaaa00" alt="Code coverage" /></a>
 <a href="https://choosealicense.com/licenses/apache-2.0/"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License badge" /></a>
 <div class="paragraph">
-<p>Octaspire Dern is a programming language. It is a dialect of Lisp, having taken influences from
+<p>Octaspire Dern is a extensible self documenting programming language.
+It is a dialect of Lisp, having taken influences from
 languages scheme, emacs lisp and C. The name of the language means
 an <strong>obscure language</strong>. <sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnote_1" title="View footnote.">1</a>]</sup></p>
 </div>
@@ -592,14 +594,20 @@ an <strong>obscure language</strong>. <sup class="footnote">[<a id="_footnoteref
 is a list, in Dern it is a vector.</p>
 </div>
 <div class="paragraph">
-<p>Every variable and function definition in Dern must be documented by a <strong>documentation string</strong>.
-Dern also makes sure that every formal function parameter is documented in the
-documentation of function definition. The documentation can be accessed with <strong>doc</strong>-function.</p>
+<p>Every variable and function definition in Dern must be documented by a
+<strong>documentation string</strong>. Dern also makes sure that every formal function
+parameter is documented in the documentation of function definition.
+The documentation can be accessed with <strong>doc</strong>-function. <strong>howto</strong> is
+another useful function. You can give it examples of function arguments
+and expected result and it will tell you what functions you can call to
+get the expected result from the given arguments.</p>
 </div>
 <div class="paragraph">
 <p>Dern can also be extended with functions written in C; C-functions can be registered
 as <strong>builtins</strong> or <strong>specials</strong>. Arguments to builtins are evaluated normally, but to specials
-are not, so specials can be used to implement special forms like <strong>if</strong>, etc.</p>
+are not, so specials can be used to implement special forms like <strong>if</strong>, etc. When
+defining your own builtins and specials, you can tell Dern whether the function
+can be tested by <strong>howto</strong> or not.</p>
 </div>
 <div class="paragraph">
 <p>Dern has also library system, that allows one to load libraries using builtin <code>require</code>.
@@ -1232,6 +1240,20 @@ be added later.</p>
 <pre class="pygments highlight"><code data-lang="dern"><span></span><span class="tok-p">(</span><span class="tok-nb">env-global)</span>
 <span class="tok-p">(</span><span class="tok-nb">env-current)</span>
 <span class="tok-p">(</span><span class="tok-nb">env-new)</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_getting_help_with_code_howto_code">Getting help with <code>howto</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Here is small example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="dern"><span></span><span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">)</span>
+<span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-s">[a]</span> <span class="tok-s">[b]</span> <span class="tok-s">[ab)</span></code></pre>
 </div>
 </div>
 </div>
@@ -1910,7 +1932,7 @@ can be used to (by giving different compiler flags):</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-09-01 20:46:59 EEST
+Last updated 2017-09-04 13:38:37 EEST
 </div>
 </div>
 </body>

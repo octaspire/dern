@@ -329,6 +329,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_host_get_command_line_arguments,
         0,
         "Get vector containing the host command line arguments",
+        false,
         env))
     {
         abort();
@@ -341,6 +342,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_host_get_environment_variables,
         0,
         "Get vector containing the host environment variables",
+        false,
         env))
     {
         abort();
@@ -353,6 +355,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_ln_at_sign,
         2,
         "Get reference to a value in a given collection at the given index",
+        true,
         env))
     {
         abort();
@@ -365,6 +368,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_cp_at_sign,
         2,
         "Get copy of a value in a given collection at the given index",
+        true,
         env))
     {
         abort();
@@ -377,6 +381,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_require,
         1,
         "Ensure that plugin is loaded (if dern is compiled with plugin support)",
+        false,
         env))
     {
         abort();
@@ -389,6 +394,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_input_file_open,
         1,
         "Open file-port for reading only",
+        false,
         env))
     {
         abort();
@@ -401,6 +407,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_output_file_open,
         1,
         "Open file-port for writing only",
+        false,
         env))
     {
         abort();
@@ -413,6 +420,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_io_file_open,
         1,
         "Open file-port for input and output",
+        false,
         env))
     {
         abort();
@@ -425,6 +433,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_port_supports_output_question_mark,
         1,
         "Predicate telling whether the given port supports writing or not",
+        false,
         env))
     {
         abort();
@@ -437,6 +446,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_port_supports_input_question_mark,
         1,
         "Predicate telling whether the given port supports reading or not",
+        false,
         env))
     {
         abort();
@@ -449,6 +459,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_port_close,
         1,
         "Close a port",
+        false,
         env))
     {
         abort();
@@ -461,6 +472,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_port_read,
         1,
         "Read from a port one or a given number of octets",
+        false,
         env))
     {
         abort();
@@ -473,6 +485,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_port_write,
         1,
         "Write one integer or all integers from a vector to a port supporting writing",
+        false,
         env))
     {
         abort();
@@ -486,6 +499,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         1,
         "Seek to a position from the beginning (positive integer) or "
         "from the end (negative integer) on ports supporting seeking",
+        false,
         env))
     {
         abort();
@@ -498,6 +512,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_port_dist,
         1,
         "Get distance from the beginning on ports that support it, or minus one",
+        false,
         env))
     {
         abort();
@@ -510,6 +525,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_port_length,
         1,
         "Get size of port in octets on ports that support this operation, or minus one",
+        false,
         env))
     {
         abort();
@@ -522,6 +538,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_port_flush,
         1,
         "Flush an output port that supports flushing",
+        false,
         env))
     {
         abort();
@@ -534,6 +551,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_not,
         1,
         "Reverse boolean value",
+        true,
         env))
     {
         abort();
@@ -546,6 +564,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_abort,
         1,
         "Quit execution with error message",
+        false,
         env))
     {
         abort();
@@ -558,6 +577,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_return,
         1,
         "Return from function early with the given value",
+        false,
         env))
     {
         abort();
@@ -570,6 +590,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_vector,
         1,
         "Create new vector of the given values.",
+        true,
         env))
     {
         abort();
@@ -584,6 +605,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         "Evaluate values until 'false' is found. Any remaining values are not evaluated. "
         "Return the last evaluated value. "
         "If there are no values, then 'true' is returned.",
+        true,
         env))
     {
         abort();
@@ -598,6 +620,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         "Evaluate values until 'true' is found. Any remaining values are not evaluated. "
         "Return the last evaluated value. "
         "If there are no values, then 'false' is returned.",
+        true,
         env))
     {
         abort();
@@ -610,6 +633,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_special_do,
         1,
         "Evaluate sequence of values and return the value of the last evaluation",
+        false,
         env))
     {
         abort();
@@ -622,6 +646,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_starts_with_question_mark,
         1,
         "Does the first value start with the second?",
+        true,
         env))
     {
         abort();
@@ -634,6 +659,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_equals,
         1,
         "Set atomic values, or elements of collections (vector, map, string) at the given index/key",
+        false,
         env))
     {
         abort();
@@ -648,6 +674,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_string_format,
         1,
         "Create new string and allow formatting of value into it using {}",
+        true,
         env))
     {
         abort();
@@ -660,6 +687,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_to_string,
         1,
         "Give value or values as string(s)",
+        true,
         env))
     {
         abort();
@@ -672,6 +700,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_to_integer,
         1,
         "Give value or values as integer(s)",
+        true,
         env))
     {
         abort();
@@ -684,6 +713,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_print,
         0,
         "Print message for the user",
+        false,
         env))
     {
         abort();
@@ -696,6 +726,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_println,
         0,
         "Print message for the user and newline",
+        false,
         env))
     {
         abort();
@@ -708,6 +739,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_env_new,
         0,
         "Create new empty environment",
+        false,
         env))
     {
         abort();
@@ -720,6 +752,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_env_current,
         0,
         "Get the current environment used by the context where this is evaluated",
+        false,
         env))
     {
         abort();
@@ -732,6 +765,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_env_global,
         0,
         "Get the global environment",
+        false,
         env))
     {
         abort();
@@ -744,6 +778,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_minus_equals,
         1,
         "Subtract value or values from the first argument (modify it)",
+        false,
         env))
     {
         abort();
@@ -756,6 +791,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_plus_equals,
         1,
         "Add value or values into the first argument (modify it)",
+        false,
         env))
     {
         abort();
@@ -768,6 +804,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_plus_plus,
         1,
         "Increase a value or values by one",
+        false,
         env))
     {
         abort();
@@ -780,6 +817,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_minus_minus,
         1,
         "Decrease a value or values by one",
+        false,
         env))
     {
         abort();
@@ -792,6 +830,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_pop_front,
         1,
         "Remove first element of a vector",
+        true,
         env))
     {
         abort();
@@ -804,6 +843,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_mod,
         1,
         "Calculate modulo of two integers",
+        true,
         env))
     {
         abort();
@@ -816,6 +856,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_slash,
         1,
         "Divide number arguments",
+        true,
         env))
     {
         abort();
@@ -828,6 +869,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_times,
         1,
         "Multiply number arguments",
+        true,
         env))
     {
         abort();
@@ -840,6 +882,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_plus,
         1,
         "Add arguments to create new value",
+        true,
         env))
     {
         abort();
@@ -852,6 +895,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_minus,
         1,
         "Subtract number arguments, or negate one argument",
+        true,
         env))
     {
         abort();
@@ -864,6 +908,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_find,
         2,
         "Find value from collection",
+        true,
         env))
     {
         abort();
@@ -876,6 +921,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_split,
         2,
         "Split a collection by value",
+        true,
         env))
     {
         abort();
@@ -889,6 +935,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_hash_map,
         0,
         "Create new hash map",
+        true,
         env))
      {
         abort();
@@ -901,6 +948,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_queue,
         0,
         "Create new queue",
+        true,
         env))
     {
         abort();
@@ -913,6 +961,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_queue_with_max_length,
         0,
         "Create new queue with maximum length",
+        true,
         env))
     {
         abort();
@@ -925,6 +974,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_list,
         0,
         "Create new list",
+        true,
         env))
     {
         abort();
@@ -937,6 +987,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_exit,
         0,
         "Quit and exit the vm execution or REPL",
+        false,
         env))
     {
         abort();
@@ -949,6 +1000,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_doc,
         1,
         "Get documentation string of a value or values",
+        true,
         env))
     {
         abort();
@@ -961,6 +1013,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_len,
         1,
         "Get length of a value or values",
+        true,
         env))
     {
         abort();
@@ -973,6 +1026,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_read_and_eval_path,
         1,
         "Read and evaluate a file from the given path",
+        false,
         env))
     {
         abort();
@@ -985,6 +1039,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_read_and_eval_string,
         1,
         "Read and evaluate the given string",
+        true,
         env))
     {
         abort();
@@ -997,6 +1052,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_copy,
         1,
         "Create full or partial copy of a value",
+        true,
         env))
     {
         abort();
@@ -1014,6 +1070,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_special_define,
         3,
         "Bind value to name and document the binding",
+        false,
         env))
     {
         abort();
@@ -1026,6 +1083,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_special_eval,
         1,
         "Evaluate a value (first argument) in global environment or, if given, in then given environment",
+        true,
         env))
     {
         abort();
@@ -1038,6 +1096,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_special_quote,
         1,
         "Quote a value",
+        true,
         env))
     {
         abort();
@@ -1050,6 +1109,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_special_select,
         1,
         "Select one of values, default, or no value and evaluate it according to boolean test",
+        true,
         env))
     {
         abort();
@@ -1062,6 +1122,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_special_if,
         1,
         "Select value or no value and evaluate it according to boolean test",
+        true,
         env))
     {
         abort();
@@ -1074,6 +1135,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_special_while,
         2,
         "Evaluate values repeatedly as long as predicate is true",
+        true,
         env))
     {
         abort();
@@ -1086,6 +1148,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_special_for,
         3, // or 5
         "Evaluate values repeatedly over a numeric range or container",
+        true,
         env))
     {
         abort();
@@ -1101,6 +1164,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         "Predicate telling whether all the given values are equal. "
         "Takes 2..n arguments. Evaluates arguments only as long as those are equal. "
         "Does not evaluate rest of the arguments if one is not equal",
+        true,
         env))
     {
         abort();
@@ -1116,6 +1180,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         "Predicate telling whether all the given values are not equal. "
         "Takes 2..n arguments. Evaluates arguments only as long as unequal is not found. "
         "Does not evaluate rest of the arguments if one is unequal",
+        true,
         env))
     {
         abort();
@@ -1130,6 +1195,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         "Predicate telling whether the arguments are less than the previous argument. "
         "Takes 2..n arguments. Evaluates arguments only as long as those are less than the previous. "
         "Does not evaluate rest of the arguments if one is larger or equal",
+        true,
         env))
     {
         abort();
@@ -1144,6 +1210,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         "Predicate telling whether the arguments are greater than the previous argument. "
         "Takes 2..n arguments. Evaluates arguments only as long as those are greater than the previous. "
         "Does not evaluate rest of the arguments if one is smaller or equal",
+        true,
         env))
     {
         abort();
@@ -1158,6 +1225,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         "Predicate telling whether the arguments are equal or less than the previous argument. "
         "Takes 2..n arguments. Evaluates arguments only as long as those are equal or less than the previous. "
         "Does not evaluate rest of the arguments if one is larger",
+        true,
         env))
     {
         abort();
@@ -1172,6 +1240,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         "Predicate telling whether the arguments are equal or greater than the previous argument. "
         "Takes 2..n arguments. Evaluates arguments only as long as those are equal or greater than "
         "the previous. Does not evaluate rest of the arguments if one is smaller",
+        true,
         env))
     {
         abort();
@@ -1184,6 +1253,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_special_fn,
         2,
         "Create new anonymous function",
+        true,
         env))
     {
         abort();
@@ -1196,6 +1266,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_uid,
         2,
         "Get unique id of a value",
+        false,
         env))
     {
         abort();
@@ -1208,6 +1279,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_integer_question_mark,
         1,
         "Predicate telling whether the argument is an integer",
+        true,
         env))
     {
         abort();
@@ -1220,6 +1292,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_real_question_mark,
         1,
         "Predicate telling whether the argument is a real",
+        true,
         env))
     {
         abort();
@@ -1232,6 +1305,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_number_question_mark,
         1,
         "Predicate telling whether the argument is a number (integer or real)",
+        true,
         env))
     {
         abort();
@@ -1244,6 +1318,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_nil_question_mark,
         1,
         "Predicate telling whether the argument is nil",
+        true,
         env))
     {
         abort();
@@ -1256,6 +1331,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_boolean_question_mark,
         1,
         "Predicate telling whether the argument is a boolean",
+        true,
         env))
     {
         abort();
@@ -1268,6 +1344,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_character_question_mark,
         1,
         "Predicate telling whether the argument is a character",
+        true,
         env))
     {
         abort();
@@ -1280,6 +1357,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_string_question_mark,
         1,
         "Predicate telling whether the argument is a string",
+        true,
         env))
     {
         abort();
@@ -1292,6 +1370,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_symbol_question_mark,
         1,
         "Predicate telling whether the argument is a symbol",
+        true,
         env))
     {
         abort();
@@ -1304,6 +1383,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_vector_question_mark,
         1,
         "Predicate telling whether the argument is a vector",
+        true,
         env))
     {
         abort();
@@ -1316,6 +1396,20 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_hash_map_question_mark,
         1,
         "Predicate telling whether the argument is a hash map",
+        true,
+        env))
+    {
+        abort();
+    }
+
+    // howto
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "howto",
+        octaspire_dern_vm_builtin_howto,
+        1,
+        "Suggest functions by giving arguments and expected result",
+        true,
         env))
     {
         abort();
@@ -1422,6 +1516,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(octasp
     result->docstr                         = 0;
     result->vm                             = self;
     result->uniqueId                       = self->nextFreeUniqueIdForValues;
+    result->howtoAllowed                   = false;
 
     if (self->nextFreeUniqueIdForValues == UINTMAX_MAX)
     {
@@ -2022,6 +2117,7 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_special(
 
     octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_SPECIAL);
     result->value.special = value;
+    result->howtoAllowed = octaspire_dern_special_is_howto_allowed(value);
 
     octaspire_dern_vm_push_value(self, result);
 
@@ -2041,6 +2137,7 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_builtin(
 
     octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_BUILTIN);
     result->value.builtin = value;
+    result->howtoAllowed = octaspire_dern_builtin_is_howto_allowed(value);
 
     octaspire_dern_vm_push_value(self, result);
 
@@ -3332,6 +3429,7 @@ bool octaspire_dern_vm_create_and_register_new_builtin(
     octaspire_dern_c_function const funcPointer,
     size_t const numRequiredActualArguments,
     char const * const docStr,
+    bool const howtoAllowed,
     octaspire_dern_environment_t * const targetEnv)
 {
     octaspire_helpers_verify_not_null(self);
@@ -3339,8 +3437,13 @@ bool octaspire_dern_vm_create_and_register_new_builtin(
 
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
 
-    octaspire_dern_builtin_t * const builtin =
-        octaspire_dern_builtin_new(funcPointer, self->allocator, numRequiredActualArguments);
+    octaspire_dern_builtin_t * const builtin = octaspire_dern_builtin_new(
+        funcPointer,
+        self->allocator,
+        name,
+        numRequiredActualArguments,
+        docStr,
+        howtoAllowed);
 
     if (!builtin)
     {
@@ -3380,12 +3483,18 @@ bool octaspire_dern_vm_create_and_register_new_special(
     octaspire_dern_c_function const funcPointer,
     size_t const numRequiredActualArguments,
     char const * const docStr,
+    bool const howtoAllowed,
     octaspire_dern_environment_t * const targetEnv)
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
 
-    octaspire_dern_special_t * const special =
-        octaspire_dern_special_new(funcPointer, self->allocator, numRequiredActualArguments);
+    octaspire_dern_special_t * const special = octaspire_dern_special_new(
+        funcPointer,
+        self->allocator,
+        name,
+        numRequiredActualArguments,
+        docStr,
+        howtoAllowed);
 
     if (!special)
     {
@@ -3578,6 +3687,14 @@ octaspire_dern_value_t *octaspire_dern_vm_find_from_value(
                     key->value.string,
                     0,
                     octaspire_container_utf8_string_get_length_in_ucs_characters(key->value.string));
+
+                if (!foundIndices)
+                {
+                    octaspire_helpers_verify_true(
+                        stackLength == octaspire_dern_vm_get_stack_length(self));
+
+                    return octaspire_dern_vm_create_new_value_vector(self);
+                }
 
                 octaspire_dern_value_t * const result =
                     octaspire_dern_vm_helper_create_new_value_vector_of_integers_from_vector_of_size_t(

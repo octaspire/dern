@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.221.0
+Documentation for Octaspire Dern programming language version 0.223.0
 
 == About
 
@@ -15,7 +15,8 @@ Documentation for Octaspire Dern programming language version 0.221.0
 <a href="https://choosealicense.com/licenses/apache-2.0/"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License badge" /></a>
 ++++
 
-Octaspire Dern is a programming language. It is a dialect of Lisp, having taken influences from
+Octaspire Dern is a extensible self documenting programming language.
+It is a dialect of Lisp, having taken influences from
 languages scheme, emacs lisp and C. The name of the language means
 an *obscure language*. footnote:[https://en.wiktionary.org/wiki/dern]
 
@@ -25,13 +26,19 @@ Dern should support imperative and functional programming. It has atomic types
 *special* and *builtin*. As non-atomic type it has *vector*. So, where in scheme `'(1 2 3)`
 is a list, in Dern it is a vector.
 
-Every variable and function definition in Dern must be documented by a *documentation string*.
-Dern also makes sure that every formal function parameter is documented in the
-documentation of function definition. The documentation can be accessed with *doc*-function.
+Every variable and function definition in Dern must be documented by a
+*documentation string*. Dern also makes sure that every formal function
+parameter is documented in the documentation of function definition.
+The documentation can be accessed with *doc*-function. *howto* is
+another useful function. You can give it examples of function arguments
+and expected result and it will tell you what functions you can call to
+get the expected result from the given arguments.
 
 Dern can also be extended with functions written in C; C-functions can be registered
 as *builtins* or *specials*. Arguments to builtins are evaluated normally, but to specials
-are not, so specials can be used to implement special forms like *if*, etc.
+are not, so specials can be used to implement special forms like *if*, etc. When
+defining your own builtins and specials, you can tell Dern whether the function
+can be tested by *howto* or not.
 
 Dern has also library system, that allows one to load libraries using builtin `require`.
 On Unix-like systems Dern also supports loading of binary libraries (.so files). For the
@@ -644,6 +651,23 @@ Here are few examples:
 (env-current)
 (env-new)
 ----
+
+
+
+== Getting help with `howto`
+
+Here is small example:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(howto 1 2 3)
+(howto [a] [b] [ab)
+----
+
+
 
 
 == Returning from functions early
