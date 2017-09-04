@@ -48,6 +48,7 @@ bool mylib_init(octaspire_dern_vm_t * const vm, octaspire_dern_environment_t * c
         mylib_say,
         1,
         "mylib says something",
+        false,
         targetEnv))
     {
         return false;
