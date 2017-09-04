@@ -579,6 +579,7 @@ bool dern_socket_init(
             "\n"
             "SEE ALSO\n"
             "socket-close",
+            false,
             targetEnv))
     {
         return false;
@@ -608,6 +609,7 @@ bool dern_socket_init(
             "\n"
             "SEE ALSO\n"
             "socket-new-ipv4-stream-socket",
+            false,
             targetEnv))
     {
         return false;
@@ -637,6 +639,7 @@ bool dern_socket_init(
             "\n"
             "SEE ALSO\n"
             "socket-new-ipv4-stream-socket",
+            false,
             targetEnv))
     {
         return false;
@@ -667,6 +670,7 @@ bool dern_socket_init(
             "\n"
             "SEE ALSO\n"
             "socket-close, socket-send",
+            false,
             targetEnv))
     {
         return false;
@@ -697,6 +701,7 @@ bool dern_socket_init(
             "\n"
             "SEE ALSO\n"
             "socket-close, socket-receive",
+            false,
             targetEnv))
     {
         return false;

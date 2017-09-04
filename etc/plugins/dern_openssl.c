@@ -530,6 +530,7 @@ bool dern_openssl_init(
             "\n"
             "SEE ALSO\n"
             "openssl-close-ssl-connection",
+            false,
             targetEnv))
     {
         return false;
@@ -559,6 +560,7 @@ bool dern_openssl_init(
             "\n"
             "SEE ALSO\n"
             "openssl-new-ssl-connect, openssl-connection-write",
+            false,
             targetEnv))
     {
         return false;
@@ -589,6 +591,7 @@ bool dern_openssl_init(
             "\n"
             "SEE ALSO\n"
             "openssl-new-ssl-connect, openssl-connection-read",
+            false,
             targetEnv))
     {
         return false;
@@ -618,6 +621,7 @@ bool dern_openssl_init(
             "\n"
             "SEE ALSO\n"
             "openssl-new-ssl-connect",
+            false,
             targetEnv))
     {
         return false;

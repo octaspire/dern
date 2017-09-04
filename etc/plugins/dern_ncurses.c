@@ -1702,6 +1702,7 @@ bool dern_ncurses_init(
             dern_ncurses_getmaxyx,
             0,
             "(ncurses-getmaxyx <optional window>) -> '(rows, cols)",
+            true,
             targetEnv))
     {
         return false;
@@ -1713,6 +1714,7 @@ bool dern_ncurses_init(
             dern_ncurses_getch,
             0,
             "(getch) -> <utf-8 character> or <symbol for a special key>",
+            false,
             targetEnv))
     {
         return false;
@@ -1724,6 +1726,7 @@ bool dern_ncurses_init(
             dern_ncurses_getstr,
             0,
             "(getsr) -> utf-8 string",
+            false,
             targetEnv))
     {
         return false;
@@ -1735,6 +1738,7 @@ bool dern_ncurses_init(
             dern_ncurses_initscr,
             0,
             "(initscr) -> C data window",
+            false,
             targetEnv))
     {
         return false;
@@ -1746,6 +1750,7 @@ bool dern_ncurses_init(
             dern_ncurses_set_raw,
             0,
             "(ncurses-set-raw boolean) -> boolean",
+            false,
             targetEnv))
     {
         return false;
@@ -1757,6 +1762,7 @@ bool dern_ncurses_init(
             dern_ncurses_set_timeout,
             0,
             "(ncurses-set-timeout number) -> integer",
+            false,
             targetEnv))
     {
         return false;
@@ -1768,6 +1774,7 @@ bool dern_ncurses_init(
             dern_ncurses_set_cbreak,
             0,
             "(ncurses-set-cbreak boolean) -> boolean",
+            false,
             targetEnv))
     {
         return false;
@@ -1779,6 +1786,7 @@ bool dern_ncurses_init(
             dern_ncurses_set_echo,
             0,
             "(ncurses-set-echo boolean) -> boolean",
+            false,
             targetEnv))
     {
         return false;
@@ -1790,6 +1798,7 @@ bool dern_ncurses_init(
             dern_ncurses_set_nl,
             1,
             "(ncurses-set-nl boolean) -> nil",
+            false,
             targetEnv))
     {
         return false;
@@ -1801,6 +1810,7 @@ bool dern_ncurses_init(
             dern_ncurses_set_cursor,
             1,
             "(ncurses-set-cursor boolean) -> symbol of previous mode or error string",
+            false,
             targetEnv))
     {
         return false;
@@ -1812,6 +1822,7 @@ bool dern_ncurses_init(
             dern_ncurses_set_keypad,
             0,
             "(ncurses-set-keypad window boolean) -> boolean",
+            false,
             targetEnv))
     {
         return false;
@@ -1823,6 +1834,7 @@ bool dern_ncurses_init(
             dern_ncurses_erase,
             0,
             "(ncurses-erase window) -> boolean",
+            false,
             targetEnv))
     {
         return false;
@@ -1834,6 +1846,7 @@ bool dern_ncurses_init(
             dern_ncurses_clear,
             0,
             "(ncurses-clear window) -> boolean",
+            false,
             targetEnv))
     {
         return false;
@@ -1876,6 +1889,7 @@ bool dern_ncurses_init(
             "\n"
             "SEE ALSO\n"
             "string-format",
+            false,
             targetEnv))
     {
         return false;
@@ -1905,6 +1919,7 @@ bool dern_ncurses_init(
             "\n"
             "SEE ALSO\n"
             "",
+            false,
             targetEnv))
     {
         return false;
@@ -1934,6 +1949,7 @@ bool dern_ncurses_init(
             "\n"
             "SEE ALSO\n"
             "",
+            false,
             targetEnv))
     {
         return false;
@@ -1963,6 +1979,7 @@ bool dern_ncurses_init(
             "\n"
             "SEE ALSO\n"
             "",
+            false,
             targetEnv))
     {
         return false;
@@ -1975,6 +1992,7 @@ bool dern_ncurses_init(
             dern_ncurses_init_color,
             0,
             "ncurses-init-color",
+            false,
             targetEnv))
     {
         return false;
@@ -2004,6 +2022,7 @@ bool dern_ncurses_init(
             "\n"
             "SEE ALSO\n"
             "",
+            false,
             targetEnv))
     {
         return false;
@@ -2033,6 +2052,7 @@ bool dern_ncurses_init(
             "\n"
             "SEE ALSO\n"
             "",
+            false,
             targetEnv))
     {
         return false;
@@ -2045,6 +2065,7 @@ bool dern_ncurses_init(
             dern_ncurses_refresh,
             0,
             "refresh",
+            false,
             targetEnv))
     {
         return false;
@@ -2056,6 +2077,7 @@ bool dern_ncurses_init(
             dern_ncurses_endwin,
             0,
             "endwin",
+            false,
             targetEnv))
     {
         return false;
