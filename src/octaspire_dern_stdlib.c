@@ -7876,7 +7876,12 @@ bool octaspire_dern_stdlib_private_builtin_howto_helper(
                      ++i)
                 {
                     octaspire_dern_value_t * const tmpArg =
-                        octaspire_dern_value_as_vector_get_element_at(expectedArgs, i);
+                        octaspire_dern_vm_create_new_value_copy(
+                            vm,
+                            octaspire_dern_value_as_vector_get_element_at(
+                                expectedArgs,
+                                i));
+                        //octaspire_dern_value_as_vector_get_element_at(expectedArgs, i);
 
                     octaspire_dern_value_as_vector_push_back_element(form, &tmpArg);
                 }
