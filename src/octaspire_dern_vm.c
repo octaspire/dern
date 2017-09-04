@@ -1402,11 +1402,12 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // TODO move to specials
     // howto
-    if (!octaspire_dern_vm_create_and_register_new_builtin(
+    if (!octaspire_dern_vm_create_and_register_new_special(
         self,
         "howto",
-        octaspire_dern_vm_builtin_howto,
+        octaspire_dern_vm_special_howto,
         1,
         "Suggest functions by giving arguments and expected result",
         true,

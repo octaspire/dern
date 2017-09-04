@@ -7822,7 +7822,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_host_get_environment_variables
 
 
 
-bool octaspire_dern_stdlib_private_builtin_howto_helper(
+bool octaspire_dern_stdlib_private_special_howto_helper(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t * const expectedArgs,
     octaspire_dern_value_t * const expectedtResult,
@@ -7924,7 +7924,7 @@ bool octaspire_dern_stdlib_private_builtin_howto_helper(
     return true;
 }
 
-octaspire_dern_value_t *octaspire_dern_vm_builtin_howto(
+octaspire_dern_value_t *octaspire_dern_vm_special_howto(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment)
@@ -7990,7 +7990,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_howto(
         octaspire_container_vector_push_back_element(counts, &zero);
     }
 
-    octaspire_dern_stdlib_private_builtin_howto_helper(
+    octaspire_dern_stdlib_private_special_howto_helper(
         vm,
         exampleArgs,
         exampleResult,
@@ -8020,7 +8020,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_howto(
                     i));
             }
 
-            octaspire_dern_stdlib_private_builtin_howto_helper(
+            octaspire_dern_stdlib_private_special_howto_helper(
                 vm,
                 exampleArgs,
                 exampleResult,
