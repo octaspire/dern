@@ -202,10 +202,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "73"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "74"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.73.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.74.0"
 
 
 
@@ -19510,10 +19510,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "224"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "2"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "225"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.224.2"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.225.0"
 
 
 
@@ -21320,7 +21320,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_host_get_environment_variables
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
-octaspire_dern_value_t *octaspire_dern_vm_builtin_howto(
+octaspire_dern_value_t *octaspire_dern_vm_special_howto(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
@@ -33036,7 +33036,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_host_get_environment_variables
 
 
 
-bool octaspire_dern_stdlib_private_builtin_howto_helper(
+bool octaspire_dern_stdlib_private_special_howto_helper(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t * const expectedArgs,
     octaspire_dern_value_t * const expectedtResult,
@@ -33090,7 +33090,12 @@ bool octaspire_dern_stdlib_private_builtin_howto_helper(
                      ++i)
                 {
                     octaspire_dern_value_t * const tmpArg =
-                        octaspire_dern_value_as_vector_get_element_at(expectedArgs, i);
+                        octaspire_dern_vm_create_new_value_copy(
+                            vm,
+                            octaspire_dern_value_as_vector_get_element_at(
+                                expectedArgs,
+                                i));
+                        //octaspire_dern_value_as_vector_get_element_at(expectedArgs, i);
 
                     octaspire_dern_value_as_vector_push_back_element(form, &tmpArg);
                 }
@@ -33133,7 +33138,7 @@ bool octaspire_dern_stdlib_private_builtin_howto_helper(
     return true;
 }
 
-octaspire_dern_value_t *octaspire_dern_vm_builtin_howto(
+octaspire_dern_value_t *octaspire_dern_vm_special_howto(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment)
@@ -33199,7 +33204,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_howto(
         octaspire_container_vector_push_back_element(counts, &zero);
     }
 
-    octaspire_dern_stdlib_private_builtin_howto_helper(
+    octaspire_dern_stdlib_private_special_howto_helper(
         vm,
         exampleArgs,
         exampleResult,
@@ -33229,7 +33234,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_howto(
                     i));
             }
 
-            octaspire_dern_stdlib_private_builtin_howto_helper(
+            octaspire_dern_stdlib_private_special_howto_helper(
                 vm,
                 exampleArgs,
                 exampleResult,
@@ -38298,11 +38303,12 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // TODO move to specials
     // howto
-    if (!octaspire_dern_vm_create_and_register_new_builtin(
+    if (!octaspire_dern_vm_create_and_register_new_special(
         self,
         "howto",
-        octaspire_dern_vm_builtin_howto,
+        octaspire_dern_vm_special_howto,
         1,
         "Suggest functions by giving arguments and expected result",
         true,
