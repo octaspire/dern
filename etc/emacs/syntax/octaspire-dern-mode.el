@@ -22,7 +22,8 @@
                        "read-and-eval-string" "return" "select" "starts-with?"
                        "string-format" "to-integer" "to-string" "uid" "vector" "while"
                        "output-file-open" "port-supports-output?" "port-supports-input?" "require"
-                       "queue" "queue-with-max-length" "list" "howto"
+                       "queue" "queue-with-max-length" "list" "howto" "howto-ok" "howto-no" "as"
+                       "in"
                        ) t) "\\_>") font-lock-builtin-face)
    (cons (regexp-opt '("nil" "false" "true") t) font-lock-constant-face)
    (cons "\\('\\w*'\\)" font-lock-variable-name-face)

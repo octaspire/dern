@@ -1,30 +1,30 @@
 (require 'dern_ncurses)
 (require 'dern_socket)
 
-(define win [win] (ncurses-initscr))
+(define win as (ncurses-initscr) [win])
 (ncurses-set-keypad win true)
 (ncurses-set-cbreak true)
 
-(define running [should this program be running] true)
-(define current-channel  [currently joined channel] nil)
-(define current-username [username] [])
-(define current-realname [realname] [])
-(define socket [socket] nil)
-(define num-rows-and-cols [number of rows and cols on screen] (ncurses-getmaxyx win))
-(define maxlines [maxlines] (- (cp@ num-rows-and-cols 0) 3))
-(define lines [messages] (queue-with-max-length maxlines))
-(define hint [hint] [])
-(define title [title] [])
-(define debug [is debug mode on] false)
+(define running           as true                             [should this program be running])
+(define current-channel   as nil                              [currently joined channel])
+(define current-username  as []                               [username])
+(define current-realname  as []                               [realname])
+(define socket            as nil                              [socket])
+(define num-rows-and-cols as (ncurses-getmaxyx win)           [number of rows and cols on screen] )
+(define maxlines          as (- (cp@ num-rows-and-cols 0) 3)  [maxlines] )
+(define lines             as (queue-with-max-length maxlines) [messages] )
+(define hint              as []                               [hint])
+(define title             as []                               [title])
+(define debug             as false                            [is debug mode on])
 
-(define PAIR-BORDER          [PAIR-BORDER]          1)
-(define PAIR-PROMPT          [PAIR-PROMPT]          2)
-(define PAIR-INPUT           [PAIR-INPUT]           3)
-(define PAIR-OTHER           [PAIR-OTHER]           4)
-(define PAIR-DEBUG           [PAIR-DEBUG]           5)
-(define PAIR-USER            [PAIR-USER]            6)
-(define PAIR-MESSAGE         [PAIR-MESSAGE]         7)
-(define PAIR-PRIVATE-MESSAGE [PAIR-PRIVATE-MESSAGE] 8)
+(define PAIR-BORDER          as 1 [PAIR-BORDER])
+(define PAIR-PROMPT          as 2 [PAIR-PROMPT])
+(define PAIR-INPUT           as 3 [PAIR-INPUT])
+(define PAIR-OTHER           as 4 [PAIR-OTHER])
+(define PAIR-DEBUG           as 5 [PAIR-DEBUG])
+(define PAIR-USER            as 6 [PAIR-USER])
+(define PAIR-MESSAGE         as 7 [PAIR-MESSAGE])
+(define PAIR-PRIVATE-MESSAGE as 8 [PAIR-PRIVATE-MESSAGE])
 
 (if (ncurses-has-colors)
     (do
@@ -39,73 +39,77 @@
       (ncurses-init-pair PAIR-PRIVATE-MESSAGE 'YELLOW 'BLACK)
       ))
 
-(define set-current-channel [set current channel] '(channel [channel]) (fn (channel)
+(define set-current-channel as (fn (channel)
     (= current-channel channel)
+    (if (== current-channel nil) (set-title [-]) (set-title current-channel)))
+  [set current channel] '(channel [channel]) howto-no)
 
-    (if (== current-channel nil) (set-title [-]) (set-title current-channel))))
-
-(define leave-current-channel [leave the current channel] '() (fn ()
-    (define message [message] (string-format [PART {}|newline|] current-channel))
+(define leave-current-channel as (fn ()
+    (define message as (string-format [PART {}|newline|] current-channel) [message])
     (socket-send socket message)
-    (set-current-channel nil)))
+    (set-current-channel nil))
+  [leave the current channel] '() howto-no)
 
-(define substr [substr] '(str [str] startIndex [startIndex]) (fn (str startIndex)
-    (define result [result] [])
+(define substr as (fn (str startIndex)
+    (define result as [] [result])
 
     (if (>= startIndex (len str)) (return result))
 
     (for i from startIndex to (- (len str) 1)
          (+= result (cp@ str i)))
-    result))
+    result)
+  [substr] '(str [str] startIndex [startIndex]) howto-no)
 
-(define handle-nick [handle /nick] '(line [line of text starting with /nick]) (fn (line)
+(define handle-nick as (fn (line)
     (= current-username (substr line 6))
-    (send-user-data)))
+    (send-user-data))
+  [handle /nick] '(line [line of text starting with /nick]) howto-no)
 
-(define handle-join [handle /join] '(line [line of text starting with /join]) (fn (line)
+(define handle-join as (fn (line)
     (if (== current-username [])
       (do (set-hint [Please set a nick first by using /nick or /user]) (return)))
 
-    (define channel [channel] (substr line 6))
+    (define channel as (substr line 6) [channel])
 
-    (define message [message] (string-format [JOIN {}|newline|] channel))
+    (define message as (string-format [JOIN {}|newline|] channel) [message])
     (socket-send socket message)
 
-    (set-current-channel channel)))
+    (set-current-channel channel))
+  [handle /join] '(line [line of text starting with /join]) howto-no)
 
-(define handle-msg [handle /msg] '(line [line of text starting with /msg]) (fn (line)
-    (define restOfLine [line without /msg] (substr line 5))
+(define handle-msg as (fn (line)
+    (define restOfLine as (substr line 5) [line without /msg])
 
-    (define tokens [line split by space] (split restOfLine | |))
+    (define tokens as (split restOfLine | |) [line split by space])
 
     (if (< (len tokens) 2) (do (set-hint [/msg expect target name and message]) (return)))
 
-    (define target [target]  (ln@ tokens 0))
-    (define msgtxt [msgtxt] [])
+    (define target as (ln@ tokens 0) [target] )
+    (define msgtxt as [] [msgtxt])
 
     (for i from 1 to (- (len tokens) 1)
          (+= msgtxt (ln@ tokens i))
          (if (< i (- (len tokens) 1)) (+= msgtxt | |)))
 
-    (define message [message] (string-format [PRIVMSG {} :{}|newline|] target msgtxt))
+    (define message as (string-format [PRIVMSG {} :{}|newline|] target msgtxt) [message])
     (socket-send socket message)
-    (push-text-to-lines 'PRIVATE-MESSAGE (string-format [<---------------You---------------> {}] msgtxt))))
+    (push-text-to-lines 'PRIVATE-MESSAGE (string-format [<---------------You---------------> {}] msgtxt)))
+  [handle /msg] '(line [line of text starting with /msg]) howto-no)
 
-(define set-hint [set-hint] '(h [new hint]) (fn (h)
+(define set-hint as (fn (h)
     (= hint [--])
     (+= hint h)
-    (for i from (len hint) to (- (cp@ num-rows-and-cols 1) 1) (+= hint |-|))))
+    (for i from (len hint) to (- (cp@ num-rows-and-cols 1) 1) (+= hint |-|)))
+  [set-hint] '(h [new hint]) howto-no)
 
-(define handle-connect [handle /connect] '(line [line of text starting with /connect]) (fn (line)
+(define handle-connect as (fn (line)
     (if (== current-username [])
       (do (set-hint [Please set a nick first by using /nick or nick and a real name using /user]) (return)))
 
-    (define restOfLine [line without /connect] (substr line 9))
-
-    (define tokens [line split by space] (split restOfLine | |))
-
-    (define address [address] [localhost])
-    (define portnum [portnum] 6667)
+    (define restOfLine as (substr line 9)        [line without /connect])
+    (define tokens     as (split restOfLine | |) [line split by space] )
+    (define address    as [localhost]            [address])
+    (define portnum    as 6667                   [portnum])
 
     (if (>= (len tokens) 1) (= address (ln@ tokens 0)))
     (if (>= (len tokens) 2) (= portnum (ln@ tokens 1)))
@@ -113,7 +117,7 @@
     (= portnum (to-integer portnum))
 
     ; Sockets cannot be copied with '='
-    (define (env-global) socket [socket] (socket-new-ipv4-stream-socket address portnum))
+    (define socket as (socket-new-ipv4-stream-socket address portnum) [socket] in (env-global))
 
     (if (string? socket)
       (do
@@ -125,18 +129,20 @@
     (send-user-data)
     (read-socket)
 
-    (set-hint (string-format [connected to {} at port {}] address portnum))))
+    (set-hint (string-format [connected to {} at port {}] address portnum)))
+  [handle /connect] '(line [line of text starting with /connect]) howto-no)
 
-(define send-user-data [send nick and possible real name to server] '() (fn ()
+(define send-user-data as (fn ()
     (if (== socket nil) (return))
 
     (socket-send socket (string-format [NICK {}|newline|] current-username))
-    (socket-send socket (string-format [USER {} 8 * :{}|newline|] current-username current-realname))))
+    (socket-send socket (string-format [USER {} 8 * :{}|newline|] current-username current-realname)))
+  [send nick and possible real name to server] '() howto-no)
 
-(define handle-user [handle /user] '(line [line of text starting with /user]) (fn (line)
-    (define restOfLine [line without /user] (substr line 6))
+(define handle-user as (fn (line)
+    (define restOfLine as (substr line 6) [line without /user])
 
-    (define tokens [line split by space] (split restOfLine | |))
+    (define tokens as (split restOfLine | |) [line split by space])
 
     (= current-username (cp@ tokens 0))
     (= current-realname [])
@@ -146,9 +152,10 @@
              (+= current-realname (cp@ tokens i))
              (if (< i (- (len tokens) 1)) (+= current-realname | |))))
 
-    (send-user-data)))
+    (send-user-data))
+  [handle /user] '(line [line of text starting with /user]) howto-no)
 
-(define handle-command [handle command, for example /join] '(line [line of text starting with /]) (fn (line)
+(define handle-command as (fn (line)
     (if (starts-with? line [/quit])    (do (= running false)       (return)))
     (if (starts-with? line [/debug])   (do (= debug (not debug))   (return)))
     (if (starts-with? line [/connect]) (do (handle-connect line)   (return)))
@@ -162,77 +169,84 @@
     (if (starts-with? line [/msg])     (do (handle-msg     line)   (return)))
     (if (starts-with? line [/part])    (do (leave-current-channel) (return)))
 
-    (set-hint (string-format [Unknown command "{}"] line))))
+    (set-hint (string-format [Unknown command "{}"] line)))
+  [handle command, for example /join] '(line [line of text starting with /]) howto-no)
 
-(define handle-message [handle a line starting without /] '(line [line of text starting with /]) (fn (line)
+(define handle-message as (fn (line)
     (if (== nil current-channel)
       (do
         (set-hint [You must enter a channel first])
         (return)))
 
-    (define message [message] (string-format [PRIVMSG {} :{}|newline|] current-channel line))
+    (define message as (string-format [PRIVMSG {} :{}|newline|] current-channel line) [message])
     (socket-send socket message)
-    (push-text-to-lines 'USER (string-format [<---------------You---------------> {}] line))))
+    (push-text-to-lines 'USER (string-format [<---------------You---------------> {}] line)))
+  [handle a line starting without /] '(line [line of text starting with /]) howto-no)
 
-(define show-title [show title bar] '(t [title message]) (fn (t)
+(define show-title as (fn (t)
     (ncurses-attron 'BOLD)
     (if (ncurses-has-colors) (ncurses-attron PAIR-BORDER))
     (ncurses-print win 0 0 t)
     (if (ncurses-has-colors) (ncurses-attroff PAIR-BORDER))
-    (ncurses-attroff 'BOLD)
-))
+    (ncurses-attroff 'BOLD))
+  [show title bar] '(t [title message]) howto-no)
 
-(define show-hint [show help message] '(h [hint message]) (fn (h)
+(define show-hint as (fn (h)
     (ncurses-attron 'BOLD)
     (if (ncurses-has-colors) (ncurses-attron PAIR-BORDER))
     (ncurses-print win (- (cp@ num-rows-and-cols 0) 2) 0 h)
     (if (ncurses-has-colors) (ncurses-attroff PAIR-BORDER))
-    (ncurses-attroff 'BOLD)
-))
+    (ncurses-attroff 'BOLD))
+  [show help message] '(h [hint message]) howto-no)
 
-(define show-empty-hint [show empty hint line] '() (fn ()
-    (define message [message] (string-format [/{}/{}/] current-username current-realname))
+(define show-empty-hint as (fn ()
+    (define message as (string-format [/{}/{}/] current-username current-realname) [message])
     (if debug (+= message [--debug]))
-    (set-hint message)))
+    (set-hint message))
+  [show empty hint line] '() howto-no)
 
-(define show-empty-title [show empty title line] '() (fn ()
+(define show-empty-title as (fn ()
     (= title [])
-    (for i from 1 to (- (cp@  num-rows-and-cols 1) 1) (+= title |-|))))
+    (for i from 1 to (- (cp@  num-rows-and-cols 1) 1) (+= title |-|)))
+  [show empty title line] '() howto-no)
 
-(define set-title [show title message] '(m [title message]) (fn (m)
+(define set-title as (fn (m)
     (= title (string-format [--{}] m))
-    (for i from (len title) to (- (cp@ num-rows-and-cols 1) 1) (+= title |-|))))
+    (for i from (len title) to (- (cp@ num-rows-and-cols 1) 1) (+= title |-|)))
+  [show title message] '(m [title message]) howto-no)
 
-(define read-and-handle-input [get user input and handle it] '() (fn ()
+(define read-and-handle-input as (fn ()
     (ncurses-attron 'BOLD)
     (ncurses-attron PAIR-PROMPT)
     (ncurses-print win (- (cp@ num-rows-and-cols 0) 1) 0 [> ])
     (ncurses-attroff PAIR-PROMPT)
     (ncurses-attroff 'BOLD)
     (ncurses-attron PAIR-INPUT)
-    (define input [line of text from the user] (ncurses-getstr 1.0))
+    (define input as (ncurses-getstr 1.0) [line of text from the user])
     (ncurses-attroff PAIR-INPUT)
 
     (if (== 0 (len input)) (do (show-empty-hint) (return)))
 
-    (define first-char [first character of user input] (cp@ input 0))
+    (define first-char as (cp@ input 0) [first character of user input])
 
     (if (== |/| first-char)
       (handle-command input)
-      (handle-message input))))
+      (handle-message input)))
+  [get user input and handle it] '() howto-no)
 
-(define handle-ping [handle PING message from the IRC server] '(message [message]) (fn (message)
+(define handle-ping as (fn (message)
     (= message 1 |O|)
     ;(+= lines message) ; TODO remove
-    (socket-send socket message)))
+    (socket-send socket message))
+  [handle PING message from the IRC server] '(message [message]) howto-no)
 
-(define push-text-to-lines [push text to lines] '(type [type] text [text]) (fn (type text)
-    (define line [tmp line] [])
+(define push-text-to-lines as (fn (type text)
+    (define line as [] [tmp line])
 
     (if (== 0 (len text)) (return))
 
     (for i from 0 to (- (len text) 1)
-         (define c [c] (cp@ text i))
+         (define c as (cp@ text i) [c])
          (if (== c |newline|)
             (do (+= lines (vector type line))
                 (=  line []))
@@ -243,45 +257,47 @@
              (= line []))))
 
     (if (> (len line) 0)
-        (do (+= lines (vector type line))))))
+        (do (+= lines (vector type line)))))
+  [push text to lines] '(type [type] text [text]) howto-no)
 
-(define extract-only-message-from-input [get only the actual message] '(message [message]) (fn (message)
+(define extract-only-message-from-input as (fn (message)
 
-    (define result [result] [])
-    (define numsyms [number of syms] 0)
+    (define result as [] [result])
+    (define numsyms as 0 [number of syms])
 
     (for i from 0 to (- (len message) 1)
-        (define c [c] (cp@ message i))
+        (define c as (cp@ message i) [c])
         (if (>= numsyms 2)
           (+= result c)
           (if (== c |:|) (++ numsyms))))
 
-    (if (>= numsyms 2) result message)))
+    (if (>= numsyms 2) result message))
+  [get only the actual message] '(message [message]) howto-no)
 
-(define read-socket [read input from socket, if available] '() (fn ()
+(define read-socket as (fn ()
     (if (== socket nil) (return))
 
-    (define input-from-socket [possible input from socket] (socket-receive socket false))
+    (define input-from-socket as (socket-receive socket false) [possible input from socket] )
 
     (if (== nil input-from-socket) (return))
 
     (if debug (push-text-to-lines 'DEBUG input-from-socket))
 
-    (define first-char [first character of user input] (cp@ input-from-socket 0))
+    (define first-char as (cp@ input-from-socket 0) [first character of user input])
 
     (if (== |P| first-char)
         (return (handle-ping input-from-socket)))
 
-    (define tokens [line split by space] (split input-from-socket | |))
+    (define tokens as (split input-from-socket | |) [line split by space])
 
-    (define command [command] [])
+    (define command as [] [command])
 
     (if (>= (len tokens) 2) (= command (ln@ tokens 1)))
 
     (if (== command [PRIVMSG])
       (do
-        (define receiver [channel or user] [])
-        (define sender   [message is from] [])
+        (define receiver as [] [channel or user])
+        (define sender   as [] [message is from])
 
         (if (>= (len tokens) 1) (= sender (substr (ln@ tokens 0) 1)))
         (if (>= (len tokens) 3) (= receiver (ln@ tokens 2)))
@@ -295,22 +311,23 @@
         (if (< (len sender) 32)
             (for i from (len sender) to 32 (+= sender |-|)))
 
-        (define msgToShow [msgToShow]
-            (string-format [<{}> {}] sender (extract-only-message-from-input input-from-socket)))
+        (define msgToShow as
+          (string-format [<{}> {}] sender (extract-only-message-from-input input-from-socket)) [msgToShow])
 
         (push-text-to-lines (if (== receiver current-channel) 'MESSAGE 'PRIVATE-MESSAGE) msgToShow)
 
         (return)))
 
-    (push-text-to-lines 'OTHER input-from-socket)))
+    (push-text-to-lines 'OTHER input-from-socket))
+  [read input from socket, if available] '() howto-no)
 
-(define print-lines [print messages] '() (fn ()
+(define print-lines as (fn ()
     (show-title title)
     (show-hint  hint)
 
-    (define row [current row] 1)
+    (define row as 1 [current row])
     (for line in lines
-         (define type [type] (cp@ line 0))
+         (define type as (cp@ line 0) [type])
 
          (if (== type 'OTHER)           (ncurses-attron PAIR-OTHER))
          (if (== type 'DEBUG)           (ncurses-attron PAIR-DEBUG))
@@ -333,7 +350,8 @@
          (++ row))
 
          (ncurses-refresh)
-    ))
+    )
+  [print messages] '() howto-no)
 
 (show-empty-hint)
 (show-empty-title)

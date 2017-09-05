@@ -79,6 +79,9 @@ octaspire_dern_function_t *octaspire_dern_function_new(
         return 0;
     }
 
+    self->name                  = octaspire_container_utf8_string_new("",   allocator);
+    self->docstr                = octaspire_container_utf8_string_new("", allocator);
+    self->howtoAllowed          = false;
     self->formals               = formals;
     self->body                  = body;
     self->definitionEnvironment = definitionEnvironment;
@@ -94,7 +97,38 @@ void octaspire_dern_function_release(octaspire_dern_function_t *self)
         return;
     }
 
+    octaspire_container_utf8_string_release(self->name);
+    self->name = 0;
+
+    octaspire_container_utf8_string_release(self->docstr);
+    self->docstr = 0;
+
     octaspire_memory_allocator_free(self->allocator, self);
+}
+
+bool octaspire_dern_function_set_howto_data(
+    octaspire_dern_function_t * const self,
+    char const * const name,
+    char const * const docstr,
+    bool const howtoAllowed)
+{
+    octaspire_helpers_verify_not_null(self);
+    octaspire_helpers_verify_not_null(self->name);
+    octaspire_helpers_verify_not_null(self->docstr);
+
+    if (!octaspire_container_utf8_string_set_from_c_string(self->name, name))
+    {
+        return false;
+    }
+
+    if (!octaspire_container_utf8_string_set_from_c_string(self->docstr, docstr))
+    {
+        return false;
+    }
+
+    self->howtoAllowed  = howtoAllowed;
+
+    return true;
 }
 
 size_t octaspire_dern_function_get_number_of_required_arguments(
@@ -400,6 +434,28 @@ octaspire_container_utf8_string_t *octaspire_dern_builtin_to_string(
         octaspire_container_utf8_string_get_c_string(self->name),
         octaspire_container_utf8_string_get_c_string(self->docstr));
 }
+
+
+
+bool octaspire_dern_function_is_howto_allowed(
+    octaspire_dern_function_t const * const self)
+{
+    return self->howtoAllowed;
+}
+
+octaspire_container_utf8_string_t *octaspire_dern_function_to_string(
+    octaspire_dern_function_t const * const self,
+    octaspire_memory_allocator_t * const allocator)
+{
+    return octaspire_container_utf8_string_new_format(
+        allocator,
+        "<function %s %s>",
+        octaspire_container_utf8_string_get_c_string(self->name),
+        octaspire_container_utf8_string_get_c_string(self->docstr));
+}
+
+
+
 
 
 char const * octaspire_dern_value_helper_get_type_as_c_string(octaspire_dern_value_tag_t const typeTag)
@@ -1611,7 +1667,7 @@ octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
 
             case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
             {
-                return octaspire_container_utf8_string_new("<function>", allocator);
+                return octaspire_dern_function_to_string(self->value.function, allocator);
             }
 
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
@@ -1752,6 +1808,12 @@ bool octaspire_dern_value_is_environment(
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT;
 }
 
+bool octaspire_dern_value_is_error(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR;
+}
+
 octaspire_dern_environment_t *octaspire_dern_value_as_environment_get_value(
     octaspire_dern_value_t * const self)
 {
@@ -1791,7 +1853,8 @@ bool octaspire_dern_value_is_howto_allowed(
     // howto
     octaspire_helpers_verify_true(
         octaspire_dern_value_is_builtin(self) ||
-        octaspire_dern_value_is_special(self));
+        octaspire_dern_value_is_special(self) ||
+        octaspire_dern_value_is_function(self));
 
     return self->howtoAllowed;
 }
@@ -1876,6 +1939,13 @@ bool octaspire_dern_value_as_hash_map_remove(
         self->value.hashMap,
         octaspire_dern_value_get_hash(keyValue),
         &keyValue);
+}
+
+octaspire_dern_function_t *octaspire_dern_value_as_function(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_FUNCTION);
+    return self->value.function;
 }
 
 bool octaspire_dern_value_as_hash_map_add(
@@ -2825,6 +2895,18 @@ char const *octaspire_dern_value_as_symbol_get_c_string(
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
     return octaspire_container_utf8_string_get_c_string(self->value.symbol);
+}
+
+bool octaspire_dern_value_is_symbol_and_equal_to_c_string(
+    octaspire_dern_value_t const * const self,
+    char const * const str)
+{
+    if (self->typeTag != OCTASPIRE_DERN_VALUE_TAG_SYMBOL)
+    {
+        return false;
+    }
+
+    return octaspire_container_utf8_string_is_equal_to_c_string(self->value.symbol, str);
 }
 
 bool octaspire_dern_value_as_symbol_is_equal_to_c_string(

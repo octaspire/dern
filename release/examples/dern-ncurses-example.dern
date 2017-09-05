@@ -1,6 +1,6 @@
 (require 'dern_ncurses)
 
-(define win [win] (ncurses-initscr))
+(define win as (ncurses-initscr) [win])
 
 (ncurses-set-keypad win true)
 
@@ -26,7 +26,7 @@
 (ncurses-print win 8 [Bye!])
 (ncurses-attroff 'UNDERLINE 2)
 
-(define num-rows-and-cols [number of rows and cols on screen] (ncurses-getmaxyx win))
+(define num-rows-and-cols as (ncurses-getmaxyx win)[number of rows and cols on screen])
 
 (ncurses-print win 10 10 (to-string num-rows-and-cols))
 
@@ -76,10 +76,10 @@
 
 (ncurses-print win [Print line of text: ])
 (ncurses-set-cursor 'normal)
-(define line [line of text from the user] (ncurses-getstr))
+(define line as (ncurses-getstr) [line of text from the user])
 
 (ncurses-print win [Give some character: ])
-(define ch [line of text from the user] (ncurses-getch))
+(define ch as (ncurses-getch) [line of text from the user])
 
 (ncurses-endwin)
 

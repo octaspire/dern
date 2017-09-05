@@ -69,10 +69,13 @@ typedef octaspire_dern_value_t *(*octaspire_dern_c_function)(
 
 typedef struct octaspire_dern_function_t
 {
-    struct octaspire_dern_value_t *formals;
-    struct octaspire_dern_value_t *body;
-    struct octaspire_dern_value_t *definitionEnvironment;
-    octaspire_memory_allocator_t  *allocator;
+    octaspire_container_utf8_string_t *name;
+    octaspire_container_utf8_string_t *docstr;
+    struct octaspire_dern_value_t     *formals;
+    struct octaspire_dern_value_t     *body;
+    struct octaspire_dern_value_t     *definitionEnvironment;
+    octaspire_memory_allocator_t      *allocator;
+    bool                               howtoAllowed;
 }
 octaspire_dern_function_t;
 
@@ -83,6 +86,12 @@ octaspire_dern_function_t *octaspire_dern_function_new(
     octaspire_memory_allocator_t  *allocator);
 
 void octaspire_dern_function_release(octaspire_dern_function_t *self);
+
+bool octaspire_dern_function_set_howto_data(
+    octaspire_dern_function_t * const self,
+    char const * const name,
+    char const * const docstr,
+    bool const howtoAllowed);
 
 size_t octaspire_dern_function_get_number_of_required_arguments(
     octaspire_dern_function_t const * const self);
@@ -151,6 +160,16 @@ bool octaspire_dern_builtin_is_howto_allowed(
 
 octaspire_container_utf8_string_t *octaspire_dern_builtin_to_string(
     octaspire_dern_builtin_t const * const self,
+    octaspire_memory_allocator_t * const allocator);
+
+
+
+
+bool octaspire_dern_function_is_howto_allowed(
+    octaspire_dern_function_t const * const self);
+
+octaspire_container_utf8_string_t *octaspire_dern_function_to_string(
+    octaspire_dern_function_t const * const self,
     octaspire_memory_allocator_t * const allocator);
 
 struct octaspire_dern_environment_t;
@@ -279,6 +298,9 @@ bool octaspire_dern_value_is_port(
 bool octaspire_dern_value_is_environment(
     octaspire_dern_value_t const * const self);
 
+bool octaspire_dern_value_is_error(
+    octaspire_dern_value_t const * const self);
+
 struct octaspire_dern_environment_t *octaspire_dern_value_as_environment_get_value(
     octaspire_dern_value_t * const self);
 
@@ -324,6 +346,9 @@ double octaspire_dern_value_as_real_get_value(
 
 double octaspire_dern_value_as_number_get_value(
     octaspire_dern_value_t const * const self);
+
+octaspire_dern_function_t *octaspire_dern_value_as_function(
+    octaspire_dern_value_t * const self);
 
 bool octaspire_dern_value_as_hash_map_add(
     octaspire_dern_value_t * const self,
@@ -397,6 +422,10 @@ char const *octaspire_dern_value_as_string_get_c_string(
 
 char const *octaspire_dern_value_as_symbol_get_c_string(
     octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_symbol_and_equal_to_c_string(
+    octaspire_dern_value_t const * const self,
+    char const * const str);
 
 bool octaspire_dern_value_as_symbol_is_equal_to_c_string(
     octaspire_dern_value_t const * const self,

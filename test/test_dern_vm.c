@@ -436,7 +436,7 @@ TEST octaspire_dern_vm_special_select_function_selectors_evaluating_into_false_a
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f1 [f1] '() (fn () false))");
+            "(define f1 as (fn () false) [f1] '() howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -445,7 +445,7 @@ TEST octaspire_dern_vm_special_select_function_selectors_evaluating_into_false_a
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define t1 [t1] '() (fn () true))");
+            "(define t1 as (fn () true) [t1] '() howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -473,7 +473,7 @@ TEST octaspire_dern_vm_special_select_function_selectors_failure_on_unknown_symb
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f1 [f1] '() (fn () false))");
+            "(define f1 as (fn () false) [f1] '() howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -482,7 +482,7 @@ TEST octaspire_dern_vm_special_select_function_selectors_failure_on_unknown_symb
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define t1 [t1] '() (fn () true))");
+            "(define t1 as (fn () true) [t1] '() howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -627,7 +627,9 @@ TEST octaspire_dern_vm_special_select_called_with_default_as_first_selector_fail
 
 TEST octaspire_dern_vm_special_define_integer_value_test(void)
 {
-    octaspire_input_t *input = octaspire_input_new_from_c_string("(define x [test] 10)", octaspireDernVmTestAllocator);
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "(define x as 10 [test])",
+        octaspireDernVmTestAllocator);
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
@@ -665,7 +667,7 @@ TEST octaspire_dern_vm_special_define_integer_value_with_explicit_target_global_
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define (env-global) x [test] 10)");
+            "(define x as 10 [test] in (env-global))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -698,7 +700,7 @@ TEST octaspire_dern_vm_special_define_my_inc_function_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define my-inc [my own inc-function] '(value [the value to increase]) (fn (value) (++ value)))");
+            "(define my-inc as (fn (value) (++ value)) [my own inc-function] '(value [the value to increase]) howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -739,7 +741,7 @@ TEST octaspire_dern_vm_special_define_factorial_function_with_integers_test(void
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define factorial [factorial function] '(n [calculate n!]) (fn (n) (if (== n 0) 1 (* n (factorial (- n 1))))))");
+            "(define factorial as (fn (n) (if (== n 0) 1 (* n (factorial (- n 1))))) [factorial function] '(n [calculate n!]) howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -795,7 +797,7 @@ TEST octaspire_dern_vm_special_define_factorial_function_with_reals_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define factorial [factorial function] '(n [calculate n!]) (fn (n) (if (<= n 0.0) 1.0 (* n (factorial (- n 1))))))");
+            "(define factorial as (fn (n) (if (<= n 0.0) 1.0 (* n (factorial (- n 1))))) [factorial function] '(n [calculate n!]) howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -844,21 +846,22 @@ TEST octaspire_dern_vm_special_define_factorial_function_with_reals_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_special_define_called_with_two_arguments_failure_test(void)
+TEST octaspire_dern_vm_special_define_called_with_three_arguments_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x 10)");
+            "(define x as 10)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Special 'define' expects three, four, or five arguments. 2 arguments were given.\n"
-        "\tAt form: >>>>>>>>>>(define x 10)<<<<<<<<<<\n",
+        "Special 'define' expects four, six or eight arguments. "
+        "3 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(define x as 10)<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -867,14 +870,14 @@ TEST octaspire_dern_vm_special_define_called_with_two_arguments_failure_test(voi
     PASS();
 }
 
-TEST octaspire_dern_vm_special_define_called_with_five_arguments_test(void)
+TEST octaspire_dern_vm_special_define_called_with_eight_arguments_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define myEnv [myEnv] (env-new))");
+            "(define myEnv as (env-new) [myEnv])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -883,7 +886,7 @@ TEST octaspire_dern_vm_special_define_called_with_five_arguments_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define myEnv f [f] '() (fn () 128))");
+            "(define f as (fn () 128) [f] '() in myEnv howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -926,22 +929,22 @@ TEST octaspire_dern_vm_special_define_called_with_five_arguments_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_special_define_called_with_four_arguments_first_being_integer_failure_test(void)
+TEST octaspire_dern_vm_special_define_called_with_four_arguments_first_being_value_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define 10 [x] 10)");
+            "(define 10 as x [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Special 'define': (define [optional-target-env] symbol...) name to be defined should be "
-        "symbol or vector to be evaluated. Type 'integer' was given.\n"
-        "\tAt form: >>>>>>>>>>(define 10 [x] 10)<<<<<<<<<<\n",
+        "The first argument of special 'define' is a vector but doesn't evaluate into "
+        "a symbol. It evaluates into '10'.\n"
+        "\tAt form: >>>>>>>>>>(define 10 as x [x])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -950,14 +953,14 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_first_being_int
     PASS();
 }
 
-TEST octaspire_dern_vm_special_define_called_with_five_arguments_second_being_integer_failure_test(void)
+TEST octaspire_dern_vm_special_define_called_with_eight_arguments_first_being_integer_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define myEnv [myEnv] (env-new))");
+            "(define myEnv as (env-new) [myEnv])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -966,15 +969,15 @@ TEST octaspire_dern_vm_special_define_called_with_five_arguments_second_being_in
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define myEnv 10 [f] '() (fn () 128))");
+            "(define 10 as (fn () 128) [f] '() in myEnv howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Special 'define': (define [optional-target-env] name...) Name must be symbol or vector to "
-        "be evaluated. Type 'integer' was given.\n"
-        "\tAt form: >>>>>>>>>>(define myEnv 10 [f] (quote ()) (fn () 128))<<<<<<<<<<\n",
+        "The first argument of special 'define' is a vector but doesn't evaluate into "
+        "a symbol. It evaluates into '10'.\n"
+        "\tAt form: >>>>>>>>>>(define 10 as (fn () 128) [f] (quote ()) in myEnv howto-ok)<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -983,21 +986,21 @@ TEST octaspire_dern_vm_special_define_called_with_five_arguments_second_being_in
     PASS();
 }
 
-TEST octaspire_dern_vm_special_define_called_with_three_arguments_error_at_last_failure_test(void)
+TEST octaspire_dern_vm_special_define_called_with_four_arguments_error_at_first_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] (noSuchFuNcTion))");
+            "(define x as (noSuchFuNcTion) [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'noSuchFuNcTion')\n"
-        "\tAt form: >>>>>>>>>>(define x [x] (noSuchFuNcTion))<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(define x as (noSuchFuNcTion) [x])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -1006,22 +1009,22 @@ TEST octaspire_dern_vm_special_define_called_with_three_arguments_error_at_last_
     PASS();
 }
 
-TEST octaspire_dern_vm_special_define_called_with_three_arguments_docstring_integer_failure_test(void)
+TEST octaspire_dern_vm_special_define_called_with_four_arguments_with_docstring_being_integer_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x 10 20)");
+            "(define x as 10 20)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Special 'define': (define [optional-target-env] symbol docstring...) docstring must be "
-        "string. Type 'integer' was given.\n"
-        "\tAt form: >>>>>>>>>>(define x 10 20)<<<<<<<<<<\n",
+        "Special 'define' expects documentation string as the fourth argument "
+        "in this context. Value '20' was given.\n"
+        "\tAt form: >>>>>>>>>>(define x as 10 20)<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -1030,22 +1033,22 @@ TEST octaspire_dern_vm_special_define_called_with_three_arguments_docstring_inte
     PASS();
 }
 
-TEST octaspire_dern_vm_special_define_called_with_three_arguments_name_evaluates_into_integer_failure_test(void)
+TEST octaspire_dern_vm_special_define_called_with_four_arguments_name_evaluates_into_integer_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define ((fn () 10)) [x] 20)");
+            "(define 20 as (fn () 10) [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Special 'define': (define [optional-target-env] symbol...) vector for name to be "
-        "defined should evaluate into symbol. Type 'integer' was result of evaluation.\n"
-        "\tAt form: >>>>>>>>>>(define ((fn () 10)) [x] 20)<<<<<<<<<<\n",
+        "The first argument of special 'define' is a vector but doesn't evaluate into "
+        "a symbol. It evaluates into '20'.\n"
+        "\tAt form: >>>>>>>>>>(define 20 as (fn () 10) [x])<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -1054,22 +1057,22 @@ TEST octaspire_dern_vm_special_define_called_with_three_arguments_name_evaluates
     PASS();
 }
 
-TEST octaspire_dern_vm_special_define_called_with_three_arguments_docstring_is_integer_failure_test(void)
+TEST octaspire_dern_vm_special_define_called_with_six_arguments_docstring_is_integer_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define ((fn () 'x)) 10 20)");
+            "(define f as (fn () 'x) 20 '() howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Special 'define': (define [optional-target-env] symbol docstring...) docstring must be "
-        "string. Type 'integer' was given.\n"
-        "\tAt form: >>>>>>>>>>(define ((fn () (quote x))) 10 20)<<<<<<<<<<\n",
+        "Special 'define' expects documentation string as the fourth argument in this "
+        "context. Value '20' was given.\n"
+        "\tAt form: >>>>>>>>>>(define f as (fn () (quote x)) 20 (quote ()) howto-ok)<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -1078,69 +1081,23 @@ TEST octaspire_dern_vm_special_define_called_with_three_arguments_docstring_is_i
     PASS();
 }
 
-TEST octaspire_dern_vm_special_define_called_with_three_arguments_error_in_last_argument_failure_test(void)
+TEST octaspire_dern_vm_special_define_called_with_eight_arguments_error_in_environment_argument_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define ((fn () 'x)) [x] (noSuchFuNcTion))");
+            "(define f as (fn () 'x) [f] '() in (noSuchFuNcTion) howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'noSuchFuNcTion')\n"
-        "\tAt form: >>>>>>>>>>(define ((fn () (quote x))) [x] (noSuchFuNcTion))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
-
-    octaspire_dern_vm_release(vm);
-    vm = 0;
-
-    PASS();
-}
-
-TEST octaspire_dern_vm_special_define_called_with_three_arguments_trying_to_bind_a_function_failure_test(void)
-{
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
-
-    octaspire_dern_value_t *evaluatedValue =
-        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
-            vm,
-            "(define ((fn () 'f)) [f] (fn () true))");
-
-    ASSERT(evaluatedValue);
-    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
-
-    ASSERT_STR_EQ(
-        "At definition of function 'f': functions cannot be defined with the three-argument "
-        "function. Use four-argument function.\n"
-        "\tAt form: >>>>>>>>>>(define ((fn () (quote f))) [f] (fn () true))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
-
-    octaspire_dern_vm_release(vm);
-    vm = 0;
-
-    PASS();
-}
-
-TEST octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_first_argument_failure_test(void)
-{
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
-
-    octaspire_dern_value_t *evaluatedValue =
-        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
-            vm,
-            "(define ((fn () 10)) [f] '() (fn () true))");
-
-    ASSERT(evaluatedValue);
-    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
-
-    ASSERT_STR_EQ(
-        "Special 'define': (define [optional-target-env] name...) Vector for name must evaluate "
-        "into symbol. Now it evaluated into type 'integer'.\n"
-        "\tAt form: >>>>>>>>>>(define ((fn () 10)) [f] (quote ()) (fn () true))<<<<<<<<<<\n",
+        "Special 'define' expects environment as the seventh argument in this "
+        "context. Value '<error>: Cannot evaluate operator of type 'error' (<error>: "
+        "Unbound symbol 'noSuchFuNcTion')' was given.\n"
+        "\tAt form: >>>>>>>>>>(define f as (fn () (quote x)) [f] (quote ()) in (noSuchFuNcTion) howto-ok)<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -1156,39 +1113,15 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_docs
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define ((fn () 'f)) 10 '() (fn () true))");
+            "(define x as 20 10)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Special 'define': (define [optional-target-env] name docstring...) docstring must be "
-        "string. Type 'integer' was given.\n"
-        "\tAt form: >>>>>>>>>>(define ((fn () (quote f))) 10 (quote ()) (fn () true))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
-
-    octaspire_dern_vm_release(vm);
-    vm = 0;
-
-    PASS();
-}
-
-TEST octaspire_dern_vm_special_define_called_with_four_arguments_docstring_integer_failure_test(void)
-{
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
-
-    octaspire_dern_value_t *evaluatedValue =
-        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
-            vm,
-            "(define f 10 '() (fn () 20))");
-
-    ASSERT(evaluatedValue);
-    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
-
-    ASSERT_STR_EQ(
-        "Special 'define': (define [optional-target-env] name docstring...) docstring must be "
-        "string. Type 'integer' was given.\n"
-        "\tAt form: >>>>>>>>>>(define f 10 (quote ()) (fn () 20))<<<<<<<<<<\n",
+        "Special 'define' expects documentation string as the fourth argument "
+        "in this context. Value '10' was given.\n"
+        "\tAt form: >>>>>>>>>>(define x as 20 10)<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -1225,7 +1158,9 @@ TEST octaspire_dern_vm_builtin_plus_plus_integer_value_test(void)
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
     octaspire_dern_value_t *evaluatedValue =
-        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(vm, "(define x [test] 10)");
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define x as 10 [test])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -1261,7 +1196,7 @@ TEST octaspire_dern_vm_builtin_doc_for_integer_value_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x-coordinate] 10)");
+            "(define x as 10 [x-coordinate])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -2770,7 +2705,7 @@ TEST octaspire_dern_vm_builtin_find_from_global_environment_defined_symbol_xyz_t
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define xyz [xyz] '(1 2 3))");
+            "(define xyz as '(1 2 3) [xyz] )");
 
     ASSERT(evaluatedValue);
 
@@ -2832,7 +2767,7 @@ TEST octaspire_dern_vm_special_while_with_one_value_to_repeat_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define i [i] 0)");
+            "(define i as 0 [i])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -2869,7 +2804,7 @@ TEST octaspire_dern_vm_special_while_with_two_values_to_repeat_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define i [i] 0)");
+            "(define i as 0 [i])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -2878,7 +2813,7 @@ TEST octaspire_dern_vm_special_while_with_two_values_to_repeat_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define j [j] 1000)");
+            "(define j as 1000 [j])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -2947,7 +2882,7 @@ TEST octaspire_dern_vm_special_while_called_with_integer_as_first_argument_failu
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 0)");
+            "(define x as 0 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3323,7 +3258,7 @@ TEST octaspire_dern_vm_builtin_equals_with_empty_vector_of_strings_and_integer_1
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define v [v] '())");
+            "(define v as '() [v])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3385,7 +3320,7 @@ TEST octaspire_dern_vm_builtin_equals_with_vector_of_strings_and_integer_1_and_s
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define v [v] '([first] [second] [third]))");
+            "(define v as '([first] [second] [third]) [v])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3454,7 +3389,7 @@ TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_same_key_inserted_multip
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define target [target] (hash-map |a| 1))");
+            "(define target as (hash-map |a| 1) [target])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3549,7 +3484,7 @@ TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_hash_map_with_elements_t
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define target [target] (hash-map))");
+            "(define target as (hash-map) [target])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3558,7 +3493,7 @@ TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_hash_map_with_elements_t
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define source [source] (hash-map 1 |a| 2 |b|))");
+            "(define source as (hash-map 1 |a| 2 |b|) [source])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3627,7 +3562,7 @@ TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_empty_hash_map_test(void
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define target [target] (hash-map 1 |a|))");
+            "(define target as (hash-map 1 |a|) [target])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3636,7 +3571,7 @@ TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_empty_hash_map_test(void
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define source [source] (hash-map))");
+            "(define source as (hash-map) [source])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3675,7 +3610,7 @@ TEST octaspire_dern_vm_builtin_equals_with_vector_and_vector_with_elements_test(
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define target [target] '())");
+            "(define target as '() [target])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3684,7 +3619,7 @@ TEST octaspire_dern_vm_builtin_equals_with_vector_and_vector_with_elements_test(
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define source [source] '(1 |a|))");
+            "(define source as '(1 |a|) [source])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3735,7 +3670,7 @@ TEST octaspire_dern_vm_builtin_equals_with_vector_and_empty_vector_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define target [target] '(1 2 3))");
+            "(define target as '(1 2 3) [target])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3744,7 +3679,7 @@ TEST octaspire_dern_vm_builtin_equals_with_vector_and_empty_vector_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define source [source] '())");
+            "(define source as '() [source])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3782,7 +3717,7 @@ TEST octaspire_dern_vm_builtin_equals_with_string_and_index_and_character_test(v
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [Pong])");
+            "(define s as [Pong] [s])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -3819,7 +3754,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_character_x_and_integer_2_test(
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define c [c] |x|)");
+            "(define c as |x| [c])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -3847,7 +3782,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_character_x_and_character_excla
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define c [c] |x|)");
+            "(define c as |x| [c])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -3875,7 +3810,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_real_3_dot_14_and_reals_1_dot_0
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define r [r] 3.14)");
+            "(define r as 3.14 [r])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -3903,7 +3838,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_integer_10_and_integers_1_and_2
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define i [i] 10)");
+            "(define i as 10 [i])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -3931,7 +3866,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_vector_1_1_2_2_2_3_and_values_1
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define v [v] '(1 1 2 2 2 3))");
+            "(define v as '(1 1 2 2 2 3) [v])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -3964,7 +3899,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_string_abcd_and_characters_a_an
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [abcd])");
+            "(define s as [abcd] [s])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -3992,7 +3927,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_hash_map_1_a_2_b_3_c_and_value_
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define h [h] (hash-map 1 |a| 2 |b| 3 |c|))");
+            "(define h as (hash-map 1 |a| 2 |b| 3 |c|) [h])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4035,7 +3970,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_hash_map_1_a_test(v
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define h [h] (hash-map))");
+            "(define h as (hash-map)[h])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4078,7 +4013,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_1_a_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define h [h] (hash-map))");
+            "(define h as (hash-map) [h])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4121,7 +4056,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_list_1_a_2_b_test(v
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define h [h] (hash-map))");
+            "(define h as (hash-map) [h])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4179,7 +4114,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_vector_1_2_3_and_4_5_6_test(void
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define v [v] '(1 2 3))");
+            "(define v as '(1 2 3) [v])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4219,7 +4154,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_string_def_test(v
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target string] [abc])");
+            "(define s as [abc] [target string])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4264,7 +4199,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_symbol_def_test(v
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target string] [abc])");
+            "(define s as [abc] [target string])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4309,7 +4244,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_character_d_test(
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target string] [abc])");
+            "(define s as [abc] [target string])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4354,7 +4289,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_vector_of_strings
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target string] [abc])");
+            "(define s as [abc] [target string])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4399,7 +4334,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_nil_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target string] [abc])");
+            "(define s as [abc] [target string])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4444,7 +4379,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_booleans_true_and
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target string] [abc])");
+            "(define s as [abc] [target string])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4489,7 +4424,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_integer_128_test(
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target string] [abc])");
+            "(define s as [abc] [target string])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4534,7 +4469,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_real_3dot14_test(
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target string] [abc])");
+            "(define s as [abc] [target string])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4583,7 +4518,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_string_def_test(v
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target symbol] 'abc)");
+            "(define s as 'abc [target symbol])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4628,7 +4563,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_symbol_def_test(v
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target symbol] 'abc)");
+            "(define s as 'abc [target symbol])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4673,7 +4608,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_character_d_test(
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target symbol] 'abc)");
+            "(define s as 'abc [target symbol])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4718,7 +4653,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_vector_of_strings
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target symbol] 'abc)");
+            "(define s as 'abc [target symbol])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4763,7 +4698,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_nil_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target symbol] 'abc)");
+            "(define s as 'abc [target symbol])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4808,7 +4743,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_booleans_true_and
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target symbol] 'abc)");
+            "(define s as 'abc [target symbol])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4853,7 +4788,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_integer_128_test(
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target symbol] 'abc)");
+            "(define s as 'abc [target symbol])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4898,7 +4833,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_real_3dot14_test(
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [target symbol] 'abc)");
+            "(define s as 'abc [target symbol])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
@@ -4994,7 +4929,7 @@ TEST octaspire_dern_vm_special_for_from_0_to_10_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define v [v] '())");
+            "(define v as '() [v])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5043,7 +4978,7 @@ TEST octaspire_dern_vm_special_for_from_0_to_10_with_step_2_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define v [v] '())");
+            "(define v as '() [v])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5092,7 +5027,7 @@ TEST octaspire_dern_vm_special_for_from_0_to_10_with_step_minus_2_failure_test(v
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define v [v] '())");
+            "(define v as '() [v])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5124,7 +5059,7 @@ TEST octaspire_dern_vm_special_for_from_10_to_0_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define v [v] '())");
+            "(define v as '() [v])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5173,7 +5108,7 @@ TEST octaspire_dern_vm_special_for_from_10_to_0_with_step_2_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define v [v] '())");
+            "(define v as '() [v])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5222,7 +5157,7 @@ TEST octaspire_dern_vm_special_for_from_10_to_0_with_step_minus_2_failure_test(v
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define v [v] '())");
+            "(define v as '() [v])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5255,7 +5190,7 @@ TEST octaspire_dern_vm_special_for_in_with_string_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [])");
+            "(define s as [] [s])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5264,7 +5199,7 @@ TEST octaspire_dern_vm_special_for_in_with_string_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define n [n] [abc])");
+            "(define n as [abc] [n])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5304,7 +5239,7 @@ TEST octaspire_dern_vm_special_for_in_with_string_step_2_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [])");
+            "(define s as [] [s])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5313,7 +5248,7 @@ TEST octaspire_dern_vm_special_for_in_with_string_step_2_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define n [n] [abc])");
+            "(define n as [abc] [n])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5353,7 +5288,7 @@ TEST octaspire_dern_vm_special_for_in_with_string_step_minus_2_failure_test(void
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [])");
+            "(define s as [] [s])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5362,7 +5297,7 @@ TEST octaspire_dern_vm_special_for_in_with_string_step_minus_2_failure_test(void
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define n [n] [abc])");
+            "(define n as [abc] [n])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5394,7 +5329,7 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [])");
+            "(define s as [] [s])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5403,7 +5338,7 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define n [n] '([John] [Mike] [Ellie]))");
+            "(define n as '([John] [Mike] [Ellie]) [n])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5443,7 +5378,7 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_step_2_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [])");
+            "(define s as [] [s])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5452,7 +5387,7 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_step_2_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define n [n] '([John] [Mike] [Ellie]))");
+            "(define n as '([John] [Mike] [Ellie]) [n])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5492,7 +5427,7 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_step_minus_2_failur
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [])");
+            "(define s as [] [s])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5501,7 +5436,7 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_step_minus_2_failur
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define n [n] '([John] [Mike] [Ellie]))");
+            "(define n as '([John] [Mike] [Ellie]) [n])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5532,7 +5467,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e [e] (env-new))");
+            "(define e as (env-new) [e])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5541,7 +5476,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e2 [e2] (env-new))");
+            "(define e2 as (env-new) [e2])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5553,7 +5488,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e a [a] 1)");
+            "(define a as 1 [a] in e)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5563,7 +5498,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e b [b] 2)");
+            "(define b as 2 [b] in e)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5573,7 +5508,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e c [c] 3)");
+            "(define c as 3 [c] in e)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5584,7 +5519,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(for i in e (define e2 (ln@ i 0) [-] (ln@ i 1)))");
+            "(for i in e (define (ln@ i 0) as (ln@ i 1) [-] in e2))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -5619,7 +5554,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_2_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e [e] (env-new))");
+            "(define e as (env-new) [e])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5628,7 +5563,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_2_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e2 [e2] (env-new))");
+            "(define e2 as (env-new) [e2])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5640,7 +5575,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_2_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e a [a] 1)");
+            "(define a as 1 [a] in e)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5650,7 +5585,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_2_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e b [b] 2)");
+            "(define b as 2 [b] in e)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5660,7 +5595,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_2_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e c [c] 3)");
+            "(define c as 3 [c] in e)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5671,7 +5606,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_2_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(for i in e step 2 (define e2 (ln@ i 0) [-] (ln@ i 1)))");
+            "(for i in e step 2 (define (ln@ i 0) as (ln@ i 1) [-] in e2))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -5693,7 +5628,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_minus_2_failure_test
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e [e] (env-new))");
+            "(define e as (env-new) [e])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5702,7 +5637,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_minus_2_failure_test
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e2 [e2] (env-new))");
+            "(define e2 as (env-new) [e2])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5714,7 +5649,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_minus_2_failure_test
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e a [a] 1)");
+            "(define a as 1 [a] in e)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5724,7 +5659,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_minus_2_failure_test
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e b [b] 2)");
+            "(define b as 2 [b] in e)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5734,7 +5669,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_minus_2_failure_test
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e c [c] 3)");
+            "(define c as 3 [c] in e)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5745,13 +5680,13 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_minus_2_failure_test
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(for i in e step -2 (define e2 (ln@ i 0) [-] (ln@ i 1)))");
+            "(for i in e step -2 (define (ln@ i 0) as (ln@ i 1) [-] in e2))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
-        "\tAt form: >>>>>>>>>>(for i in e step -2 (define e2 (ln@ i 0) [-] (ln@ i 1)))<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(for i in e step -2 (define (ln@ i 0) as (ln@ i 1) [-] in e2))<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -5767,7 +5702,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define h [h] (hash-map 'a 1 'b 2 'c 3))");
+            "(define h as (hash-map 'a 1 'b 2 'c 3) [h])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5776,7 +5711,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e [e] (env-new))");
+            "(define e as (env-new) [e])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5785,7 +5720,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(for i in h (define e (ln@ i 0) [-] (ln@ i 1)))");
+            "(for i in h (define (ln@ i 0) as (ln@ i 1) [-] in e))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -5820,7 +5755,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_2_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define h [h] (hash-map 'a 1 'b 2 'c 3))");
+            "(define h as (hash-map 'a 1 'b 2 'c 3) [h])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5829,7 +5764,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_2_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e [e] (env-new))");
+            "(define e as (env-new) [e])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5838,7 +5773,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_2_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(for i in h step 2 (define e (ln@ i 0) [-] (ln@ i 1)))");
+            "(for i in h step 2 (define (ln@ i 0) as (ln@ i 1) [-] in e))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
@@ -5860,7 +5795,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_minus_2_failure_test(vo
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define h [h] (hash-map 'a 1 'b 2 'c 3))");
+            "(define h as (hash-map 'a 1 'b 2 'c 3) [h])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5869,7 +5804,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_minus_2_failure_test(vo
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define e [e] (env-new))");
+            "(define e as (env-new) [e])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -5878,14 +5813,14 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_minus_2_failure_test(vo
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(for i in h step -2 (define e (ln@ i 0) [-] (ln@ i 1)))");
+            "(for i in h step -2 (define (ln@ i 0) as (ln@ i 1) [-] in e))");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
-        "\tAt form: >>>>>>>>>>(for i in h step -2 (define e (ln@ i 0) [-] (ln@ i 1)))<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(for i in h step -2 (define (ln@ i 0) as (ln@ i 1) [-] in e))<<<<<<<<<<\n",
         octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
@@ -5995,7 +5930,7 @@ TEST octaspire_dern_vm_error_in_function_body_is_reported_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '(x [x]) (fn (x) (NoSuchFunction x)))");
+            "(define f as (fn (x) (NoSuchFunction x)) [f] '(x [x]) howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6309,7 +6244,7 @@ TEST octaspire_dern_vm_changing_atom_doesnt_change_another_defined_from_it_test(
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define original [original] 10)");
+            "(define original as 10 [original])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6318,7 +6253,7 @@ TEST octaspire_dern_vm_changing_atom_doesnt_change_another_defined_from_it_test(
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define copied [copied] original)");
+            "(define copied as original [copied])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6355,7 +6290,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_do_inside_function_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define counter [counter] 0)");
+            "(define counter as 0 [counter])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6364,7 +6299,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_do_inside_function_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '() (fn () (do (++ counter) (return 99) (++ counter))))");
+            "(define f as (fn () (do (++ counter) (return 99) (++ counter))) [f] '() howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6401,7 +6336,7 @@ TEST octaspire_dern_vm_special_do_error_stops_evaluation_and_is_reported_test(vo
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define counter [counter] 0)");
+            "(define counter as 0 [counter])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6452,7 +6387,7 @@ TEST octaspire_dern_vm_builtin_return_inside_function_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define counter [counter] 0)");
+            "(define counter as 0 [counter])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6461,7 +6396,7 @@ TEST octaspire_dern_vm_builtin_return_inside_function_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '() (fn () (++ counter) (return 99) (++ counter)))");
+            "(define f as (fn () (++ counter) (return 99) (++ counter)) [f] '() howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6498,7 +6433,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_numeric_range_inside_f
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define counter [counter] 0)");
+            "(define counter as 0 [counter])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6507,7 +6442,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_numeric_range_inside_f
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '() (fn () (for i from 0 to 10 (++ counter) (if (== i 5) (return 99)))))");
+            "(define f as (fn () (for i from 0 to 10 (++ counter) (if (== i 5) (return 99)))) [f] '() howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6544,7 +6479,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_collection_inside_func
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define counter [counter] 0)");
+            "(define counter as 0 [counter])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6553,7 +6488,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_collection_inside_func
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '() (fn () (for i in '(1 2 3 4 5 6) (+= counter i) (if (== i 4) (return 99)))))");
+            "(define f as (fn () (for i in '(1 2 3 4 5 6) (+= counter i) (if (== i 4) (return 99)))) [f] '() howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6590,7 +6525,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_string_inside_function
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define counter [counter] 0)");
+            "(define counter as 0 [counter])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6599,7 +6534,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_string_inside_function
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '() (fn () (for i in [abcdef] (+= counter 1) (if (== i |d|) (return 99)))))");
+            "(define f as (fn () (for i in [abcdef] (+= counter 1) (if (== i |d|) (return 99)))) [f] '() howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6636,7 +6571,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_environment_inside_fun
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define counter [counter] 0)");
+            "(define counter as 0 [counter])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6645,7 +6580,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_environment_inside_fun
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '() (fn () (define a [a] 1) (define b [b] 2) (define c [c] 3) (for i in (env-current) (+= counter 1) (if (== counter 1) (return 99)))))");
+            "(define f as (fn () (define a as 1 [a]) (define b as 2 [b]) (define c as 3 [c]) (for i in (env-current) (+= counter 1) (if (== counter 1) (return 99)))) [f] '() howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6682,7 +6617,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_hash_map_inside_functi
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define counter [counter] 0)");
+            "(define counter as 0 [counter])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6691,7 +6626,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_for_with_hash_map_inside_functi
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '() (fn () (for i in (hash-map |a| 1 |b| 2 |c| 3) (+= counter 1) (if (== counter 1) (return 99)))))");
+            "(define f as (fn () (for i in (hash-map |a| 1 |b| 2 |c| 3) (+= counter 1) (if (== counter 1) (return 99)))) [f] '() howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6731,7 +6666,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_while_inside_function_test(void
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define counter [counter] 0)");
+            "(define counter as 0 [counter])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6740,7 +6675,7 @@ TEST octaspire_dern_vm_builtin_return_in_special_while_inside_function_test(void
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '() (fn () (while (< counter 100) (++ counter) (return 99))))");
+            "(define f as (fn () (while (< counter 100) (++ counter) (return 99))) [f] '() howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6777,7 +6712,7 @@ TEST octaspire_dern_vm_builtin_return_called_without_argument_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define counter [counter] 0)");
+            "(define counter as 0 [counter])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6786,7 +6721,7 @@ TEST octaspire_dern_vm_builtin_return_called_without_argument_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '() (fn () (while (< counter 100) (++ counter) (return))))");
+            "(define f as (fn () (while (< counter 100) (++ counter) (return))) [f] '() howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6822,7 +6757,7 @@ TEST octaspire_dern_vm_builtin_return_called_with_two_arguments_failure_test(voi
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define counter [counter] 0)");
+            "(define counter as 0 [counter])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6831,7 +6766,7 @@ TEST octaspire_dern_vm_builtin_return_called_with_two_arguments_failure_test(voi
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '() (fn () (while (< counter 100) (++ counter) (return 1 2))))");
+            "(define f as (fn () (while (< counter 100) (++ counter) (return 1 2))) [f] '() howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6876,10 +6811,11 @@ TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_four_
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '(x [x] y [rest of the args] ... [varargs]) (fn (x y ...)\n"
-            "(define result [result] [])\n"
+            "(define f as (fn (x y ...)\n"
+            "(define result as [] [result])\n"
             "(+= result (string-format x)) (+= result (string-format y))\n"
-            "result))");
+            "result) "
+            "[f] '(x [x] y [rest of the args] ... [varargs]) howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6910,10 +6846,11 @@ TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_one_a
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '(x [x] y [rest of the args] ... [varargs]) (fn (x y ...)\n"
-            "(define result [result] [])\n"
+            "(define f as (fn (x y ...)\n"
+            "(define result as [] [result])\n"
             "(+= result (string-format x)) (+= result (string-format y))\n"
-            "result))");
+            "result) "
+            "[f] '(x [x] y [rest of the args] ... [varargs]) howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6944,10 +6881,11 @@ TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_zero_
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '(x [x] y [rest of the args] ... [varargs]) (fn (x y ...)\n"
+            "(define f as (fn (x y ...)\n"
             "(define result [result] [])\n"
             "(+= result (string-format x)) (+= result (string-format y))\n"
-            "result))");
+            "result) "
+            "[f] '(x [x] y [rest of the args] ... [varargs]) howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -6978,7 +6916,7 @@ TEST octaspire_dern_vm_newly_created_function_returned_from_another_function_and
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define creator [creator] '() (fn () (fn (val) (+ 11 val))))");
+            "(define creator as (fn () (fn (val) (+ 11 val))) [creator] '() howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7006,7 +6944,7 @@ TEST octaspire_dern_vm_recursive_function_used_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define a [a] '(x [x]) (fn (x) (if (< x 10) (a (+ x 1)) x)))");
+            "(define a as (fn (x) (if (< x 10) (a (+ x 1)) x)) [a] '(x [x]) howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7034,7 +6972,7 @@ TEST octaspire_dern_vm_mutually_recursive_functions_used_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define a [a] '(val [val]) (fn (val) (b (+ val 1))))");
+            "(define a as (fn (val) (b (+ val 1))) [a] '(val [val]) howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7043,7 +6981,7 @@ TEST octaspire_dern_vm_mutually_recursive_functions_used_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define b [b] '(x [x]) (fn (x) (if (< x 10) (a x) x)))");
+            "(define b as (fn (x) (if (< x 10) (a x) x)) [b] '(x [x]) howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7125,7 +7063,7 @@ TEST octaspire_dern_vm_special_and_called_with_one_argument_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9)");
+            "(define x as 9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7151,7 +7089,7 @@ TEST octaspire_dern_vm_special_or_called_with_one_argument_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9)");
+            "(define x as 9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7177,7 +7115,7 @@ TEST octaspire_dern_vm_special_and_called_with_one_false_argument_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] false)");
+            "(define x as false [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7203,7 +7141,7 @@ TEST octaspire_dern_vm_special_or_called_with_one_false_argument_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] false)");
+            "(define x as false [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7229,7 +7167,7 @@ TEST octaspire_dern_vm_builtin_not_called_with_one_false_argument_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] false)");
+            "(define x as false [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7255,7 +7193,7 @@ TEST octaspire_dern_vm_builtin_not_called_with_one_true_argument_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] true)");
+            "(define x as true [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7281,7 +7219,7 @@ TEST octaspire_dern_vm_builtin_not_called_with_one_integer_argument_failure_test
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 0)");
+            "(define x as 0 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7311,7 +7249,7 @@ TEST octaspire_dern_vm_builtin_not_called_with_two_boolean_arguments_failure_tes
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] false)");
+            "(define x as false [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7320,7 +7258,7 @@ TEST octaspire_dern_vm_builtin_not_called_with_two_boolean_arguments_failure_tes
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define y [y] true)");
+            "(define y as true [y])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7350,7 +7288,7 @@ TEST octaspire_dern_vm_special_and_called_with_three_arguments_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [])");
+            "(define s as [] [s])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7359,7 +7297,7 @@ TEST octaspire_dern_vm_special_and_called_with_three_arguments_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '(x [x]) (fn (x) (+= s x) x))");
+            "(define f as (fn (x) (+= s x) x) [f] '(x [x]) howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7396,7 +7334,7 @@ TEST octaspire_dern_vm_special_or_called_with_three_arguments_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [])");
+            "(define s as [] [s])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7405,7 +7343,7 @@ TEST octaspire_dern_vm_special_or_called_with_three_arguments_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '(x [x]) (fn (x) (+= s x) (if (== x [c]) x false)))");
+            "(define f as (fn (x) (+= s x) (if (== x [c]) x false)) [f] '(x [x]) howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7442,7 +7380,7 @@ TEST octaspire_dern_vm_special_and_called_with_three_arguments_with_false_as_sec
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [])");
+            "(define s as [] [s])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7451,7 +7389,7 @@ TEST octaspire_dern_vm_special_and_called_with_three_arguments_with_false_as_sec
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '(x [x]) (fn (x) (+= s x) x))");
+            "(define f as (fn (x) (+= s x) x) [f] '(x [x]) howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7488,7 +7426,7 @@ TEST octaspire_dern_vm_special_or_called_with_three_arguments_with_true_as_secon
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [])");
+            "(define s as [] [s])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7497,7 +7435,7 @@ TEST octaspire_dern_vm_special_or_called_with_three_arguments_with_true_as_secon
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '(x [x]) (fn (x) (+= s x) false))");
+            "(define f as (fn (x) (+= s x) false) [f] '(x [x]) howto-no)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7534,7 +7472,7 @@ TEST octaspire_dern_vm_special_greater_than_called_with_two_reals_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10.02)");
+            "(define x as 10.02 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7562,7 +7500,7 @@ TEST octaspire_dern_vm_special_greater_than_called_with_two_integers_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10)");
+            "(define x as 10 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7590,7 +7528,7 @@ TEST octaspire_dern_vm_special_greater_than_called_with_integer_10_and_real_9dot
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10)");
+            "(define x as 10 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7618,7 +7556,7 @@ TEST octaspire_dern_vm_special_greater_than_called_with_integer_9_and_real_9dot9
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9)");
+            "(define x as 9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7646,7 +7584,7 @@ TEST octaspire_dern_vm_special_greater_than_called_with_real_9dot9_and_integer_1
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9.9)");
+            "(define x as 9.9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7674,7 +7612,7 @@ TEST octaspire_dern_vm_special_greater_than_called_with_real_10dot1_and_integer_
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10.1)");
+            "(define x as 10.1 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7707,7 +7645,7 @@ TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_two_reals_test(
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10.02)");
+            "(define x as 10.02 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7753,7 +7691,7 @@ TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_two_integers_te
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10)");
+            "(define x as 10 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7799,7 +7737,7 @@ TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_integer_10_and_
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10)");
+            "(define x as 10 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7827,7 +7765,7 @@ TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_integer_9_and_r
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9)");
+            "(define x as 9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7855,7 +7793,7 @@ TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_real_9dot9_and_
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9.9)");
+            "(define x as 9.9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7883,7 +7821,7 @@ TEST octaspire_dern_vm_special_greater_than_or_equal_called_with_real_10dot1_and
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10.1)");
+            "(define x as 10.1 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7927,7 +7865,7 @@ TEST octaspire_dern_vm_special_less_than_called_with_two_reals_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10.01)");
+            "(define x as 10.01 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7955,7 +7893,7 @@ TEST octaspire_dern_vm_special_less_than_called_with_two_integers_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9)");
+            "(define x as 9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -7983,7 +7921,7 @@ TEST octaspire_dern_vm_special_less_than_called_with_integer_9_and_real_9dot9_te
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9)");
+            "(define x as 9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8011,7 +7949,7 @@ TEST octaspire_dern_vm_special_less_than_called_with_integer_10_and_real_9dot9_t
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10)");
+            "(define x as 10 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8039,7 +7977,7 @@ TEST octaspire_dern_vm_special_less_than_called_with_real_10dot1_and_integer_10_
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10.1)");
+            "(define x as 10.1 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8067,7 +8005,7 @@ TEST octaspire_dern_vm_special_less_than_called_with_real_9dot9_and_integer_10_t
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9.9)");
+            "(define x as 9.9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8106,7 +8044,7 @@ TEST octaspire_dern_vm_special_less_than_or_equal_called_with_two_reals_test(voi
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10.01)");
+            "(define x as 10.01 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8152,7 +8090,7 @@ TEST octaspire_dern_vm_special_less_than_or_equal_called_with_two_integers_test(
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9)");
+            "(define x as 9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8198,7 +8136,7 @@ TEST octaspire_dern_vm_special_less_than_or_equal_called_with_integer_9_and_real
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9)");
+            "(define x as 9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8226,7 +8164,7 @@ TEST octaspire_dern_vm_special_less_than_or_equal_called_with_integer_10_and_rea
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10)");
+            "(define x as 10 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8254,7 +8192,7 @@ TEST octaspire_dern_vm_special_less_than_or_equal_called_with_real_10dot1_and_in
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10.1)");
+            "(define x as 10.1 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8282,7 +8220,7 @@ TEST octaspire_dern_vm_special_less_than_or_equal_called_with_real_9dot9_and_int
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9.9)");
+            "(define x as 9.9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8315,7 +8253,7 @@ TEST octaspire_dern_vm_builtin_equals_equals_called_with_two_reals_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10.01)");
+            "(define x as 10.01 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8352,7 +8290,7 @@ TEST octaspire_dern_vm_builtin_equals_equals_called_with_two_integers_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9)");
+            "(define x as 9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8389,7 +8327,7 @@ TEST octaspire_dern_vm_buildin_equals_equals_called_with_integer_9_and_reals_9do
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9)");
+            "(define x as 9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8426,7 +8364,7 @@ TEST octaspire_dern_vm_builtin_equals_equals__called_with_integer_10_and_real_9d
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10)");
+            "(define x as 10 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8454,7 +8392,7 @@ TEST octaspire_dern_vm_builtin_equals_equals_called_with_real_10dot1_and_integer
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10.1)");
+            "(define x as 10.1 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8482,7 +8420,7 @@ TEST octaspire_dern_vm_builtin_equals_equals_called_with_real_9dot9_and_integer_
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9.9)");
+            "(define x as 9.9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8516,7 +8454,7 @@ TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_two_reals_test(voi
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10.01)");
+            "(define x as 10.01 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8553,7 +8491,7 @@ TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_two_integers_test(
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9)");
+            "(define x as 9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8590,7 +8528,7 @@ TEST octaspire_dern_vm_buildin_exclamation_equals_called_with_integer_9_and_real
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9)");
+            "(define x as 9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8627,7 +8565,7 @@ TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_integer_10_and_rea
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10)");
+            "(define x as 10 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8655,7 +8593,7 @@ TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_real_10dot1_and_in
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 10.1)");
+            "(define x as 10.1 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8683,7 +8621,7 @@ TEST octaspire_dern_vm_builtin_exclamation_equals_called_with_real_9dot9_and_int
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define x [x] 9.9)");
+            "(define x as 9.9 [x])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8711,7 +8649,7 @@ TEST octaspire_dern_vm_error_during_user_function_call_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [my function] '() (fn () (NoSuchFunction)))");
+            "(define f as (fn () (NoSuchFunction)) [my function] '() howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8783,7 +8721,7 @@ TEST octaspire_dern_vm_error_during_special_call_during_user_function_call_test(
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] '() (fn () (<)))");
+            "(define f as (fn () (<)) [f] '() howto-ok)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8853,7 +8791,7 @@ TEST octaspire_dern_vm_special_eval_value_from_given_local_env_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define myEnv [myEnv] (env-new))");
+            "(define myEnv as (env-new) [myEnv])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8862,7 +8800,7 @@ TEST octaspire_dern_vm_special_eval_value_from_given_local_env_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define myEnv myVal [myVal] 128)");
+            "(define myVal as 128 [myVal] in myEnv)");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -8890,7 +8828,7 @@ TEST octaspire_dern_vm_special_eval_eval_eval_f_1_2_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define myFn [myFn] +)");
+            "(define myFn as + [myFn])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
@@ -9112,7 +9050,7 @@ TEST octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowe
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9175,7 +9113,7 @@ TEST octaspire_dern_vm_input_file_open_success_because_file_system_access_is_all
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9238,7 +9176,7 @@ TEST octaspire_dern_vm_output_file_open_success_because_file_system_access_is_al
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9259,7 +9197,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_output_file
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9288,7 +9226,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_input_file_
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9317,7 +9255,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_io_file_tes
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9346,7 +9284,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_integer_fai
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] 10)");
+            "(define f as 10 [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9404,7 +9342,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_input_file
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9433,7 +9371,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_output_fil
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9462,7 +9400,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_io_file_te
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9491,7 +9429,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_integer_fa
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] 10)");
+            "(define f as 10 [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9549,7 +9487,7 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9635,7 +9573,7 @@ TEST octaspire_dern_vm_port_dist_called_with_a_file_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9712,7 +9650,7 @@ TEST octaspire_dern_vm_port_seek_called_with_a_file_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9816,7 +9754,7 @@ TEST octaspire_dern_vm_input_file_open_with_file_system_access_allowed_failure_o
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "no-such-file.nono]))");
+            "(define f as (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "no-such-file.nono]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9848,7 +9786,7 @@ TEST octaspire_dern_vm_port_write_failure_on_input_file_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -9922,7 +9860,7 @@ TEST octaspire_dern_vm_port_length_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define f [f] (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]))");
+            "(define f as (io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt]) [f])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -10295,7 +10233,7 @@ TEST octaspire_dern_vm_nil_question_mark_test(void)
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
-        "(define myNil [myNil] nil)");
+        "(define myNil as nil [myNil])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -10392,7 +10330,7 @@ TEST octaspire_dern_vm_boolean_question_mark_test(void)
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
-        "(define myBool [myBool] true)");
+        "(define myBool as true [myBool])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -10489,7 +10427,7 @@ TEST octaspire_dern_vm_character_question_mark_test(void)
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
-        "(define myChar [myChar] |a|)");
+        "(define myChar as |a| [myChar])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -10586,7 +10524,7 @@ TEST octaspire_dern_vm_string_question_mark_test(void)
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
-        "(define myStr [myStr] [abc])");
+        "(define myStr as [abc] [myStr])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -10683,7 +10621,7 @@ TEST octaspire_dern_vm_symbol_question_mark_test(void)
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
-        "(define mySym [mySym] 10)");
+        "(define mySym as 10 [mySym])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -10780,7 +10718,7 @@ TEST octaspire_dern_vm_vector_question_mark_test(void)
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
-        "(define mySym [mySym] '(99 98 97 96))");
+        "(define mySym as '(99 98 97 96) [mySym])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -10877,7 +10815,7 @@ TEST octaspire_dern_vm_hash_map_question_mark_test(void)
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
-        "(define myHashMap [myHashMap] (hash-map |a| 0))");
+        "(define myHashMap as (hash-map |a| 0) [myHashMap])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -10932,7 +10870,7 @@ TEST octaspire_dern_vm_queue_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define q [queue] (queue))");
+            "(define q as (queue) [queue])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -11030,7 +10968,7 @@ TEST octaspire_dern_vm_queue_with_max_length_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define q [queue] (queue-with-max-length 3))");
+            "(define q as (queue-with-max-length 3) [queue])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -11128,7 +11066,7 @@ TEST octaspire_dern_vm_list_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define l [list] (list))");
+            "(define l as (list) [list])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -11315,7 +11253,7 @@ TEST octaspire_dern_vm_cp_at_sign_with_vector_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define v [v] '(1 2 3))");
+            "(define v as '(1 2 3) [v])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -11354,7 +11292,7 @@ TEST octaspire_dern_vm_cp_at_sign_with_string_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [abc])");
+            "(define s as [abc] [s])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -11397,7 +11335,7 @@ TEST octaspire_dern_vm_cp_at_sign_with_hash_map_of_size_one_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define h [h] (hash-map [a] 2))");
+            "(define h as (hash-map [a] 2) [h])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -11446,7 +11384,7 @@ TEST octaspire_dern_vm_cp_at_sign_with_hash_map_of_size_three_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define h [h] (hash-map [a] 1   [b] 2   [c] 3))");
+            "(define h as (hash-map [a] 1   [b] 2   [c] 3) [h])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -11501,7 +11439,7 @@ TEST octaspire_dern_vm_ln_at_sign_with_vector_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define v [v] '(1 2 3))");
+            "(define v as '(1 2 3) [v])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -11540,7 +11478,7 @@ TEST octaspire_dern_vm_ln_at_sign_with_string_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define s [s] [abc])");
+            "(define s as [abc] [s])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -11571,7 +11509,7 @@ TEST octaspire_dern_vm_ln_at_sign_with_hash_map_of_size_one_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define h [h] (hash-map [a] 2))");
+            "(define h as (hash-map [a] 2) [h])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -11620,7 +11558,7 @@ TEST octaspire_dern_vm_ln_at_sign_with_hash_map_of_size_three_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define h [h] (hash-map [a] 1   [b] 2   [c] 3))");
+            "(define h as (hash-map [a] 1   [b] 2   [c] 3) [h])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true,                             evaluatedValue->value.boolean);
@@ -11855,7 +11793,7 @@ TEST octaspire_dern_vm_copy_user_data_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define a [a] (octaspire-dern-test-dern-vm-create-new-user-data))");
+            "(define a as (octaspire-dern-test-dern-vm-create-new-user-data) [a])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, octaspire_dern_value_as_boolean_get_value(evaluatedValue));
@@ -11863,7 +11801,7 @@ TEST octaspire_dern_vm_copy_user_data_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(define b [b] (copy a))");
+            "(define b as (copy a) [b])");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, octaspire_dern_value_as_boolean_get_value(evaluatedValue));
@@ -11915,13 +11853,13 @@ octaspire_input_t *octaspire_test_dern_vm_custom_require_file_loader(
     if (strcmp("test1.dern", name) == 0)
     {
         return octaspire_input_new_from_c_string(
-            "(define f1 [f1] '(a [a] b [b]) (fn (a b) (+ a b)))",
+            "(define f1 as (fn (a b) (+ a b)) [f1] '(a [a] b [b]) howto-ok)",
             allocator);
     }
     else if (strcmp("test2.dern", name) == 0)
     {
         return octaspire_input_new_from_c_string(
-            "(define f2 [f2] '(a [a] b [b]) (fn (a b) (* a b)))",
+            "(define f2 as (fn (a b) (* a b)) [f2] '(a [a] b [b]) howto-ok)",
             allocator);
     }
 
@@ -12034,19 +11972,16 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_special_define_my_inc_function_test);
     RUN_TEST(octaspire_dern_vm_special_define_factorial_function_with_integers_test);
     RUN_TEST(octaspire_dern_vm_special_define_factorial_function_with_reals_test);
-    RUN_TEST(octaspire_dern_vm_special_define_called_with_two_arguments_failure_test);
-    RUN_TEST(octaspire_dern_vm_special_define_called_with_five_arguments_test);
-    RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_first_being_integer_failure_test);
-    RUN_TEST(octaspire_dern_vm_special_define_called_with_five_arguments_second_being_integer_failure_test);
-    RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_error_at_last_failure_test);
-    RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_docstring_integer_failure_test);
-    RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_name_evaluates_into_integer_failure_test);
-    RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_docstring_is_integer_failure_test);
-    RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_error_in_last_argument_failure_test);
-    RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_trying_to_bind_a_function_failure_test);
-    RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_first_argument_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_three_arguments_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_eight_arguments_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_first_being_value_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_eight_arguments_first_being_integer_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_error_at_first_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_with_docstring_being_integer_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_name_evaluates_into_integer_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_six_arguments_docstring_is_integer_failure_test);
+    RUN_TEST(octaspire_dern_vm_special_define_called_with_eight_arguments_error_in_environment_argument_failure_test);
     RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_docstring_failure_test);
-    RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_docstring_integer_failure_test);
 
     RUN_TEST(octaspire_dern_vm_special_quote_called_without_arguments_failure_test);
 

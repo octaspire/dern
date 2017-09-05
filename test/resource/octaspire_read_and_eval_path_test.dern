@@ -1,4 +1,4 @@
-(define y [y] 100)
+(define y as 100 [y])
 y
-(define x [x] 200)
+(define x as 200 [x])
 x

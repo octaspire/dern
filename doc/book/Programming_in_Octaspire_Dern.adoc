@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.226.0
+Documentation for Octaspire Dern programming language version 0.228.0
 
 == About
 
@@ -191,7 +191,7 @@ This is a multiline comment.    !#
 (println)
 
 ; 3. Print greetings to everybody on the vector
-(define names [Christmas card list] '(John Alice Mark))
+(define names as '(John Alice Mark) [Christmas card list])
 (for i in names (println [Happy holidays, {}!] i))
 (println)
 
@@ -206,18 +206,20 @@ This is a multiline comment.    !#
 (println)
 
 ; 6. Define new function to greet people and use it
-(define greeter [My greeter function] '(greeting [the greeting] name [who to greet]) (fn (greeting name)
-    (println [{}, {}!] greeting name)))
+(define greeter as (fn (greeting name)
+    (println [{}, {}!] greeting name))
+  [My greeter function] '(greeting [the greeting] name [who to greet]) howto-no)
 
 (greeter 'Hi 'Alice)
 
 ; 7. Redefine greeter-function with early exit using 'return'
-(define grumpy [is our hero grumpy, or not] true)
+(define grumpy as true [is our hero grumpy, or not])
 
-(define greeter [My greeter function] '(greeting [the greeting] name [who to greet]) (fn (greeting name)
+(define greeter as (fn (greeting name)
     (if grumpy (return [I am grumpy and will not greet anyone. Hmpfh!]))
     (println [{}, {}!] greeting name)
-    (string-format [I greeted "{}", as requested] name)))
+    (string-format [I greeted "{}", as requested] name))
+  [My greeter function] '(greeting [the greeting] name [who to greet]) howto-no)
 
 (println (greeter 'Hi 'Alice))
 (= grumpy false)
@@ -225,9 +227,10 @@ This is a multiline comment.    !#
 (println)
 
 ; 8. Add names and custom greetings into a hash map and use it to greet people
-(define names [My custom greetings] (hash-map 'John 'Hi
-                                              'Lola 'Hello
-                                              'Mike 'Bonjour))
+(define names as (hash-map 'John 'Hi
+                           'Lola 'Hello
+                           'Mike 'Bonjour)
+                        [My custom greetings])
 
 (for i in names (greeter (ln@ i 1) (ln@ i 0)))
 ----
@@ -305,9 +308,9 @@ Multiline comments can be used to make script files executable in UNIX-like syst
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(define pi [value for pi] 3.14)
-(define names [names list] '(John Lisa Mark))
-(define double [doubles numbers] '(x [this is doubled]) (fn (x) (* 2 x)))
+(define pi as 3.14 [value for pi])
+(define names as '(John Lisa Mark) [names list])
+(define double as (fn (x) (* 2 x)) [doubles numbers] '(x [this is doubled]) howto-ok)
 ----
 
 Here we bind three values to a name: one real, one vector and one function taking one argument.
@@ -355,8 +358,8 @@ names to values in other environments than the current one. Example:
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(define myEnv [my own environment] (env-new))
-(define myEnv pi [value for pi] 3.14)
+(define myEnv as (env-new) [my own environment])
+(define pi as 3.14 [value for pi] in myEnv)
 
 pi                  ; <error>: Unbound symbol 'pi'
 (eval pi myEnv)     ; 3.14
@@ -377,7 +380,7 @@ container (vector, string, hash-map, etc.) and with (input) *ports*. Below is co
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(define i [my counter] 0)
+(define i as 0 [my counter])
 (while (<= i 10) (println [Counting at {}...] i) (++ i))
 ----
 
@@ -398,7 +401,7 @@ Container for:
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(define names [names list] '(John Mark Lisa))
+(define names as '(John Mark Lisa) [names list])
 (for i in names (println [Hello {} World!] i))
 ----
 
@@ -412,7 +415,7 @@ way the iterator is incremented:
 ----
 (for i from 0 to 10 step 3 (println [Hello {} World!] i))
 
-(define names [names list] '(John Mark Lisa))
+(define names as '(John Mark Lisa) [names list])
 (for i in names step 2 (println [Hello {} World!] i))
 ----
 
@@ -447,20 +450,20 @@ Here are few examples:
 (len [abc])             ; length of string:   3
 (len (hash-map 1 |a|))  ; length of hash-map: 1
 
-(define number [my number] 1)
+(define number as 1 [my number])
 (++ number)                      ; number is 2
 (-- number)                      ; number is 1
 (+= number 2)                    ; number is 3
 
 (+ [Hello] [ ] [World.] [ Bye.]) ; Hello World. Bye.
 
-(define greeting [my greeting] [Hello])
+(define greeting as [Hello] [my greeting])
 (+= greeting [ World!])                 ; Hello World!
 (+= greeting |!|)                       ; Hello World!!
 
 (+= '(1 2 3) '(4 5 6))                  ; (1 2 3 (4 5 6))
 
-(define capitals [country -> capital] (hash-map [United Kingdom] [London] [Spain] [Madrid]))
+(define capitals as (hash-map [United Kingdom] [London] [Spain] [Madrid]) [country -> capital])
 (+= capitals [Nepal] [Kathmandu])
 (+= capitals '([Norway] [Oslo] [Poland] [Warsaw]))
 (+= capitals (hash-map [Peru] [Lima]))
@@ -527,8 +530,8 @@ Here are some examples using `select`:
 (select false [Yes])           ; nil
 
 
-(define f1 [f1] '() (fn () true))
-(define f2 [f2] '() (fn () false))
+(define f1 as (fn () true)  [f1] '() howto-no)
+(define f2 as (fn () false) [f2] '() howto-no)
 
 (select (f1)  [Yes]
         (f2)  [No]
@@ -595,9 +598,9 @@ Here are few examples:
 (print   [Hi])   ; Prints Hi without newline
 (println [Hi])   ; Prints Hi and newline
 
-(define name1  [some name 1] 'Jim)
-(define name2  [some name 2] 'Alice)
-(define number [some number] 30)
+(define name1  as 'Jim   [some name 1])
+(define name2  as 'Alice [some name 2])
+(define number as 30     [some number])
 
 (println [Hi {} and {}! It is {} degrees outside.] name1 name2 number)  ; Prints Hi Jim and Alice! It is 30 degrees outside.
 ----
@@ -611,9 +614,9 @@ Here are few examples:
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(define name1  [some name 1] 'Jim)
-(define name2  [some name 2] 'Alice)
-(define number [some number] 30)
+(define name1  as 'Jim   [some name 1])
+(define name2  as 'Alice [some name 2])
+(define number as 30     [some number])
 
 (string-format [Hi {} and {}! It is {} degrees outside.] name1 name2 number)  ; Creates a sting [Hi Jim and Alice! It is 30 degrees outside.]
 ----
@@ -628,12 +631,12 @@ Here are few examples:
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(define f [f] '(x [x] ... [varargs]) (fn (x ...) x))
+(define f as (fn (x ...) x) [f] '(x [x] ... [varargs]) howto-no)
 
 (f 1 2 3)   ; (1 2 3)
 
 
-(define f [f] '(x [x] y [rest of the args] ... [varargs]) (fn (x y ...) (println x) (println y)))
+(define f as (fn (x y ...) (println x) (println y)) [f] '(x [x] y [rest of the args] ... [varargs]) howto-no)
 
 (f 1 2 3)   ; Prints 1|newline|(2 3)
 ----
@@ -681,11 +684,11 @@ Small example:
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(define errorCode [0 means no error.] 1)
+(define errorCode as 1 [0 means no error.])
 
-(define start-engine [Start engine if all OK] '() (fn ()
+(define start-engine as (fn ()
     (if (!= errorCode 0) (return [Cannot start the engine]))
-    ; .... Start the engine here...))
+    ; .... Start the engine here...) [Start engine if all OK] '() howto-no)
 ----
 
 `Return` can be called with zero or one argument. If no arguments are given, then `return`
@@ -715,16 +718,16 @@ called at runtime. Small example:
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(define level-next [next level] '() (fn ()
+(define level-next as (fn ()
     (level-reset)
 
-    (define lnum [level number] (+ level-current-number 1))
+    (define lnum as (+ level-current-number 1) [level number])
 
     (if (> lnum number-of-levels) (= lnum 1))
 
-    (define name-of-fn-to-call [name of the level builder function to call] 'level-)
+    (define name-of-fn-to-call as 'level- [name of the level builder function to call])
     (+= name-of-fn-to-call lnum)
-    (eval ((eval name-of-fn-to-call)))))
+    (eval ((eval name-of-fn-to-call)))) [next level] '() howto-no)
 ----
 
 == Input and output ports
@@ -743,7 +746,7 @@ Here is small example:
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(define f [f] (io-file-open [/path/goes/here.xy]))
+(define f as (io-file-open [/path/goes/here.xy]) [f])
 
 (port-read f)
 (port-read f 3)
@@ -761,7 +764,7 @@ garbage collector collects it. Some ports might also support *seeking*, *distanc
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(define f [f] (io-file-open [/path/goes/here.xy]))
+(define f as (io-file-open [/path/goes/here.xy]) [f])
 
 (port-seek f -1)  ; Seek to the end
 (port-write f 65)
@@ -795,7 +798,7 @@ Input ports can be iterated with `for` in similar way that containers are iterat
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(define f [f] (io-file-open [/path/goes/here.xy]))
+(define f as (io-file-open [/path/goes/here.xy]) [f])
 
 (for i in f (println i))           ; Print every octet
 
@@ -816,17 +819,17 @@ Below is short example about querying a port for supported operations:
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(define f [f] (io-file-open [/path/goes/here.xy]))
+(define f as (io-file-open [/path/goes/here.xy]) [f])
 
 (port-supports-output? f)          ; true
 (port-supports-input?  f)          ; true
 
-(define f [f] (output-file-open [/path/goes/here.xy]))
+(define f as (output-file-open [/path/goes/here.xy]) [f])
 
 (port-supports-output? f)          ; true
 (port-supports-input?  f)          ; false
 
-(define f [f] (input-file-open [/path/goes/here.xy]))
+(define f as (input-file-open [/path/goes/here.xy]) [f])
 
 (port-supports-output? f)          ; false
 (port-supports-input?  f)          ; true
@@ -840,7 +843,7 @@ You can use `port-write` and `+=` to write to a port octets with values `integer
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(define f [f] (io-file-open [/path/goes/here.xy]))
+(define f as (io-file-open [/path/goes/here.xy]) [f])
 
 (+= f |a| |b| [ cat] |!|)  ; ab cat!
 
@@ -1109,13 +1112,13 @@ octaspire_input_t *my_custom_loader(
     if (strcmp("test1.dern", name) == 0)
     {
         return octaspire_input_new_from_c_string(
-            "(define f1 [f1] '(a [a] b [b]) (fn (a b) (+ a b)))",
+            "(define f1 as (fn (a b) (+ a b)) [f1] '(a [a] b [b]) howto-ok)",
             allocator);
     }
     else if (strcmp("test2.dern", name) == 0)
     {
         return octaspire_input_new_from_c_string(
-            "(define f2 [f2] '(a [a] b [b]) (fn (a b) (* a b)))",
+            "(define f2 as (fn (a b) (* a b)) [f2] '(a [a] b [b]) howto-ok)",
             allocator);
     }
 
