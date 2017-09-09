@@ -353,11 +353,18 @@ octaspire_container_utf8_string_t *octaspire_dern_special_to_string(
     octaspire_dern_special_t const * const self,
     octaspire_memory_allocator_t * const allocator)
 {
+    /*
     return octaspire_container_utf8_string_new_format(
         allocator,
         "<builtin %s %s>",
         octaspire_container_utf8_string_get_c_string(self->name),
         octaspire_container_utf8_string_get_c_string(self->docstr));
+    */
+
+    return octaspire_container_utf8_string_new_format(
+        allocator,
+        "%s",
+        octaspire_container_utf8_string_get_c_string(self->name));
 }
 
 
@@ -428,11 +435,18 @@ octaspire_container_utf8_string_t *octaspire_dern_builtin_to_string(
     octaspire_dern_builtin_t const * const self,
     octaspire_memory_allocator_t * const allocator)
 {
+    /*
     return octaspire_container_utf8_string_new_format(
         allocator,
         "<special %s %s>",
         octaspire_container_utf8_string_get_c_string(self->name),
         octaspire_container_utf8_string_get_c_string(self->docstr));
+    */
+
+    return octaspire_container_utf8_string_new_format(
+        allocator,
+        "%s",
+        octaspire_container_utf8_string_get_c_string(self->name));
 }
 
 
@@ -447,11 +461,18 @@ octaspire_container_utf8_string_t *octaspire_dern_function_to_string(
     octaspire_dern_function_t const * const self,
     octaspire_memory_allocator_t * const allocator)
 {
+    /*
     return octaspire_container_utf8_string_new_format(
         allocator,
         "<function %s %s>",
         octaspire_container_utf8_string_get_c_string(self->name),
         octaspire_container_utf8_string_get_c_string(self->docstr));
+    */
+
+    return octaspire_container_utf8_string_new_format(
+        allocator,
+        "%s",
+        octaspire_container_utf8_string_get_c_string(self->name));
 }
 
 

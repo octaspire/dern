@@ -8556,17 +8556,12 @@ bool octaspire_dern_stdlib_private_special_howto_helper(
 
                 octaspire_dern_vm_push_value(vm, evaluatedValue);
 
-                //printf("EXPECTED: ");
-                //octaspire_dern_value_print(expectedtResult, octaspire_dern_vm_get_allocator(vm));
-                //printf("EVALUATED: ");
-                //octaspire_dern_value_print(evaluatedValue, octaspire_dern_vm_get_allocator(vm));
 
                 if (octaspire_dern_value_is_equal(expectedtResult, evaluatedValue))
                 {
-                    // This builtin or special is added as suggestion
                     octaspire_dern_value_as_vector_push_back_element(
                         result,
-                        &value);
+                        &form);
                 }
 
                 octaspire_dern_vm_pop_value(vm, evaluatedValue);
@@ -8629,82 +8624,24 @@ octaspire_dern_value_t *octaspire_dern_vm_special_howto(
     octaspire_dern_value_t * const exampleResult =
         octaspire_dern_value_as_vector_get_element_at(arguments, numArgs - 1);
 
-    //printf("-----example args are-------\n");
-    //octaspire_dern_value_print(exampleArgs, octaspire_dern_vm_get_allocator(vm));
+    octaspire_container_vector_permutation_iterator_t *iter =
+        octaspire_container_vector_permutation_iterator_new(
+            exampleArgs->value.vector,
+            octaspire_dern_vm_get_allocator(vm));
 
-
-
-    // Permutations are generated with Heap's algorithm
-    octaspire_container_vector_t *counts = octaspire_container_vector_new(
-        sizeof(int),
-        false,
-        0,
-        octaspire_dern_vm_get_allocator(vm));
-
-
-    for (size_t i = 0; i < octaspire_dern_value_as_vector_get_length(exampleArgs); ++i)
+    do
     {
-        int const zero = 0;
-        octaspire_container_vector_push_back_element(counts, &zero);
+        octaspire_dern_stdlib_private_special_howto_helper(
+            vm,
+            exampleArgs,
+            exampleResult,
+            environment,
+            result);
     }
+    while (octaspire_container_vector_permutation_iterator_next(iter));
 
-    octaspire_dern_stdlib_private_special_howto_helper(
-        vm,
-        exampleArgs,
-        exampleResult,
-        environment,
-        result);
-
-    size_t i = 0;
-    while (i < octaspire_dern_value_as_vector_get_length(exampleArgs))
-    {
-        int ci = *(int const * const)
-            octaspire_container_vector_get_element_at(counts, i);
-
-        if (ci < (int)i)
-        {
-            if (i % 2 == 0)
-            {
-                octaspire_helpers_verify_true(octaspire_container_vector_swap(
-                    exampleArgs->value.vector,
-                    0,
-                    i));
-            }
-            else
-            {
-                octaspire_helpers_verify_true(octaspire_container_vector_swap(
-                    exampleArgs->value.vector,
-                    ci,
-                    i));
-            }
-
-            octaspire_dern_stdlib_private_special_howto_helper(
-                vm,
-                exampleArgs,
-                exampleResult,
-                environment,
-                result);
-
-            ++ci;
-
-            octaspire_helpers_verify_true(
-                octaspire_container_vector_replace_element_at(counts, i, &ci));
-
-            i = 0;
-        }
-        else
-        {
-            ci = 0;
-
-            octaspire_helpers_verify_true(
-                octaspire_container_vector_replace_element_at(counts, i, &ci));
-
-            ++i;
-        }
-    }
-
-    octaspire_container_vector_release(counts);
-    counts = 0;
+    octaspire_container_vector_permutation_iterator_release(iter);
+    iter = 0;
 
     octaspire_dern_vm_pop_value(vm, exampleArgs);
     octaspire_dern_vm_pop_value(vm, result);
