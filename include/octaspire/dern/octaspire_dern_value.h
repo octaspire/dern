@@ -85,6 +85,11 @@ octaspire_dern_function_t *octaspire_dern_function_new(
     struct octaspire_dern_value_t *definitionEnvironment,
     octaspire_memory_allocator_t  *allocator);
 
+octaspire_dern_function_t *octaspire_dern_function_new_copy(
+    octaspire_dern_function_t const * const other,
+    struct octaspire_dern_vm_t * const vm,
+    octaspire_memory_allocator_t  *allocator);
+
 void octaspire_dern_function_release(octaspire_dern_function_t *self);
 
 bool octaspire_dern_function_set_howto_data(
@@ -119,6 +124,10 @@ octaspire_dern_special_t *octaspire_dern_special_new(
     char const * const docstr,
     bool const howtoAllowed);
 
+octaspire_dern_special_t *octaspire_dern_special_new_copy(
+    octaspire_dern_special_t * const other,
+    octaspire_memory_allocator_t * const allocator);
+
 void octaspire_dern_special_release(octaspire_dern_special_t *self);
 
 size_t octaspire_dern_special_get_number_of_required_arguments(
@@ -149,6 +158,10 @@ octaspire_dern_builtin_t *octaspire_dern_builtin_new(
     size_t const numRequiredActualArguments,
     char const * const docstr,
     bool const howtoAllowed);
+
+octaspire_dern_builtin_t *octaspire_dern_builtin_new_copy(
+    octaspire_dern_builtin_t * const other,
+    octaspire_memory_allocator_t * const allocator);
 
 void octaspire_dern_builtin_release(octaspire_dern_builtin_t *self);
 

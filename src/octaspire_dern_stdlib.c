@@ -8496,12 +8496,6 @@ bool octaspire_dern_stdlib_private_special_howto_helper(
         octaspire_container_hash_map_element_t * const element =
             octaspire_dern_environment_get_at_index(actualEnv, i);
 
-        //octaspire_dern_value_t *name =
-        //    octaspire_container_hash_map_element_get_key(element);
-
-        //printf("\nNAME: ");
-        //octaspire_dern_value_print(name, octaspire_dern_vm_get_allocator(vm));
-
         octaspire_dern_value_t * const value =
             octaspire_container_hash_map_element_get_value(element);
 
@@ -8544,15 +8538,14 @@ bool octaspire_dern_stdlib_private_special_howto_helper(
                     octaspire_dern_value_as_vector_push_back_element(form, &tmpArg);
                 }
 
-                //octaspire_dern_value_print(form, octaspire_dern_vm_get_allocator(vm));
-
+                // TODO Check why 'form' might be modified during evaluation.
+                // (howto 1 2 3) works without copying, but (howto [a] [b] [ab])
+                // doesn't work if 'form' is not copied before evaluation.
                 octaspire_dern_value_t * const evaluatedValue =
                     octaspire_dern_vm_eval(
                         vm,
-                        form,
+                        octaspire_dern_vm_create_new_value_copy(vm, form), // eval pushes
                         environment);
-
-
 
                 octaspire_dern_vm_push_value(vm, evaluatedValue);
 

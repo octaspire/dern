@@ -61,6 +61,87 @@ octaspire_dern_environment_t *octaspire_dern_environment_new(
     return self;
 }
 
+octaspire_dern_environment_t *octaspire_dern_environment_new_copy(
+    octaspire_dern_environment_t * const other,
+    struct octaspire_dern_vm_t * const vm,
+    octaspire_memory_allocator_t * const allocator)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_dern_environment_t *self =
+        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_environment_t));
+
+    if (!self)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return 0;
+    }
+
+    self->allocator = allocator;
+    self->vm        = vm;
+
+    self->enclosing = octaspire_dern_vm_create_new_value_copy(vm, other->enclosing);
+
+
+    self->bindings  = octaspire_container_hash_map_new(
+        sizeof(octaspire_dern_value_t*),
+        true,
+        sizeof(octaspire_dern_value_t*),
+        true,
+        (octaspire_container_hash_map_key_compare_function_t)octaspire_dern_value_is_equal,
+        (octaspire_container_hash_map_key_hash_function_t)octaspire_dern_value_get_hash,
+        0,
+        0,
+        allocator);
+
+    octaspire_container_hash_map_element_iterator_t iter =
+        octaspire_container_hash_map_element_iterator_init(other->bindings);
+
+    do
+    {
+        if (iter.element)
+        {
+            octaspire_dern_value_t * const keyVal =
+                octaspire_container_hash_map_element_get_key(iter.element);
+
+            octaspire_dern_value_t * const copyOfKeyVal =
+                octaspire_dern_vm_create_new_value_copy(vm, keyVal);
+
+            octaspire_dern_vm_push_value(vm, copyOfKeyVal);
+
+            octaspire_dern_value_t * const valVal =
+                octaspire_container_hash_map_element_get_value(iter.element);
+
+            octaspire_dern_value_t * const copyOfValVal =
+                octaspire_dern_vm_create_new_value_copy(vm, valVal);
+
+            octaspire_dern_vm_push_value(vm, copyOfValVal);
+
+            octaspire_dern_vm_pop_value(vm, copyOfValVal);
+            octaspire_dern_vm_pop_value(vm, copyOfKeyVal);
+
+            if (octaspire_container_hash_map_put(
+                    self->bindings,
+                    octaspire_dern_value_get_hash(copyOfKeyVal),
+                    &copyOfKeyVal,
+                    &copyOfValVal))
+            {
+                abort();
+            }
+
+        }
+    }
+    while (octaspire_container_hash_map_element_iterator_next(&iter));
+
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return self;
+}
+
 void octaspire_dern_environment_release(octaspire_dern_environment_t *self)
 {
     if (!self)

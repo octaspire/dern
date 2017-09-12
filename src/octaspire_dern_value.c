@@ -90,6 +90,67 @@ octaspire_dern_function_t *octaspire_dern_function_new(
     return self;
 }
 
+octaspire_dern_function_t *octaspire_dern_function_new_copy(
+    octaspire_dern_function_t const * const other,
+    octaspire_dern_vm_t * const vm,
+    octaspire_memory_allocator_t  *allocator)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_dern_function_t *self =
+        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_function_t));
+
+    if (!self)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return 0;
+    }
+
+    self->name 
+        = octaspire_container_utf8_string_new_copy(other->name, allocator);
+
+    self->docstr
+        = octaspire_container_utf8_string_new_copy(other->docstr, allocator);
+
+    self->howtoAllowed = other->howtoAllowed;
+
+
+
+    self->formals =
+        octaspire_dern_vm_create_new_value_copy(vm, other->formals);
+
+    octaspire_dern_vm_push_value(vm, self->formals);
+
+
+
+    self->body =
+        octaspire_dern_vm_create_new_value_copy(vm, other->body);
+
+    octaspire_dern_vm_push_value(vm, self->body);
+
+
+
+    self->definitionEnvironment =
+        octaspire_dern_vm_create_new_value_copy(vm, other->definitionEnvironment);
+
+    octaspire_dern_vm_push_value(vm, self->definitionEnvironment);
+
+
+
+    self->allocator             = allocator;
+
+
+
+    octaspire_dern_vm_pop_value(vm, self->definitionEnvironment);
+    octaspire_dern_vm_pop_value(vm, self->body);
+    octaspire_dern_vm_pop_value(vm, self->formals);
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return self;
+}
+
 void octaspire_dern_function_release(octaspire_dern_function_t *self)
 {
     if (!self)
@@ -320,6 +381,34 @@ octaspire_dern_special_t *octaspire_dern_special_new(
     return self;
 }
 
+octaspire_dern_special_t *octaspire_dern_special_new_copy(
+    octaspire_dern_special_t * const other,
+    octaspire_memory_allocator_t * const allocator)
+{
+    octaspire_dern_special_t *self =
+        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_special_t));
+
+    if (!self)
+    {
+        return 0;
+    }
+
+    self->cFunction                  = other->cFunction;
+    self->allocator                  = allocator;
+
+    self->name                       = 
+        octaspire_container_utf8_string_new_copy(other->name, allocator);
+
+    self->numRequiredActualArguments = other->numRequiredActualArguments;
+
+    self->docstr                     = 
+        octaspire_container_utf8_string_new_copy(other->docstr, allocator);
+
+    self->howtoAllowed               = other->howtoAllowed;
+
+    return self;
+}
+
 void octaspire_dern_special_release(octaspire_dern_special_t *self)
 {
     if (!self)
@@ -398,6 +487,34 @@ octaspire_dern_builtin_t *octaspire_dern_builtin_new(
         octaspire_container_utf8_string_new(docstr, allocator);
 
     self->howtoAllowed               = howtoAllowed;
+
+    return self;
+}
+
+octaspire_dern_builtin_t *octaspire_dern_builtin_new_copy(
+    octaspire_dern_builtin_t * const other,
+    octaspire_memory_allocator_t * const allocator)
+{
+    octaspire_dern_builtin_t *self =
+        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_builtin_t));
+
+    if (!self)
+    {
+        return 0;
+    }
+
+    self->cFunction                  = other->cFunction;
+    self->allocator                  = allocator;
+
+    self->name                       =
+        octaspire_container_utf8_string_new_copy(other->name, allocator);
+
+    self->numRequiredActualArguments = other->numRequiredActualArguments;
+
+    self->docstr                     =
+        octaspire_container_utf8_string_new_copy(other->docstr, allocator);
+
+    self->howtoAllowed               = other->howtoAllowed;
 
     return self;
 }

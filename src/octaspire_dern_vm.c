@@ -1705,13 +1705,43 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
         break;
 
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        {
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        {
+            result->value.environment = octaspire_dern_environment_new_copy(
+                valueToBeCopied->value.environment,
+                self,
+                self->allocator);
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        {
+            result->value.function = octaspire_dern_function_new_copy(
+                valueToBeCopied->value.function,
+                self,
+                self->allocator);
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        {
+            result->value.special = octaspire_dern_special_new_copy(
+                valueToBeCopied->value.special,
+                self->allocator);
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         {
-            abort();
+            result->value.builtin = octaspire_dern_builtin_new_copy(
+                valueToBeCopied->value.builtin,
+                self->allocator);
         }
+        break;
 
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         {

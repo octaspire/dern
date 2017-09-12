@@ -42,6 +42,11 @@ octaspire_dern_environment_t *octaspire_dern_environment_new(
     struct octaspire_dern_vm_t *vm,
     octaspire_memory_allocator_t *allocator);
 
+octaspire_dern_environment_t *octaspire_dern_environment_new_copy(
+    octaspire_dern_environment_t * const other,
+    struct octaspire_dern_vm_t * const vm,
+    octaspire_memory_allocator_t * const allocator);
+
 void octaspire_dern_environment_release(octaspire_dern_environment_t *self);
 
 // Returns 0 or error
