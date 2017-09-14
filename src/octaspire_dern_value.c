@@ -1213,9 +1213,20 @@ bool octaspire_dern_value_is_less_than(
                     other->value.symbol) < 0);
         }
 
-        // TODO XXX implement the rest
         case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.comment,
+                    other->value.comment) < 0);
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.error,
+                    other->value.error) < 0);
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
@@ -1307,9 +1318,21 @@ bool octaspire_dern_value_is_greater_than(
                     other->value.symbol) > 0);
         }
 
-        // TODO XXX implement the rest
         case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.comment,
+                    other->value.comment) > 0);
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.error,
+                    other->value.error) > 0);
+        }
+
+        // TODO XXX implement the rest
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
@@ -1395,9 +1418,21 @@ bool octaspire_dern_value_is_less_than_or_equal(
                     other->value.symbol) <= 0);
         }
 
-        // TODO XXX implement the rest
         case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.comment,
+                    other->value.comment) <= 0);
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.error,
+                    other->value.error) <= 0);
+        }
+
+        // TODO XXX implement the rest
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
@@ -1484,9 +1519,21 @@ bool octaspire_dern_value_is_greater_than_or_equal(
                     other->value.symbol) >= 0);
         }
 
-        // TODO XXX implement the rest
         case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.comment,
+                    other->value.comment) >= 0);
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        {
+            return (octaspire_container_utf8_string_compare(
+                    self->value.error,
+                    other->value.error) >= 0);
+        }
+
+        // TODO XXX implement the rest
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
