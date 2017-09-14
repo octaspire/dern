@@ -11930,7 +11930,7 @@ TEST octaspire_dern_vm_require_a_source_library_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_special_howto_test(void)
+TEST octaspire_dern_vm_special_howto_1_2_3_test(void)
 {
     octaspire_dern_vm_t *vm =
         octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -11948,6 +11948,64 @@ TEST octaspire_dern_vm_special_howto_test(void)
 
     ASSERT_STR_EQ(
         "((+ 1 2) (+ 2 1))",
+        octaspire_container_utf8_string_get_c_string(tmpStr));
+
+    octaspire_container_utf8_string_release(tmpStr);
+    tmpStr = 0;
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_howto_strings_a_b_ab_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(howto [a] [b] [ab])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
+
+    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        evaluatedValue,
+        octaspire_dern_vm_get_allocator(vm));
+
+    ASSERT_STR_EQ(
+        "((+ [a] [b]))",
+        octaspire_container_utf8_string_get_c_string(tmpStr));
+
+    octaspire_container_utf8_string_release(tmpStr);
+    tmpStr = 0;
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_howto_chars_a_b_string_ab_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(howto |a| |b| [ab])");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
+
+    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        evaluatedValue,
+        octaspire_dern_vm_get_allocator(vm));
+
+    ASSERT_STR_EQ(
+        "((+ |a| |b|))",
         octaspire_container_utf8_string_get_c_string(tmpStr));
 
     octaspire_container_utf8_string_release(tmpStr);
@@ -12342,7 +12400,9 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
 
     RUN_TEST(octaspire_dern_vm_require_a_source_library_test);
 
-    RUN_TEST(octaspire_dern_vm_special_howto_test);
+    RUN_TEST(octaspire_dern_vm_special_howto_1_2_3_test);
+    RUN_TEST(octaspire_dern_vm_special_howto_strings_a_b_ab_test);
+    RUN_TEST(octaspire_dern_vm_special_howto_chars_a_b_string_ab_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;
