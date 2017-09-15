@@ -1667,6 +1667,156 @@ TEST octaspire_dern_vm_builtin_plus_empty_string_and_characters_k_i_t_t_e_n_test
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_plus_vector_1_2_3_and_4_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+ '(1 2 3) 4)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
+
+    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        evaluatedValue,
+        octaspire_dern_vm_get_allocator(vm));
+
+    ASSERT_STR_EQ(
+        "(1 2 3 4)",
+        octaspire_container_utf8_string_get_c_string(tmpStr));
+
+    octaspire_container_utf8_string_release(tmpStr);
+    tmpStr = 0;
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_vector_1_2_3_and_4_and_a_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+ '(1 2 3) 4 |a|)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
+
+    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        evaluatedValue,
+        octaspire_dern_vm_get_allocator(vm));
+
+    ASSERT_STR_EQ(
+        "(1 2 3 4 |a|)",
+        octaspire_container_utf8_string_get_c_string(tmpStr));
+
+    octaspire_container_utf8_string_release(tmpStr);
+    tmpStr = 0;
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_empty_vector_and_1_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+ '() 1)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
+
+    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        evaluatedValue,
+        octaspire_dern_vm_get_allocator(vm));
+
+    ASSERT_STR_EQ(
+        "(1)",
+        octaspire_container_utf8_string_get_c_string(tmpStr));
+
+    octaspire_container_utf8_string_release(tmpStr);
+    tmpStr = 0;
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_empty_vector_and_empty_vector_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+ '() '())");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
+
+    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        evaluatedValue,
+        octaspire_dern_vm_get_allocator(vm));
+
+    ASSERT_STR_EQ(
+        "(())",
+        octaspire_container_utf8_string_get_c_string(tmpStr));
+
+    octaspire_container_utf8_string_release(tmpStr);
+    tmpStr = 0;
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_plus_empty_vector_and_empty_vector_and_empty_vector_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(+ '() '() '())");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
+
+    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        evaluatedValue,
+        octaspire_dern_vm_get_allocator(vm));
+
+    ASSERT_STR_EQ(
+        "(() ())",
+        octaspire_container_utf8_string_get_c_string(tmpStr));
+
+    octaspire_container_utf8_string_release(tmpStr);
+    tmpStr = 0;
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_minus_string_cat_dog_cat_and_string_cat_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -12124,6 +12274,11 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_builtin_plus_string_cat_dog_and_string_space_and_string_zebra_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_string_ca_and_character_t_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_empty_string_and_characters_k_i_t_t_e_n_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_vector_1_2_3_and_4_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_vector_1_2_3_and_4_and_a_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_empty_vector_and_1_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_empty_vector_and_empty_vector_test);
+    RUN_TEST(octaspire_dern_vm_builtin_plus_empty_vector_and_empty_vector_and_empty_vector_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_string_cat_dog_cat_and_string_cat_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_and_character_b_test);
