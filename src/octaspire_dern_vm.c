@@ -1706,6 +1706,69 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
 
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         {
+            result->value.hashMap = octaspire_container_hash_map_new(
+                sizeof(octaspire_dern_value_t*),
+                true,
+                sizeof(octaspire_dern_value_t*),
+                true,
+                (octaspire_container_hash_map_key_compare_function_t)
+                    octaspire_dern_value_is_equal,
+                (octaspire_container_hash_map_key_hash_function_t)
+                    octaspire_dern_value_get_hash,
+                0,
+                0,
+                self->allocator);
+
+            octaspire_container_hash_map_element_iterator_t iter =
+                octaspire_container_hash_map_element_iterator_init(
+                    valueToBeCopied->value.hashMap);
+            do
+            {
+                if (iter.element)
+                {
+                    octaspire_dern_value_t * const keyToCopy =
+                        octaspire_container_hash_map_element_get_key(iter.element);
+
+                    octaspire_dern_value_t * const valToCopy =
+                        octaspire_container_hash_map_element_get_value(iter.element);
+
+                    octaspire_helpers_verify_not_null(keyToCopy);
+                    octaspire_helpers_verify_not_null(valToCopy);
+
+
+
+                    octaspire_dern_value_t * const copyOfKeyVal =
+                        octaspire_dern_vm_create_new_value_copy(self, keyToCopy);
+
+                    octaspire_helpers_verify_not_null(copyOfKeyVal);
+
+                    octaspire_dern_vm_push_value(self, copyOfKeyVal);
+
+
+
+                    octaspire_dern_value_t * const copyOfValVal =
+                        octaspire_dern_vm_create_new_value_copy(self, valToCopy);
+
+                    octaspire_helpers_verify_not_null(copyOfValVal);
+
+                    octaspire_dern_vm_push_value(self, copyOfValVal);
+
+
+
+                    if (!octaspire_container_hash_map_put(
+                            result->value.hashMap,
+                            octaspire_dern_value_get_hash(copyOfKeyVal),
+                            &copyOfKeyVal,
+                            &copyOfValVal))
+                    {
+                        abort();
+                    }
+
+                    octaspire_dern_vm_pop_value(self, copyOfValVal);
+                    octaspire_dern_vm_pop_value(self, copyOfKeyVal);
+                }
+            }
+            while (octaspire_container_hash_map_element_iterator_next(&iter));
         }
         break;
 
