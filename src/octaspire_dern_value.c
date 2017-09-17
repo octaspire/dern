@@ -1235,8 +1235,88 @@ bool octaspire_dern_value_is_equal(
             return true;
         }
 
-        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:       return self->value.queue == other->value.queue;
-        case OCTASPIRE_DERN_VALUE_TAG_LIST:        return self->value.list == other->value.list;
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        {
+            if (octaspire_dern_value_as_queue_get_length(self) !=
+                octaspire_dern_value_as_queue_get_length(other))
+            {
+                return false;
+            }
+
+            octaspire_container_queue_iterator_t myIter =
+                octaspire_container_queue_iterator_init(self->value.queue);
+
+            octaspire_container_queue_iterator_t otherIter =
+                octaspire_container_queue_iterator_init(other->value.queue);
+
+            while (myIter.iterator.currentNode)
+            {
+                octaspire_helpers_verify_not_null(otherIter.iterator.currentNode);
+
+                octaspire_dern_value_t const * const myVal =
+                    octaspire_container_list_node_get_element(
+                        myIter.iterator.currentNode);
+
+                octaspire_dern_value_t const * const otherVal =
+                    octaspire_container_list_node_get_element(
+                        otherIter.iterator.currentNode);
+
+                octaspire_helpers_verify_not_null(myVal);
+                octaspire_helpers_verify_not_null(otherVal);
+
+                if (!octaspire_dern_value_is_equal(myVal, otherVal))
+                {
+                    return false;
+                }
+
+                octaspire_container_queue_iterator_next(&myIter);
+                octaspire_container_queue_iterator_next(&otherIter);
+            }
+
+            return true;
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        {
+            if (octaspire_dern_value_as_list_get_length(self) !=
+                octaspire_dern_value_as_list_get_length(other))
+            {
+                return false;
+            }
+
+            octaspire_container_list_node_iterator_t myIter =
+                octaspire_container_list_node_iterator_init(self->value.list);
+
+            octaspire_container_list_node_iterator_t otherIter =
+                octaspire_container_list_node_iterator_init(other->value.list);
+
+            while (myIter.currentNode)
+            {
+                octaspire_helpers_verify_not_null(otherIter.currentNode);
+
+                octaspire_dern_value_t const * const myVal =
+                    octaspire_container_list_node_get_element(
+                        myIter.currentNode);
+
+                octaspire_dern_value_t const * const otherVal =
+                    octaspire_container_list_node_get_element(
+                        otherIter.currentNode);
+
+                octaspire_helpers_verify_not_null(myVal);
+                octaspire_helpers_verify_not_null(otherVal);
+
+                if (!octaspire_dern_value_is_equal(myVal, otherVal))
+                {
+                    return false;
+                }
+
+                octaspire_container_list_node_iterator_next(&myIter);
+                octaspire_container_list_node_iterator_next(&otherIter);
+            }
+
+            return true;
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return self->value.environment == other->value.environment;
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return self->value.function == other->value.function;
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special == other->value.special;
@@ -2372,6 +2452,13 @@ bool octaspire_dern_value_as_queue_pop(octaspire_dern_value_t * const self)
     return octaspire_container_queue_pop(self->value.queue);
 }
 
+size_t octaspire_dern_value_as_queue_get_length(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_QUEUE);
+    return octaspire_container_queue_get_length(self->value.queue);
+}
+
 bool octaspire_dern_value_as_list_push_back(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const toBeAdded)
@@ -2393,6 +2480,13 @@ bool octaspire_dern_value_as_list_pop_back(octaspire_dern_value_t * const self)
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST);
     return octaspire_container_list_pop_back(self->value.list);
+}
+
+size_t octaspire_dern_value_as_list_get_length(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST);
+    return octaspire_container_list_get_length(self->value.list);
 }
 
 bool octaspire_dern_value_as_character_add(

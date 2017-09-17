@@ -378,11 +378,17 @@ bool octaspire_dern_value_as_queue_push(
 
 bool octaspire_dern_value_as_queue_pop(octaspire_dern_value_t * const self);
 
+size_t octaspire_dern_value_as_queue_get_length(
+    octaspire_dern_value_t const * const self);
+
 bool octaspire_dern_value_as_list_push_back(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const toBeAdded);
 
 bool octaspire_dern_value_as_list_pop_back(octaspire_dern_value_t * const self);
+
+size_t octaspire_dern_value_as_list_get_length(
+    octaspire_dern_value_t const * const self);
 
 bool octaspire_dern_value_as_character_add(
     octaspire_dern_value_t * const self,
