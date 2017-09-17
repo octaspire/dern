@@ -1066,6 +1066,11 @@ bool octaspire_dern_value_is_equal(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_t const * const other)
 {
+    if (self == other)
+    {
+        return true;
+    }
+
     if (octaspire_dern_value_is_number(self))
     {
         if (!octaspire_dern_value_is_number(other))
@@ -1117,12 +1122,73 @@ bool octaspire_dern_value_is_equal(
                    self->value.real <= other->value.integer;
         }
 
-        case OCTASPIRE_DERN_VALUE_TAG_STRING:      return octaspire_container_utf8_string_is_equal(self->value.string, other->value.string);
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:      return octaspire_container_utf8_string_is_equal(self->value.comment, other->value.comment);
-        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:   return octaspire_container_utf8_string_is_equal(self->value.character, other->value.character);
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:      return octaspire_container_utf8_string_is_equal(self->value.symbol, other->value.symbol);
-        case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_is_equal(self->value.error, other->value.error);
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return self->value.vector == other->value.vector;
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            return octaspire_container_utf8_string_is_equal(
+                self->value.string,
+                other->value.string);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        {
+            return octaspire_container_utf8_string_is_equal(
+                self->value.comment,
+                other->value.comment);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        {
+            return octaspire_container_utf8_string_is_equal(
+                self->value.character,
+                other->value.character);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            return octaspire_container_utf8_string_is_equal(
+                self->value.symbol,
+                other->value.symbol);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        {
+            return octaspire_container_utf8_string_is_equal(
+                self->value.error,
+                other->value.error);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        {
+            if (octaspire_dern_value_as_vector_get_length(self) !=
+                octaspire_dern_value_as_vector_get_length(other))
+            {
+                return false;
+            }
+
+            for (size_t i = 0; i < octaspire_dern_value_as_vector_get_length(self); ++i)
+            {
+                octaspire_dern_value_t const * const valA =
+                    octaspire_dern_value_as_vector_get_element_at_const(
+                        self,
+                        i);
+
+                octaspire_dern_value_t const * const valB =
+                    octaspire_dern_value_as_vector_get_element_at_const(
+                        other,
+                        i);
+
+                octaspire_helpers_verify_not_null(valA);
+                octaspire_helpers_verify_not_null(valB);
+
+                if (!octaspire_dern_value_is_equal(valA, valB))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         {
             if (octaspire_dern_value_as_hash_map_get_number_of_elements(self) !=

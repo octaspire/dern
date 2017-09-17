@@ -1154,12 +1154,11 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
-    // TODO XXX move to other builtins
     // ==
-    if (!octaspire_dern_vm_create_and_register_new_builtin(
+    if (!octaspire_dern_vm_create_and_register_new_special(
         self,
         "==",
-        octaspire_dern_vm_builtin_equals_equals,
+        octaspire_dern_vm_special_equals_equals,
         1,
         "Predicate telling whether all the given values are equal. "
         "Takes 2..n arguments. Evaluates arguments only as long as those are equal. "

@@ -1,12 +1,12 @@
 This is amalgamated single file source release for Octaspire Dern programming
-language version 0.235.0. File 'octaspire-dern-amalgamated.c'
+language version 0.236.0. File 'octaspire-dern-amalgamated.c'
 is all that is needed; it has no other dependencies than a C compiler and
 standard library supporting C99.
 
 SHA-512 checksums for this and older releases can be found from:
 https://octaspire.github.io/dern/
-If you want to check this release, download checksums for version 0.235.0 from:
-https://octaspire.github.io/dern/checksums-0.235.0
+If you want to check this release, download checksums for version 0.236.0 from:
+https://octaspire.github.io/dern/checksums-0.236.0
 
 Building instructions for all supported platforms (and scripts for building
 automatically) can be found in directory 'how-to-build'. Look for a file that

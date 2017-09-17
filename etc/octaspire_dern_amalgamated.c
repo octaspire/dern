@@ -20337,10 +20337,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "235"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "236"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.235.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.236.0"
 
 
 
@@ -22073,7 +22073,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_equals(
     octaspire_dern_value_t *environment);
 
 // TODO move to other builtins
-octaspire_dern_value_t *octaspire_dern_vm_builtin_equals_equals(
+octaspire_dern_value_t *octaspire_dern_vm_special_equals_equals(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
@@ -28906,7 +28906,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_equals(
 }
 
 
-octaspire_dern_value_t *octaspire_dern_vm_builtin_equals_equals(
+octaspire_dern_value_t *octaspire_dern_vm_special_equals_equals(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment)
@@ -28967,7 +28967,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_exclamation_equals(
     octaspire_dern_value_t *environment)
 {
     octaspire_dern_value_t *tmpVal =
-        octaspire_dern_vm_builtin_equals_equals(vm, arguments, environment);
+        octaspire_dern_vm_special_equals_equals(vm, arguments, environment);
 
     if (tmpVal->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
     {
@@ -36384,6 +36384,11 @@ bool octaspire_dern_value_is_equal(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_t const * const other)
 {
+    if (self == other)
+    {
+        return true;
+    }
+
     if (octaspire_dern_value_is_number(self))
     {
         if (!octaspire_dern_value_is_number(other))
@@ -36435,12 +36440,73 @@ bool octaspire_dern_value_is_equal(
                    self->value.real <= other->value.integer;
         }
 
-        case OCTASPIRE_DERN_VALUE_TAG_STRING:      return octaspire_container_utf8_string_is_equal(self->value.string, other->value.string);
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:      return octaspire_container_utf8_string_is_equal(self->value.comment, other->value.comment);
-        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:   return octaspire_container_utf8_string_is_equal(self->value.character, other->value.character);
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:      return octaspire_container_utf8_string_is_equal(self->value.symbol, other->value.symbol);
-        case OCTASPIRE_DERN_VALUE_TAG_ERROR:       return octaspire_container_utf8_string_is_equal(self->value.error, other->value.error);
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:      return self->value.vector == other->value.vector;
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            return octaspire_container_utf8_string_is_equal(
+                self->value.string,
+                other->value.string);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
+        {
+            return octaspire_container_utf8_string_is_equal(
+                self->value.comment,
+                other->value.comment);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        {
+            return octaspire_container_utf8_string_is_equal(
+                self->value.character,
+                other->value.character);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            return octaspire_container_utf8_string_is_equal(
+                self->value.symbol,
+                other->value.symbol);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        {
+            return octaspire_container_utf8_string_is_equal(
+                self->value.error,
+                other->value.error);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        {
+            if (octaspire_dern_value_as_vector_get_length(self) !=
+                octaspire_dern_value_as_vector_get_length(other))
+            {
+                return false;
+            }
+
+            for (size_t i = 0; i < octaspire_dern_value_as_vector_get_length(self); ++i)
+            {
+                octaspire_dern_value_t const * const valA =
+                    octaspire_dern_value_as_vector_get_element_at_const(
+                        self,
+                        i);
+
+                octaspire_dern_value_t const * const valB =
+                    octaspire_dern_value_as_vector_get_element_at_const(
+                        other,
+                        i);
+
+                octaspire_helpers_verify_not_null(valA);
+                octaspire_helpers_verify_not_null(valB);
+
+                if (!octaspire_dern_value_is_equal(valA, valB))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         {
             if (octaspire_dern_value_as_hash_map_get_number_of_elements(self) !=
@@ -40418,12 +40484,11 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
-    // TODO XXX move to other builtins
     // ==
-    if (!octaspire_dern_vm_create_and_register_new_builtin(
+    if (!octaspire_dern_vm_create_and_register_new_special(
         self,
         "==",
-        octaspire_dern_vm_builtin_equals_equals,
+        octaspire_dern_vm_special_equals_equals,
         1,
         "Predicate telling whether all the given values are equal. "
         "Takes 2..n arguments. Evaluates arguments only as long as those are equal. "
@@ -56647,10 +56712,97 @@ TEST octaspire_dern_vm_special_less_than_or_equal_called_with_real_9dot9_and_int
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_equals_equals_called_with_two_equal_vectors_of_integers_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
 
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define v1 as '(1 2 3 4 5) [v1])");
 
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
 
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define v2 as '(1 2 3 4 5) [v2])");
 
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(== v1 v2)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(== v2 v2)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_equals_equals_called_with_two_unequal_vectors_of_integers_with_different_lengths_5_and_6_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define v1 as '(1 2 3 4 5) [v1])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define v2 as '(1 2 3 4 5 6) [v2])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(== v1 v2)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(== v2 v1)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                             evaluatedValue->value.boolean);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
 
 TEST octaspire_dern_vm_builtin_equals_equals_called_with_two_reals_test(void)
 {
@@ -60778,6 +60930,8 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_special_less_than_or_equal_called_with_real_10dot1_and_integer_10_test);
     RUN_TEST(octaspire_dern_vm_special_less_than_or_equal_called_with_real_9dot9_and_integer_10_test);
 
+    RUN_TEST(octaspire_dern_vm_builtin_equals_equals_called_with_two_equal_vectors_of_integers_test);
+    RUN_TEST(octaspire_dern_vm_builtin_equals_equals_called_with_two_unequal_vectors_of_integers_with_different_lengths_5_and_6_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_equals_called_with_two_reals_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_equals_called_with_two_integers_test);
     RUN_TEST(octaspire_dern_vm_buildin_equals_equals_called_with_integer_9_and_reals_9dot1_and_9dot0_test);
