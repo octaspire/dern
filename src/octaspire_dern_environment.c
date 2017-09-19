@@ -21,6 +21,7 @@ limitations under the License.
 #include <octaspire/core/octaspire_helpers.h>
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include "octaspire/dern/octaspire_dern_value.h"
+#include "octaspire/dern/octaspire_dern_helpers.h"
 
 static octaspire_container_utf8_string_t *octaspire_dern_environment_private_to_string(
     octaspire_dern_environment_t const * const self,
@@ -578,5 +579,14 @@ bool octaspire_dern_environment_mark(octaspire_dern_environment_t *self)
     }
 
     return true;
+}
+
+bool octaspire_dern_environment_is_equal(
+    octaspire_dern_environment_t const * const self,
+    octaspire_dern_environment_t const * const other)
+{
+    return octaspire_dern_helpers_are_value_hash_maps_equal(
+        self->bindings,
+        other->bindings);
 }
 

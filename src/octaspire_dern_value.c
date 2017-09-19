@@ -24,6 +24,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_environment.h"
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include "octaspire/dern/octaspire_dern_port.h"
+#include "octaspire/dern/octaspire_dern_helpers.h"
 
 static char const * const octaspire_dern_value_helper_type_tags_as_c_strings[] =
 {
@@ -1066,6 +1067,9 @@ bool octaspire_dern_value_is_equal(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_t const * const other)
 {
+    octaspire_helpers_verify_not_null(self);
+    octaspire_helpers_verify_not_null(other);
+
     if (self == other)
     {
         return true;
@@ -1191,48 +1195,9 @@ bool octaspire_dern_value_is_equal(
 
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         {
-            if (octaspire_dern_value_as_hash_map_get_number_of_elements(self) !=
-                octaspire_dern_value_as_hash_map_get_number_of_elements(other))
-            {
-                return false;
-            }
-
-            octaspire_container_hash_map_element_iterator_t iter =
-                octaspire_container_hash_map_element_iterator_init(self->value.hashMap);
-
-            while (iter.element)
-            {
-                octaspire_dern_value_t const * const myKey =
-                    octaspire_container_hash_map_element_get_key(iter.element);
-
-                octaspire_dern_value_t const * const myVal =
-                    octaspire_container_hash_map_element_get_value(iter.element);
-
-
-
-                octaspire_container_hash_map_element_t const * const otherElem =
-                    octaspire_dern_value_as_hash_map_get_const(
-                        other,
-                        octaspire_dern_value_get_hash(myKey),
-                        myKey);
-
-                if (!otherElem)
-                {
-                    return false;
-                }
-
-                octaspire_dern_value_t const * const otherVal =
-                    octaspire_container_hash_map_element_get_value(otherElem);
-
-                if (!octaspire_dern_value_is_equal(myVal, otherVal))
-                {
-                    return false;
-                }
-
-                octaspire_container_hash_map_element_iterator_next(&iter);
-            }
-
-            return true;
+            return octaspire_dern_helpers_are_value_hash_maps_equal(
+                self->value.hashMap,
+                other->value.hashMap);
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
@@ -1317,7 +1282,13 @@ bool octaspire_dern_value_is_equal(
             return true;
         }
 
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return self->value.environment == other->value.environment;
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        {
+            return octaspire_dern_environment_is_equal(
+                self->value.environment,
+                other->value.environment);
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return self->value.function == other->value.function;
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special == other->value.special;
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin == other->value.builtin;

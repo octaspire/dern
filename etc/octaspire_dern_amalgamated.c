@@ -202,10 +202,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "80"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "81"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.80.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.81.0"
 
 
 
@@ -1397,6 +1397,13 @@ octaspire_container_vector_t *octaspire_container_hash_map_element_get_values(
 void *octaspire_container_hash_map_element_get_value(
     octaspire_container_hash_map_element_t const * const self);
 
+void const *octaspire_container_hash_map_element_get_key_const(
+    octaspire_container_hash_map_element_t const * const self);
+
+void const *octaspire_container_hash_map_element_get_value_const(
+    octaspire_container_hash_map_element_t const * const self);
+
+
 // Hash map
 typedef struct octaspire_container_hash_map_t octaspire_container_hash_map_t;
 
@@ -1464,6 +1471,9 @@ octaspire_container_hash_map_element_t *octaspire_container_hash_map_get_at_inde
     octaspire_container_hash_map_t *self,
     ptrdiff_t const possiblyNegativeIndex);
 
+
+
+
 typedef struct octaspire_container_hash_map_element_iterator_t
 {
     octaspire_container_hash_map_t *hashMap;
@@ -1478,6 +1488,26 @@ octaspire_container_hash_map_element_iterator_t octaspire_container_hash_map_ele
 
 bool octaspire_container_hash_map_element_iterator_next(
     octaspire_container_hash_map_element_iterator_t * const self);
+
+
+
+
+typedef struct octaspire_container_hash_map_element_const_iterator_t
+{
+    octaspire_container_hash_map_t const *hashMap;
+    octaspire_container_hash_map_element_t const *element;
+    size_t bucketIndex;
+    size_t elementInsideBucketIndex;
+}
+octaspire_container_hash_map_element_const_iterator_t;
+
+octaspire_container_hash_map_element_const_iterator_t octaspire_container_hash_map_element_const_iterator_init(
+    octaspire_container_hash_map_t const * const self);
+
+bool octaspire_container_hash_map_element_const_iterator_next(
+    octaspire_container_hash_map_element_const_iterator_t * const self);
+
+
 
 #ifdef __cplusplus
 }
@@ -6519,6 +6549,21 @@ void *octaspire_container_hash_map_element_get_value(
     //return self->valueIsPointer ? (*(void**)self->value) : self->value;
 }
 
+void const *octaspire_container_hash_map_element_get_key_const(
+    octaspire_container_hash_map_element_t const * const self)
+{
+    assert(self);
+    return self->keyIsPointer ? (*(void const**)self->key) : self->key;
+}
+
+void const *octaspire_container_hash_map_element_get_value_const(
+    octaspire_container_hash_map_element_t const * const self)
+{
+    assert(self);
+    assert(octaspire_container_vector_get_length(self->values) < 2);
+    return octaspire_container_vector_get_element_at_const(self->values, 0);
+}
+
 
 
 struct octaspire_container_hash_map_t
@@ -7302,6 +7347,113 @@ bool octaspire_container_hash_map_element_iterator_next(
 
     return self->element != 0;
 }
+
+
+
+
+
+
+octaspire_container_hash_map_element_const_iterator_t
+octaspire_container_hash_map_element_const_iterator_init(
+    octaspire_container_hash_map_t const * const self)
+{
+    octaspire_container_hash_map_element_const_iterator_t iterator;
+
+    iterator.hashMap = self;
+    iterator.bucketIndex = 0;
+    iterator.elementInsideBucketIndex = 0;
+    iterator.element = 0;
+
+    while (!(iterator.element))
+    {
+        if (iterator.bucketIndex < octaspire_container_vector_get_length(self->buckets))
+        {
+            octaspire_container_vector_t const * const bucket =
+                (octaspire_container_vector_t const *)
+                octaspire_container_vector_get_element_at_const(
+                    self->buckets,
+                    (ptrdiff_t)(iterator.bucketIndex));
+
+            size_t const bucketSize = octaspire_container_vector_get_length(bucket);
+
+            for (; iterator.elementInsideBucketIndex < bucketSize; ++(iterator.elementInsideBucketIndex))
+            {
+                iterator.element = (octaspire_container_hash_map_element_t const *)
+                    octaspire_container_vector_get_element_at_const(
+                        bucket,
+                        (ptrdiff_t)(iterator.elementInsideBucketIndex));
+
+                if (iterator.element)
+                {
+                    break;
+                }
+            }
+        }
+        else
+        {
+            break;
+        }
+
+        if (iterator.element)
+        {
+            return iterator;
+        }
+
+        ++(iterator.bucketIndex);
+        iterator.elementInsideBucketIndex = 0;
+    }
+
+    return iterator;
+}
+
+bool octaspire_container_hash_map_element_const_iterator_next(
+    octaspire_container_hash_map_element_const_iterator_t * const self)
+{
+    self->element = 0;
+    ++(self->elementInsideBucketIndex);
+
+    while (!(self->element))
+    {
+        if (self->bucketIndex < octaspire_container_vector_get_length(self->hashMap->buckets))
+        {
+            octaspire_container_vector_t const * const bucket =
+                (octaspire_container_vector_t const *)
+                octaspire_container_vector_get_element_at_const(
+                    self->hashMap->buckets,
+                    (ptrdiff_t)(self->bucketIndex));
+
+            size_t const bucketSize = octaspire_container_vector_get_length(bucket);
+
+            for (; self->elementInsideBucketIndex < bucketSize; ++(self->elementInsideBucketIndex))
+            {
+                self->element = (octaspire_container_hash_map_element_t const *)
+                    octaspire_container_vector_get_element_at_const(
+                        bucket,
+                        (ptrdiff_t)(self->elementInsideBucketIndex));
+
+                if (self->element)
+                {
+                    break;
+                }
+            }
+        }
+        else
+        {
+            break;
+        }
+
+        if (self->element)
+        {
+            return self->element != 0;
+        }
+
+        ++(self->bucketIndex);
+        self->elementInsideBucketIndex = 0;
+    }
+
+    return self->element != 0;
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../src/octaspire_container_hash_map.c
@@ -20237,6 +20389,71 @@ TEST octaspire_container_hash_map_element_iterator_test(void)
     PASS();
 }
 
+TEST octaspire_container_hash_map_element_const_iterator_test(void)
+{
+    octaspire_container_hash_map_t *hashMap = octaspire_container_hash_map_new(
+        sizeof(size_t),
+        false,
+        sizeof(size_t),
+        false,
+        octaspire_container_hash_map_new_test_key_compare_function_for_size_t_keys,
+        octaspire_container_hash_map_new_test_key_hash_function_for_size_t_keys,
+        0,
+        0,
+        octaspireContainerHashMapTestAllocator);
+
+    ASSERT(hashMap);
+
+    octaspire_container_hash_map_element_const_iterator_t iterator =
+        octaspire_container_hash_map_element_const_iterator_init(hashMap);
+
+    ASSERT_EQ(hashMap, iterator.hashMap);
+    ASSERT_EQ(0,       iterator.element);
+
+    for (size_t i = 0; i < 100; ++i)
+    {
+        ASSERT_FALSE(octaspire_container_hash_map_element_const_iterator_next(&iterator));
+
+        ASSERT_EQ(hashMap, iterator.hashMap);
+        ASSERT_EQ(0,       iterator.element);
+    }
+
+    size_t const numElements = 128;
+
+    for (size_t i = 0; i < numElements; ++i)
+    {
+        uint32_t hash = (uint32_t)i;
+
+        octaspire_container_hash_map_put(hashMap, hash, &i, &i);
+    }
+
+    ASSERT_EQ(numElements, octaspire_container_hash_map_get_number_of_elements(hashMap));
+
+    iterator =
+        octaspire_container_hash_map_element_const_iterator_init(hashMap);
+
+    ASSERT_EQ(hashMap, iterator.hashMap);
+
+    size_t counter = 0;
+    while (iterator.element)
+    {
+        ASSERT_EQ(hashMap, iterator.hashMap);
+        ASSERT_EQ(counter, octaspire_container_hash_map_element_get_hash(iterator.element));
+        ASSERT_EQ(counter, *(size_t const*)octaspire_container_hash_map_element_get_key_const(iterator.element));
+        ASSERT_EQ(counter, *(size_t const*)octaspire_container_hash_map_element_get_value_const(iterator.element));
+
+        ++counter;
+        octaspire_container_hash_map_element_const_iterator_next(&iterator);
+    }
+
+    ASSERT_EQ(numElements, counter);
+
+    octaspire_container_hash_map_release(hashMap);
+    hashMap = 0;
+
+    PASS();
+}
+
 TEST octaspire_container_hash_map_get_at_index_test(void)
 {
     octaspire_container_hash_map_t *hashMap = octaspire_container_hash_map_new(
@@ -20315,6 +20532,7 @@ GREATEST_SUITE(octaspire_container_hash_map_suite)
     RUN_TEST(octaspire_container_hash_map_new_keys_ostring_t_and_values_ostring_t_test);
     RUN_TEST(octaspire_container_hash_map_new_with_octaspire_container_utf8_string_keys_test);
     RUN_TEST(octaspire_container_hash_map_element_iterator_test);
+    RUN_TEST(octaspire_container_hash_map_element_const_iterator_test);
 
     RUN_TEST(octaspire_container_hash_map_get_at_index_test);
 
@@ -20567,10 +20785,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "237"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "239"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.237.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.239.0"
 
 
 
@@ -21489,6 +21707,49 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+// START OF        ../include/octaspire/dern/octaspire_dern_helpers.h
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/******************************************************************************
+Octaspire Dern - Programming language
+Copyright 2017 www.octaspire.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+******************************************************************************/
+#ifndef OCTASPIRE_DERN_HELPERS_H
+#define OCTASPIRE_DERN_HELPERS_H
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+bool octaspire_dern_helpers_are_value_hash_maps_equal(
+    octaspire_container_hash_map_t const * const firstValueHashMap,
+    octaspire_container_hash_map_t const * const otherValueHashMap);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// END OF          ../include/octaspire/dern/octaspire_dern_helpers.h
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
 // START OF        ../include/octaspire/dern/octaspire_dern_environment.h
 //////////////////////////////////////////////////////////////////////////////////////////////////
 /******************************************************************************
@@ -21569,6 +21830,10 @@ octaspire_container_hash_map_element_t *octaspire_dern_environment_get_at_index(
     ptrdiff_t const index);
 
 bool octaspire_dern_environment_mark(octaspire_dern_environment_t *self);
+
+bool octaspire_dern_environment_is_equal(
+    octaspire_dern_environment_t const * const self,
+    octaspire_dern_environment_t const * const other);
 
 #ifdef __cplusplus
 }
@@ -23042,6 +23307,15 @@ bool octaspire_dern_environment_mark(octaspire_dern_environment_t *self)
     }
 
     return true;
+}
+
+bool octaspire_dern_environment_is_equal(
+    octaspire_dern_environment_t const * const self,
+    octaspire_dern_environment_t const * const other)
+{
+    return octaspire_dern_helpers_are_value_hash_maps_equal(
+        self->bindings,
+        other->bindings);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26410,6 +26684,62 @@ bool octaspire_dern_port_supports_input(
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+// START OF        ../src/octaspire_dern_helpers.c
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool octaspire_dern_helpers_are_value_hash_maps_equal(
+    octaspire_container_hash_map_t const * const firstValueHashMap,
+    octaspire_container_hash_map_t const * const otherValueHashMap)
+{
+    if (octaspire_container_hash_map_get_number_of_elements(firstValueHashMap) !=
+        octaspire_container_hash_map_get_number_of_elements(otherValueHashMap))
+    {
+        return false;
+    }
+
+    octaspire_container_hash_map_element_const_iterator_t iter =
+        octaspire_container_hash_map_element_const_iterator_init(firstValueHashMap);
+
+    while (iter.element)
+    {
+        octaspire_dern_value_t const * const myKey =
+            octaspire_container_hash_map_element_get_key_const(iter.element);
+
+        octaspire_dern_value_t const * const myVal =
+            octaspire_container_hash_map_element_get_value_const(iter.element);
+
+        octaspire_container_hash_map_element_t const * const otherElem =
+            octaspire_container_hash_map_get_const(
+                otherValueHashMap,
+                octaspire_dern_value_get_hash(myKey),
+                &myKey);
+
+        if (!otherElem)
+        {
+            return false;
+        }
+
+        octaspire_dern_value_t const * const otherVal =
+            octaspire_container_hash_map_element_get_value(otherElem);
+
+        if (!octaspire_dern_value_is_equal(myVal, otherVal))
+        {
+            return false;
+        }
+
+        octaspire_container_hash_map_element_const_iterator_next(&iter);
+    }
+
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// END OF          ../src/octaspire_dern_helpers.c
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
 // START OF        ../src/octaspire_dern_stdlib.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
 /******************************************************************************
@@ -29173,20 +29503,23 @@ octaspire_dern_value_t *octaspire_dern_vm_special_equals_equals(
 
     for (size_t i = 1; i < numArgs; ++i)
     {
-        if (!octaspire_dern_value_is_equal(
-                firstValue,
-                octaspire_dern_vm_eval(
-                    vm,
-                    octaspire_dern_value_as_vector_get_element_at(
-                        arguments,
-                        (ptrdiff_t)i),
-                    environment)))
+        octaspire_dern_value_t *secondValue = octaspire_dern_vm_eval(
+            vm,
+            octaspire_dern_value_as_vector_get_element_at(arguments, (ptrdiff_t)i),
+            environment);
+
+        octaspire_dern_vm_push_value(vm, secondValue);
+
+        if (!octaspire_dern_value_is_equal(firstValue, secondValue))
         {
+            octaspire_dern_vm_pop_value(vm, secondValue);
             octaspire_dern_vm_pop_value(vm, firstValue);
             octaspire_dern_vm_pop_value(vm, arguments);
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_get_value_false(vm);
         }
+
+        octaspire_dern_vm_pop_value(vm, secondValue);
     }
 
     octaspire_dern_vm_pop_value(vm, firstValue);
@@ -36620,6 +36953,9 @@ bool octaspire_dern_value_is_equal(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_t const * const other)
 {
+    octaspire_helpers_verify_not_null(self);
+    octaspire_helpers_verify_not_null(other);
+
     if (self == other)
     {
         return true;
@@ -36745,48 +37081,9 @@ bool octaspire_dern_value_is_equal(
 
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         {
-            if (octaspire_dern_value_as_hash_map_get_number_of_elements(self) !=
-                octaspire_dern_value_as_hash_map_get_number_of_elements(other))
-            {
-                return false;
-            }
-
-            octaspire_container_hash_map_element_iterator_t iter =
-                octaspire_container_hash_map_element_iterator_init(self->value.hashMap);
-
-            while (iter.element)
-            {
-                octaspire_dern_value_t const * const myKey =
-                    octaspire_container_hash_map_element_get_key(iter.element);
-
-                octaspire_dern_value_t const * const myVal =
-                    octaspire_container_hash_map_element_get_value(iter.element);
-
-
-
-                octaspire_container_hash_map_element_t const * const otherElem =
-                    octaspire_dern_value_as_hash_map_get_const(
-                        other,
-                        octaspire_dern_value_get_hash(myKey),
-                        myKey);
-
-                if (!otherElem)
-                {
-                    return false;
-                }
-
-                octaspire_dern_value_t const * const otherVal =
-                    octaspire_container_hash_map_element_get_value(otherElem);
-
-                if (!octaspire_dern_value_is_equal(myVal, otherVal))
-                {
-                    return false;
-                }
-
-                octaspire_container_hash_map_element_iterator_next(&iter);
-            }
-
-            return true;
+            return octaspire_dern_helpers_are_value_hash_maps_equal(
+                self->value.hashMap,
+                other->value.hashMap);
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
@@ -36871,7 +37168,13 @@ bool octaspire_dern_value_is_equal(
             return true;
         }
 
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT: return self->value.environment == other->value.environment;
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        {
+            return octaspire_dern_environment_is_equal(
+                self->value.environment,
+                other->value.environment);
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return self->value.function == other->value.function;
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special == other->value.special;
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin == other->value.builtin;
@@ -57558,6 +57861,159 @@ TEST octaspire_dern_vm_builtin_equals_equals_called_with_two_unequal_hash_maps_o
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_equals_equals_called_with_two_equal_environments_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define e1 as (env-new) [e1])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define e2 as (env-new) [e2])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    // Compare empty environments
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(== e1 e2)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(== e2 e1)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    // Add some content to environments
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define a as 1 [a] in e1)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define a as 1 [a] in e2)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    // Compare environments with one value
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(== e1 e2)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(== e2 e1)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_equals_equals_called_with_two_unequal_environments_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define e1 as (env-new) [e1])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define e2 as (env-new) [e2])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    // Add some differing content to environments
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define a as 1 [a] in e1)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define a as 2 [a] in e2)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    // Compare environments with one value
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(== e1 e2)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                            evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(== e2 e1)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false,                            evaluatedValue->value.boolean);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_equals_equals_called_with_two_unequal_vectors_of_vectors_of_integers_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -61834,6 +62290,8 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_builtin_equals_equals_called_with_two_equal_vectors_of_vectors_of_integers_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_equals_called_with_two_equal_hash_maps_of_vectors_of_integers_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_equals_called_with_two_unequal_hash_maps_of_vectors_of_integers_test);
+    RUN_TEST(octaspire_dern_vm_builtin_equals_equals_called_with_two_equal_environments_test);
+    RUN_TEST(octaspire_dern_vm_builtin_equals_equals_called_with_two_unequal_environments_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_equals_called_with_two_unequal_vectors_of_vectors_of_integers_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_equals_called_with_two_unequal_vectors_of_integers_with_different_lengths_5_and_6_test);
     RUN_TEST(octaspire_dern_vm_builtin_equals_equals_called_with_two_unequal_vectors_of_integers_with_different_elements_test);

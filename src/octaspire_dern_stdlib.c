@@ -2768,20 +2768,23 @@ octaspire_dern_value_t *octaspire_dern_vm_special_equals_equals(
 
     for (size_t i = 1; i < numArgs; ++i)
     {
-        if (!octaspire_dern_value_is_equal(
-                firstValue,
-                octaspire_dern_vm_eval(
-                    vm,
-                    octaspire_dern_value_as_vector_get_element_at(
-                        arguments,
-                        (ptrdiff_t)i),
-                    environment)))
+        octaspire_dern_value_t *secondValue = octaspire_dern_vm_eval(
+            vm,
+            octaspire_dern_value_as_vector_get_element_at(arguments, (ptrdiff_t)i),
+            environment);
+
+        octaspire_dern_vm_push_value(vm, secondValue);
+
+        if (!octaspire_dern_value_is_equal(firstValue, secondValue))
         {
+            octaspire_dern_vm_pop_value(vm, secondValue);
             octaspire_dern_vm_pop_value(vm, firstValue);
             octaspire_dern_vm_pop_value(vm, arguments);
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_get_value_false(vm);
         }
+
+        octaspire_dern_vm_pop_value(vm, secondValue);
     }
 
     octaspire_dern_vm_pop_value(vm, firstValue);

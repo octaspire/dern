@@ -79,6 +79,10 @@ octaspire_container_hash_map_element_t *octaspire_dern_environment_get_at_index(
 
 bool octaspire_dern_environment_mark(octaspire_dern_environment_t *self);
 
+bool octaspire_dern_environment_is_equal(
+    octaspire_dern_environment_t const * const self,
+    octaspire_dern_environment_t const * const other);
+
 #ifdef __cplusplus
 }
 #endif
