@@ -168,6 +168,45 @@ void octaspire_dern_function_release(octaspire_dern_function_t *self)
     octaspire_memory_allocator_free(self->allocator, self);
 }
 
+bool octaspire_dern_function_is_equal(
+    octaspire_dern_function_t const * const self,
+    octaspire_dern_function_t const * const other)
+{
+    if (!octaspire_container_utf8_string_is_equal(self->name, other->name))
+    {
+        return false;
+    }
+
+    if (!octaspire_container_utf8_string_is_equal(self->docstr, other->docstr))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_value_is_equal(self->formals, other->formals))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_value_is_equal(self->body, other->body))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_value_is_equal(
+            self->definitionEnvironment,
+            other->definitionEnvironment))
+    {
+        return false;
+    }
+
+    if (self->howtoAllowed != other->howtoAllowed)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 bool octaspire_dern_function_set_howto_data(
     octaspire_dern_function_t * const self,
     char const * const name,
@@ -1289,10 +1328,27 @@ bool octaspire_dern_value_is_equal(
                 other->value.environment);
         }
 
-        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:    return self->value.function == other->value.function;
-        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:     return self->value.special == other->value.special;
-        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:     return self->value.builtin == other->value.builtin;
-        case OCTASPIRE_DERN_VALUE_TAG_PORT:        return self->value.port    == other->value.port;
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        {
+            return octaspire_dern_function_is_equal(
+                self->value.function,
+                other->value.function);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        {
+            return self->value.special == other->value.special;
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        {
+            return self->value.builtin == other->value.builtin;
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        {
+            return self->value.port == other->value.port;
+        }
 
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         {

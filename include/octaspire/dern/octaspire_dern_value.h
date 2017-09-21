@@ -92,6 +92,10 @@ octaspire_dern_function_t *octaspire_dern_function_new_copy(
 
 void octaspire_dern_function_release(octaspire_dern_function_t *self);
 
+bool octaspire_dern_function_is_equal(
+    octaspire_dern_function_t const * const self,
+    octaspire_dern_function_t const * const other);
+
 bool octaspire_dern_function_set_howto_data(
     octaspire_dern_function_t * const self,
     char const * const name,
