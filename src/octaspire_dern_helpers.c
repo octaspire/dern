@@ -1,13 +1,14 @@
 #include "octaspire/dern/octaspire_dern_helpers.h"
 
-bool octaspire_dern_helpers_are_value_hash_maps_equal(
+int octaspire_dern_helpers_compare_value_hash_maps(
     octaspire_container_hash_map_t const * const firstValueHashMap,
     octaspire_container_hash_map_t const * const otherValueHashMap)
 {
     if (octaspire_container_hash_map_get_number_of_elements(firstValueHashMap) !=
         octaspire_container_hash_map_get_number_of_elements(otherValueHashMap))
     {
-        return false;
+        return octaspire_container_hash_map_get_number_of_elements(firstValueHashMap) -
+            octaspire_container_hash_map_get_number_of_elements(otherValueHashMap);
     }
 
     octaspire_container_hash_map_element_const_iterator_t iter =
@@ -29,20 +30,22 @@ bool octaspire_dern_helpers_are_value_hash_maps_equal(
 
         if (!otherElem)
         {
-            return false;
+            return 1;
         }
 
         octaspire_dern_value_t const * const otherVal =
             octaspire_container_hash_map_element_get_value(otherElem);
 
-        if (!octaspire_dern_value_is_equal(myVal, otherVal))
+        int const cmp = octaspire_dern_value_compare(myVal, otherVal);
+
+        if (cmp)
         {
-            return false;
+            return cmp;
         }
 
         octaspire_container_hash_map_element_const_iterator_next(&iter);
     }
 
-    return true;
+    return 0;
 }
 

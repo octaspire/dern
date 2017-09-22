@@ -172,39 +172,56 @@ bool octaspire_dern_function_is_equal(
     octaspire_dern_function_t const * const self,
     octaspire_dern_function_t const * const other)
 {
-    if (!octaspire_container_utf8_string_is_equal(self->name, other->name))
+    return (octaspire_dern_function_compare(self, other) == 0);
+}
+
+int octaspire_dern_function_compare(
+    octaspire_dern_function_t const * const self,
+    octaspire_dern_function_t const * const other)
+{
+    if (self == other)
     {
-        return false;
+        return 0;
     }
 
-    if (!octaspire_container_utf8_string_is_equal(self->docstr, other->docstr))
+    int cmp = octaspire_container_utf8_string_compare(self->name, other->name);
+
+    if (cmp)
     {
-        return false;
+        return cmp;
     }
 
-    if (!octaspire_dern_value_is_equal(self->formals, other->formals))
+    cmp = octaspire_container_utf8_string_compare(self->docstr, other->docstr);
+
+    if (cmp)
     {
-        return false;
+        return cmp;
     }
 
-    if (!octaspire_dern_value_is_equal(self->body, other->body))
+    cmp = octaspire_dern_value_compare(self->formals, other->formals);
+
+    if (cmp)
     {
-        return false;
+        return cmp;
     }
 
-    if (!octaspire_dern_value_is_equal(
-            self->definitionEnvironment,
-            other->definitionEnvironment))
+    cmp = octaspire_dern_value_compare(self->body, other->body);
+
+    if (cmp)
     {
-        return false;
+        return cmp;
     }
 
-    if (self->howtoAllowed != other->howtoAllowed)
+    cmp = octaspire_dern_value_compare(
+        self->definitionEnvironment,
+        other->definitionEnvironment);
+
+    if (cmp)
     {
-        return false;
+        return cmp;
     }
 
-    return true;
+    return (self->howtoAllowed - other->howtoAllowed);
 }
 
 bool octaspire_dern_function_set_howto_data(
@@ -1109,255 +1126,7 @@ bool octaspire_dern_value_is_equal(
     octaspire_helpers_verify_not_null(self);
     octaspire_helpers_verify_not_null(other);
 
-    if (self == other)
-    {
-        return true;
-    }
-
-    if (octaspire_dern_value_is_number(self))
-    {
-        if (!octaspire_dern_value_is_number(other))
-        {
-            return false;
-        }
-    }
-    else if (self->typeTag != other->typeTag)
-    {
-        return false;
-    }
-
-    switch (self->typeTag)
-    {
-        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
-        {
-            abort();
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_NIL:
-        {
-            return true;
-        }
-        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
-        {
-            return self->value.boolean == other->value.boolean;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
-        {
-            if (other->typeTag == self->typeTag)
-            {
-                return self->value.integer == other->value.integer;
-            }
-
-            return self->value.integer >= other->value.real &&
-                   self->value.integer <= other->value.real;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_REAL:
-        {
-            if (other->typeTag == self->typeTag)
-            {
-                return self->value.real >= other->value.real &&
-                       self->value.real <= other->value.real;
-            }
-
-            return self->value.real >= other->value.integer &&
-                   self->value.real <= other->value.integer;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_STRING:
-        {
-            return octaspire_container_utf8_string_is_equal(
-                self->value.string,
-                other->value.string);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
-        {
-            return octaspire_container_utf8_string_is_equal(
-                self->value.comment,
-                other->value.comment);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
-        {
-            return octaspire_container_utf8_string_is_equal(
-                self->value.character,
-                other->value.character);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
-        {
-            return octaspire_container_utf8_string_is_equal(
-                self->value.symbol,
-                other->value.symbol);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
-        {
-            return octaspire_container_utf8_string_is_equal(
-                self->value.error,
-                other->value.error);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
-        {
-            if (octaspire_dern_value_as_vector_get_length(self) !=
-                octaspire_dern_value_as_vector_get_length(other))
-            {
-                return false;
-            }
-
-            for (size_t i = 0; i < octaspire_dern_value_as_vector_get_length(self); ++i)
-            {
-                octaspire_dern_value_t const * const valA =
-                    octaspire_dern_value_as_vector_get_element_at_const(
-                        self,
-                        i);
-
-                octaspire_dern_value_t const * const valB =
-                    octaspire_dern_value_as_vector_get_element_at_const(
-                        other,
-                        i);
-
-                octaspire_helpers_verify_not_null(valA);
-                octaspire_helpers_verify_not_null(valB);
-
-                if (!octaspire_dern_value_is_equal(valA, valB))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
-        {
-            return octaspire_dern_helpers_are_value_hash_maps_equal(
-                self->value.hashMap,
-                other->value.hashMap);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
-        {
-            if (octaspire_dern_value_as_queue_get_length(self) !=
-                octaspire_dern_value_as_queue_get_length(other))
-            {
-                return false;
-            }
-
-            octaspire_container_queue_iterator_t myIter =
-                octaspire_container_queue_iterator_init(self->value.queue);
-
-            octaspire_container_queue_iterator_t otherIter =
-                octaspire_container_queue_iterator_init(other->value.queue);
-
-            while (myIter.iterator.currentNode)
-            {
-                octaspire_helpers_verify_not_null(otherIter.iterator.currentNode);
-
-                octaspire_dern_value_t const * const myVal =
-                    octaspire_container_list_node_get_element(
-                        myIter.iterator.currentNode);
-
-                octaspire_dern_value_t const * const otherVal =
-                    octaspire_container_list_node_get_element(
-                        otherIter.iterator.currentNode);
-
-                octaspire_helpers_verify_not_null(myVal);
-                octaspire_helpers_verify_not_null(otherVal);
-
-                if (!octaspire_dern_value_is_equal(myVal, otherVal))
-                {
-                    return false;
-                }
-
-                octaspire_container_queue_iterator_next(&myIter);
-                octaspire_container_queue_iterator_next(&otherIter);
-            }
-
-            return true;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_LIST:
-        {
-            if (octaspire_dern_value_as_list_get_length(self) !=
-                octaspire_dern_value_as_list_get_length(other))
-            {
-                return false;
-            }
-
-            octaspire_container_list_node_iterator_t myIter =
-                octaspire_container_list_node_iterator_init(self->value.list);
-
-            octaspire_container_list_node_iterator_t otherIter =
-                octaspire_container_list_node_iterator_init(other->value.list);
-
-            while (myIter.currentNode)
-            {
-                octaspire_helpers_verify_not_null(otherIter.currentNode);
-
-                octaspire_dern_value_t const * const myVal =
-                    octaspire_container_list_node_get_element(
-                        myIter.currentNode);
-
-                octaspire_dern_value_t const * const otherVal =
-                    octaspire_container_list_node_get_element(
-                        otherIter.currentNode);
-
-                octaspire_helpers_verify_not_null(myVal);
-                octaspire_helpers_verify_not_null(otherVal);
-
-                if (!octaspire_dern_value_is_equal(myVal, otherVal))
-                {
-                    return false;
-                }
-
-                octaspire_container_list_node_iterator_next(&myIter);
-                octaspire_container_list_node_iterator_next(&otherIter);
-            }
-
-            return true;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
-        {
-            return octaspire_dern_environment_is_equal(
-                self->value.environment,
-                other->value.environment);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
-        {
-            return octaspire_dern_function_is_equal(
-                self->value.function,
-                other->value.function);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
-        {
-            return self->value.special == other->value.special;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
-        {
-            return self->value.builtin == other->value.builtin;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_PORT:
-        {
-            return self->value.port == other->value.port;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
-        {
-            return octaspire_dern_c_data_is_equal(self->value.cData, other->value.cData);
-        }
-    }
-
-    abort();
-    return false;
+    return (octaspire_dern_value_compare(self, other) == 0);
 }
 
 bool octaspire_dern_value_is_less_than(
@@ -1367,103 +1136,7 @@ bool octaspire_dern_value_is_less_than(
     octaspire_helpers_verify_not_null(self);
     octaspire_helpers_verify_not_null(other);
 
-    if (octaspire_dern_value_is_number(self))
-    {
-        if (!octaspire_dern_value_is_number(other))
-        {
-            return false;
-        }
-    }
-    else if (self->typeTag != other->typeTag)
-    {
-        return false;
-    }
-
-    switch (self->typeTag)
-    {
-        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
-        {
-            abort();
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_NIL:
-        {
-            return false;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
-        {
-            return self->value.boolean < other->value.boolean;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
-        {
-            if (other->typeTag == self->typeTag)
-            {
-                return self->value.integer < other->value.integer;
-            }
-
-            return self->value.integer < other->value.real;
-
-        }
-        case OCTASPIRE_DERN_VALUE_TAG_REAL:
-        {
-            if (other->typeTag == self->typeTag)
-            {
-                return self->value.real < other->value.real;
-            }
-
-            return self->value.real < other->value.integer;
-        }
-        case OCTASPIRE_DERN_VALUE_TAG_STRING:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.string,
-                    other->value.string) < 0);
-        }
-        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.character,
-                    other->value.character) < 0);
-        }
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.symbol,
-                    other->value.symbol) < 0);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.comment,
-                    other->value.comment) < 0);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.error,
-                    other->value.error) < 0);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
-        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
-        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
-        case OCTASPIRE_DERN_VALUE_TAG_LIST:
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
-        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
-        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
-        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
-        case OCTASPIRE_DERN_VALUE_TAG_PORT:
-        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
-        {
-            abort();
-        }
-    }
-
-    return false;
+    return (octaspire_dern_value_compare(self, other) < 0);
 }
 
 bool octaspire_dern_value_is_greater_than(
@@ -1473,103 +1146,7 @@ bool octaspire_dern_value_is_greater_than(
     octaspire_helpers_verify_not_null(self);
     octaspire_helpers_verify_not_null(other);
 
-    if (octaspire_dern_value_is_number(self))
-    {
-        if (!octaspire_dern_value_is_number(other))
-        {
-            return false;
-        }
-    }
-    else if (self->typeTag != other->typeTag)
-    {
-        return false;
-    }
-
-    switch (self->typeTag)
-    {
-        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
-        {
-            abort();
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_NIL:
-        {
-            return false;
-        }
-        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
-        {
-            return self->value.boolean > other->value.boolean;
-        }
-        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
-        {
-            if (other->typeTag == self->typeTag)
-            {
-                return self->value.integer > other->value.integer;
-            }
-
-            return self->value.integer > other->value.real;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_REAL:
-        {
-            if (other->typeTag == self->typeTag)
-            {
-                return self->value.real > other->value.real;
-            }
-
-            return self->value.real > other->value.integer;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_STRING:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.string,
-                    other->value.string) > 0);
-        }
-        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.character,
-                    other->value.character) > 0);
-        }
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.symbol,
-                    other->value.symbol) > 0);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.comment,
-                    other->value.comment) > 0);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.error,
-                    other->value.error) > 0);
-        }
-
-        // TODO XXX implement the rest
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
-        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
-        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
-        case OCTASPIRE_DERN_VALUE_TAG_LIST:
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
-        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
-        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
-        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
-        case OCTASPIRE_DERN_VALUE_TAG_PORT:
-        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
-        {
-            abort();
-        }
-    }
-
-    return false;
+    return (octaspire_dern_value_compare(self, other) > 0);
 }
 
 bool octaspire_dern_value_is_less_than_or_equal(
@@ -1579,98 +1156,7 @@ bool octaspire_dern_value_is_less_than_or_equal(
     octaspire_helpers_verify_not_null(self);
     octaspire_helpers_verify_not_null(other);
 
-    if (octaspire_dern_value_is_number(self))
-    {
-        if (!octaspire_dern_value_is_number(other))
-        {
-            return false;
-        }
-    }
-    else if (self->typeTag != other->typeTag)
-    {
-        return false;
-    }
-
-    switch (self->typeTag)
-    {
-        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
-        {
-            abort();
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_NIL:         return true;
-        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     return self->value.boolean <= other->value.boolean;
-        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
-        {
-            if (other->typeTag == self->typeTag)
-            {
-                return self->value.integer <= other->value.integer;
-            }
-
-            return self->value.integer <= other->value.real;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_REAL:
-        {
-            if (other->typeTag == self->typeTag)
-            {
-                return self->value.real <= other->value.real;
-            }
-
-            return self->value.real <= other->value.integer;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_STRING:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.string,
-                    other->value.string) <= 0);
-        }
-        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.character,
-                    other->value.character) <= 0);
-        }
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.symbol,
-                    other->value.symbol) <= 0);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.comment,
-                    other->value.comment) <= 0);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.error,
-                    other->value.error) <= 0);
-        }
-
-        // TODO XXX implement the rest
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
-        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
-        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
-        case OCTASPIRE_DERN_VALUE_TAG_LIST:
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
-        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
-        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
-        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
-        case OCTASPIRE_DERN_VALUE_TAG_PORT:
-        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
-        {
-            abort();
-        }
-    }
-
-    abort();
-    return false;
+    return (octaspire_dern_value_compare(self, other) <= 0);
 }
 
 bool octaspire_dern_value_is_greater_than_or_equal(
@@ -1680,97 +1166,7 @@ bool octaspire_dern_value_is_greater_than_or_equal(
     octaspire_helpers_verify_not_null(self);
     octaspire_helpers_verify_not_null(other);
 
-    if (octaspire_dern_value_is_number(self))
-    {
-        if (!octaspire_dern_value_is_number(other))
-        {
-            return false;
-        }
-    }
-    else if (self->typeTag != other->typeTag)
-    {
-        return false;
-    }
-
-    switch (self->typeTag)
-    {
-        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
-        {
-            abort();
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_NIL:         return true;
-        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:     return self->value.boolean >= other->value.boolean;
-        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
-        {
-            if (other->typeTag == self->typeTag)
-            {
-                return self->value.integer >= other->value.integer;
-            }
-
-            return self->value.integer >= other->value.real;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_REAL:
-        {
-            if (other->typeTag == self->typeTag)
-            {
-                return self->value.real >= other->value.real;
-            }
-
-            return self->value.real >= other->value.integer;
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_STRING:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.string,
-                    other->value.string) >= 0);
-        }
-        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.character,
-                    other->value.character) >= 0);
-        }
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.symbol,
-                    other->value.symbol) >= 0);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.comment,
-                    other->value.comment) >= 0);
-        }
-
-        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
-        {
-            return (octaspire_container_utf8_string_compare(
-                    self->value.error,
-                    other->value.error) >= 0);
-        }
-
-        // TODO XXX implement the rest
-        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
-        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
-        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
-        case OCTASPIRE_DERN_VALUE_TAG_LIST:
-        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
-        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
-        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
-        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
-        case OCTASPIRE_DERN_VALUE_TAG_PORT:
-        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
-        {
-            abort();
-        }
-    }
-
-    return false;
+    return (octaspire_dern_value_compare(self, other) >= 0);
 }
 
 octaspire_container_utf8_string_t *octaspire_dern_private_value_to_string(
@@ -3971,6 +3367,41 @@ int octaspire_dern_value_compare(
     octaspire_helpers_verify_not_null(self);
     octaspire_helpers_verify_not_null(other);
 
+    if (self == other)
+    {
+        return 0;
+    }
+
+    if (octaspire_dern_value_is_number(self))
+    {
+        if (octaspire_dern_value_is_number(other))
+        {
+            if (octaspire_dern_value_is_real(self) ||
+                octaspire_dern_value_is_real(other))
+            {
+                double const a = octaspire_dern_value_as_number_get_value(self);
+                double const b = octaspire_dern_value_as_number_get_value(other);
+
+                if (a < b)
+                {
+                    return -1;
+                }
+
+                if (a > b)
+                {
+                    return 1;
+                }
+
+                return 0;
+            }
+            else
+            {
+                return octaspire_dern_value_as_integer_get_value(self) -
+                    octaspire_dern_value_as_integer_get_value(other);
+            }
+        }
+    }
+
     if (self->typeTag != other->typeTag)
     {
         return (int)(self->typeTag) - (int)(other->typeTag);
@@ -3997,72 +3428,184 @@ int octaspire_dern_value_compare(
         }
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         {
-            return (int)(self->value.real - other->value.real);
+            if (self->value.real < other->value.real)
+            {
+                return -1;
+            }
+
+            if (self->value.real > other->value.real)
+            {
+                return 1;
+            }
+
+            return 0;
         }
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
-            return strcmp(
-                octaspire_container_utf8_string_get_c_string(self->value.string),
-                octaspire_container_utf8_string_get_c_string(other->value.string));
+            return octaspire_container_utf8_string_compare(
+                self->value.string,
+                other->value.string);
         }
         case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         {
-            return strcmp(
-                octaspire_container_utf8_string_get_c_string(self->value.comment),
-                octaspire_container_utf8_string_get_c_string(other->value.comment));
+            return octaspire_container_utf8_string_compare(
+                self->value.comment,
+                other->value.comment);
         }
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
-            return strcmp(
-                octaspire_container_utf8_string_get_c_string(self->value.character),
-                octaspire_container_utf8_string_get_c_string(other->value.character));
+            return octaspire_container_utf8_string_compare(
+                self->value.character,
+                other->value.character);
         }
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         {
-            return strcmp(
-                octaspire_container_utf8_string_get_c_string(self->value.symbol),
-                octaspire_container_utf8_string_get_c_string(other->value.symbol));
+            return octaspire_container_utf8_string_compare(
+                self->value.symbol,
+                other->value.symbol);
         }
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         {
-            return strcmp(
-                octaspire_container_utf8_string_get_c_string(self->value.error),
-                octaspire_container_utf8_string_get_c_string(other->value.error));
+            return octaspire_container_utf8_string_compare(
+                self->value.error,
+                other->value.error);
         }
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         {
-            return
-                octaspire_dern_value_private_compare_void_pointers(
-                    self->value.vector, other->value.vector);
+            if (octaspire_dern_value_as_vector_get_length(self) !=
+                octaspire_dern_value_as_vector_get_length(other))
+            {
+                return octaspire_dern_value_as_vector_get_length(self) -
+                    octaspire_dern_value_as_vector_get_length(other);
+            }
+
+            for (size_t i = 0; i < octaspire_dern_value_as_vector_get_length(self); ++i)
+            {
+                octaspire_dern_value_t const * const valA =
+                    octaspire_dern_value_as_vector_get_element_at_const(
+                        self,
+                        i);
+
+                octaspire_dern_value_t const * const valB =
+                    octaspire_dern_value_as_vector_get_element_at_const(
+                        other,
+                        i);
+
+                octaspire_helpers_verify_not_null(valA);
+                octaspire_helpers_verify_not_null(valB);
+
+                int const cmp = octaspire_dern_value_compare(valA, valB);
+
+                if (cmp)
+                {
+                    return cmp;
+                }
+            }
+
+            return 0;
         }
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         {
-            return
-                octaspire_dern_value_private_compare_void_pointers(
-                    self->value.hashMap, other->value.hashMap);
+            return octaspire_dern_helpers_compare_value_hash_maps(
+                self->value.hashMap,
+                other->value.hashMap);
         }
         case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
         {
-            return
-                octaspire_dern_value_private_compare_void_pointers(
-                    self->value.queue, other->value.queue);
+            if (octaspire_dern_value_as_queue_get_length(self) !=
+                octaspire_dern_value_as_queue_get_length(other))
+            {
+                return octaspire_dern_value_as_queue_get_length(self) -
+                    octaspire_dern_value_as_queue_get_length(other);
+            }
+
+            octaspire_container_queue_iterator_t myIter =
+                octaspire_container_queue_iterator_init(self->value.queue);
+
+            octaspire_container_queue_iterator_t otherIter =
+                octaspire_container_queue_iterator_init(other->value.queue);
+
+            while (myIter.iterator.currentNode)
+            {
+                octaspire_helpers_verify_not_null(otherIter.iterator.currentNode);
+
+                octaspire_dern_value_t const * const myVal =
+                    octaspire_container_list_node_get_element(
+                        myIter.iterator.currentNode);
+
+                octaspire_dern_value_t const * const otherVal =
+                    octaspire_container_list_node_get_element(
+                        otherIter.iterator.currentNode);
+
+                octaspire_helpers_verify_not_null(myVal);
+                octaspire_helpers_verify_not_null(otherVal);
+
+                int const cmp = octaspire_dern_value_compare(myVal, otherVal);
+
+                if (cmp)
+                {
+                    return cmp;
+                }
+
+                octaspire_container_queue_iterator_next(&myIter);
+                octaspire_container_queue_iterator_next(&otherIter);
+            }
+
+            return 0;
         }
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         {
-            return
-                octaspire_dern_value_private_compare_void_pointers(
-                    self->value.list, other->value.list);
+            if (octaspire_dern_value_as_list_get_length(self) !=
+                octaspire_dern_value_as_list_get_length(other))
+            {
+                return octaspire_dern_value_as_list_get_length(self) -
+                    octaspire_dern_value_as_list_get_length(other);
+            }
+
+            octaspire_container_list_node_iterator_t myIter =
+                octaspire_container_list_node_iterator_init(self->value.list);
+
+            octaspire_container_list_node_iterator_t otherIter =
+                octaspire_container_list_node_iterator_init(other->value.list);
+
+            while (myIter.currentNode)
+            {
+                octaspire_helpers_verify_not_null(otherIter.currentNode);
+
+                octaspire_dern_value_t const * const myVal =
+                    octaspire_container_list_node_get_element(
+                        myIter.currentNode);
+
+                octaspire_dern_value_t const * const otherVal =
+                    octaspire_container_list_node_get_element(
+                        otherIter.currentNode);
+
+                octaspire_helpers_verify_not_null(myVal);
+                octaspire_helpers_verify_not_null(otherVal);
+
+                int const cmp = octaspire_dern_value_compare(myVal, otherVal);
+
+                if (cmp)
+                {
+                    return cmp;
+                }
+
+                octaspire_container_list_node_iterator_next(&myIter);
+                octaspire_container_list_node_iterator_next(&otherIter);
+            }
+
+            return 0;
         }
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         {
-            return
-                octaspire_dern_value_private_compare_void_pointers(
-                    self->value.environment, other->value.environment);
+            return octaspire_dern_environment_compare(
+                    self->value.environment,
+                    other->value.environment);
         }
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
         {
             return
-                octaspire_dern_value_private_compare_void_pointers(
+                octaspire_dern_function_compare(
                     self->value.function, other->value.function);
         }
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:

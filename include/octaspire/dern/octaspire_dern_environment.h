@@ -83,6 +83,10 @@ bool octaspire_dern_environment_is_equal(
     octaspire_dern_environment_t const * const self,
     octaspire_dern_environment_t const * const other);
 
+int octaspire_dern_environment_compare(
+    octaspire_dern_environment_t const * const self,
+    octaspire_dern_environment_t const * const other);
+
 #ifdef __cplusplus
 }
 #endif

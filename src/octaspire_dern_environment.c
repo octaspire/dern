@@ -585,7 +585,14 @@ bool octaspire_dern_environment_is_equal(
     octaspire_dern_environment_t const * const self,
     octaspire_dern_environment_t const * const other)
 {
-    return octaspire_dern_helpers_are_value_hash_maps_equal(
+    return (octaspire_dern_environment_compare(self, other) == 0);
+}
+
+int octaspire_dern_environment_compare(
+    octaspire_dern_environment_t const * const self,
+    octaspire_dern_environment_t const * const other)
+{
+    return octaspire_dern_helpers_compare_value_hash_maps(
         self->bindings,
         other->bindings);
 }

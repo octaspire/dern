@@ -24,7 +24,7 @@ limitations under the License.
 extern "C" {
 #endif
 
-bool octaspire_dern_helpers_are_value_hash_maps_equal(
+int octaspire_dern_helpers_compare_value_hash_maps(
     octaspire_container_hash_map_t const * const firstValueHashMap,
     octaspire_container_hash_map_t const * const otherValueHashMap);
 
