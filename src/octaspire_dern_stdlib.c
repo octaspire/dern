@@ -2794,8 +2794,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_equals_equals(
     return octaspire_dern_vm_get_value_true(vm);
 }
 
-// TODO move to other builtins
-octaspire_dern_value_t *octaspire_dern_vm_builtin_exclamation_equals(
+octaspire_dern_value_t *octaspire_dern_vm_special_exclamation_equals(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment)
@@ -2813,7 +2812,9 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_exclamation_equals(
         abort();
     }
 
-    return octaspire_dern_vm_create_new_value_boolean(vm, !tmpVal->value.boolean);
+    return octaspire_dern_vm_create_new_value_boolean(
+        vm,
+        !octaspire_dern_value_as_boolean_get_value(tmpVal));
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_special_less_than_or_equal(

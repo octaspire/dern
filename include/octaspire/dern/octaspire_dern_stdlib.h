@@ -314,14 +314,12 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_equals(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
-// TODO move to other builtins
 octaspire_dern_value_t *octaspire_dern_vm_special_equals_equals(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
-// TODO move to other builtins
-octaspire_dern_value_t *octaspire_dern_vm_builtin_exclamation_equals(
+octaspire_dern_value_t *octaspire_dern_vm_special_exclamation_equals(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
