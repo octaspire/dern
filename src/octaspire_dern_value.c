@@ -1984,6 +1984,7 @@ bool octaspire_dern_value_as_character_add(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_as_character_subtract(
@@ -2057,6 +2058,7 @@ bool octaspire_dern_value_as_character_subtract(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_as_integer_add(
@@ -2157,6 +2159,7 @@ bool octaspire_dern_value_as_integer_add(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_as_integer_subtract(
@@ -2352,6 +2355,7 @@ bool octaspire_dern_value_as_real_add(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_as_real_subtract(
@@ -2447,6 +2451,7 @@ bool octaspire_dern_value_as_real_subtract(
     }
 
     abort();
+    return 0;
 }
 
 char const *octaspire_dern_value_as_character_get_c_string(

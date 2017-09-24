@@ -4115,6 +4115,7 @@ octaspire_dern_value_t *octaspire_dern_vm_find_from_value(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_get_global_environment(

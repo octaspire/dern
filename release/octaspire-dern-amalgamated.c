@@ -202,10 +202,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "82"
-#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "83"
+#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "1"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.82.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.83.1"
 
 
 
@@ -4258,7 +4258,7 @@ bool octaspire_container_list_node_iterator_next(
 
     self->currentNode = octaspire_container_list_node_get_next(self->currentNode);
 
-    return (self->currentNode);
+    return (self->currentNode != 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20786,9 +20786,9 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "244"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.244.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.244.1"
 
 
 
@@ -23940,6 +23940,7 @@ bool octaspire_dern_lexer_token_is_equal(
     }
 
     abort();
+    return false;
 }
 
 octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
@@ -30074,6 +30075,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_abort(
     octaspire_dern_vm_pop_value(vm, arguments);
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_input_file_open(
@@ -31588,7 +31590,12 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
         }
         else if (octaspire_dern_value_is_string(value))
         {
-            int32_t valueAsInt = (int32_t)strtoimax(
+            int32_t valueAsInt =
+#ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
+                (int32_t)strtol(
+#else
+                (int32_t)strtoimax(
+#endif
                 octaspire_dern_value_as_string_get_c_string(value),
                 0,
                 10);
@@ -33696,6 +33703,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_minus(
@@ -33759,6 +33767,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_find(
@@ -33954,6 +33963,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_split(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_hash_map(
@@ -34673,6 +34683,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_ln_at_sign(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
@@ -34958,6 +34969,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_require(
@@ -35607,6 +35619,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_copy(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_host_get_command_line_arguments(
@@ -37891,6 +37904,7 @@ bool octaspire_dern_value_as_character_add(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_as_character_subtract(
@@ -37964,6 +37978,7 @@ bool octaspire_dern_value_as_character_subtract(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_as_integer_add(
@@ -38064,6 +38079,7 @@ bool octaspire_dern_value_as_integer_add(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_as_integer_subtract(
@@ -38259,6 +38275,7 @@ bool octaspire_dern_value_as_real_add(
     }
 
     abort();
+    return false;
 }
 
 bool octaspire_dern_value_as_real_subtract(
@@ -38354,6 +38371,7 @@ bool octaspire_dern_value_as_real_subtract(
     }
 
     abort();
+    return 0;
 }
 
 char const *octaspire_dern_value_as_character_get_c_string(
@@ -43698,6 +43716,7 @@ octaspire_dern_value_t *octaspire_dern_vm_find_from_value(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_get_global_environment(

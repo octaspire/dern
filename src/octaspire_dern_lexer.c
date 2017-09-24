@@ -604,6 +604,7 @@ bool octaspire_dern_lexer_token_is_equal(
     }
 
     abort();
+    return false;
 }
 
 octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(

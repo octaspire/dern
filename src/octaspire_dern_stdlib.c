@@ -3319,6 +3319,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_abort(
     octaspire_dern_vm_pop_value(vm, arguments);
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_input_file_open(
@@ -4833,7 +4834,12 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
         }
         else if (octaspire_dern_value_is_string(value))
         {
-            int32_t valueAsInt = (int32_t)strtoimax(
+            int32_t valueAsInt =
+#ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
+                (int32_t)strtol(
+#else
+                (int32_t)strtoimax(
+#endif
                 octaspire_dern_value_as_string_get_c_string(value),
                 0,
                 10);
@@ -6941,6 +6947,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_minus(
@@ -7004,6 +7011,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_find(
@@ -7199,6 +7207,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_split(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_hash_map(
@@ -7918,6 +7927,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_ln_at_sign(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
@@ -8203,6 +8213,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_require(
@@ -8852,6 +8863,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_copy(
     }
 
     abort();
+    return 0;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_host_get_command_line_arguments(
