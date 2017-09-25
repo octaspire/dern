@@ -784,6 +784,20 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // -==
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "-==",
+        octaspire_dern_vm_builtin_minus_equals_equals,
+        1,
+        "Remove from supported collection a value that has the same unique id "
+        "than the given value. Note that equal values are probably not the same",
+        false,
+        env))
+    {
+        abort();
+    }
+
     // +=
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
@@ -1169,9 +1183,24 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
-    // !=
+    // ===
     if (!octaspire_dern_vm_create_and_register_new_special(
         self,
+        "===",
+        octaspire_dern_vm_special_equals_equals_equals,
+        2,
+        "Predicate telling whether all the given values are the same. "
+        "Two values that are equal might not be the same value. "
+        "Takes 2..n arguments. Evaluates arguments only as long as those are the same. "
+        "Does not evaluate rest of the arguments if one is not the same",
+        true,
+        env))
+    {
+        abort();
+    }
+
+    // !=
+    if (!octaspire_dern_vm_create_and_register_new_special( self,
         "!=",
         octaspire_dern_vm_special_exclamation_equals,
         1,

@@ -525,6 +525,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_iteration">Iteration</a></li>
 <li><a href="#_comparing_and_changing_values_predicates">Comparing and changing values, predicates</a></li>
+<li><a href="#_removing_the_last_value_from_a_vector">Removing the last value from a vector</a></li>
 <li><a href="#_branching_and_selection">Branching and selection</a></li>
 <li><a href="#_selecting_values_from_collections">Selecting values from collections</a></li>
 <li><a href="#_accessing_and_manipulating_command_line_arguments_and_environment_variables">Accessing and manipulating command line arguments and environment variables</a></li>
@@ -570,7 +571,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Documentation for Octaspire Dern programming language version 0.245.0</p>
+<p>Documentation for Octaspire Dern programming language version 0.246.0</p>
 </div>
 </div>
 </div>
@@ -1033,6 +1034,7 @@ way the iterator is incremented:</p>
 <span class="tok-p">(</span><span class="tok-nb">not </span><span class="tok-no">true</span><span class="tok-p">)</span>     <span class="tok-c tok-c-Singleline">; false</span>
 
 <span class="tok-p">(</span><span class="tok-nb">uid </span><span class="tok-nv">+</span><span class="tok-p">)</span>        <span class="tok-c tok-c-Singleline">; unique id of +</span>
+<span class="tok-p">(</span><span class="tok-nb">=== </span><span class="tok-nv">+</span> <span class="tok-nv">+</span><span class="tok-p">)</span>      <span class="tok-c tok-c-Singleline">; compare using unique id</span>
 
 <span class="tok-p">(</span><span class="tok-nb">len </span><span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">))</span>          <span class="tok-c tok-c-Singleline">; length of vector:   3</span>
 <span class="tok-p">(</span><span class="tok-nb">len </span><span class="tok-s">[abc]</span><span class="tok-p">)</span>             <span class="tok-c tok-c-Singleline">; length of string:   3</span>
@@ -1061,13 +1063,22 @@ way the iterator is incremented:</p>
 <span class="tok-p">(</span><span class="tok-nb">-= </span><span class="tok-sc">|x|</span> <span class="tok-sc">|!|</span><span class="tok-p">)</span>                  <span class="tok-c tok-c-Singleline">; |W|</span>
 <span class="tok-p">(</span><span class="tok-nb">-= </span><span class="tok-s">[abba]</span> <span class="tok-sc">|a|</span><span class="tok-p">)</span>               <span class="tok-c tok-c-Singleline">; [bb]</span>
 <span class="tok-p">(</span><span class="tok-nb">-= </span><span class="tok-p">(</span><span class="tok-nb">hash-map </span><span class="tok-mi">1</span> <span class="tok-sc">|a|</span> <span class="tok-mi">2</span> <span class="tok-sc">|b|</span><span class="tok-p">)</span> <span class="tok-mi">1</span><span class="tok-p">)</span> <span class="tok-c tok-c-Singleline">; (hash-map 2 |b|)</span>
-<span class="tok-p">(</span><span class="tok-nb">-= </span><span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-mi">1</span> <span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">)</span> <span class="tok-mi">1</span> <span class="tok-mi">2</span><span class="tok-p">)</span>         <span class="tok-c tok-c-Singleline">; (3)</span></code></pre>
+<span class="tok-p">(</span><span class="tok-nb">-= </span><span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-mi">1</span> <span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">)</span> <span class="tok-mi">1</span> <span class="tok-mi">2</span><span class="tok-p">)</span>         <span class="tok-c tok-c-Singleline">; (3)</span>
+
+<span class="tok-p">(</span><span class="tok-nb">define </span><span class="tok-nv">v</span> <span class="tok-nv">as</span> <span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span> <span class="tok-mi">3</span><span class="tok-p">)</span> <span class="tok-s">[v]</span><span class="tok-p">)</span>
+<span class="tok-p">(</span><span class="tok-nb">-= </span><span class="tok-nv">v</span> <span class="tok-p">(</span><span class="tok-nb">ln@ </span><span class="tok-nv">v</span> <span class="tok-mi">-1</span><span class="tok-p">))</span>             <span class="tok-c tok-c-Singleline">; (1 2)</span>
+
+<span class="tok-p">(</span><span class="tok-nb">define </span><span class="tok-nv">v</span> <span class="tok-nv">as</span> <span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span> <span class="tok-mi">3</span><span class="tok-p">)</span> <span class="tok-s">[v]</span><span class="tok-p">)</span>
+<span class="tok-p">(</span><span class="tok-nb">-== </span><span class="tok-nv">v</span> <span class="tok-p">(</span><span class="tok-nb">ln@ </span><span class="tok-nv">v</span> <span class="tok-mi">-1</span><span class="tok-p">))</span>            <span class="tok-c tok-c-Singleline">; (1 2 3)</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Operators <code>++</code>, <code>--</code>, <code>+=</code>, <code>-=</code>, <code>==</code> and <code>!=</code> are similar to those in C. Note also that
 <strong>the operands need not to be numbers</strong>. You can, for example, use <code>+=</code> to push values to the
-back of a vector, add characters into a string, write values into a port, etc.</p>
+back of a vector, add characters into a string, write values into a port, etc.
+<code>-==</code> removes values from a supported collection by comparing the unique identifiers
+of values. It removes only values that are the same (equal values might not be the
+same).</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -1083,6 +1094,28 @@ for the above operators should be implemented in the standard library eventually
 </td>
 </tr>
 </table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_removing_the_last_value_from_a_vector">Removing the last value from a vector</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Compare these two cases:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="dern"><span></span><span class="tok-p">(</span><span class="tok-nb">define </span><span class="tok-nv">v</span> <span class="tok-nv">as</span> <span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span> <span class="tok-mi">3</span><span class="tok-p">)</span> <span class="tok-s">[v]</span><span class="tok-p">)</span>
+<span class="tok-p">(</span><span class="tok-nb">-= </span><span class="tok-nv">v</span> <span class="tok-p">(</span><span class="tok-nb">ln@ </span><span class="tok-nv">v</span> <span class="tok-mi">-1</span><span class="tok-p">))</span>             <span class="tok-c tok-c-Singleline">; (1 2)</span>
+
+<span class="tok-p">(</span><span class="tok-nb">define </span><span class="tok-nv">v</span> <span class="tok-nv">as</span> <span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span> <span class="tok-mi">3</span><span class="tok-p">)</span> <span class="tok-s">[v]</span><span class="tok-p">)</span>
+<span class="tok-p">(</span><span class="tok-nb">-== </span><span class="tok-nv">v</span> <span class="tok-p">(</span><span class="tok-nb">ln@ </span><span class="tok-nv">v</span> <span class="tok-mi">-1</span><span class="tok-p">))</span>            <span class="tok-c tok-c-Singleline">; (1 2 3)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The last example removes really only the last value (compared using <code>===</code>).
+The first example removes all the values that are equal to the last value
+(compared using <code>==</code>).</p>
 </div>
 </div>
 </div>
@@ -1935,7 +1968,7 @@ can be used to (by giving different compiler flags):</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-09-24 10:09:10 EEST
+Last updated 2017-09-25 17:44:12 EEST
 </div>
 </div>
 </body>

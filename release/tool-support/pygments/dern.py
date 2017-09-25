@@ -15,7 +15,7 @@ class DernLexer(RegexLexer):
     flags = re.MULTILINE | re.DOTALL
 
     builtins = [
-        '!=', '*', '+', '++', '+=', '-', '--', '-=', '/', '<', '<=', '=', '==', '>', '>=', 'abort',
+        '!=', '*', '+', '++', '+=', '-', '--', '-=', '-==', '/', '<', '<=', '=', '==', '===', '>', '>=', 'abort',
         'and', 'define', 'do', 'doc', 'env-current', 'env-global', 'env-new', 'eval', 'exit',
         'find', 'fn', 'for', 'hash-map', 'if', 'len', 'mod', 'not', 'ln@', 'cp@', 'or',
         'pop-front', 'print', 'println', 'quote', 'read-and-eval-path', 'read-and-eval-string',
