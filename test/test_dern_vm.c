@@ -4283,6 +4283,336 @@ TEST octaspire_dern_vm_builtin_minus_equals_equals_with_vector_1_2_3_3_and_ln_at
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_pop_back_with_vector_1_2_3_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define v as '(1 2 3) [v])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    char const * const expected[] =
+    {
+        "(1 2)",
+        "(1)",
+        "()",
+        "()",
+        "()"
+    };
+
+    for (size_t i = 0; i < (sizeof(expected) / sizeof(expected[0])); ++i)
+    {
+        evaluatedValue =
+            octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+                vm,
+                "(pop-back v)");
+
+        ASSERT(evaluatedValue);
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
+
+        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+            evaluatedValue,
+            octaspire_dern_vm_get_allocator(vm));
+
+        ASSERT_STR_EQ(
+            expected[i],
+            octaspire_container_utf8_string_get_c_string(tmpStr));
+
+        octaspire_container_utf8_string_release(tmpStr);
+        tmpStr = 0;
+    }
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(len v)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_pop_back_with_string_abc_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s as [abc] [s])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    char const * const expected[] =
+    {
+        "[ab]",
+        "[a]",
+        "[]",
+        "[]",
+        "[]"
+    };
+
+    for (size_t i = 0; i < (sizeof(expected) / sizeof(expected[0])); ++i)
+    {
+        evaluatedValue =
+            octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+                vm,
+                "(pop-back s)");
+
+        ASSERT(evaluatedValue);
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+            evaluatedValue,
+            octaspire_dern_vm_get_allocator(vm));
+
+        ASSERT_STR_EQ(
+            expected[i],
+            octaspire_container_utf8_string_get_c_string(tmpStr));
+
+        octaspire_container_utf8_string_release(tmpStr);
+        tmpStr = 0;
+    }
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(len s)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_pop_back_with_symbol_abc_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define s as 'abc [s])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    char const * const expected[] =
+    {
+        "ab",
+        "a",
+        "",
+        "",
+        ""
+    };
+
+    for (size_t i = 0; i < (sizeof(expected) / sizeof(expected[0])); ++i)
+    {
+        evaluatedValue =
+            octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+                vm,
+                "(pop-back s)");
+
+        ASSERT(evaluatedValue);
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
+
+        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+            evaluatedValue,
+            octaspire_dern_vm_get_allocator(vm));
+
+        ASSERT_STR_EQ(
+            expected[i],
+            octaspire_container_utf8_string_get_c_string(tmpStr));
+
+        octaspire_container_utf8_string_release(tmpStr);
+        tmpStr = 0;
+    }
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(len s)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_pop_back_with_list_1_2_3_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define l as (list 1 2 3) [l])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    char const * const expected[] =
+    {
+        "(list 1 2)",
+        "(list 1)",
+        "(list )",
+        "(list )",
+        "(list )"
+    };
+
+    for (size_t i = 0; i < (sizeof(expected) / sizeof(expected[0])); ++i)
+    {
+        evaluatedValue =
+            octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+                vm,
+                "(pop-back l)");
+
+        ASSERT(evaluatedValue);
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_LIST, evaluatedValue->typeTag);
+
+        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+            evaluatedValue,
+            octaspire_dern_vm_get_allocator(vm));
+
+        ASSERT_STR_EQ(
+            expected[i],
+            octaspire_container_utf8_string_get_c_string(tmpStr));
+
+        octaspire_container_utf8_string_release(tmpStr);
+        tmpStr = 0;
+    }
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(len l)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_pop_back_with_queue_1_2_3_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define q as (queue 1 2 3) [q])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    char const * const expected[] =
+    {
+        "(queue 2 3)",
+        "(queue 3)",
+        "(queue )",
+        "(queue )",
+        "(queue )"
+    };
+
+    for (size_t i = 0; i < (sizeof(expected) / sizeof(expected[0])); ++i)
+    {
+        evaluatedValue =
+            octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+                vm,
+                "(pop-back q)");
+
+        ASSERT(evaluatedValue);
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_QUEUE, evaluatedValue->typeTag);
+
+        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+            evaluatedValue,
+            octaspire_dern_vm_get_allocator(vm));
+
+        ASSERT_STR_EQ(
+            expected[i],
+            octaspire_container_utf8_string_get_c_string(tmpStr));
+
+        octaspire_container_utf8_string_release(tmpStr);
+        tmpStr = 0;
+    }
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(len q)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_pop_back_with_integer_10_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(pop-back 10)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR,  evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "First argument to builtin 'pop-back' cannot be of type 'integer'.\n"
+        "\tAt form: >>>>>>>>>>(pop-back 10)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_hash_map_1_a_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -14906,6 +15236,12 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_builtin_minus_equals_with_hash_map_1_a_2_b_3_c_and_value_1_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_equals_with_vector_1_2_3_3_and_ln_at_v_minus_1_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_equals_equals_with_vector_1_2_3_3_and_ln_at_v_minus_1_test);
+    RUN_TEST(octaspire_dern_vm_builtin_pop_back_with_vector_1_2_3_test);
+    RUN_TEST(octaspire_dern_vm_builtin_pop_back_with_string_abc_test);
+    RUN_TEST(octaspire_dern_vm_builtin_pop_back_with_symbol_abc_test);
+    RUN_TEST(octaspire_dern_vm_builtin_pop_back_with_list_1_2_3_test);
+    RUN_TEST(octaspire_dern_vm_builtin_pop_back_with_queue_1_2_3_test);
+    RUN_TEST(octaspire_dern_vm_builtin_pop_back_with_integer_10_failure_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_hash_map_1_a_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_1_a_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_list_1_a_2_b_test);

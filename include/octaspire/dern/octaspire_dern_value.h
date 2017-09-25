@@ -433,6 +433,9 @@ bool octaspire_dern_value_as_symbol_push_back(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const value);
 
+bool octaspire_dern_value_as_symbol_pop_back(
+    octaspire_dern_value_t * const self);
+
 bool octaspire_dern_value_as_string_pop_back_ucs_character(
     octaspire_dern_value_t * const self);
 

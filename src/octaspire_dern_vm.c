@@ -798,6 +798,19 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // pop-back
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "pop-back",
+        octaspire_dern_vm_builtin_pop_back,
+        1,
+        "Remove the last value from supported collection.",
+        false,
+        env))
+    {
+        abort();
+    }
+
     // +=
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,

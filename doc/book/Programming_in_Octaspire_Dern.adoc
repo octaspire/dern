@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.246.0
+Documentation for Octaspire Dern programming language version 0.247.0
 
 == About
 
@@ -517,6 +517,22 @@ Compare these two cases:
 The last example removes really only the last value (compared using `===`).
 The first example removes all the values that are equal to the last value
 (compared using `==`).
+
+Values can be removed this way from any position by using different indices.
+As with other functions, negative indices count from the end of the collection
+and positive from the beginning.
+
+More efficient way of removing the last value from a collection is to use
+the builtin `pop-back`:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(define v as '(1 2 3 3) [v])
+(pop-back v)                  ; (1 2 3)
+----
 
 
 

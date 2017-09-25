@@ -2631,6 +2631,13 @@ bool octaspire_dern_value_as_symbol_push_back(
     return false;
 }
 
+bool octaspire_dern_value_as_symbol_pop_back(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+    return octaspire_container_utf8_string_pop_back_ucs_character(self->value.symbol);
+}
+
 bool octaspire_dern_value_as_string_pop_back_ucs_character(
     octaspire_dern_value_t * const self)
 {

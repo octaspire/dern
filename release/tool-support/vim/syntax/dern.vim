@@ -20,7 +20,7 @@ syn match dernEscape "\v\|bar\|" contained
 syn match dernEscape "\v\{\}" contained
 hi link dernString String
 
-syn keyword dernKeyword != * + ++ += - -- -= -== / < <= = == === > >= abort and define do doc env-current env-global env-new eval exit find fn for hash-map if len mod not ln@ cp@ or pop-front print println quote read-and-eval-path read-and-eval-string return select starts-with? string-format to-integer to-string uid vector while io-file-open port-read port-write port-seek port-flush port-close port-dist port-length input-file-open output-file-open port-supports-output? port-supports-input? require queue queue-with-max-length list howto howto-ok howto-no as in
+syn keyword dernKeyword != * + ++ += - -- -= -== / < <= = == === > >= abort and define do doc env-current env-global env-new eval exit find fn for hash-map if len mod not ln@ cp@ or pop-front print println quote read-and-eval-path read-and-eval-string return select starts-with? string-format to-integer to-string uid vector while io-file-open port-read port-write port-seek port-flush port-close port-dist port-length input-file-open output-file-open port-supports-output? port-supports-input? require queue queue-with-max-length list howto howto-ok howto-no as in pop-back
 hi link dernKeyword Keyword
 
 syn keyword dernBoolean true false nil

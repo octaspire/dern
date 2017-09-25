@@ -23,7 +23,7 @@ class DernLexer(RegexLexer):
         'vector', 'while', 'io-file-open', 'port-read', 'port-write', 'port-seek', 'port-flush',
         'port-close', 'port-dist', 'port-length', 'input-file-open', 'output-file-open',
         'port-supports-output?', 'port-supports-input?', 'require', 'queue', 'queue-with-max-length',
-        'list', 'howto', 'howto-ok', 'howto-no', 'as', 'in'
+        'list', 'howto', 'howto-ok', 'howto-no', 'as', 'in', 'pop-back'
 
     ]
 
