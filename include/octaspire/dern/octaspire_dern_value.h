@@ -395,6 +395,8 @@ bool octaspire_dern_value_as_list_push_back(
 
 bool octaspire_dern_value_as_list_pop_back(octaspire_dern_value_t * const self);
 
+bool octaspire_dern_value_as_list_pop_front(octaspire_dern_value_t * const self);
+
 size_t octaspire_dern_value_as_list_get_length(
     octaspire_dern_value_t const * const self);
 
@@ -436,7 +438,13 @@ bool octaspire_dern_value_as_symbol_push_back(
 bool octaspire_dern_value_as_symbol_pop_back(
     octaspire_dern_value_t * const self);
 
+bool octaspire_dern_value_as_symbol_pop_front(
+    octaspire_dern_value_t * const self);
+
 bool octaspire_dern_value_as_string_pop_back_ucs_character(
+    octaspire_dern_value_t * const self);
+
+bool octaspire_dern_value_as_string_pop_front_ucs_character(
     octaspire_dern_value_t * const self);
 
 bool octaspire_dern_value_as_string_remove_all_substrings(
@@ -495,6 +503,8 @@ bool octaspire_dern_value_as_vector_remove_element_at(
     ptrdiff_t const possiblyNegativeIndex);
 
 bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *self);
+
+bool octaspire_dern_value_as_vector_pop_front_element(octaspire_dern_value_t *self);
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at(
     octaspire_dern_value_t * const self,

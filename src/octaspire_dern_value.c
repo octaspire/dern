@@ -1905,6 +1905,12 @@ bool octaspire_dern_value_as_list_pop_back(octaspire_dern_value_t * const self)
     return octaspire_container_list_pop_back(self->value.list);
 }
 
+bool octaspire_dern_value_as_list_pop_front(octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_LIST);
+    return octaspire_container_list_pop_front(self->value.list);
+}
+
 size_t octaspire_dern_value_as_list_get_length(
     octaspire_dern_value_t const * const self)
 {
@@ -2638,12 +2644,27 @@ bool octaspire_dern_value_as_symbol_pop_back(
     return octaspire_container_utf8_string_pop_back_ucs_character(self->value.symbol);
 }
 
+bool octaspire_dern_value_as_symbol_pop_front(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+    return octaspire_container_utf8_string_pop_front_ucs_character(self->value.symbol);
+}
+
 bool octaspire_dern_value_as_string_pop_back_ucs_character(
     octaspire_dern_value_t * const self)
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
 
     return octaspire_container_utf8_string_pop_back_ucs_character(self->value.string);
+}
+
+bool octaspire_dern_value_as_string_pop_front_ucs_character(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
+
+    return octaspire_container_utf8_string_pop_front_ucs_character(self->value.string);
 }
 
 bool octaspire_dern_value_as_string_remove_all_substrings(
@@ -2960,6 +2981,13 @@ bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *sel
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
 
     return octaspire_container_vector_pop_back_element(self->value.vector);
+}
+
+bool octaspire_dern_value_as_vector_pop_front_element(octaspire_dern_value_t *self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    return octaspire_container_vector_pop_front_element(self->value.vector);
 }
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at(

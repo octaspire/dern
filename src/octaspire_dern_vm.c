@@ -811,6 +811,19 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // pop-front
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "pop-front",
+        octaspire_dern_vm_builtin_pop_front,
+        1,
+        "Remove the first value from supported collection.",
+        false,
+        env))
+    {
+        abort();
+    }
+
     // +=
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
@@ -845,19 +858,6 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         1,
         "Decrease a value or values by one",
         false,
-        env))
-    {
-        abort();
-    }
-
-    // pop-front
-    if (!octaspire_dern_vm_create_and_register_new_builtin(
-        self,
-        "pop-front",
-        octaspire_dern_vm_builtin_pop_front,
-        1,
-        "Remove first element of a vector",
-        true,
         env))
     {
         abort();
