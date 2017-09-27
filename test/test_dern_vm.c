@@ -4468,7 +4468,91 @@ TEST octaspire_dern_vm_builtin_pop_front_with_symbol_abc_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_pop_front_with_list_1_2_3_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
 
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define l as (list 1 2 3) [l])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN,  evaluatedValue->typeTag);
+    ASSERT_EQ(true,                              evaluatedValue->value.boolean);
+
+    char const * const expected[] =
+    {
+        "(list 2 3)",
+        "(list 3)",
+        "(list )",
+        "(list )",
+        "(list )"
+    };
+
+    for (size_t i = 0; i < (sizeof(expected) / sizeof(expected[0])); ++i)
+    {
+        evaluatedValue =
+            octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+                vm,
+                "(pop-front l)");
+
+        ASSERT(evaluatedValue);
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_LIST, evaluatedValue->typeTag);
+
+        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+            evaluatedValue,
+            octaspire_dern_vm_get_allocator(vm));
+
+        ASSERT_STR_EQ(
+            expected[i],
+            octaspire_container_utf8_string_get_c_string(tmpStr));
+
+        octaspire_container_utf8_string_release(tmpStr);
+        tmpStr = 0;
+    }
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(len l)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_pop_front_with_integer_10_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(pop-front 10)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR,  evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "First argument to builtin 'pop-front' cannot be of type 'integer'.\n"
+        "\tAt form: >>>>>>>>>>(pop-front 10)<<<<<<<<<<\n",
+        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
 
 
 
@@ -15430,6 +15514,9 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_builtin_pop_front_with_vector_1_2_3_test);
     RUN_TEST(octaspire_dern_vm_builtin_pop_front_with_string_abc_test);
     RUN_TEST(octaspire_dern_vm_builtin_pop_front_with_symbol_abc_test);
+    RUN_TEST(octaspire_dern_vm_builtin_pop_front_with_list_1_2_3_test);
+    // No pop front for queue
+    RUN_TEST(octaspire_dern_vm_builtin_pop_front_with_integer_10_failure_test);
 
     RUN_TEST(octaspire_dern_vm_builtin_pop_back_with_vector_1_2_3_test);
     RUN_TEST(octaspire_dern_vm_builtin_pop_back_with_string_abc_test);

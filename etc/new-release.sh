@@ -25,15 +25,15 @@ create_new_version() {
     echo "New version is $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH"
 
     echo "Updating CMakeLists.txt..."
-    sed -i "s/set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR $MAJOR)/set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR $NEW_MAJOR)/" "$PROJECT_PATH/CMakeLists.txt"
+    sed -i '' "s/set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR $MAJOR)/set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR $NEW_MAJOR)/" "$PROJECT_PATH/CMakeLists.txt"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    sed -i "s/set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR $MINOR)/set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR $NEW_MINOR)/" "$PROJECT_PATH/CMakeLists.txt"
+    sed -i '' "s/set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR $MINOR)/set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR $NEW_MINOR)/" "$PROJECT_PATH/CMakeLists.txt"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    sed -i "s/set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH $PATCH)/set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH $NEW_PATCH)/" "$PROJECT_PATH/CMakeLists.txt"
+    sed -i '' "s/set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH $PATCH)/set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH $NEW_PATCH)/" "$PROJECT_PATH/CMakeLists.txt"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    sed -i "s/Documentation for Octaspire Dern programming language version $MAJOR.$MINOR.$PATCH/Documentation for Octaspire Dern programming language version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/" "$PROJECT_PATH/doc/book/Programming_in_Octaspire_Dern.adoc"
+    sed -i '' "s/Documentation for Octaspire Dern programming language version $MAJOR.$MINOR.$PATCH/Documentation for Octaspire Dern programming language version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/" "$PROJECT_PATH/doc/book/Programming_in_Octaspire_Dern.adoc"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    sed -i "s/Octaspire Dern version $MAJOR.$MINOR.$PATCH/Octaspire Dern version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/" "$PROJECT_PATH/test/REPL/octaspire-dern-repl.exp"
+    sed -i '' "s/Octaspire Dern version $MAJOR.$MINOR.$PATCH/Octaspire Dern version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/" "$PROJECT_PATH/test/REPL/octaspire-dern-repl.exp"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "Running make..."
@@ -169,17 +169,17 @@ RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "Copying build scripts to the release directory..."
-    cp -r "$PROJECT_PATH/etc/how-to-build/" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/"
+    cp -R "$PROJECT_PATH/etc/how-to-build" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "Copying tool-support directories..."
-    cp -r "$PROJECT_PATH/etc/emacs" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
+    cp -R "$PROJECT_PATH/etc/emacs" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    cp -r "$PROJECT_PATH/etc/vim" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
+    cp -R "$PROJECT_PATH/etc/vim" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    cp -r "$PROJECT_PATH/etc/pygments" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
+    cp -R "$PROJECT_PATH/etc/pygments" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    cp -r "$PROJECT_PATH/etc/source-highlight" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
+    cp -R "$PROJECT_PATH/etc/source-highlight" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/tool-support/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "Compressing release directory into tar.bz2..."
@@ -195,7 +195,7 @@ RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     echo "Removing $PROJECT_PATH/release/ and creating it again with updates"
     rm -rf "$PROJECT_PATH/release"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    cp -r "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH" "$PROJECT_PATH"
+    cp -R "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH" "$PROJECT_PATH"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     mv "$PROJECT_PATH/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH" "$PROJECT_PATH/release"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
