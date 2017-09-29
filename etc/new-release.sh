@@ -25,15 +25,15 @@ create_new_version() {
     echo "New version is $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH"
 
     echo "Updating CMakeLists.txt..."
-    sed -i '' "s/set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR $MAJOR)/set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR $NEW_MAJOR)/" "$PROJECT_PATH/CMakeLists.txt"
+    sed -i "s/set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR $MAJOR)/set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR $NEW_MAJOR)/" "$PROJECT_PATH/CMakeLists.txt"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    sed -i '' "s/set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR $MINOR)/set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR $NEW_MINOR)/" "$PROJECT_PATH/CMakeLists.txt"
+    sed -i "s/set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR $MINOR)/set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR $NEW_MINOR)/" "$PROJECT_PATH/CMakeLists.txt"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    sed -i '' "s/set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH $PATCH)/set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH $NEW_PATCH)/" "$PROJECT_PATH/CMakeLists.txt"
+    sed -i "s/set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH $PATCH)/set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH $NEW_PATCH)/" "$PROJECT_PATH/CMakeLists.txt"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    sed -i '' "s/Documentation for Octaspire Dern programming language version $MAJOR.$MINOR.$PATCH/Documentation for Octaspire Dern programming language version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/" "$PROJECT_PATH/doc/book/Programming_in_Octaspire_Dern.adoc"
+    sed -i "s/Documentation for Octaspire Dern programming language version $MAJOR.$MINOR.$PATCH/Documentation for Octaspire Dern programming language version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/" "$PROJECT_PATH/doc/book/Programming_in_Octaspire_Dern.adoc"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    sed -i '' "s/Octaspire Dern version $MAJOR.$MINOR.$PATCH/Octaspire Dern version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/" "$PROJECT_PATH/test/REPL/octaspire-dern-repl.exp"
+    sed -i "s/Octaspire Dern version $MAJOR.$MINOR.$PATCH/Octaspire Dern version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/" "$PROJECT_PATH/test/REPL/octaspire-dern-repl.exp"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "Running make..."

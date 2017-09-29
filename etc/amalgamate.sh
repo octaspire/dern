@@ -113,8 +113,8 @@ cat >> $FILE << EnDoFmEsSaGe
 //////////////////////////////////////////////////////////////////////////////////////////////////
 EnDoFmEsSaGe
 cat $INFILE >> $FILE
-sed -i '' '/#define OCTASPIRE_DERN_CONFIG_TEST_RES_PATH/d'  $FILE
-sed -i '' '/#define OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS/d' $FILE
+sed -i '/#define OCTASPIRE_DERN_CONFIG_TEST_RES_PATH/d'  $FILE
+sed -i '/#define OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS/d' $FILE
 cat >> $FILE << EnDoFmEsSaGe
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          $INFILE
