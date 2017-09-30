@@ -13,7 +13,7 @@
 #elif defined(__sun) && defined(__SVR4)
 // Solaris, OpenIndiana
 #include <ncurses/curses.h>
-#elif defined(__FreeBSD__) || defined(__HAIKU__) || defined(__MidnightBSD__) || defined(__SYLLABLE__)
+#elif defined(__FreeBSD__) || defined(__HAIKU__) || defined(__MidnightBSD__) || defined(__SYLLABLE__) || defined(__APPLE__)
 #include <ncurses.h>
 #else
 #include <ncursesw/ncurses.h>

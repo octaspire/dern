@@ -203,9 +203,9 @@ limitations under the License.
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "85"
-#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "1"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.85.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.85.1"
 
 
 
@@ -20846,10 +20846,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "249"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "2"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "250"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.249.2"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.250.0"
 
 
 
@@ -34796,7 +34796,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_binary_file(
 
     octaspire_container_utf8_string_t *fileName = octaspire_container_utf8_string_new_format(
         octaspire_dern_vm_get_allocator(vm),
+#if defined(__APPLE__)
+        "lib%s.dylib",
+#else
         "lib%s.so",
+#endif
         name);
 
     octaspire_helpers_verify_not_null(fileName);
