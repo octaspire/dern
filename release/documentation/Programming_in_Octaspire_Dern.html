@@ -512,7 +512,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_linux_freebsd_openbsd_netbsd_openindiana_dragonfly_bsd_midnightbsd_minix_3_haiku_syllable_desktop_macos">Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Syllable Desktop, macOS</a></li>
 <li><a href="#_plan9">Plan9</a></li>
-<li><a href="#_windows_using_mingw">Windows using MinGW</a></li>
+<li><a href="#_windows_using_mingw_and_git">Windows using MinGW and Git</a></li>
 </ul>
 </li>
 <li><a href="#_hello_world">Hello world</a></li>
@@ -571,7 +571,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Documentation for Octaspire Dern programming language version 0.252.3</p>
+<p>Documentation for Octaspire Dern programming language version 0.253.0</p>
 </div>
 </div>
 </div>
@@ -719,36 +719,40 @@ testing and development/fixing purposes.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_windows_using_mingw">Windows using MinGW</h3>
-<div class="olist arabic">
-<ol class="arabic">
+<h3 id="_windows_using_mingw_and_git">Windows using MinGW and Git</h3>
+<div class="ulist">
+<ul>
 <li>
 <p>Download and install <strong>MinGW</strong> from
-<a href="http://www.mingw.org">www.mingw.org</a> into directory <code>C:\MinGW</code>. Please note, that you might need
-to add <code>C:\MinGW</code> and <code>C:\MinGW\bin</code> into the <code>PATH</code>.
-If you cannot install into <code>C:\MinGW</code>, you can install MinGW to some other place.
-Remember the installation path, because later you can write it into the
-<code>WindowsMinGW.bat</code> file, so that the script finds MinGW.</p>
+<a href="http://www.mingw.org">www.mingw.org</a> into a directory, for example into <code>C:\MinGW</code>.
+Install <strong>GCC</strong> compiler.
+Add <code>MinGW\bin</code> into the <code>PATH</code>
+(for example, if you installed into <code>C:\MinGW</code>, add <code>C:\MinGW\bin</code> into the <code>PATH</code>).</p>
 </li>
 <li>
-<p>Download and install <strong>7-Zip</strong> from
-<a href="http://www.7-zip.org">www.7-zip.org</a>.</p>
+<p>Download and install <strong>Git for Windows</strong> from
+<a href="https://git-scm.com/download/win">https://git-scm.com/download/win</a>.</p>
 </li>
 <li>
-<p>Download
-<a href="http://www.octaspire.com/dern/release.tar.bz2">www.octaspire.com/dern/release.tar.bz2</a> and
-extract it with 7-Zip. You might need to extract it twice; first into file <code>release.tar</code>
-and then again to get the directory.</p>
+<p>Start <strong>Git Bash</strong> and run the following commands:</p>
 </li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>git clone https://github.com/octaspire/dern.git
+<span class="tok-nb">cd</span> dern/release
+how-to-build/windows.sh</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
 <li>
-<p>Start <strong>shell</strong> and change directory to the extracted release directory
-and then into directory <code>version-x.y.z</code>, where x, y and z are some version
-numbers.</p>
+<p>Start <strong>Windows Command Prompt</strong> and change directory to the same release directory, as
+above. Run examples and programs in the <strong>Command Prompt</strong> window
+(NOT in the Git Bash window).</p>
 </li>
-<li>
-<p>When you are in the directory <code>version-x.y.z</code> run command <code>how-to-build\WindowsMinGW.bat</code></p>
-</li>
-</ol>
+</ul>
 </div>
 <div class="paragraph">
 <p>More scripts for different tools might be added later.</p>
@@ -1983,7 +1987,7 @@ can be used to (by giving different compiler flags):</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-10-03 22:30:30 EEST
+Last updated 2017-10-03 23:07:27 EEST
 </div>
 </div>
 </body>

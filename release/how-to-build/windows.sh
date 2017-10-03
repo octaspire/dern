@@ -102,7 +102,7 @@ echo   "Run programs and examples like this using __Windows Command Prompt__:"
 echo   "====================================================================="
 printf "%b1)%b octaspire-dern-unit-test-runner.exe\n" $YELLOW $GREEN
 printf "%b2)%b embedding-example.exe\n" $YELLOW $GREEN
-printf "%b3)%b octaspire-dern-repl.exe examples\\use-mylib.dern\n" $YELLOW $GREEN
+printf '%b3)%b octaspire-dern-repl.exe examples\\use-mylib.dern\n' $YELLOW $GREEN
 printf "%b4)%b octaspire-dern-repl.exe\n" $YELLOW $GREEN
 #printf "%b5)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-sockets-example.dern\n" $YELLOW $GREEN
 #printf "%b6)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN

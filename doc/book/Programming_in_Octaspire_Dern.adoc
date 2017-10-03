@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.252.3
+Documentation for Octaspire Dern programming language version 0.253.0
 
 == About
 
@@ -135,28 +135,32 @@ Please note, that Dern in Plan9 is currently EXPERIMENTAL, can crash and should 
 testing and development/fixing purposes.
 
 
-=== Windows using MinGW
+=== Windows using MinGW and Git
 
-1. Download and install *MinGW* from
-http://www.mingw.org[www.mingw.org] into directory `C:\MinGW`. Please note, that you might need
-to add `C:\MinGW` and `C:\MinGW\bin` into the `PATH`.
-If you cannot install into `C:\MinGW`, you can install MinGW to some other place.
-Remember the installation path, because later you can write it into the
-`WindowsMinGW.bat` file, so that the script finds MinGW.
+* Download and install *MinGW* from
+http://www.mingw.org[www.mingw.org] into a directory, for example into `C:\MinGW`.
+Install *GCC* compiler.
+Add `MinGW\bin` into the `PATH`
+(for example, if you installed into `C:\MinGW`, add `C:\MinGW\bin` into the `PATH`).
 
-2. Download and install *7-Zip* from
-http://www.7-zip.org[www.7-zip.org].
+* Download and install *Git for Windows* from
+https://git-scm.com/download/win[https://git-scm.com/download/win].
 
-3. Download
-http://www.octaspire.com/dern/release.tar.bz2[www.octaspire.com/dern/release.tar.bz2] and
-extract it with 7-Zip. You might need to extract it twice; first into file `release.tar`
-and then again to get the directory.
+* Start *Git Bash* and run the following commands:
 
-4. Start *shell* and change directory to the extracted release directory
-   and then into directory `version-x.y.z`, where x, y and z are some version
-   numbers.
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+git clone https://github.com/octaspire/dern.git
+cd dern/release
+how-to-build/windows.sh
+----
 
-5. When you are in the directory `version-x.y.z` run command `how-to-build\WindowsMinGW.bat`
+* Start *Windows Command Prompt* and change directory to the same release directory, as
+above. Run examples and programs in the *Command Prompt* window
+(NOT in the Git Bash window).
 
 
 More scripts for different tools might be added later.
