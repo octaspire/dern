@@ -105,8 +105,6 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
     self->vm              = vm;
     self->name            = octaspire_container_utf8_string_new(name, self->allocator);
     self->typeTag         = OCTASPIRE_DERN_LIB_TAG_BINARY;
-    self->binaryLibHandle = 0;
-
 
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #ifdef _WIN32
@@ -274,15 +272,18 @@ void octaspire_dern_lib_release(octaspire_dern_lib_t *self)
         return;
     }
 
-    if (self->typeTag == OCTASPIRE_DERN_LIB_TAG_BINARY && self->binaryLibHandle)
+    if (self->typeTag == OCTASPIRE_DERN_LIB_TAG_BINARY)
     {
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #ifdef _WIN32
         FreeLibrary(self->binaryLibHandle);
         self->binaryLibHandle = 0;
 #else
-        dlclose(self->binaryLibHandle);
-        self->binaryLibHandle = 0;
+        if (self->binaryLibHandle)
+        {
+            dlclose(self->binaryLibHandle);
+            self->binaryLibHandle = 0;
+        }
 #endif
 #endif
     }
@@ -320,6 +321,7 @@ void *octaspire_dern_lib_get_handle(octaspire_dern_lib_t * const self)
     return self->binaryLibHandle;
 #endif
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(self);
     return 0;
 #endif
 }
