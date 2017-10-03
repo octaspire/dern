@@ -20,7 +20,11 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_config.h"
 
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
 #endif
 
 struct octaspire_dern_lib_t
@@ -29,7 +33,13 @@ struct octaspire_dern_lib_t
     octaspire_dern_vm_t               *vm;
     octaspire_container_utf8_string_t *name;
     octaspire_container_utf8_string_t *errorMessage;
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+#ifdef _WIN32
+    HINSTANCE                          binaryLibHandle;
+#else
     void                              *binaryLibHandle;
+#endif
+#endif
     octaspire_dern_lib_tag_t           typeTag;
     char                               padding[4];
 };
@@ -52,7 +62,14 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_source(
     self->vm              = vm;
     self->name            = octaspire_container_utf8_string_new(name, self->allocator);
     self->typeTag         = OCTASPIRE_DERN_LIB_TAG_SOURCE;
+
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+#ifdef _WIN32
+    /* NOP */
+#else
     self->binaryLibHandle = 0;
+#endif
+#endif
 
     octaspire_dern_value_t *value =
         octaspire_dern_vm_read_from_octaspire_input_and_eval_in_global_environment(vm, input);
@@ -92,7 +109,69 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
 
 
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+#ifdef _WIN32
+    self->binaryLibHandle = LoadLibrary(fileName);
 
+    if (!self->binaryLibHandle)
+    {
+        self->errorMessage =
+            octaspire_container_utf8_string_new_format(
+                self->allocator,
+                "Binary library (name='%s' fileName='%s')\n"
+                "cannot be loaded/opened with LoadLibrary.",
+                name,
+                fileName);
+
+        octaspire_helpers_verify_not_null(self->errorMessage);
+    }
+    else
+    {
+        bool (*libInitFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const);
+
+        octaspire_container_utf8_string_t *libInitFuncName =
+            octaspire_container_utf8_string_new_format(self->allocator, "%s_init", name);
+
+        octaspire_helpers_verify_not_null(libInitFuncName);
+
+        libInitFunc =
+            (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))GetProcAddress(
+                self->binaryLibHandle,
+                octaspire_container_utf8_string_get_c_string(libInitFuncName));
+
+        octaspire_container_utf8_string_release(libInitFuncName);
+        libInitFuncName = 0;
+
+        if (!libInitFunc)
+        {
+            self->errorMessage =
+                octaspire_container_utf8_string_new_format(
+                    self->allocator,
+                    "Binary library (name='%s' fileName='%s'):\n"
+                    "GetProcAddress failed on the init function for the library.",
+                    name,
+                    fileName);
+
+            octaspire_helpers_verify_not_null(self->errorMessage);
+        }
+        else
+        {
+            if (!(*libInitFunc)(
+                    vm,
+                    octaspire_dern_vm_get_global_environment(vm)->value.environment))
+            {
+                self->errorMessage =
+                    octaspire_container_utf8_string_new_format(
+                        self->allocator,
+                        "Binary library (name='%s' fileName='%s'):\n"
+                        "init function failed.",
+                        name,
+                        fileName);
+
+                octaspire_helpers_verify_not_null(self->errorMessage);
+            }
+        }
+    }
+#else
         // Clear any old errors
         dlerror();
 
@@ -167,7 +246,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
                 }
             }
         }
-
+#endif
 #else
 
         self->errorMessage =
@@ -198,9 +277,14 @@ void octaspire_dern_lib_release(octaspire_dern_lib_t *self)
     if (self->typeTag == OCTASPIRE_DERN_LIB_TAG_BINARY && self->binaryLibHandle)
     {
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
-        dlclose(self->binaryLibHandle);
-#endif
+#ifdef _WIN32
+        FreeLibrary(self->binaryLibHandle);
         self->binaryLibHandle = 0;
+#else
+        dlclose(self->binaryLibHandle);
+        self->binaryLibHandle = 0;
+#endif
+#endif
     }
 
     octaspire_container_utf8_string_release(self->name);
@@ -229,6 +313,14 @@ char const *octaspire_dern_lib_get_error_message(octaspire_dern_lib_t const * co
 
 void *octaspire_dern_lib_get_handle(octaspire_dern_lib_t * const self)
 {
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+#ifdef _WIN32
+    return &(self->binaryLibHandle);
+#else
     return self->binaryLibHandle;
+#endif
+#else
+    return 0;
+#endif
 }
 

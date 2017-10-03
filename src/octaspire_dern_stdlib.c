@@ -7953,6 +7953,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_binary_file(
         octaspire_dern_vm_get_allocator(vm),
 #if defined(__APPLE__)
         "lib%s.dylib",
+#elif _WIN32
+        "lib%s.dll",
 #else
         "lib%s.so",
 #endif

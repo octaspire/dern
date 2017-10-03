@@ -200,6 +200,8 @@ static void octaspire_dern_repl_private_cleanup(void)
 
 #ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
 void main(int argc, char *argv[])
+#elif _WIN32
+int main(int argc, char *argv[], char *environ[])
 #else
 int main(int argc, char *argv[])
 #endif
@@ -347,7 +349,9 @@ int main(int argc, char *argv[])
     input = octaspire_input_new_from_c_string("", allocator);
     vm    = octaspire_dern_vm_new_with_config(allocator, stdio, vmConfig);
 
+#ifndef _WIN32
     extern char **environ;
+#endif
 
     for (char **var = environ; *var; ++var)
     {
