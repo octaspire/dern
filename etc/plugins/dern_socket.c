@@ -7,6 +7,9 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #endif
+#ifdef __FreeBSD__
+#include <netinet/in.h>
+#endif
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
