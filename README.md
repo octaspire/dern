@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/octaspire/dern.svg?branch=master)](https://travis-ci.org/octaspire/dern)
-[![Coverage Status](https://img.shields.io/badge/coverage-83%25-red.svg?colorB=aaaa00)](https://octaspire.io/dern/coverage)
+[![Coverage Status](https://img.shields.io/badge/coverage-84%25-red.svg?colorB=aaaa00)](https://octaspire.io/dern/coverage)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://choosealicense.com/licenses/apache-2.0/)
 
 
