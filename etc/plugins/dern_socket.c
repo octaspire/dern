@@ -10,6 +10,9 @@
 #ifdef __FreeBSD__
 #include <netinet/in.h>
 #endif
+#ifdef __DragonFly__
+#include <netinet/in.h>
+#endif
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
