@@ -69,14 +69,14 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
 
 
 
-#printf "$YELLOW\n"
-#cat << EnDoFmEsSaGe
-#5. Building the 'dern_socket' (binary) plugin.
-#-------------------------------------------------------------------------------
-#EnDoFmEsSaGe
-#echoToDefs
-#echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_socket.c
-#echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_socket.dll dern_socket.o
+printf "$YELLOW\n"
+cat << EnDoFmEsSaGe
+5. Building the 'dern_socket' (binary) plugin.
+-------------------------------------------------------------------------------
+EnDoFmEsSaGe
+echoToDefs
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_socket.c
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_socket.dll dern_socket.o -lws2_32 -L . imp.a
 
 
 
@@ -104,7 +104,8 @@ printf "%b1)%b octaspire-dern-unit-test-runner.exe\n" $YELLOW $GREEN
 printf "%b2)%b embedding-example.exe\n" $YELLOW $GREEN
 printf '%b3)%b octaspire-dern-repl.exe examples\\use-mylib.dern\n' $YELLOW $GREEN
 printf "%b4)%b octaspire-dern-repl.exe\n" $YELLOW $GREEN
-#printf "%b5)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-sockets-example.dern\n" $YELLOW $GREEN
+printf "%b5)%b octaspire-dern-repl examples/dern-sockets-echo-server.dern\n" $YELLOW $GREEN
+printf "%b+)%b octaspire-dern-repl examples/dern-sockets-echo-client.dern\n" $YELLOW $GREEN
 #printf "%b6)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN
 #printf "%b7)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/irc-client.dern\n" $YELLOW $GREEN
 echo "======================================================================="

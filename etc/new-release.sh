@@ -156,8 +156,10 @@ RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     cp "$PROJECT_PATH/doc/examples/plugins/dern_ncurses/dern-ncurses-example.dern" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
-    echo "Copying file for binary 'dern_socket' plugin example..."
-    cp "$PROJECT_PATH/doc/examples/plugins/dern_sockets/dern-sockets-example.dern" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
+    echo "Copying files for binary 'dern_socket' plugin example..."
+    cp "$PROJECT_PATH/doc/examples/plugins/dern_sockets/dern-sockets-echo-server.dern" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    cp "$PROJECT_PATH/doc/examples/plugins/dern_sockets/dern-sockets-echo-client.dern" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "Copying embedding example..."

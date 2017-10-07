@@ -1,0 +1,13 @@
+#! This example assumes that you have IRC-server running on your
+   machine
+!#
+
+(require 'dern_socket)
+
+(define s as (socket-new-ipv4-stream-socket nil 6667) [socket])
+
+(while true
+    (define client as (socket-accept s) [socket for the new connection])
+    (println (socket-receive client true))
+    (socket-send client [Hello from server]))
+

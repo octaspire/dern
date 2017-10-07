@@ -1,8 +1,12 @@
 #include "octaspire-dern-amalgamated.c"
+#ifdef _WIN32
+#include <winsock2.h>
+#else
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#endif
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
@@ -11,6 +15,32 @@
 #include <stdint.h>
 
 static char const * const DERN_SOCKET_PLUGIN_NAME = "dern_socket";
+
+#ifdef _WIN32
+static char const *dern_socket_private_format_win32_error_message(void)
+{
+    static char msgBuf[512];
+    memset(msgBuf, 0, sizeof(msgBuf));
+
+    int const errorCode = WSAGetLastError();
+
+    FormatMessage(
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        0,
+        errorCode,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        msgBuf,
+        sizeof(msgBuf),
+        0);
+
+    if (strlen(msgBuf) == 0)
+    {
+        snprintf(msgBuf, sizeof(msgBuf), "%d", errorCode);
+    }
+
+    return msgBuf;
+}
+#endif
 
 void dern_socket_socket_clean_up_callback(void *payload)
 {
@@ -75,6 +105,109 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
         ? 0
         : (int)octaspire_dern_value_as_integer_get_value(secondArg);
 
+#ifdef _WIN32
+    WSADATA wsa;
+
+    if (WSAStartup(MAKEWORD(2,2), &wsa) != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_string_format(
+            vm,
+            "Builtin 'socket-new-ipv4-stream-socket' failed with error message: %s",
+            dern_socket_private_format_win32_error_message());
+    }
+
+    SOCKET s;
+
+    if ((s = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_string_format(
+            vm,
+            "Builtin 'socket-new-ipv4-stream-socket' failed to create a socket with error message: %s",
+            dern_socket_private_format_win32_error_message());
+    }
+
+    if (address)
+    {
+        struct hostent *he = gethostbyname(address);
+
+        if (!he)
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_string_format(
+                vm,
+                "Builtin 'socket-new-ipv4-stream-socket' failed: gethostbyname(%s) failed.",
+                address);
+        }
+
+        struct in_addr **addrs = (struct in_addr**)he->h_addr_list;
+
+        if (addrs[0] == 0)
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_string_format(
+                vm,
+                "Builtin 'socket-new-ipv4-stream-socket' failed: no addresses for %s",
+                address);
+        }
+
+        struct sockaddr_in server;
+        server.sin_addr.s_addr = addrs[0]->s_addr;
+        server.sin_family      = AF_INET;
+        server.sin_port        = htons(port);
+
+        if (connect(s, (struct sockaddr*)&server, sizeof(server)) < 0)
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_string_format(
+                vm,
+                "Builtin 'socket-new-ipv4-stream-socket' connect to %s failed.",
+                address);
+                //"Builtin 'socket-new-ipv4-stream-socket' connect failed: %s",
+                //strerror(errno));
+        }
+    }
+    else
+    {
+        struct sockaddr_in server;
+        server.sin_family      = AF_INET;
+        server.sin_addr.s_addr = INADDR_ANY;
+        server.sin_port        = htons(port);
+
+        if (bind(s, (struct sockaddr*)&server, sizeof(server)) == SOCKET_ERROR)
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_string_format(
+                vm,
+                "Builtin 'socket-new-ipv4-stream-socket' failed to bind a socket with error message: %s",
+                dern_socket_private_format_win32_error_message());
+        }
+
+        if (listen(s, 5) == SOCKET_ERROR)
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_string_format(
+                vm,
+                "Builtin 'socket-new-ipv4-stream-socket' failed to listen a socket with error message: %s",
+                dern_socket_private_format_win32_error_message());
+        }
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_SOCKET_PLUGIN_NAME,
+        "socketFileDescriptor",
+        "dern_socket_socket_clean_up_callback",
+        "",
+        "",
+        "",
+        false,
+        (void*)s);
+
+#else
     intptr_t const socketFileDescriptor = socket(AF_INET, SOCK_STREAM, 0);
 
     if (socketFileDescriptor == -1)
@@ -162,6 +295,7 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
         "",
         false,
         (void*)socketFileDescriptor);
+#endif
 }
 
 octaspire_dern_value_t *dern_socket_close(
@@ -217,6 +351,23 @@ octaspire_dern_value_t *dern_socket_close(
             octaspire_dern_c_data_get_payload_typename(cData));
     }
 
+#ifdef _WIN32
+    SOCKET s = (SOCKET)octaspire_dern_c_data_get_payload(cData);
+
+    int result = closesocket(s);
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    if (result != 0)
+    {
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'socket-close' failed: %s.",
+            dern_socket_private_format_win32_error_message());
+    }
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+#else
     intptr_t const socketFileDescriptor =
         (intptr_t)octaspire_dern_c_data_get_payload(cData);
 
@@ -233,6 +384,7 @@ octaspire_dern_value_t *dern_socket_close(
     }
 
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
+#endif
 }
 
 octaspire_dern_value_t *dern_socket_accept(
@@ -288,6 +440,38 @@ octaspire_dern_value_t *dern_socket_accept(
             octaspire_dern_c_data_get_payload_typename(cData));
     }
 
+#ifdef _WIN32
+    SOCKET const s = (SOCKET const)octaspire_dern_c_data_get_payload(cData);
+
+    struct sockaddr_in client;
+    int clientLen = sizeof(struct sockaddr_in);
+
+    SOCKET result =
+        accept(s, (struct sockaddr*)&client, (int*)&clientLen);
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    if (result == INVALID_SOCKET)
+    {
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'socket-accept' failed: %s.",
+            dern_socket_private_format_win32_error_message());
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_SOCKET_PLUGIN_NAME,
+        "socketFileDescriptor",
+        "dern_socket_socket_clean_up_callback",
+        "",
+        "",
+        "",
+        false,
+        (void*)result);
+#else
     intptr_t const socketFileDescriptor =
         (intptr_t)octaspire_dern_c_data_get_payload(cData);
 
@@ -319,6 +503,7 @@ octaspire_dern_value_t *dern_socket_accept(
         "",
         false,
         (void*)result);
+#endif
 }
 
 octaspire_dern_value_t *dern_socket_receive(
@@ -389,6 +574,64 @@ octaspire_dern_value_t *dern_socket_receive(
 
     bool const waitForData = octaspire_dern_value_as_boolean_get_value(secondArg);
 
+#ifdef _WIN32
+    SOCKET const s = (SOCKET const)octaspire_dern_c_data_get_payload(cData);
+
+    octaspire_container_utf8_string_t *str = 0;
+
+    //while (true)
+    {
+        u_long mode = (waitForData ? 0 : 1);
+
+        if (ioctlsocket(s, FIONBIO, &mode) != NO_ERROR)
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "Builtin 'socket-receive' failed on ioctlsocket");
+        }
+
+        char buffer[1025] = {0};
+        int const recvStatus =
+            recv(s, buffer, 1024 * sizeof(char), 0);
+            //recv(s, buffer, 1024 * sizeof(char), waitForData ? MSG_WAITALL : 0);
+
+        if (recvStatus == SOCKET_ERROR)
+        {
+            if (waitForData)
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'socket-receive' failed to receive: %s.",
+                    strerror(errno));
+            }
+            else
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_nil(vm);
+            }
+        }
+        else if (recvStatus == 0)
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "Builtin 'socket-receive' failed to receive: server closed connection.");
+        }
+        else
+        {
+            str = octaspire_container_utf8_string_new_from_buffer(
+                buffer,
+                recvStatus,
+                octaspire_dern_vm_get_allocator(vm));
+        }
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_not_null(str);
+    return octaspire_dern_vm_create_new_value_string(vm, str);
+#else
     intptr_t const socketFileDescriptor =
         (intptr_t)octaspire_dern_c_data_get_payload(cData);
 
@@ -435,6 +678,7 @@ octaspire_dern_value_t *dern_socket_receive(
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     octaspire_helpers_verify_not_null(str);
     return octaspire_dern_vm_create_new_value_string(vm, str);
+#endif
 }
 
 octaspire_dern_value_t *dern_socket_send(
@@ -490,6 +734,60 @@ octaspire_dern_value_t *dern_socket_send(
             octaspire_dern_c_data_get_payload_typename(cData));
     }
 
+#ifdef _WIN32
+    SOCKET const s = (SOCKET const)octaspire_dern_c_data_get_payload(cData);
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    if (!octaspire_dern_value_is_text(secondArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'socket-send' expects string or symbol as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    char const * ptr = octaspire_dern_value_as_text_get_c_string(secondArg);
+    size_t       len = octaspire_dern_value_as_text_get_length_in_octets(secondArg);
+    intptr_t     result = 0;
+
+    while (true)
+    {
+        int const sendStatus = send(s, ptr, len, 0);
+
+        if (sendStatus == SOCKET_ERROR)
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'socket-send' failed to send: %s.",
+                strerror(errno));
+        }
+
+        if (sendStatus > (int)len)
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "Builtin 'socket-send' error: this should not happen.");
+        }
+
+        len    -= sendStatus;
+        ptr    += sendStatus;
+        result += sendStatus;
+
+        if (len == 0)
+        {
+            break;
+        }
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_integer(vm, result);
+#else
     intptr_t const socketFileDescriptor =
         (intptr_t)octaspire_dern_c_data_get_payload(cData);
 
@@ -543,6 +841,7 @@ octaspire_dern_value_t *dern_socket_send(
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_integer(vm, result);
+#endif
 }
 
 bool dern_socket_init(
