@@ -146,6 +146,8 @@ RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     cp "$PROJECT_PATH/etc/plugins/dern_socket.c" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/plugins/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    cp "$PROJECT_PATH/etc/plugins/dern_dir.c" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/plugins/"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "Copying files for binary library example..."
     cp "$PROJECT_PATH/doc/examples/plugins/hello/amalgamated/mylib.c" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
@@ -160,6 +162,10 @@ RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     cp "$PROJECT_PATH/doc/examples/plugins/dern_sockets/dern-sockets-echo-server.dern" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     cp "$PROJECT_PATH/doc/examples/plugins/dern_sockets/dern-sockets-echo-client.dern" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+
+    echo "Copying files for binary 'dern_dir' plugin example..."
+    cp "$PROJECT_PATH/doc/examples/plugins/dern_dir/dern-dir-example.dern" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "Copying embedding example..."
