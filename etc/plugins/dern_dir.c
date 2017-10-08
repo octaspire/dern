@@ -4,6 +4,9 @@
 #else
 #include <dirent.h>
 #include <unistd.h>
+#ifdef __linux__
+#include <linux/limits.h>
+#endif
 #endif
 
 octaspire_dern_value_t *dern_dir_get_listing(
