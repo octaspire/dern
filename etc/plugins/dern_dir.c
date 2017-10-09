@@ -4,6 +4,7 @@
 #else
 #include <dirent.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #ifdef __linux__
 #include <linux/limits.h>
 #endif
@@ -65,6 +66,14 @@ octaspire_dern_value_t *dern_dir_get_listing(
     {
         if (strcmp(info.cFileName, ".") != 0 && strcmp(info.cFileName, "..") != 0)
         {
+            octaspire_dern_value_t * const subVec =
+                octaspire_dern_vm_create_new_value_vector(vm);
+
+            octaspire_helpers_verify_not_null(subVec);
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_value_as_vector_push_back_element(result, &subVec));
+
             octaspire_container_utf8_string_t * const str =
                 octaspire_container_utf8_string_new_format(
                     octaspire_dern_vm_get_allocator(vm),
@@ -80,7 +89,28 @@ octaspire_dern_value_t *dern_dir_get_listing(
             octaspire_helpers_verify_not_null(elem);
 
             octaspire_helpers_verify_true(
-                octaspire_dern_value_as_vector_push_back_element(result, &elem));
+                octaspire_dern_value_as_vector_push_back_element(subVec, &elem));
+
+            DWORD properties = GetFileAttributes(info.cFileName);
+
+            if (properties != INVALID_FILE_ATTRIBUTES)
+            {
+                // TODO calculate with the high part.
+                octaspire_dern_value_t * const lenVal =
+                    octaspire_dern_vm_create_new_value_integer(vm, info.nFileSizeLow);
+
+                octaspire_helpers_verify_true(
+                    octaspire_dern_value_as_vector_push_back_element(subVec, &lenVal));
+
+                // TODO check that it actually is a file, if it is not a directory.
+                octaspire_dern_value_t * const typeVal =
+                    octaspire_dern_vm_create_new_value_symbol_from_c_string(
+                        vm,
+                        (properties & FILE_ATTRIBUTE_DIRECTORY) ? "directory" : "file");
+
+                octaspire_helpers_verify_true(
+                    octaspire_dern_value_as_vector_push_back_element(subVec, &typeVal));
+            }
         }
     }
     while (FindNextFile(h, &info));
@@ -111,12 +141,22 @@ octaspire_dern_value_t *dern_dir_get_listing(
         if (strncmp(entry->d_name, ".", NAME_MAX) != 0 &&
             strncmp(entry->d_name, ".", NAME_MAX) != 0)
         {
+            octaspire_dern_value_t * const subVec =
+                octaspire_dern_vm_create_new_value_vector(vm);
+
+            octaspire_helpers_verify_not_null(subVec);
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_value_as_vector_push_back_element(result, &subVec));
+
             octaspire_container_utf8_string_t * const str =
                 octaspire_container_utf8_string_new_format(
                     octaspire_dern_vm_get_allocator(vm),
                     "%s/%s",
                     path,
                     entry->d_name);
+
+            octaspire_helpers_verify_not_null(str);
 
             octaspire_dern_value_t * const elem =
                 octaspire_dern_vm_create_new_value_string(
@@ -126,7 +166,27 @@ octaspire_dern_value_t *dern_dir_get_listing(
             octaspire_helpers_verify_not_null(elem);
 
             octaspire_helpers_verify_true(
-                octaspire_dern_value_as_vector_push_back_element(result, &elem));
+                octaspire_dern_value_as_vector_push_back_element(subVec, &elem));
+
+            struct stat properties;
+
+            if (stat(entry->d_name, &properties) == 0)
+            {
+                octaspire_dern_value_t * const lenVal =
+                    octaspire_dern_vm_create_new_value_integer(vm, properties.st_size);
+
+                octaspire_helpers_verify_true(
+                    octaspire_dern_value_as_vector_push_back_element(subVec, &lenVal));
+
+                octaspire_dern_value_t * const typeVal =
+                    octaspire_dern_vm_create_new_value_symbol_from_c_string(
+                        vm,
+                        S_ISDIR(properties.st_mode) ? "directory" :
+                            (S_ISREG(properties.st_mode) ? "file" : "other"));
+
+                octaspire_helpers_verify_true(
+                    octaspire_dern_value_as_vector_push_back_element(subVec, &typeVal));
+            }
         }
     }
 #endif
