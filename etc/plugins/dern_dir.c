@@ -1,3 +1,8 @@
+#if defined(__sun) && defined(__SVR4)
+// Solaris, OpenIndiana
+#define __EXTENSIONS__
+#include <limits.h>
+#endif
 #include "octaspire-dern-amalgamated.c"
 #ifdef _WIN32
 #include <windows.h>
