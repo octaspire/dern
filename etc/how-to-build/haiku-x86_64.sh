@@ -100,7 +100,7 @@ cat << EnDoFmEsSaGe
    binary plugin 'dern_ncurses', you don't have to do anything. Otherwise,
    to install development version of library 'ncurses':
 
-       - Haiku: pkgman install ncurses_x86_devel
+       - Haiku x86_64: pkgman install ncurses6_devel
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
 echoToDefs
