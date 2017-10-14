@@ -32,7 +32,7 @@
 #include <ncursesw/ncurses.h>
 #endif
 
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__OpenBSD__)
 #undef KEY_BACKSPACE
 #define KEY_BACKSPACE 127
 #endif
