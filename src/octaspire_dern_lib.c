@@ -88,7 +88,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_source(
 }
 
 #ifdef _WIN32
-static char const *octaspire_dern_private_format_win32_error_message(void)
+static char const *octaspire_dern_lib_private_format_win32_error_message(void)
 {
     static char msgBuf[512];
     memset(msgBuf, 0, sizeof(msgBuf));
