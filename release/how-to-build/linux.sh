@@ -100,7 +100,7 @@ cat << EnDoFmEsSaGe
    binary plugin 'dern_ncurses', you don't have to do anything. Otherwise,
    to install development version of library 'ncurses':
 
-       - Debian, Ubuntu, Raspberry Pi: sudo apt-get install libncurses5-dev
+       - Debian, Ubuntu, Raspberry Pi: sudo apt-get install libncursesw5-dev
        - More systems added later...
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
