@@ -60,7 +60,9 @@ cat >> $FILE << EnDoFmEsSaGe
 
 #else
 
+#ifndef OCTASPIRE_DERN_AMALGAMATED_NO_BOOL
 #include <stdbool.h>
+#endif
 #include <stddef.h>
 #include <stdint.h>
 

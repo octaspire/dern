@@ -46,7 +46,9 @@ limitations under the License.
 
 #else
 
+#ifndef OCTASPIRE_DERN_AMALGAMATED_NO_BOOL
 #include <stdbool.h>
+#endif
 #include <stddef.h>
 #include <stdint.h>
 
@@ -20851,9 +20853,9 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "258"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.258.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.258.1"
 
 
 
@@ -25902,6 +25904,32 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_source(
     return self;
 }
 
+#ifdef _WIN32
+static char const *octaspire_dern_private_format_win32_error_message(void)
+{
+    static char msgBuf[512];
+    memset(msgBuf, 0, sizeof(msgBuf));
+
+    int const errorCode = GetLastError();
+
+    FormatMessage(
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        0,
+        errorCode,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        msgBuf,
+        sizeof(msgBuf),
+        0);
+
+    if (strlen(msgBuf) == 0)
+    {
+        snprintf(msgBuf, sizeof(msgBuf), "%d", errorCode);
+    }
+
+    return msgBuf;
+}
+#endif
+
 octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
     char const * const name,
     char const * const fileName,
@@ -25931,9 +25959,10 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
             octaspire_container_utf8_string_new_format(
                 self->allocator,
                 "Binary library (name='%s' fileName='%s')\n"
-                "cannot be loaded/opened with LoadLibrary.",
+                "cannot be loaded/opened with LoadLibrary: %s",
                 name,
-                fileName);
+                fileName,
+                octaspire_dern_lib_private_format_win32_error_message());
 
         octaspire_helpers_verify_not_null(self->errorMessage);
     }

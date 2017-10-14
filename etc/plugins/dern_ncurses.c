@@ -1,3 +1,14 @@
+#ifdef _WIN32
+#define OCTASPIRE_DERN_AMALGAMATED_NO_BOOL
+#define PDC_WIDE
+#include "curses.h"
+#include "panel.h"
+#define true  1
+#define false 0
+#undef KEY_BACKSPACE
+#define KEY_BACKSPACE 8
+#endif
+
 #include "octaspire-dern-amalgamated.c"
 #include <ctype.h>
 #include <locale.h>
@@ -5,6 +16,8 @@
 
 #define NCURSES_WIDECHAR 1
 #define _XOPEN_SOURCE_EXTENDED 1
+
+#ifndef _WIN32
 
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(__minix)
 #include <curses.h>
@@ -18,6 +31,14 @@
 #else
 #include <ncursesw/ncurses.h>
 #endif
+
+#if defined(__APPLE__)
+#undef KEY_BACKSPACE
+#define KEY_BACKSPACE 127
+#endif
+
+#endif
+
 
 static char const * const DERN_NCURSES_PLUGIN_NAME = "dern_ncurses";
 

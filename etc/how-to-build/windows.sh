@@ -25,8 +25,9 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
     -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION      \
     -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
     $COVERAGE                                                  \
--I . octaspire-dern-amalgamated.c -lm                          \
--o octaspire-dern-unit-test-runner
+    -I . octaspire-dern-amalgamated.c -lm                      \
+    -lKernel32                                                 \
+    -o octaspire-dern-unit-test-runner
 
 
 
@@ -38,8 +39,9 @@ EnDoFmEsSaGe
 echoToDefs
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
     -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
--I . examples/embedding-example.c -lm                          \
--o embedding-example
+    -I . examples/embedding-example.c -lm                      \
+    -lKernel32                                                 \
+    -o embedding-example
 
 
 
@@ -49,9 +51,16 @@ cat << EnDoFmEsSaGe
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
 echoToDefs
-echoAndRun $CC -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION octaspire-dern-amalgamated.c -shared -Wl,--out-implib=imp.a
+echoAndRun $CC                                                 \
+    -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION                \
+    -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
+    octaspire-dern-amalgamated.c                               \
+    -lKernel32                                                 \
+    -shared -Wl,--out-implib=imp.a
+
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c examples/mylib.c
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libmylib.dll mylib.o -L . imp.a
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I .         \
+    -o libmylib.dll mylib.o -lKernel32 -L . imp.a
 
 
 
@@ -64,8 +73,9 @@ echoToDefs
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
     -DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION           \
     -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
--I . octaspire-dern-amalgamated.c -lm                          \
--o octaspire-dern-repl
+    -I . octaspire-dern-amalgamated.c -lm                      \
+    -lKernel32                                                 \
+    -o octaspire-dern-repl
 
 
 
@@ -76,7 +86,8 @@ cat << EnDoFmEsSaGe
 EnDoFmEsSaGe
 echoToDefs
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_socket.c
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_socket.dll dern_socket.o -lws2_32 -L . imp.a
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I .         \
+    -o libdern_socket.dll dern_socket.o -lws2_32 -L . imp.a
 
 
 
@@ -87,23 +98,30 @@ cat << EnDoFmEsSaGe
 EnDoFmEsSaGe
 echoToDefs
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_dir.c
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_dir.dll dern_dir.o -L . imp.a
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I .         \
+    -o libdern_dir.dll dern_dir.o -lKernel32 -L . imp.a
 
 
 
-#printf "$YELLOW\n"
-#cat << EnDoFmEsSaGe
-#7. Building the 'dern_ncurses' (binary) plugin.  PLEASE NOTE: This plugin
-#   requires development version of 'ncurses' library (i.e. headers) to be
-#   installed on the system; otherwise compilation will fail. Failure will
-#   not affect other steps, so if this step fails and you don't want to use
-#   binary plugin 'dern_ncurses', you don't have to do anything. Otherwise,
-#   to install development version of library 'ncurses'.
-#-------------------------------------------------------------------------------
-#EnDoFmEsSaGe
-#echoToDefs
-#echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_ncurses.c
-#echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_ncurses.dll dern_ncurses.o -lncursesw
+printf "$YELLOW\n"
+cat << EnDoFmEsSaGe
+7. Building the 'dern_ncurses' (binary) plugin.  PLEASE NOTE: This plugin
+   requires 'ncurses' library and headers to be installed on the system;
+   otherwise compilation will fail. Failure will not affect other steps,
+   so if this step fails and you don't want to use  binary plugin
+   'dern_ncurses', you don't have to do anything. Otherwise, download
+   'PDCurses' library for windows from:
+
+        a) Go to https://pdcurses.sourceforge.io
+        b) Download file 'pdc34dllw.zip' into 'release'-directory
+        c) Run command: unzip pdc34dllw.zip
+        d) Run command: how-to-build/windows.sh
+-------------------------------------------------------------------------------
+EnDoFmEsSaGe
+echoToDefs
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_ncurses.c
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I .         \
+    -o libdern_ncurses.dll dern_ncurses.o -lKernel32 -L . -lpdcurses imp.a
 
 
 
@@ -115,11 +133,11 @@ printf "%b1)%b octaspire-dern-unit-test-runner.exe\n" $YELLOW $GREEN
 printf "%b2)%b embedding-example.exe\n" $YELLOW $GREEN
 printf '%b3)%b octaspire-dern-repl.exe examples\\use-mylib.dern\n' $YELLOW $GREEN
 printf "%b4)%b octaspire-dern-repl.exe\n" $YELLOW $GREEN
-printf "%b5)%b octaspire-dern-repl examples/dern-sockets-echo-server.dern\n" $YELLOW $GREEN
-printf "%b+)%b octaspire-dern-repl examples/dern-sockets-echo-client.dern\n" $YELLOW $GREEN
-printf "%b6)%b octaspire-dern-repl examples/dern-dir-example.dern\n" $YELLOW $GREEN
-#printf "%b7)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN
-#printf "%b8)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/irc-client.dern\n" $YELLOW $GREEN
+printf "%b5)%b octaspire-dern-repl examples\\dern-sockets-echo-server.dern\n" $YELLOW $GREEN
+printf "%b+)%b octaspire-dern-repl examples\\dern-sockets-echo-client.dern\n" $YELLOW $GREEN
+printf "%b6)%b octaspire-dern-repl examples\\dern-dir-example.dern\n" $YELLOW $GREEN
+printf "%b7)%b octaspire-dern-repl examples\\dern-ncurses-example.dern\n" $YELLOW $GREEN
+printf "%b8)%b octaspire-dern-repl examples\\irc-client.dern\n" $YELLOW $GREEN
 echo "======================================================================="
 echoToDefs
 
