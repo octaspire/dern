@@ -167,9 +167,15 @@ octaspire_dern_value_t *dern_ncurses_getch(
     }
 
     wint_t wint;
-    /*int const status =*/get_wch(&wint);
+    int const status = get_wch(&wint);
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    if (status == ERR)
+    {
+        return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "ERR");
+    }
+
     switch (wint)
     {
         case 10:
@@ -1902,7 +1908,7 @@ bool dern_ncurses_init(
             "ncurses-getch",
             dern_ncurses_getch,
             0,
-            "(getch) -> <utf-8 character> or <symbol for a special key>",
+            "(getch) -> <utf-8 character> or <symbol for a special key> or ERR",
             false,
             targetEnv))
     {

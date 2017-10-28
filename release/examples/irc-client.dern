@@ -232,6 +232,8 @@
 (define read-and-handle-input as (fn ()
     (define char as (ncurses-getch) [octet of input from the user])
 
+    (if (== 'ERR char) (return))
+
     (if (== 'KEY_ENTER char)
           (do
             (handle-input-line)
