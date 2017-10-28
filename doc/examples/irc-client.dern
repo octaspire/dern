@@ -20,6 +20,7 @@
 (define title             as []                               [title])
 (define debug             as false                            [is debug mode on])
 (define user-input-buffer as []                               [stores line of user input])
+(define redraw-required   as true                             [is (re)draw required or not])
 
 (define PAIR-BORDER          as 1 [PAIR-BORDER])
 (define PAIR-PROMPT          as 2 [PAIR-PROMPT])
@@ -234,6 +235,8 @@
 
     (if (== 'ERR char) (return))
 
+    (= redraw-required true)
+
     (if (== 'KEY_ENTER char)
           (do
             (handle-input-line)
@@ -310,6 +313,8 @@
     (define input-from-socket as (socket-receive socket false) [possible input from socket] )
 
     (if (== nil input-from-socket) (return))
+
+    (= redraw-required true)
 
     (if debug (push-text-to-lines 'DEBUG input-from-socket))
 
@@ -390,11 +395,13 @@
     (ncurses-move win (- (cp@ num-rows-and-cols 0) 1) (+ (len user-input-buffer) 1))
     (read-socket)
     (read-and-handle-input)
-    (ncurses-clear win)
-    (show-input-line)
-    (print-lines)
-    (ncurses-move win (- (cp@ num-rows-and-cols 0) 1) (+ (len user-input-buffer) 1))
-    )
+    (if redraw-required
+      (do
+        (ncurses-clear win)
+        (show-input-line)
+        (print-lines)
+        (ncurses-move win (- (cp@ num-rows-and-cols 0) 1) (+ (len user-input-buffer) 1))
+        (= redraw-required false))))
 
 (ncurses-endwin)
 
