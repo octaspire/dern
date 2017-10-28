@@ -4,6 +4,9 @@
 (define win as (ncurses-initscr) [win])
 (ncurses-set-keypad win true)
 (ncurses-set-cbreak true)
+(ncurses-set-nl true)
+(ncurses-halfdelay 1)
+(ncurses-set-echo false)
 
 (define running           as true                             [should this program be running])
 (define current-channel   as nil                              [currently joined channel])
@@ -16,6 +19,7 @@
 (define hint              as []                               [hint])
 (define title             as []                               [title])
 (define debug             as false                            [is debug mode on])
+(define user-input-buffer as []                               [stores line of user input])
 
 (define PAIR-BORDER          as 1 [PAIR-BORDER])
 (define PAIR-PROMPT          as 2 [PAIR-PROMPT])
@@ -215,23 +219,47 @@
     (for i from (len title) to (- (cp@ num-rows-and-cols 1) 1) (+= title |-|)))
   [show title message] '(m [title message]) howto-no)
 
-(define read-and-handle-input as (fn ()
+(define show-input-line as (fn ()
     (ncurses-attron 'BOLD)
     (ncurses-attron PAIR-PROMPT)
-    (ncurses-print win (- (cp@ num-rows-and-cols 0) 1) 0 [> ])
+    (ncurses-print win (- (cp@ num-rows-and-cols 0) 1) 0 (string-format [>{}] user-input-buffer))
     (ncurses-attroff PAIR-PROMPT)
     (ncurses-attroff 'BOLD)
-    (ncurses-attron PAIR-INPUT)
-    (define input as (ncurses-getstr 1.0) [line of text from the user])
     (ncurses-attroff PAIR-INPUT)
+    (ncurses-move win (- (cp@ num-rows-and-cols 0) 1) (+ (len user-input-buffer) 2)))
+    [show user input] '() howto-no)
 
-    (if (== 0 (len input)) (do (show-empty-hint) (return)))
+(define read-and-handle-input as (fn ()
+    (define char as (ncurses-getch) [octet of input from the user])
 
-    (define first-char as (cp@ input 0) [first character of user input])
+    (if (== 'KEY_ENTER char)
+          (do
+            (handle-input-line)
+            (= user-input-buffer [])
+            (show-input-line)
+            (return)))
+
+    (if (and (== 'KEY_BACKSPACE char) (> (len user-input-buffer) 0))
+          (do
+            (-- user-input-buffer)
+            (show-input-line)
+            (return)))
+
+    (if (character? char)
+        (do
+          (+= user-input-buffer char)
+          (show-input-line)
+          (return))))
+    [read input and handle it if needed] '() howto-no)
+
+(define handle-input-line as (fn ()
+    (if (== 0 (len user-input-buffer)) (do (show-empty-hint) (return)))
+
+    (define first-char as (cp@ user-input-buffer 0) [first character of user input])
 
     (if (== |/| first-char)
-      (handle-command input)
-      (handle-message input)))
+      (handle-command user-input-buffer)
+      (handle-message user-input-buffer)))
   [get user input and handle it] '() howto-no)
 
 (define handle-ping as (fn (message)
@@ -357,10 +385,14 @@
 (show-empty-title)
 
 (while running
+    (ncurses-move win (- (cp@ num-rows-and-cols 0) 1) (+ (len user-input-buffer) 1))
     (read-socket)
     (read-and-handle-input)
     (ncurses-clear win)
-    (print-lines))
+    (show-input-line)
+    (print-lines)
+    (ncurses-move win (- (cp@ num-rows-and-cols 0) 1) (+ (len user-input-buffer) 1))
+    )
 
 (ncurses-endwin)
 

@@ -172,11 +172,41 @@ octaspire_dern_value_t *dern_ncurses_getch(
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     switch (wint)
     {
-        case KEY_BREAK: return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_BREAK");
-        case KEY_DOWN:  return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_DOWN");
-        case KEY_UP:    return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_UP");
-        case KEY_LEFT:  return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_LEFT");
-        case KEY_RIGHT: return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_RIGHT");
+        case 10:
+        case KEY_ENTER:
+        {
+            return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_ENTER");
+        }
+
+        case KEY_BREAK:
+        {
+            return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_BREAK");
+        }
+
+        case KEY_DOWN:
+        {
+            return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_DOWN");
+        }
+
+        case KEY_UP:
+        {
+            return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_UP");
+        }
+
+        case KEY_LEFT:
+        {
+            return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_LEFT");
+        }
+
+        case KEY_RIGHT:
+        {
+            return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_RIGHT");
+        }
+
+        case KEY_BACKSPACE:
+        {
+            return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_BACKSPACE");
+        }
 
         // TODO add more special keys
 
@@ -1186,6 +1216,144 @@ octaspire_dern_value_t *dern_ncurses_print(
     abort();
 }
 
+octaspire_dern_value_t *dern_ncurses_halfdelay(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-halfdelay' expects one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_integer(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-halfdelay' expects integer as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    int result = halfdelay(octaspire_dern_value_as_integer_get_value(firstArg));
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
+}
+
+octaspire_dern_value_t *dern_ncurses_move(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 3)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-move' expects three arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    WINDOW *window = stdscr;
+
+    octaspire_dern_value_t * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-move' expects window as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cData = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_NCURSES_PLUGIN_NAME,
+            "window"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-move' expects 'dern_ncurses' and 'window' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+    }
+
+    window = octaspire_dern_c_data_get_payload(cData);
+
+    octaspire_dern_value_t * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_integer(secondArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-move' expects integer as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    octaspire_dern_value_t * const thirdArg =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 2);
+
+    octaspire_helpers_verify_not_null(thirdArg);
+
+    if (!octaspire_dern_value_is_integer(thirdArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'ncurses-move' expects integer as third argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(thirdArg->typeTag));
+    }
+
+    int result = wmove(
+        window,
+        octaspire_dern_value_as_integer_get_value(secondArg),
+        octaspire_dern_value_as_integer_get_value(thirdArg));
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
+}
+
 octaspire_dern_value_t *dern_ncurses_attron(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1910,6 +2078,68 @@ bool dern_ncurses_init(
             "\n"
             "SEE ALSO\n"
             "string-format",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "ncurses-halfdelay",
+            dern_ncurses_halfdelay,
+            1,
+            "NAME\n"
+            "\tncurses-halfdelay\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_ncurses)\n"
+            "\n"
+            "\t(ncurses-halfdelay tenths) -> boolean\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tSet ncurses halfdelay mode.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\ttenths   Tenths of seconds before ERR is returned on missing input.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tBoolean: 'false' on failure and 'true' otherwise.\n"
+            "\n"
+            "SEE ALSO\n"
+            "",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "ncurses-move",
+            dern_ncurses_move,
+            2,
+            "NAME\n"
+            "\tncurses-move\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_ncurses)\n"
+            "\n"
+            "\t(ncurses-move window y x) -> boolean\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tSet cursor position\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\twindow             Target window\n"
+            "\ty                  y-coordinate\n"
+            "\tx                  x-coordinate\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tBoolean: 'false' on failure and 'true' otherwise.\n"
+            "\n"
+            "SEE ALSO\n"
+            "",
             false,
             targetEnv))
     {
