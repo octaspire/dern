@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 cat << EOF
 This script is intended to be used while developing plugins. For normal use,
 it is recommended to use the files inside release-directory. The file for
@@ -30,8 +30,8 @@ if [ "$platform" == "Linux" ]; then
     gcc -g -Wall -Wextra -std=c99 -shared -o libdern_openssl.so dern_openssl.o -lssl -lcrypto
 
     echo "--- plugin dir     ---"
-    clang -g -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_dir.c
-    clang -g -Wall -Wextra -std=c99 -shared -o libdern_dir.so dern_dir.o
+    gcc -g -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_dir.c
+    gcc -g -Wall -Wextra -std=c99 -shared -o libdern_dir.so dern_dir.o
 fi
 
 
