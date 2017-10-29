@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.261.1
+Documentation for Octaspire Dern programming language version 0.262.0
 
 == About
 
@@ -60,9 +60,10 @@ version controlled source distribution. The whole amalgamated release can be fou
 the *release*-directory of the version controlled source distribution and from
 http://www.octaspire.com/dern/release.tar.bz2[octaspire.com/dern/release.tar.bz2].
 
-Dern is portable and is tested and known to run in Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana,
-DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Windows and macOS. The `how-to-build`-directory of
-the amalgamated source release contains build script for all tested platforms.
+Dern is portable and is tested and known to run in Linux, FreeBSD, OpenBSD, NetBSD,
+OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Windows, macOS and Termux.
+The `how-to-build`-directory of the amalgamated source release contains build script
+for all tested platforms.
 
 [NOTE]
 This is the first language I have ever designed or implemented. There
@@ -95,7 +96,7 @@ The amalgamated source release is the recommended way of using Dern, if you don'
 modify Dern itself. To use the amalgamated release, you will need only a C compiler and
 C standard library supporting C99.
 
-=== Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Syllable Desktop, macOS
+=== Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Syllable Desktop, macOS, Termux
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -112,7 +113,7 @@ sh how-to-build/YOUR_PLATFORM_NAME_HERE.XX
 
 replace *YOUR_PLATFORM_NAME_HERE.XX* with *FreeBSD.sh*, *NetBSD.sh*, *OpenBSD.sh*,
 *OpenIndiana.sh*, *DragonFlyBSD.sh*, *MidnightBSD*, *linux.sh*, *minix3.sh*,
-*haiku.sh*, *SyllableDesktop.sh* or *macOS.sh*.
+*haiku.sh*, *SyllableDesktop.sh*, *macOS.sh* or *termux.sh*.
 More scripts for different platforms will be added later.
 
 
