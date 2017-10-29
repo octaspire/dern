@@ -227,7 +227,7 @@
     (ncurses-attroff PAIR-PROMPT)
     (ncurses-attroff 'BOLD)
     (ncurses-attroff PAIR-INPUT)
-    (ncurses-move win (- (cp@ num-rows-and-cols 0) 1) (+ (len user-input-buffer) 2)))
+    (ncurses-move win (- (cp@ num-rows-and-cols 0) 1) (+ (len user-input-buffer) 1)))
     [show user input] '() howto-no)
 
 (define read-and-handle-input as (fn ()
@@ -392,15 +392,13 @@
 (show-empty-title)
 
 (while running
-    (ncurses-move win (- (cp@ num-rows-and-cols 0) 1) (+ (len user-input-buffer) 1))
     (read-socket)
     (read-and-handle-input)
     (if redraw-required
       (do
         (ncurses-clear win)
-        (show-input-line)
         (print-lines)
-        (ncurses-move win (- (cp@ num-rows-and-cols 0) 1) (+ (len user-input-buffer) 1))
+        (show-input-line)
         (= redraw-required false))))
 
 (ncurses-endwin)
