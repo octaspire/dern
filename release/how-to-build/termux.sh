@@ -115,13 +115,13 @@ echo   "Run programs and examples like this:"
 echo   "=================================================================="
 printf "%b1)%b ./octaspire-dern-unit-test-runner\n" $YELLOW $GREEN
 printf "%b2)%b ./embedding-example\n" $YELLOW $GREEN
-printf "%b3)%b LD_LIBRARY_PATH=$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/use-mylib.dern\n" $YELLOW $GREEN
+printf "%b3)%b LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/use-mylib.dern\n" $YELLOW $GREEN
 printf "%b4)%b ./octaspire-dern-repl -c\n" $YELLOW $GREEN
-printf "%b5)%b LD_LIBRARY_PATH=$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-sockets-echo-server.dern\n" $YELLOW $GREEN
-printf "%b+)%b LD_LIBRARY_PATH=$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-sockets-echo-client.dern\n" $YELLOW $GREEN
-printf "%b6)%b LD_LIBRARY_PATH=$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-dir-example.dern\n" $YELLOW $GREEN
-printf "%b7)%b LD_LIBRARY_PATH=$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN
-printf "%b8)%b LD_LIBRARY_PATH=$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/irc-client.dern\n" $YELLOW $GREEN
+printf "%b5)%b LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-sockets-echo-server.dern\n" $YELLOW $GREEN
+printf "%b+)%b LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-sockets-echo-client.dern\n" $YELLOW $GREEN
+printf "%b6)%b LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-dir-example.dern\n" $YELLOW $GREEN
+printf "%b7)%b LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN
+printf "%b8)%b LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/irc-client.dern\n" $YELLOW $GREEN
 echo "=================================================================="
 echoToDefs
 
