@@ -12,11 +12,13 @@
 (define current-channel   as nil                              [currently joined channel])
 (define current-username  as []                               [username])
 (define current-realname  as []                               [realname])
+(define hint              as []                               [hint])
+(define rebuild-statusbar as true                             [should statusbar be (re)build])
+(define statusbar         as []                               [shows username, realname and hint])
 (define socket            as nil                              [socket])
 (define num-rows-and-cols as (ncurses-getmaxyx win)           [number of rows and cols on screen] )
 (define maxlines          as (- (cp@ num-rows-and-cols 0) 3)  [maxlines] )
 (define lines             as (queue-with-max-length maxlines) [messages] )
-(define hint              as []                               [hint])
 (define title             as []                               [title])
 (define debug             as false                            [is debug mode on])
 (define user-input-buffer as []                               [stores line of user input])
@@ -102,10 +104,16 @@
   [handle /msg] '(line [line of text starting with /msg]) howto-no)
 
 (define set-hint as (fn (h)
-    (= hint [--])
-    (+= hint h)
-    (for i from (len hint) to (- (cp@ num-rows-and-cols 1) 1) (+= hint |-|)))
-  [set-hint] '(h [new hint]) howto-no)
+    (= hint h)
+    (= rebuild-statusbar true))
+  [Set the current hint] '(h [the new hint]) howto-no)
+
+(define build-statusbar as (fn ()
+    (= redraw-required true)
+    (= rebuild-statusbar false)
+    (= statusbar (string-format [--/{}/{}/{}/--] current-username current-realname hint))
+    (for i from (len statusbar) to (- (cp@ num-rows-and-cols 1) 1) (+= statusbar |-|)))
+  [Build string for the status bar from the username, realname and hint] '() howto-no)
 
 (define handle-connect as (fn (line)
     (if (== current-username [])
@@ -152,6 +160,8 @@
     (= current-username (cp@ tokens 0))
     (= current-realname [])
 
+    (= rebuild-statusbar true)
+
     (if (> (len tokens) 1)
         (for i from 1 to (- (len tokens) 1)
              (+= current-realname (cp@ tokens i))
@@ -196,24 +206,13 @@
     (ncurses-attroff 'BOLD))
   [show title bar] '(t [title message]) howto-no)
 
-(define show-hint as (fn (h)
+(define show-statusbar as (fn ()
     (ncurses-attron 'BOLD)
     (if (ncurses-has-colors) (ncurses-attron PAIR-BORDER))
-    (ncurses-print win (- (cp@ num-rows-and-cols 0) 2) 0 h)
+    (ncurses-print win (- (cp@ num-rows-and-cols 0) 2) 0 statusbar)
     (if (ncurses-has-colors) (ncurses-attroff PAIR-BORDER))
     (ncurses-attroff 'BOLD))
-  [show help message] '(h [hint message]) howto-no)
-
-(define show-empty-hint as (fn ()
-    (define message as (string-format [/{}/{}/] current-username current-realname) [message])
-    (if debug (+= message [--debug]))
-    (set-hint message))
-  [show empty hint line] '() howto-no)
-
-(define show-empty-title as (fn ()
-    (= title [])
-    (for i from 1 to (- (cp@  num-rows-and-cols 1) 1) (+= title |-|)))
-  [show empty title line] '() howto-no)
+  [draw statusbar into display] '() howto-no)
 
 (define set-title as (fn (m)
     (= title (string-format [--{}] m))
@@ -258,7 +257,7 @@
     [read input and handle it if needed] '() howto-no)
 
 (define handle-input-line as (fn ()
-    (if (== 0 (len user-input-buffer)) (do (show-empty-hint) (return)))
+    (if (== 0 (len user-input-buffer)) (return))
 
     (define first-char as (cp@ user-input-buffer 0) [first character of user input])
 
@@ -358,7 +357,7 @@
 
 (define print-lines as (fn ()
     (show-title title)
-    (show-hint  hint)
+    (show-statusbar)
 
     (define row as 1 [current row])
     (for line in lines
@@ -388,12 +387,12 @@
     )
   [print messages] '() howto-no)
 
-(show-empty-hint)
-(show-empty-title)
+(set-title [-])
 
 (while running
     (read-socket)
     (read-and-handle-input)
+    (if rebuild-statusbar (build-statusbar))
     (if redraw-required
       (do
         (ncurses-clear win)
