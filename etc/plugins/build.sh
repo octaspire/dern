@@ -51,6 +51,10 @@ if [ "$platform" == "MacOS" ]; then
     echo "--- plugin dir     ---"
     clang -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_dir.c
     clang -Wall -Wextra -std=c99 -dynamiclib -o libdern_dir.dylib dern_dir.o
+
+    echo "--- plugin SDL2    ---"
+    clang -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_sdl2.c
+    clang -Wall -Wextra -std=c99 -dynamiclib -o libdern_sdl2.dylib dern_sdl2.o
 fi
 
 if [ "$platform" == "MinGW" ]; then
