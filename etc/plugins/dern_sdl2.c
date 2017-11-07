@@ -1,3 +1,4 @@
+#include "octaspire-dern-amalgamated.c"
 #include "SDL.h"
 
 static char const * const DERN_SDL2_PLUGIN_NAME = "dern_sdl2";
@@ -88,7 +89,7 @@ octaspire_dern_value_t *dern_sdl2_create_window(
             octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
     }
 
-    octaspire_dern_value_t const * const thirddArg =
+    octaspire_dern_value_t const * const thirdArg =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
 
     octaspire_helpers_verify_not_null(thirdArg);
@@ -215,9 +216,9 @@ octaspire_dern_value_t *dern_sdl2_create_window(
             {
                 flags |= SDL_WINDOW_INPUT_GRABBED;
             }
-            else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "INPUT_HIGHDPI"))
+            else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "ALLOW_HIGHDPI"))
             {
-                flags |= SDL_WINDOW_INPUT_HIGHDPI;
+                flags |= SDL_WINDOW_ALLOW_HIGHDPI;
             }
             else
             {
