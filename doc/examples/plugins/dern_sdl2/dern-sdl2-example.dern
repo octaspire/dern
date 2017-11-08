@@ -1,0 +1,6 @@
+(require 'dern_sdl2)
+
+(sdl2-Init 'EVERYTHING)
+(sdl2-CreateWindow [test] 0 0 100 100)
+(for i from 0 to 40000 (println [a]))
+(sdl2-Quit)
