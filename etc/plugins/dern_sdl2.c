@@ -10,7 +10,113 @@ void dern_sdl2_window_clean_up_callback(void *payload)
     payload = 0;
 }
 
-octaspire_dern_value_t *dern_sdl2_create_window(
+octaspire_dern_value_t *dern_sdl2_Init(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs < 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-init' expects at least one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    Uint32 flags = 0;
+
+    for (size_t i = 0; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t const * const flagArg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
+
+        octaspire_helpers_verify_not_null(flagArg);
+
+        if (octaspire_dern_value_is_symbol(flagArg))
+        {
+            if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "TIMER"))
+            {
+                flags |= SDL_INIT_TIMER;
+            }
+            else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "AUDIO"))
+            {
+                flags |= SDL_INIT_AUDIO;
+            }
+            else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "VIDEO"))
+            {
+                flags |= SDL_INIT_VIDEO;
+            }
+            else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "JOYSTICK"))
+            {
+                flags |= SDL_INIT_JOYSTICK;
+            }
+            else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "HAPTIC"))
+            {
+                flags |= SDL_INIT_HAPTIC;
+            }
+            else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "GAMECONTROLLER"))
+            {
+                flags |= SDL_INIT_GAMECONTROLLER;
+            }
+            else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "EVENTS"))
+            {
+                flags |= SDL_INIT_EVENTS;
+            }
+            else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "EVERYTHING"))
+            {
+                flags |= SDL_INIT_EVERYTHING;
+            }
+            else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "NOPARACHUTE"))
+            {
+                flags |= SDL_INIT_NOPARACHUTE;
+            }
+            else
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'sdl2-init': unknown symbol '%s' as the %zu. argument. ",
+                    octaspire_dern_value_as_symbol_get_c_string(flagArg),
+                    i + 1);
+            }
+        }
+        else
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-init' expects symbol as the %zu. argument. "
+                "Type '%s' was given.",
+                i + 1,
+                octaspire_dern_value_helper_get_type_as_c_string(flagArg->typeTag));
+        }
+    }
+
+    if (SDL_Init(flags) < 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-init' failed. Error message is '%s'.",
+            SDL_GetError());
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(
+        vm,
+        true);
+}
+
+octaspire_dern_value_t *dern_sdl2_CreateWindow(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
     octaspire_dern_value_t * const environment)
@@ -283,10 +389,22 @@ bool dern_sdl2_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
-            "sdl2-create-window",
-            dern_sdl2_create_window,
-            0,
-            "(sdl2-create-window title, x, y, w, h, optional-flags...) -> <window or error message>",
+            "sdl2-Init",
+            dern_sdl2_Init,
+            1,
+            "(sdl2-Init flags...) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-CreateWindow",
+            dern_sdl2_CreateWindow,
+            5,
+            "(sdl2-CreateWindow title, x, y, w, h, optional-flags...) -> <window or error message>",
             true,
             targetEnv))
     {
