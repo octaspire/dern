@@ -381,6 +381,42 @@ octaspire_dern_value_t *dern_sdl2_CreateWindow(
         window);
 }
 
+octaspire_dern_value_t *dern_sdl2_NumJoysticks(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-NumJoysticks' expects no arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    int const result = SDL_NumJoysticks();
+
+    if (result < 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-NumJoysticks' failed. "
+            "Error message is: '%s'.",
+            SDL_GetError());
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_integer(vm, result);
+}
+
 octaspire_dern_value_t *dern_sdl2_Quit(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -431,6 +467,18 @@ bool dern_sdl2_init(
             dern_sdl2_CreateWindow,
             5,
             "(sdl2-CreateWindow title, x, y, w, h, optional-flags...) -> <window or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-NumJoysticks",
+            dern_sdl2_NumJoysticks,
+            0,
+            "(sdl2-NumJoysticks) -> integer or error message",
             true,
             targetEnv))
     {
