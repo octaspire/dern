@@ -32,6 +32,10 @@ if [ "$platform" == "Linux" ]; then
     echo "--- plugin dir     ---"
     gcc -g -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_dir.c
     gcc -g -Wall -Wextra -std=c99 -shared -o libdern_dir.so dern_dir.o
+
+    echo "--- plugin SDL2    ---"
+    gcc -g -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_sdl2.c `sdl2-config --cflags`
+    gcc -g -Wall -Wextra -std=c99 -shared -o libdern_sdl2.so dern_sdl2.o `sdl2-config --libs`
 fi
 
 
