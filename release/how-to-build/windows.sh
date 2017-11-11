@@ -131,12 +131,13 @@ cat << EnDoFmEsSaGe
    requires 'sdl2' library and headers to be installed on the system;
    otherwise compilation will fail. Failure will not affect other steps,
    so if this step fails and you don't want to use  binary plugin
-   'dern_sdl2', you don't have to do anything. Otherwise, download
-   'SDL2' library for windows from:
+   'dern_sdl2', you don't have to do anything. Otherwise, download and
+   use 'SDL2' library for windows by giving the following commands:
 
-        a) https://www.libsdl.org/release/SDL2-devel-2.0.7-mingw.tar.gz
-        c) Run command: tar xzf SDL2-devel-2.0.7-mingw.tar.gz
-        d) Run command: how-to-build/windows.sh
+        a) curl -O https://www.libsdl.org/release/SDL2-devel-2.0.7-mingw.tar.gz
+        b) tar xzf SDL2-devel-2.0.7-mingw.tar.gz
+        c) cp SDL2-2.0.7/i686-w64-mingw32/bin/SDL2.dll .
+        d) how-to-build/windows.sh
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
 echoToDefs
