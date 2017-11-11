@@ -125,6 +125,27 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I .         \
 
 
 
+printf "$YELLOW\n"
+cat << EnDoFmEsSaGe
+8. Building the 'dern_sdl2' (binary) plugin.  PLEASE NOTE: This plugin
+   requires 'sdl2' library and headers to be installed on the system;
+   otherwise compilation will fail. Failure will not affect other steps,
+   so if this step fails and you don't want to use  binary plugin
+   'dern_sdl2', you don't have to do anything. Otherwise, download
+   'SDL2' library for windows from:
+
+        a) https://www.libsdl.org/release/SDL2-devel-2.0.7-mingw.tar.gz
+        c) Run command: tar xzf SDL2-devel-2.0.7-mingw.tar.gz
+        d) Run command: how-to-build/windows.sh
+-------------------------------------------------------------------------------
+EnDoFmEsSaGe
+echoToDefs
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -I SDL2-2.0.7/i686-w64-mingw32/include/SDL2 -Dmain=SDL_main -c plugins/dern_sdl2.c
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I .         \
+    -o libdern_sdl2.dll dern_sdl2.o -L . imp.a -L SDL2-2.0.7/i686-w64-mingw32/lib -lSDL2
+
+
+
 printf "\nDone.\n$GREEN"
 echo   "====================================================================="
 echo   "Run programs and examples like this using __Windows Command Prompt__:"
@@ -137,7 +158,8 @@ printf "%b5)%b octaspire-dern-repl examples\\dern-sockets-echo-server.dern\n" $Y
 printf "%b+)%b octaspire-dern-repl examples\\dern-sockets-echo-client.dern\n" $YELLOW $GREEN
 printf "%b6)%b octaspire-dern-repl examples\\dern-dir-example.dern\n" $YELLOW $GREEN
 printf "%b7)%b octaspire-dern-repl examples\\dern-ncurses-example.dern\n" $YELLOW $GREEN
-printf "%b8)%b octaspire-dern-repl examples\\irc-client.dern\n" $YELLOW $GREEN
+printf "%b8)%b octaspire-dern-repl examples\\dern-sdl2-example.dern\n" $YELLOW $GREEN
+printf "%b9)%b octaspire-dern-repl examples\\irc-client.dern\n" $YELLOW $GREEN
 echo "======================================================================="
 echoToDefs
 
