@@ -124,8 +124,8 @@ cat << EnDoFmEsSaGe
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
 echoToDefs
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_ncurses.c \`sdl2-config --cflags\`
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_sdl2.so dern_sdl2.o \`sdl2-config --libs\`
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_sdl2.c `sdl2-config --cflags`
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_sdl2.so dern_sdl2.o `sdl2-config --libs`
 
 
 

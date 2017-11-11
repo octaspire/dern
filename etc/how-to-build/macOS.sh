@@ -129,8 +129,8 @@ EnDoFmEsSaGe
 echoToDefs
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra -dynamiclib          \
     -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION                \
-    \`sdl2-config --cflags\`                                   \
--I . -o libdern_sdl2.dylib plugins/dern_sdl2.c \`sdl2-config --libs\`
+    `sdl2-config --cflags`                                     \
+-I . -o libdern_sdl2.dylib plugins/dern_sdl2.c `sdl2-config --libs`
 
 
 
