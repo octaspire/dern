@@ -109,6 +109,24 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_ncurses.so der
 
 
 
+printf "$YELLOW\n"
+cat << EnDoFmEsSaGe
+8. Building the 'dern_sdl2' (binary) plugin.  PLEASE NOTE: This plugin
+   requires development version of 'SDL2' library (i.e. headers) to be
+   installed on the system; otherwise compilation will fail. Failure will
+   not affect other steps, so if this step fails and you don't want to use
+   binary plugin 'dern_sdl2', you don't have to do anything. Otherwise,
+   to install development version of library 'SDL2':
+
+       - NetBSD: sudo pkgin install SDL2
+-------------------------------------------------------------------------------
+EnDoFmEsSaGe
+echoToDefs
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_sdl2.c `sdl2-config --cflags`
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_sdl2.so dern_sdl2.o `sdl2-config --libs`
+
+
+
 printf "\nDone.\n$GREEN"
 echo   "=================================================================="
 echo   "Run programs and examples like this:"
@@ -121,7 +139,8 @@ printf "%b5)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-sockets-ech
 printf "%b+)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-sockets-echo-client.dern\n" $YELLOW $GREEN
 printf "%b6)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-dir-example.dern\n" $YELLOW $GREEN
 printf "%b7)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN
-printf "%b8)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/irc-client.dern\n" $YELLOW $GREEN
+printf "%b8)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-sdl2-example.dern\n" $YELLOW $GREEN
+printf "%b9)%b LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/irc-client.dern\n" $YELLOW $GREEN
 echo "=================================================================="
 echoToDefs
 

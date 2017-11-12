@@ -10,6 +10,13 @@ void dern_sdl2_window_clean_up_callback(void *payload)
     payload = 0;
 }
 
+void dern_sdl2_renderer_clean_up_callback(void *payload)
+{
+    octaspire_helpers_verify_not_null(payload);
+    SDL_DestroyRenderer((SDL_Renderer*)payload);
+    payload = 0;
+}
+
 octaspire_dern_value_t *dern_sdl2_Init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -432,6 +439,486 @@ octaspire_dern_value_t *dern_sdl2_CreateWindow(
         "",
         true,
         window);
+}
+
+octaspire_dern_value_t *dern_sdl2_CreateRenderer(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs < 3)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateRenderer' expects at least three arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateRenderer' expects window as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cData = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_SDL2_PLUGIN_NAME,
+            "window"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateRenderer' expects 'dern_sdl2' and 'window' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+    }
+
+    SDL_Window * const window = octaspire_dern_c_data_get_payload(cData);
+
+    int index = 0;
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (octaspire_dern_value_is_integer(secondArg))
+    {
+        index = octaspire_dern_value_as_integer_get_value(secondArg);
+    }
+    else
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateRenderer' expects integer as the second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    Uint32 flags = 0;
+
+    for (size_t i = 2; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t const * const flagArg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
+
+        octaspire_helpers_verify_not_null(flagArg);
+
+        if (octaspire_dern_value_is_symbol(flagArg))
+        {
+            if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "SOFTWARE"))
+            {
+                flags |= SDL_RENDERER_SOFTWARE;
+            }
+            else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "ACCELERATED"))
+            {
+                flags |= SDL_RENDERER_ACCELERATED;
+            }
+            else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "PRESENTVSYNC"))
+            {
+                flags |= SDL_RENDERER_PRESENTVSYNC;
+            }
+            else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(flagArg, "TARGETTEXTURE"))
+            {
+                flags |= SDL_RENDERER_TARGETTEXTURE;
+            }
+            else
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'sdl2-CreateRenderer': unknown symbol '%s' as the %zu. argument. ",
+                    octaspire_dern_value_as_symbol_get_c_string(flagArg),
+                    i + 1);
+            }
+        }
+        else
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-CreateRenderer' expects symbol as the %zu. argument. "
+                "Type '%s' was given.",
+                i + 1,
+                octaspire_dern_value_helper_get_type_as_c_string(flagArg->typeTag));
+        }
+    }
+
+    SDL_Renderer * const renderer = SDL_CreateRenderer(
+        window,
+        index,
+        flags);
+
+    if (!renderer)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateRenderer' failed to create a renderer. "
+            "Error message is: '%s'.",
+            SDL_GetError());
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_SDL2_PLUGIN_NAME,
+        "renderer",
+        "dern_sdl2_renderer_clean_up_callback",
+        "",
+        "",
+        "",
+        true,
+        renderer);
+}
+
+octaspire_dern_value_t *dern_sdl2_RenderClear(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderClear' expects one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderClear' expects renderer as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cData = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_SDL2_PLUGIN_NAME,
+            "renderer"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderClear' expects 'dern_sdl2' and 'renderer' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+    }
+
+    SDL_Renderer * const renderer = octaspire_dern_c_data_get_payload(cData);
+
+    if (SDL_RenderClear(renderer) < 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderClear' failed with error message: %s.",
+            SDL_GetError());
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_RenderPresent(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderPresent' expects one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderPresent' expects renderer as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cData = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_SDL2_PLUGIN_NAME,
+            "renderer"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderPresent' expects 'dern_sdl2' and 'renderer' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+    }
+
+    SDL_Renderer * const renderer = octaspire_dern_c_data_get_payload(cData);
+
+    SDL_RenderPresent(renderer);
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_SetRenderDrawColor(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 5)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-SetRenderDrawColor' expects five arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-SetRenderDrawColor' expects renderer as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cData = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_SDL2_PLUGIN_NAME,
+            "renderer"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-SetRenderDrawColor' expects 'dern_sdl2' and 'renderer' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+    }
+
+    SDL_Renderer * const renderer = octaspire_dern_c_data_get_payload(cData);
+
+    Uint8 components[4];
+
+    for (size_t i = 1; i < 5; ++i)
+    {
+        octaspire_dern_value_t const * const arg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
+
+        octaspire_helpers_verify_not_null(arg);
+
+        if (!octaspire_dern_value_is_integer(arg))
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-SetRenderDrawColor' expects integer as the %zu. argument. "
+                "Type '%s' was given.",
+                i + 1,
+                octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+        }
+
+        components[i - 1] = (Uint8)octaspire_dern_value_as_integer_get_value(arg);
+    }
+
+    if (SDL_SetRenderDrawColor(
+        renderer,
+        components[0],
+        components[1],
+        components[2],
+        components[3]) < 0)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-SetRenderDrawColor' failed: %s.",
+            SDL_GetError());
+    }
+
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_RenderDrawLine(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 5)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderDrawLine' expects five arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderDrawLine' expects renderer as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cData = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_SDL2_PLUGIN_NAME,
+            "renderer"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderDrawLine' expects 'dern_sdl2' and 'renderer' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+    }
+
+    SDL_Renderer * const renderer = octaspire_dern_c_data_get_payload(cData);
+
+    int coordinates[4];
+
+    for (size_t i = 1; i < 5; ++i)
+    {
+        octaspire_dern_value_t const * const arg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
+
+        octaspire_helpers_verify_not_null(arg);
+
+        if (!octaspire_dern_value_is_integer(arg))
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-RenderDrawLine' expects integer as the %zu. argument. "
+                "Type '%s' was given.",
+                i + 1,
+                octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+        }
+
+        coordinates[i - 1] = (Uint8)octaspire_dern_value_as_integer_get_value(arg);
+    }
+
+    if (SDL_RenderDrawLine(
+        renderer,
+        coordinates[0],
+        coordinates[1],
+        coordinates[2],
+        coordinates[3]) < 0)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderDrawLine' failed: %s.",
+            SDL_GetError());
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
 octaspire_dern_value_t *dern_sdl2_GetWindowSurface(
@@ -1014,6 +1501,66 @@ bool dern_sdl2_init(
             dern_sdl2_CreateWindow,
             5,
             "(sdl2-CreateWindow title, x, y, w, h, optional-flags...) -> <window or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-CreateRenderer",
+            dern_sdl2_CreateRenderer,
+            5,
+            "(sdl2-CreateRenderer window index flags...) -> <renderer or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-RenderClear",
+            dern_sdl2_RenderClear,
+            5,
+            "(sdl2-RenderClear renderer) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-RenderPresent",
+            dern_sdl2_RenderPresent,
+            5,
+            "(sdl2-RenderPresent renderer) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-SetRenderDrawColor",
+            dern_sdl2_SetRenderDrawColor,
+            5,
+            "(sdl2-SetRenderDrawColor renderer r g b a) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-RenderDrawLine",
+            dern_sdl2_RenderDrawLine,
+            5,
+            "(sdl2-RenderDrawLine renderer x1 y1 x2 y2) -> <true or error message>",
             true,
             targetEnv))
     {
