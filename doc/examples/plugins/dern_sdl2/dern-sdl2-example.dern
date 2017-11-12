@@ -1,6 +1,6 @@
 (require 'dern_sdl2)
 
-(sdl2-Init 'EVERYTHING)
+(sdl2-Init 'VIDEO)
 (define window   as (sdl2-CreateWindow [test] 'CENTERED 'CENTERED 300 300) [window])
 (define renderer as (sdl2-CreateRenderer window -1 'SOFTWARE) [renderer])
 (sdl2-SetRenderDrawColor renderer 0 0 0 255)

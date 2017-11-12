@@ -116,9 +116,22 @@ cat << EnDoFmEsSaGe
    installed on the system; otherwise compilation will fail. Failure will
    not affect other steps, so if this step fails and you don't want to use
    binary plugin 'dern_sdl2', you don't have to do anything. Otherwise,
-   to install development version of library 'SDL2':
+   to install development version of library 'SDL2' manually:
 
-       - NetBSD: sudo pkgin install SDL2
+       - NetBSD: curl -O http://www.libsdl.org/release/SDL2-2.0.7.tar.gz
+                 tar zxf SDL2-2.0.7.tar.gz
+                 cd SDL2-2.0.7
+                 ./configure --disable-joystick       \\
+                             --disable-audio          \\
+                             --disable-x11-shared     \\
+                             --enable-directfb-shared
+                 gmake
+                 sudo gmake install
+
+    (If you have installed SDL2 with 'sudo pkgin install SDL2' you might
+    have to remove it first by running 'sudo pkgin remove SDL2' and then
+    install SDL2 manually. This is the way I was able to get SDL2 to work
+    in NetBSD at the moment.)
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
 echoToDefs
