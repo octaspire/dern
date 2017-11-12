@@ -8,6 +8,8 @@
 (sdl2-SetRenderDrawColor renderer 255 0 0 255)
 (sdl2-SetRenderDrawColor renderer 255 0 0 255)
 (sdl2-RenderDrawLine renderer 0 0 200 200)
+(sdl2-RenderDrawPoint renderer 100 10)
+(sdl2-RenderDrawRect renderer 200 200 50 50)
 (sdl2-RenderPresent renderer)
 ;(define surface as (sdl2-GetWindowSurface window) [surface])
 ;(sdl2-FillRect surface nil (sdl2-MapRGB (sdl2-GetPixelFormat surface) 255 255 0))
