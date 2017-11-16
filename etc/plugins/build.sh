@@ -57,8 +57,11 @@ if [ "$platform" == "MacOS" ]; then
     clang -Wall -Wextra -std=c99 -dynamiclib -o libdern_dir.dylib dern_dir.o
 
     echo "--- plugin SDL2    ---"
-    clang -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_sdl2.c `sdl2-config --cflags`
-    clang -Wall -Wextra -std=c99 -dynamiclib -o libdern_sdl2.dylib dern_sdl2.o `sdl2-config --libs`
+    clang -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION \
+        -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY \
+        -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY \
+        -c -fPIC -I ../../release dern_sdl2.c `sdl2-config --cflags`
+    clang -Wall -Wextra -std=c99 -dynamiclib -o libdern_sdl2.dylib dern_sdl2.o `sdl2-config --libs` -lSDL2_image -lSDL2_mixer
 fi
 
 if [ "$platform" == "MinGW" ]; then

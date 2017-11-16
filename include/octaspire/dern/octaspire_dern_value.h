@@ -458,6 +458,9 @@ bool octaspire_dern_value_as_string_is_index_valid(
 char const *octaspire_dern_value_as_string_get_c_string(
     octaspire_dern_value_t const * const self);
 
+size_t octaspire_dern_value_as_string_get_length_in_octets(
+    octaspire_dern_value_t const * const self);
+
 char const *octaspire_dern_value_as_symbol_get_c_string(
     octaspire_dern_value_t const * const self);
 

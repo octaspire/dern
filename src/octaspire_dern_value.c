@@ -2739,6 +2739,13 @@ char const *octaspire_dern_value_as_string_get_c_string(
     return octaspire_container_utf8_string_get_c_string(self->value.string);
 }
 
+size_t octaspire_dern_value_as_string_get_length_in_octets(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
+    return octaspire_container_utf8_string_get_length_in_octets(self->value.string);
+}
+
 char const *octaspire_dern_value_as_symbol_get_c_string(
     octaspire_dern_value_t const * const self)
 {

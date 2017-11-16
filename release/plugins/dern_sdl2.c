@@ -1,6 +1,14 @@
 #include "octaspire-dern-amalgamated.c"
 #include "SDL.h"
 
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY
+#include "SDL_image.h"
+#endif
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY
+#include "SDL_mixer.h"
+#endif
+
 typedef struct octaspire_sdl2_texture_t octaspire_sdl2_texture_t;
 
 octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_path(
@@ -116,7 +124,7 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_buffer(
         return self;
     }
 
-#ifdef OCTASPIRE_SDL2_UTILS_USE_SDL_IMAGE_LIBRARY
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY
     SDL_Surface *imageSurface = IMG_Load_RW(SDL_RWFromConstMem(buffer, bufferLengthInOctets), 1);
 #else
     SDL_Surface *imageSurface = SDL_LoadBMP_RW(SDL_RWFromConstMem(buffer, bufferLengthInOctets), 1);
@@ -217,7 +225,7 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_color_keyed_from_buffer(
         return self;
     }
 
-#ifdef OCTASPIRE_SDL2_UTILS_USE_SDL_IMAGE_LIBRARY
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY
     SDL_Surface *imageSurface = IMG_Load_RW(SDL_RWFromConstMem(buffer, bufferLengthInOctets), 1);
 #else
     SDL_Surface *imageSurface = SDL_LoadBMP_RW(SDL_RWFromConstMem(buffer, bufferLengthInOctets), 1);
@@ -329,6 +337,13 @@ void dern_sdl2_texture_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
     octaspire_sdl2_texture_release((octaspire_sdl2_texture_t*)payload);
+    payload = 0;
+}
+
+void dern_sdl2_music_clean_up_callback(void *payload)
+{
+    octaspire_helpers_verify_not_null(payload);
+    Mix_FreeMusic((Mix_Music*)payload);
     payload = 0;
 }
 
@@ -627,16 +642,33 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
     }
     else
     {
-        // TODO XXX implement
-        abort();
+        octaspire_container_vector_t * vec = octaspire_helpers_base64_decode(
+            octaspire_dern_value_as_string_get_c_string(thirdArg),
+            octaspire_dern_value_as_string_get_length_in_octets(thirdArg),
+            octaspire_dern_vm_get_allocator(vm));
+
+        // TODO XXX check and report error.
+        octaspire_helpers_verify_not_null(vec);
+
+        texture = octaspire_sdl2_texture_new_from_buffer(
+            octaspire_container_vector_get_element_at_const(vec, 0),
+            octaspire_container_vector_get_length(vec),
+            "base64 encoded",
+            isBlend,
+            renderer,
+            octaspire_dern_vm_get_allocator(vm));
+
+        octaspire_container_vector_release(vec);
+        vec = 0;
     }
 
     if (!texture)
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
+        return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Builtin 'sdl2-CreateTexture' failed.");
+            "Builtin 'sdl2-CreateTexture' failed: %s",
+            SDL_GetError());
     }
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
@@ -650,6 +682,126 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
         "",
         false,
         texture);
+}
+
+//"(sdl2-CreateMusic isPath pathOrBuffer) -> <music or error message>",
+octaspire_dern_value_t *dern_sdl2_CreateMusic(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateMusic' expects two arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_symbol(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateMusic' expects symbol as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    bool isPath = false;
+
+    if (octaspire_dern_value_as_symbol_is_equal_to_c_string(firstArg, "PATH"))
+    {
+        isPath = true;
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(firstArg, "BASE64"))
+    {
+        isPath = false;
+    }
+    else
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateMusic' expects symbol 'PATH' or 'BASE64' "
+            "as first argument. Symbol '%s' was given.",
+            octaspire_dern_value_as_symbol_get_c_string(firstArg));
+    }
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_string(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateMusic' expects string as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    char const * const pathOrBuffer = octaspire_dern_value_as_string_get_c_string(secondArg);
+
+    Mix_Music * music = 0;
+
+    if (isPath)
+    {
+        music = Mix_LoadMUS(pathOrBuffer);
+    }
+    else
+    {
+        octaspire_container_vector_t * vec = octaspire_helpers_base64_decode(
+            octaspire_dern_value_as_string_get_c_string(secondArg),
+            octaspire_dern_value_as_string_get_length_in_octets(secondArg),
+            octaspire_dern_vm_get_allocator(vm));
+
+        // TODO XXX check and report error.
+        octaspire_helpers_verify_not_null(vec);
+
+        SDL_RWops * const rw = SDL_RWFromMem(
+            octaspire_container_vector_get_element_at(vec, 0),
+            octaspire_container_vector_get_length(vec));
+        music = Mix_LoadMUS_RW(rw, 1);
+
+        octaspire_container_vector_release(vec);
+        vec = 0;
+    }
+
+    if (!music)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateMusic' failed: %s.",
+            Mix_GetError());
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_SDL2_PLUGIN_NAME,
+        "music",
+        "dern_sdl2_music_clean_up_callback",
+        "",
+        "",
+        "",
+        false,
+        music);
 }
 
 octaspire_dern_value_t *dern_sdl2_CreateWindow(
@@ -1594,6 +1746,246 @@ octaspire_dern_value_t *dern_sdl2_RenderDrawRect(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+octaspire_dern_value_t *dern_sdl2_RenderCopy(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 4)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderCopy' expects four arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderCopy' expects renderer as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cDataRenderer = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cDataRenderer,
+            DERN_SDL2_PLUGIN_NAME,
+            "renderer"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderCopy' expects 'dern_sdl2' and 'renderer' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cDataRenderer),
+            octaspire_dern_c_data_get_payload_typename(cDataRenderer));
+    }
+
+    SDL_Renderer * const renderer = octaspire_dern_c_data_get_payload(cDataRenderer);
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_c_data(secondArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderCopy' expects texture as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cDataTexture = secondArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cDataTexture,
+            DERN_SDL2_PLUGIN_NAME,
+            "texture"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderCopy' expects 'dern_sdl2' and 'texture' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cDataTexture),
+            octaspire_dern_c_data_get_payload_typename(cDataTexture));
+    }
+
+    octaspire_sdl2_texture_t const * const texture =
+        octaspire_dern_c_data_get_payload(cDataTexture);
+
+    int coordinates[8];
+    bool srcIsNil = false;
+    bool dstIsNil = false;
+
+    // Third argument (source rectangle or nil)
+
+    octaspire_dern_value_t const * const thirdArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+
+    octaspire_helpers_verify_not_null(thirdArg);
+
+    if (octaspire_dern_value_is_vector(thirdArg))
+    {
+        if (octaspire_dern_value_as_vector_get_length(thirdArg) != 4)
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-RenderCopy' expects vector with four arguments as "
+                "the third argument. Vector has %zu elements.",
+                octaspire_dern_value_as_vector_get_length(thirdArg));
+        }
+
+        for (size_t i = 0; i < 4; ++i)
+        {
+            octaspire_dern_value_t const * const numVal =
+                octaspire_dern_value_as_vector_get_element_at_const(thirdArg, i);
+
+            octaspire_helpers_verify_not_null(numVal);
+
+            if (!octaspire_dern_value_is_integer(numVal))
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'sdl2-RenderCopy' expects integer as "
+                    "%zu. element in the vector given as the third argument. "
+                    "Type  '%s' was given.",
+                    octaspire_dern_value_helper_get_type_as_c_string(numVal->typeTag));
+            }
+
+            coordinates[i] = octaspire_dern_value_as_integer_get_value(numVal);
+        }
+    }
+    else if (octaspire_dern_value_is_nil(thirdArg))
+    {
+        srcIsNil = true;
+    }
+    else
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderCopy' expects vector or nil as the third argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(thirdArg->typeTag));
+    }
+
+    // Fourth argument (destination rectangle or nil)
+
+    octaspire_dern_value_t const * const fourthArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 3);
+
+    octaspire_helpers_verify_not_null(fourthArg);
+
+    if (octaspire_dern_value_is_vector(fourthArg))
+    {
+        if (octaspire_dern_value_as_vector_get_length(fourthArg) != 4)
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-RenderCopy' expects vector with four arguments as "
+                "the fourth argument. Vector has %zu elements.",
+                octaspire_dern_value_as_vector_get_length(fourthArg));
+        }
+
+        for (size_t i = 0; i < 4; ++i)
+        {
+            octaspire_dern_value_t const * const numVal =
+                octaspire_dern_value_as_vector_get_element_at_const(fourthArg, i);
+
+            octaspire_helpers_verify_not_null(numVal);
+
+            if (!octaspire_dern_value_is_integer(numVal))
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'sdl2-RenderCopy' expects integer as "
+                    "%zu. element in the vector given as the fourth argument. "
+                    "Type  '%s' was given.",
+                    octaspire_dern_value_helper_get_type_as_c_string(numVal->typeTag));
+            }
+
+            coordinates[4 + i] = octaspire_dern_value_as_integer_get_value(numVal);
+        }
+    }
+    else if (octaspire_dern_value_is_nil(fourthArg))
+    {
+        dstIsNil = true;
+    }
+    else
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderCopy' expects vector or nil as the fourth argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(fourthArg->typeTag));
+    }
+
+    SDL_Rect srcRect;
+    srcRect.x = coordinates[0];
+    srcRect.y = coordinates[1];
+    srcRect.w = coordinates[2];
+    srcRect.h = coordinates[3];
+
+    SDL_Rect dstRect;
+    dstRect.x = coordinates[4];
+    dstRect.y = coordinates[5];
+    dstRect.w = coordinates[6];
+    dstRect.h = coordinates[7];
+
+    if (SDL_RenderCopy(
+        renderer,
+        texture->texture,
+        srcIsNil ? 0 : &srcRect,
+        dstIsNil ? 0 : &dstRect) < 0)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderCopy' failed: %s.",
+            SDL_GetError());
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
 octaspire_dern_value_t *dern_sdl2_RenderFillRect(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2399,6 +2791,18 @@ bool dern_sdl2_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
+            "sdl2-CreateMusic",
+            dern_sdl2_CreateMusic,
+            2,
+            "(sdl2-CreateMusic isPath pathOrBuffer) -> <music or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
             "sdl2-CreateWindow",
             dern_sdl2_CreateWindow,
             5,
@@ -2487,6 +2891,20 @@ bool dern_sdl2_init(
             dern_sdl2_RenderDrawRect,
             5,
             "(sdl2-RenderDrawRect renderer x y w h) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-RenderCopy",
+            dern_sdl2_RenderCopy,
+            4,
+            "(sdl2-RenderCopy renderer texture '(sx sy sw sh) '(tx ty tw th)) -> <true or error message>\n"
+            "(sdl2-RenderCopy renderer texture nil            '(tx ty tw th)) -> <true or error message>\n"
+            "(sdl2-RenderCopy renderer texture nil            nil)            -> <true or error message>",
             true,
             targetEnv))
     {
