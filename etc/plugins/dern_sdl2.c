@@ -9,7 +9,14 @@
 #include "SDL_mixer.h"
 #endif
 
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+#include "SDL_ttf.h"
+#endif
+
 typedef struct octaspire_sdl2_texture_t octaspire_sdl2_texture_t;
+
+static octaspire_container_hash_map_t * dern_sdl2_private_textures              = 0;
+static size_t                           dern_sdl2_private_next_free_texture_uid = 0;
 
 octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_path(
     char const * const path,
@@ -25,6 +32,16 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_buffer(
     bool const blend,
     SDL_Renderer *renderer,
     octaspire_memory_allocator_t *allocator);
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_font_and_text(
+    TTF_Font * const font,
+    char const * const text,
+    SDL_Color const color,
+    bool const blend,
+    SDL_Renderer *renderer,
+    octaspire_memory_allocator_t *allocator);
+#endif
 
 octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_color_keyed_from_path(
     char const * const path,
@@ -163,6 +180,70 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_buffer(
 
     return self;
 }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_font_and_text(
+    TTF_Font * const font,
+    char const * const text,
+    SDL_Color const color,
+    bool const blend,
+    SDL_Renderer *renderer,
+    octaspire_memory_allocator_t *allocator)
+{
+    octaspire_sdl2_texture_t *self =
+        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_sdl2_texture_t));
+
+    if (!self)
+    {
+        return self;
+    }
+
+    self->allocator = allocator;
+    self->path      = octaspire_container_utf8_string_new("", allocator);
+
+    if (!self->path)
+    {
+        octaspire_sdl2_texture_release(self);
+        self = 0;
+        return self;
+    }
+    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
+
+    if (!surface)
+    {
+        printf("Texture for text \"%s\" cannot be created: %s\n", text, TTF_GetError());
+        octaspire_sdl2_texture_release(self);
+        self = 0;
+        return self;
+    }
+
+    self->texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    if (!self->texture)
+    {
+        printf("Texture for text \"%s\" cannot be created: %s\n", text, SDL_GetError());
+        octaspire_sdl2_texture_release(self);
+        self = 0;
+        return self;
+    }
+
+    self->width  = surface->w;
+    self->height = surface->h;
+
+    SDL_FreeSurface(surface);
+    surface = 0;
+
+    if (blend)
+    {
+        if (SDL_SetTextureBlendMode(self->texture, SDL_BLENDMODE_BLEND) < 0)
+        {
+            abort();
+        }
+    }
+
+    return self;
+}
+#endif
 
 octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_color_keyed_from_path(
     char const * const path,
@@ -333,10 +414,52 @@ void dern_sdl2_renderer_clean_up_callback(void *payload)
     payload = 0;
 }
 
+static octaspire_sdl2_texture_t * dern_sdl2_private_helper_uid_to_texture(
+    void const * const payload)
+{
+    size_t const key = (size_t)payload;
+    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+
+    octaspire_container_hash_map_element_t * elem =
+        octaspire_container_hash_map_get(dern_sdl2_private_textures, hash, &key);
+
+    if (!elem)
+    {
+        return 0;
+    }
+
+    return (octaspire_sdl2_texture_t*)octaspire_container_hash_map_element_get_value(elem);
+}
+
 void dern_sdl2_texture_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
-    octaspire_sdl2_texture_release((octaspire_sdl2_texture_t*)payload);
+
+    size_t const key = (size_t const)payload;
+    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+
+    octaspire_sdl2_texture_t * texture = dern_sdl2_private_helper_uid_to_texture(payload);
+
+    if (!texture)
+    {
+        return;
+    }
+
+    //octaspire_sdl2_texture_release(texture);
+    //texture = 0;
+    //payload = 0;
+
+    octaspire_helpers_verify_true(octaspire_container_hash_map_remove(
+        dern_sdl2_private_textures,
+        hash,
+        &key));
+}
+
+void dern_sdl2_font_clean_up_callback(void *payload)
+{
+    octaspire_helpers_verify_not_null(payload);
+    // TODO XXX crash here
+    //TTF_CloseFont((TTF_Font*)payload);
     payload = 0;
 }
 
@@ -447,6 +570,32 @@ octaspire_dern_value_t *dern_sdl2_Init(
             SDL_GetError());
     }
 
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+    if (TTF_Init() < 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-init' failed. TTF_Init failed. Error message is '%s'.",
+            TTF_GetError());
+    }
+#endif
+
+    dern_sdl2_private_textures = octaspire_container_hash_map_new_with_size_t_keys(
+        sizeof(octaspire_sdl2_texture_t*),
+        true,
+        (octaspire_container_hash_map_element_callback_function_t)
+            octaspire_sdl2_texture_release,
+        octaspire_dern_vm_get_allocator(vm));
+
+    if (!dern_sdl2_private_textures)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-init' failed. Cannot allocate texture map.");
+    }
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(
         vm,
@@ -505,7 +654,7 @@ octaspire_dern_value_t *dern_sdl2_Delay(
         vm,
         true);
 }
-//"(sdl2-CreateTexture renderer isPath pathOrBuffer isBlend) -> <texture or error message>",
+
 octaspire_dern_value_t *dern_sdl2_CreateTexture(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -671,6 +820,229 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
             SDL_GetError());
     }
 
+    ++dern_sdl2_private_next_free_texture_uid;
+
+    if (!octaspire_container_hash_map_put(
+            dern_sdl2_private_textures,
+            octaspire_container_hash_map_helper_size_t_get_hash(
+                dern_sdl2_private_next_free_texture_uid),
+            &dern_sdl2_private_next_free_texture_uid,
+            &texture))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-CreateTexture' failed: internal texture save failed.");
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_SDL2_PLUGIN_NAME,
+        "texture",
+        "dern_sdl2_texture_clean_up_callback",
+        "",
+        "",
+        "",
+        false,
+        (void*)dern_sdl2_private_next_free_texture_uid);
+}
+
+static SDL_Color octaspire_dern_sdl2_helpers_c_string_to_sdl_color(
+    char const * const str)
+{
+    SDL_Color color;
+    color.r = 0xFF;
+    color.g = 0xFF;
+    color.b = 0xFF;
+    color.a = 0xFF;
+
+    if (strcmp("black", str) == 0)
+    {
+        color.r = 0x0;
+        color.g = 0x0;
+        color.b = 0x0;
+        color.a = 0x0;
+    }
+    else if (strcmp("orange", str) == 0)
+    {
+        color.r = 0xFF;
+        color.g = 0xA5;
+        color.b = 0x00;
+        color.a = 0xFF;
+    }
+
+    return color;
+}
+
+//sdl2-CreateTextureFromFontAndText renderer font text color isBlend
+octaspire_dern_value_t *dern_sdl2_CreateTextureFromFontAndText(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 5)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateTextureFromFontAndText' expects five argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    // Renderer
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateTextureFromFontAndText' expects renderer as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cDataRenderer = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cDataRenderer,
+            DERN_SDL2_PLUGIN_NAME,
+            "renderer"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateTextureFromFontAndText' expects 'dern_sdl2' and 'renderer' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cDataRenderer),
+            octaspire_dern_c_data_get_payload_typename(cDataRenderer));
+    }
+
+    SDL_Renderer * const renderer = octaspire_dern_c_data_get_payload(cDataRenderer);
+
+    // Font
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_c_data(secondArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateTextureFromFontAndText' expects renderer as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cDataFont = secondArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cDataFont,
+            DERN_SDL2_PLUGIN_NAME,
+            "font"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateTextureFromFontAndText' expects 'dern_sdl2' and 'font' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cDataFont),
+            octaspire_dern_c_data_get_payload_typename(cDataFont));
+    }
+
+    TTF_Font * const font = octaspire_dern_c_data_get_payload(cDataFont);
+
+    // Text
+
+    octaspire_dern_value_t const * const thirdArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+
+    octaspire_helpers_verify_not_null(thirdArg);
+
+    if (!octaspire_dern_value_is_string(thirdArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateTextureFromFontAndText' expects string as third argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(thirdArg->typeTag));
+    }
+
+    // Color
+
+    octaspire_dern_value_t const * const fourthArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 3);
+
+    octaspire_helpers_verify_not_null(fourthArg);
+
+    if (!octaspire_dern_value_is_string(fourthArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateTextureFromFontAndText' expects string as fourth argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(fourthArg->typeTag));
+    }
+
+    SDL_Color const color =
+        octaspire_dern_sdl2_helpers_c_string_to_sdl_color(
+            octaspire_dern_value_as_string_get_c_string(fourthArg));
+
+    // Blend
+
+    octaspire_dern_value_t const * const fifthArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 4);
+
+    octaspire_helpers_verify_not_null(fifthArg);
+
+    if (!octaspire_dern_value_is_boolean(fifthArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateTextureFromFontAndText' expects boolean as fifth argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(fifthArg->typeTag));
+    }
+
+    bool const isBlend = octaspire_dern_value_as_boolean_get_value(fifthArg);
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+    octaspire_sdl2_texture_t * texture = octaspire_sdl2_texture_new_from_font_and_text(
+        font,
+        octaspire_dern_value_as_string_get_c_string(thirdArg),
+        color,
+        isBlend,
+        renderer,
+        octaspire_dern_vm_get_allocator(vm));
+
+    if (!texture)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateTextureFromFontAndText' failed: %s",
+            SDL_GetError());
+    }
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_c_data(
         vm,
@@ -682,9 +1054,14 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
         "",
         false,
         texture);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "SDL2 plugin is compiled without TTF support.");
+#endif
 }
 
-//"(sdl2-CreateMusic isPath pathOrBuffer) -> <music or error message>",
 octaspire_dern_value_t *dern_sdl2_CreateMusic(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -755,6 +1132,7 @@ octaspire_dern_value_t *dern_sdl2_CreateMusic(
             octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
     }
 
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY
     char const * const pathOrBuffer = octaspire_dern_value_as_string_get_c_string(secondArg);
 
     Mix_Music * music = 0;
@@ -802,6 +1180,13 @@ octaspire_dern_value_t *dern_sdl2_CreateMusic(
         "",
         false,
         music);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Your SDL2 plugin is currently compiled without SDL2 mixer support. "
+        "Compile it with SDL2 mixer support to be able to use the mixer from Dern.");
+#endif
 }
 
 octaspire_dern_value_t *dern_sdl2_CreateWindow(
@@ -1067,6 +1452,143 @@ octaspire_dern_value_t *dern_sdl2_CreateWindow(
         "",
         true,
         window);
+}
+
+octaspire_dern_value_t *dern_sdl2_CreateFont(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 3)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateFont' expects three arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_symbol(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateFont' expects symbol as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    bool isPath = false;
+
+    if (octaspire_dern_value_as_symbol_is_equal_to_c_string(firstArg, "PATH"))
+    {
+        isPath = true;
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(firstArg, "BASE64"))
+    {
+        isPath = false;
+    }
+    else
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateFont' expects symbol 'PATH' or 'BASE64' "
+            "as first argument. Symbol '%s' was given.",
+            octaspire_dern_value_as_symbol_get_c_string(firstArg));
+    }
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_string(secondArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateFont' expects string as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    char const * const pathOrBuffer = octaspire_dern_value_as_string_get_c_string(secondArg);
+
+    octaspire_dern_value_t const * const thirdArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+
+    octaspire_helpers_verify_not_null(thirdArg);
+
+    if (!octaspire_dern_value_is_integer(thirdArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateFont' expects integer as third argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(thirdArg->typeTag));
+    }
+
+    TTF_Font * font = 0;
+
+    if (isPath)
+    {
+        font = TTF_OpenFont(pathOrBuffer, octaspire_dern_value_as_integer_get_value(thirdArg));
+    }
+    else
+    {
+        octaspire_container_vector_t * vec = octaspire_helpers_base64_decode(
+            octaspire_dern_value_as_string_get_c_string(secondArg),
+            octaspire_dern_value_as_string_get_length_in_octets(secondArg),
+            octaspire_dern_vm_get_allocator(vm));
+
+        // TODO XXX check and report error.
+        octaspire_helpers_verify_not_null(vec);
+
+        font = TTF_OpenFontRW(
+            SDL_RWFromConstMem(
+                octaspire_container_vector_get_element_at_const(vec, 0),
+                octaspire_container_vector_get_length(vec)
+                ),
+            1,
+            octaspire_dern_value_as_integer_get_value(thirdArg));
+
+        octaspire_container_vector_release(vec);
+        vec = 0;
+    }
+
+    if (!font)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateFont' failed: %s",
+            TTF_GetError());
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_SDL2_PLUGIN_NAME,
+        "font",
+        "dern_sdl2_font_clean_up_callback",
+        "",
+        "",
+        "",
+        false,
+        font);
 }
 
 octaspire_dern_value_t *dern_sdl2_CreateRenderer(
@@ -1832,8 +2354,19 @@ octaspire_dern_value_t *dern_sdl2_RenderCopy(
             octaspire_dern_c_data_get_payload_typename(cDataTexture));
     }
 
+    size_t const key = (size_t)octaspire_dern_c_data_get_payload(cDataTexture);
+
     octaspire_sdl2_texture_t const * const texture =
-        octaspire_dern_c_data_get_payload(cDataTexture);
+        dern_sdl2_private_helper_uid_to_texture((void const * const)key);
+
+    if (!texture)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-RenderCopy' failed: no texture with key %zu loaded.",
+            key);
+    }
 
     int coordinates[8];
     bool srcIsNil = false;
@@ -2741,6 +3274,12 @@ octaspire_dern_value_t *dern_sdl2_Quit(
             numArgs);
     }
 
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+    TTF_Quit();
+#endif
+
+    SDL_Quit();
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(
         vm,
@@ -2791,6 +3330,18 @@ bool dern_sdl2_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
+            "sdl2-CreateTextureFromFontAndText",
+            dern_sdl2_CreateTextureFromFontAndText,
+            4,
+            "(sdl2-CreateTextureFromFontAndText renderer font text color isBlend) -> <texture or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
             "sdl2-CreateMusic",
             dern_sdl2_CreateMusic,
             2,
@@ -2807,6 +3358,18 @@ bool dern_sdl2_init(
             dern_sdl2_CreateWindow,
             5,
             "(sdl2-CreateWindow title, x, y, w, h, optional-flags...) -> <window or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-CreateFont",
+            dern_sdl2_CreateFont,
+            3,
+            "(sdl2-CreateFont 'PATH/'BASE64 [PATH/BUFFER] SIZE) -> <font or error message>",
             true,
             targetEnv))
     {

@@ -208,10 +208,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "88"
-#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "89"
+#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.88.1"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.89.0"
 
 
 
@@ -1443,6 +1443,12 @@ octaspire_container_hash_map_t *octaspire_container_hash_map_new_with_octaspire_
     octaspire_container_hash_map_element_callback_function_t valueReleaseCallback,
     octaspire_memory_allocator_t *allocator);
 
+octaspire_container_hash_map_t *octaspire_container_hash_map_new_with_size_t_keys(
+    size_t const valueSizeInOctets,
+    bool const valueIsPointer,
+    octaspire_container_hash_map_element_callback_function_t valueReleaseCallback,
+    octaspire_memory_allocator_t *allocator);
+
 void octaspire_container_hash_map_release(octaspire_container_hash_map_t *self);
 
 bool octaspire_container_hash_map_remove(
@@ -1517,6 +1523,9 @@ bool octaspire_container_hash_map_element_const_iterator_next(
     octaspire_container_hash_map_element_const_iterator_t * const self);
 
 
+
+uint32_t octaspire_container_hash_map_helper_size_t_get_hash(
+    size_t const value);
 
 #ifdef __cplusplus
 }
@@ -7261,6 +7270,37 @@ octaspire_container_hash_map_t *octaspire_container_hash_map_new_with_octaspire_
         (octaspire_container_hash_map_key_compare_function_t)octaspire_container_utf8_string_is_equal,
         (octaspire_container_hash_map_key_hash_function_t)octaspire_container_utf8_string_get_hash,
         (octaspire_container_hash_map_element_callback_function_t)octaspire_container_utf8_string_release,
+        valueReleaseCallback,
+        allocator);
+}
+
+static bool octaspire_container_hash_map_helper_private_size_t_is_equal(
+    size_t const * const first,
+    size_t const * const second)
+{
+    return *first == *second;
+}
+
+uint32_t octaspire_container_hash_map_helper_size_t_get_hash(
+    size_t const value)
+{
+    return jenkins_one_at_a_time_hash(&value, sizeof(value));
+}
+
+octaspire_container_hash_map_t *octaspire_container_hash_map_new_with_size_t_keys(
+    size_t const valueSizeInOctets,
+    bool const valueIsPointer,
+    octaspire_container_hash_map_element_callback_function_t valueReleaseCallback,
+    octaspire_memory_allocator_t *allocator)
+{
+    return octaspire_container_hash_map_new(
+        sizeof(size_t),
+        false,
+        valueSizeInOctets,
+        valueIsPointer,
+        (octaspire_container_hash_map_key_compare_function_t)octaspire_container_hash_map_helper_private_size_t_is_equal,
+        (octaspire_container_hash_map_key_hash_function_t)octaspire_container_hash_map_helper_size_t_get_hash,
+        (octaspire_container_hash_map_element_callback_function_t)0,
         valueReleaseCallback,
         allocator);
 }
@@ -21491,6 +21531,64 @@ TEST octaspire_container_hash_map_new_with_octaspire_container_utf8_string_keys_
     PASS();
 }
 
+TEST octaspire_container_hash_map_new_with_size_t_keys_test(void)
+{
+    octaspire_container_hash_map_t *hashMap =
+        octaspire_container_hash_map_new_with_size_t_keys(
+            sizeof(octaspire_container_utf8_string_t *),
+            true,
+            (octaspire_container_hash_map_element_callback_function_t)
+                octaspire_container_utf8_string_release,
+            octaspireContainerHashMapTestAllocator);
+
+    size_t const numElements = 32;
+
+    for (size_t i = 0; i < numElements; ++i)
+    {
+        octaspire_container_utf8_string_t *str = octaspire_container_utf8_string_new_format(
+            octaspireContainerHashMapTestAllocator,
+            "%zu",
+            i);
+
+        uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(i);
+
+        ASSERT(octaspire_container_hash_map_put(hashMap, hash, &i, &str));
+
+        ASSERT_EQ(i+1, octaspire_container_hash_map_get_number_of_elements(hashMap));
+    }
+
+    ASSERT_EQ(numElements, octaspire_container_hash_map_get_number_of_elements(hashMap));
+
+    for (size_t i = 0; i < numElements; ++i)
+    {
+        octaspire_container_utf8_string_t *str = octaspire_container_utf8_string_new_format(
+            octaspireContainerHashMapTestAllocator,
+            "%zu",
+            i);
+
+        uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(i);
+
+        octaspire_container_hash_map_element_t *element =
+            octaspire_container_hash_map_get(hashMap, hash, &i);
+
+        ASSERT(element);
+
+        ASSERT_EQ(hash, octaspire_container_hash_map_element_get_hash(element));
+
+        ASSERT_EQ(i, *(size_t const * const)octaspire_container_hash_map_element_get_key(element));
+
+        ASSERT(octaspire_container_utf8_string_is_equal(str, (octaspire_container_utf8_string_t*)octaspire_container_hash_map_element_get_value(element)));
+
+        octaspire_container_utf8_string_release(str);
+        str = 0;
+    }
+
+    octaspire_container_hash_map_release(hashMap);
+    hashMap = 0;
+
+    PASS();
+}
+
 TEST octaspire_container_hash_map_element_iterator_test(void)
 {
     octaspire_container_hash_map_t *hashMap = octaspire_container_hash_map_new(
@@ -21698,6 +21796,7 @@ GREATEST_SUITE(octaspire_container_hash_map_suite)
     RUN_TEST(octaspire_container_hash_map_new_allocation_failure_on_second_allocation_test);
     RUN_TEST(octaspire_container_hash_map_new_keys_ostring_t_and_values_ostring_t_test);
     RUN_TEST(octaspire_container_hash_map_new_with_octaspire_container_utf8_string_keys_test);
+    RUN_TEST(octaspire_container_hash_map_new_with_size_t_keys_test);
     RUN_TEST(octaspire_container_hash_map_element_iterator_test);
     RUN_TEST(octaspire_container_hash_map_element_const_iterator_test);
 
@@ -21952,10 +22051,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "274"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "276"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.274.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.276.0"
 
 
 
