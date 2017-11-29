@@ -1043,6 +1043,22 @@ octaspire_dern_value_t *dern_sdl2_CreateTextureFromFontAndText(
             SDL_GetError());
     }
 
+    ++dern_sdl2_private_next_free_texture_uid;
+
+    if (!octaspire_container_hash_map_put(
+            dern_sdl2_private_textures,
+            octaspire_container_hash_map_helper_size_t_get_hash(
+                dern_sdl2_private_next_free_texture_uid),
+            &dern_sdl2_private_next_free_texture_uid,
+            &texture))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-CreateTextureFromFontAndText' failed: "
+            "internal texture save failed.");
+    }
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_c_data(
         vm,
@@ -1053,7 +1069,7 @@ octaspire_dern_value_t *dern_sdl2_CreateTextureFromFontAndText(
         "",
         "",
         false,
-        texture);
+        (void*)dern_sdl2_private_next_free_texture_uid);
 #else
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_from_c_string(

@@ -5,11 +5,13 @@
 (define renderer as (sdl2-CreateRenderer window -1 'SOFTWARE) [renderer])
 ;(define texture as (sdl2-CreateTexture renderer 'PATH [examples/octaspireO128.png] true) [texture])
 
-(define font as (sdl2-CreateFont 'PATH [Chunk.ttf] 32) [font])
+;(define font as (sdl2-CreateFont 'PATH [Chunk.ttf] 32) [font])
 
+#!
 (define textureFromFontAndText as
   (sdl2-CreateTextureFromFontAndText renderer font [Hello World!] [white] false)
   [texture from font and text])
+!#
 
 (define textureFromBase64 as
   (sdl2-CreateTexture renderer 'BASE64
