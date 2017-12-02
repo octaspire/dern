@@ -106,14 +106,18 @@ void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
         HINSTANCE * const handle = octaspire_dern_lib_get_handle(self->library);
         void (*func)(void * const payload);
         func = (void (*)(void * const))GetProcAddress(*handle, octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName));
-        octaspire_helpers_verify_not_null_void_funptr_void_ptr_const(func);
-        func(self->payload);
+        if (func)
+        {
+            func(self->payload);
+        }
 #else
         void * const handle = octaspire_dern_lib_get_handle(self->library);
         void (*func)(void * const payload);
         func = (void (*)(void * const))dlsym(handle, octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName));
-        octaspire_helpers_verify_not_null_void_funptr_void_ptr_const(func);
-        func(self->payload);
+        if (func)
+        {
+            func(self->payload);
+        }
 #endif
     }
 #endif

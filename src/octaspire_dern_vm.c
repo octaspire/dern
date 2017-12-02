@@ -1466,6 +1466,9 @@ void octaspire_dern_vm_release(octaspire_dern_vm_t *self)
         return;
     }
 
+    octaspire_container_hash_map_release(self->libraries);
+    self->libraries = 0;
+
     octaspire_container_vector_release(self->commandLineArguments);
     self->commandLineArguments = 0;
 
@@ -1481,9 +1484,6 @@ void octaspire_dern_vm_release(octaspire_dern_vm_t *self)
     octaspire_container_vector_release(self->stack);
 
     octaspire_container_vector_release(self->all);
-
-    octaspire_container_hash_map_release(self->libraries);
-    self->libraries = 0;
 
     octaspire_memory_allocator_free(self->allocator, self);
 }

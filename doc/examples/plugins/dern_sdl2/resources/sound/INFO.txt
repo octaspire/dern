@@ -1,0 +1,21 @@
+Note from octaspire: these files might be modified versions. The originals were downloaded from:
+https://opengameart.org/content/512-sound-effects-8-bit-style
+
+Part of the original file follows:
+------------------------------------------------------------------------------------------------
+This is The Essential Retro Video Game Sound Effects Collection [512 sounds]
+
+
+Hi, I'm Juhani Junkala, the author of this collection. I'm a classically trained composer, producer and a sound designer with over 20 years of experience.
+
+These sound effects have been released under CC0 creative commons license. You can do anything you want with these sounds.
+
+All the sounds are at 44100hz 16bit mono .wav format and at -6db volume level. Change the individual volume of the sounds manually if necessary.
+
+If the filename has a "loop" in it then the sound loops seamlessly.
+
+Check out my game music portfolio: https://www.youtube.com/watch?v=dbACpSy9FWY
+
+If you need music or sound effects for your game, contact me: juhani.junkala@musician.org
+------------------------------------------------------------------------------------------------
+

@@ -303,11 +303,114 @@ void octaspire_dern_lib_release(octaspire_dern_lib_t *self)
     {
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #ifdef _WIN32
-        FreeLibrary(self->binaryLibHandle);
-        self->binaryLibHandle = 0;
+        if (self->binaryLibHandle)
+        {
+            bool (*libCleanFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const);
+
+            octaspire_container_utf8_string_t *libCleanFuncName =
+                octaspire_container_utf8_string_new_format(self->allocator, "%s_clean", name);
+
+            octaspire_helpers_verify_not_null(libCleanFuncName);
+
+            libCleanFunc =
+                (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))GetProcAddress(
+                    self->binaryLibHandle,
+                    octaspire_container_utf8_string_get_c_string(libCleanFuncName));
+
+            octaspire_container_utf8_string_release(libCleanFuncName);
+            libCleanFuncName = 0;
+
+            if (!libCleanFunc)
+            {
+                self->errorMessage =
+                    octaspire_container_utf8_string_new_format(
+                        self->allocator,
+                        "Binary library (name='%s' fileName='%s'):\n"
+                        "GetProcAddress failed on the clean function for the library.",
+                        name,
+                        fileName);
+
+                octaspire_helpers_verify_not_null(self->errorMessage);
+            }
+            else
+            {
+                if (!(*libCleanFunc)(
+                        vm,
+                        octaspire_dern_vm_get_global_environment(vm)->value.environment))
+                {
+                    self->errorMessage =
+                        octaspire_container_utf8_string_new_format(
+                            self->allocator,
+                            "Binary library (name='%s' fileName='%s'):\n"
+                            "clean function failed.",
+                            name,
+                            fileName);
+
+                    octaspire_helpers_verify_not_null(self->errorMessage);
+                }
+            }
+
+            FreeLibrary(self->binaryLibHandle);
+            self->binaryLibHandle = 0;
+        }
 #else
         if (self->binaryLibHandle)
         {
+            bool (*libCleanFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const);
+
+            octaspire_container_utf8_string_t *libCleanFuncName =
+                octaspire_container_utf8_string_new_format(
+                    self->allocator,
+                    "%s_clean",
+                    octaspire_container_utf8_string_get_c_string(self->name));
+
+            octaspire_helpers_verify_not_null(libCleanFuncName);
+
+            libCleanFunc =
+                (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))dlsym(
+                    self->binaryLibHandle,
+                    octaspire_container_utf8_string_get_c_string(libCleanFuncName));
+
+            octaspire_container_utf8_string_release(libCleanFuncName);
+            libCleanFuncName = 0;
+
+            char *error = dlerror();
+
+            if (error)
+            {
+                self->errorMessage =
+                    octaspire_container_utf8_string_new_format(
+                        self->allocator,
+                        "Binary library (name='%s'):\n"
+                        "dlsym failed on the clean function for the library. dlerror is: %s",
+                        octaspire_container_utf8_string_get_c_string(self->name),
+                        error);
+
+                octaspire_helpers_verify_not_null(self->errorMessage);
+
+                //dlclose(self->binaryLibHandle);
+                //self->binaryLibHandle = 0;
+            }
+            else
+            {
+                if (!(*libCleanFunc)(
+                        self->vm,
+                        octaspire_dern_vm_get_global_environment(self->vm)->value.environment))
+                {
+                    self->errorMessage =
+                        octaspire_container_utf8_string_new_format(
+                            self->allocator,
+                            "Binary library (name='%s'):\n"
+                            "clean function failed.",
+                            octaspire_container_utf8_string_get_c_string(self->name));
+
+                    octaspire_helpers_verify_not_null(self->errorMessage);
+
+                    //dlclose(self->binaryLibHandle);
+                    //self->binaryLibHandle = 0;
+                }
+            }
+
             dlclose(self->binaryLibHandle);
             self->binaryLibHandle = 0;
         }
