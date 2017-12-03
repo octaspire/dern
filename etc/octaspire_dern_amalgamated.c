@@ -22051,10 +22051,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "276"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "2"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "277"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.276.2"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.277.0"
 
 
 
@@ -27322,11 +27322,114 @@ void octaspire_dern_lib_release(octaspire_dern_lib_t *self)
     {
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #ifdef _WIN32
-        FreeLibrary(self->binaryLibHandle);
-        self->binaryLibHandle = 0;
+        if (self->binaryLibHandle)
+        {
+            bool (*libCleanFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const);
+
+            octaspire_container_utf8_string_t *libCleanFuncName =
+                octaspire_container_utf8_string_new_format(self->allocator, "%s_clean", name);
+
+            octaspire_helpers_verify_not_null(libCleanFuncName);
+
+            libCleanFunc =
+                (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))GetProcAddress(
+                    self->binaryLibHandle,
+                    octaspire_container_utf8_string_get_c_string(libCleanFuncName));
+
+            octaspire_container_utf8_string_release(libCleanFuncName);
+            libCleanFuncName = 0;
+
+            if (!libCleanFunc)
+            {
+                self->errorMessage =
+                    octaspire_container_utf8_string_new_format(
+                        self->allocator,
+                        "Binary library (name='%s' fileName='%s'):\n"
+                        "GetProcAddress failed on the clean function for the library.",
+                        name,
+                        fileName);
+
+                octaspire_helpers_verify_not_null(self->errorMessage);
+            }
+            else
+            {
+                if (!(*libCleanFunc)(
+                        vm,
+                        octaspire_dern_vm_get_global_environment(vm)->value.environment))
+                {
+                    self->errorMessage =
+                        octaspire_container_utf8_string_new_format(
+                            self->allocator,
+                            "Binary library (name='%s' fileName='%s'):\n"
+                            "clean function failed.",
+                            name,
+                            fileName);
+
+                    octaspire_helpers_verify_not_null(self->errorMessage);
+                }
+            }
+
+            FreeLibrary(self->binaryLibHandle);
+            self->binaryLibHandle = 0;
+        }
 #else
         if (self->binaryLibHandle)
         {
+            bool (*libCleanFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const);
+
+            octaspire_container_utf8_string_t *libCleanFuncName =
+                octaspire_container_utf8_string_new_format(
+                    self->allocator,
+                    "%s_clean",
+                    octaspire_container_utf8_string_get_c_string(self->name));
+
+            octaspire_helpers_verify_not_null(libCleanFuncName);
+
+            libCleanFunc =
+                (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))dlsym(
+                    self->binaryLibHandle,
+                    octaspire_container_utf8_string_get_c_string(libCleanFuncName));
+
+            octaspire_container_utf8_string_release(libCleanFuncName);
+            libCleanFuncName = 0;
+
+            char *error = dlerror();
+
+            if (error)
+            {
+                self->errorMessage =
+                    octaspire_container_utf8_string_new_format(
+                        self->allocator,
+                        "Binary library (name='%s'):\n"
+                        "dlsym failed on the clean function for the library. dlerror is: %s",
+                        octaspire_container_utf8_string_get_c_string(self->name),
+                        error);
+
+                octaspire_helpers_verify_not_null(self->errorMessage);
+
+                //dlclose(self->binaryLibHandle);
+                //self->binaryLibHandle = 0;
+            }
+            else
+            {
+                if (!(*libCleanFunc)(
+                        self->vm,
+                        octaspire_dern_vm_get_global_environment(self->vm)->value.environment))
+                {
+                    self->errorMessage =
+                        octaspire_container_utf8_string_new_format(
+                            self->allocator,
+                            "Binary library (name='%s'):\n"
+                            "clean function failed.",
+                            octaspire_container_utf8_string_get_c_string(self->name));
+
+                    octaspire_helpers_verify_not_null(self->errorMessage);
+
+                    //dlclose(self->binaryLibHandle);
+                    //self->binaryLibHandle = 0;
+                }
+            }
+
             dlclose(self->binaryLibHandle);
             self->binaryLibHandle = 0;
         }
@@ -27484,14 +27587,18 @@ void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
         HINSTANCE * const handle = octaspire_dern_lib_get_handle(self->library);
         void (*func)(void * const payload);
         func = (void (*)(void * const))GetProcAddress(*handle, octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName));
-        octaspire_helpers_verify_not_null_void_funptr_void_ptr_const(func);
-        func(self->payload);
+        if (func)
+        {
+            func(self->payload);
+        }
 #else
         void * const handle = octaspire_dern_lib_get_handle(self->library);
         void (*func)(void * const payload);
         func = (void (*)(void * const))dlsym(handle, octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName));
-        octaspire_helpers_verify_not_null_void_funptr_void_ptr_const(func);
-        func(self->payload);
+        if (func)
+        {
+            func(self->payload);
+        }
 #endif
     }
 #endif
@@ -42859,6 +42966,9 @@ void octaspire_dern_vm_release(octaspire_dern_vm_t *self)
         return;
     }
 
+    octaspire_container_hash_map_release(self->libraries);
+    self->libraries = 0;
+
     octaspire_container_vector_release(self->commandLineArguments);
     self->commandLineArguments = 0;
 
@@ -42874,9 +42984,6 @@ void octaspire_dern_vm_release(octaspire_dern_vm_t *self)
     octaspire_container_vector_release(self->stack);
 
     octaspire_container_vector_release(self->all);
-
-    octaspire_container_hash_map_release(self->libraries);
-    self->libraries = 0;
 
     octaspire_memory_allocator_free(self->allocator, self);
 }

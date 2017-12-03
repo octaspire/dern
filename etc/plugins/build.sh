@@ -34,8 +34,12 @@ if [ "$platform" == "Linux" ]; then
     gcc -g -Wall -Wextra -std=c99 -shared -o libdern_dir.so dern_dir.o
 
     echo "--- plugin SDL2    ---"
-    gcc -g -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_sdl2.c `sdl2-config --cflags`
-    gcc -g -Wall -Wextra -std=c99 -shared -o libdern_sdl2.so dern_sdl2.o `sdl2-config --libs`
+    gcc -Wall -Wextra -pedantic -g -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION \
+        -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY \
+        -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY \
+        -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY   \
+        -c -fPIC -I ../../release dern_sdl2.c `sdl2-config --cflags`
+    gcc -Wall -Wextra -pedantic -std=c99 -shared -o libdern_sdl2.so dern_sdl2.o `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 fi
 
 

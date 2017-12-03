@@ -13,10 +13,264 @@
 #include "SDL_ttf.h"
 #endif
 
+static char const *dern_sdl2_private_helper_sdl_keycode_to_c_string(
+    SDL_Keycode const code)
+{
+    switch (code)
+    {
+        case SDLK_0:                  return "0";
+        case SDLK_1:                  return "1";
+        case SDLK_2:                  return "2";
+        case SDLK_3:                  return "3";
+        case SDLK_4:                  return "4";
+        case SDLK_5:                  return "5";
+        case SDLK_6:                  return "6";
+        case SDLK_7:                  return "7";
+        case SDLK_8:                  return "8";
+        case SDLK_9:                  return "9";
+        case SDLK_a:                  return "a";
+        case SDLK_AC_BACK:            return "AC_BACK";
+        case SDLK_AC_BOOKMARKS:       return "AC_BOOKMARKS";
+        case SDLK_AC_FORWARD:         return "AC_FORWARD";
+        case SDLK_AC_HOME:            return "AC_HOME";
+        case SDLK_AC_REFRESH:         return "AC_REFRESH";
+        case SDLK_AC_SEARCH:          return "AC_SEARCH";
+        case SDLK_AC_STOP:            return "AC_STOP";
+        case SDLK_AGAIN:              return "AGAIN";
+        case SDLK_ALTERASE:           return "ALTERASE";
+        case SDLK_QUOTE:              return "QUOTE";
+        case SDLK_APPLICATION:        return "APPLICATION";
+        case SDLK_AUDIOMUTE:          return "AUDIOMUTE";
+        case SDLK_AUDIONEXT:          return "AUDIONEXT";
+        case SDLK_AUDIOPLAY:          return "AUDIOPLAY";
+        case SDLK_AUDIOPREV:          return "AUDIOPREV";
+        case SDLK_AUDIOSTOP:          return "AUDIOSTOP";
+        case SDLK_b:                  return "b";
+        case SDLK_BACKSLASH:          return "BACKSLASH";
+        case SDLK_BACKSPACE:          return "BACKSPACE";
+        case SDLK_BRIGHTNESSDOWN:     return "BRIGHTNESSDOWN";
+        case SDLK_BRIGHTNESSUP:       return "BRIGHTNESSUP";
+        case SDLK_c:                  return "c";
+        case SDLK_CALCULATOR:         return "CALCULATOR";
+        case SDLK_CANCEL:             return "CANCEL";
+        case SDLK_CAPSLOCK:           return "CAPSLOCK";
+        case SDLK_CLEAR:              return "CLEAR";
+        case SDLK_CLEARAGAIN:         return "CLEARAGAIN";
+        case SDLK_COMMA:              return "COMMA";
+        case SDLK_COMPUTER:           return "COMPUTER";
+        case SDLK_COPY:               return "COPY";
+        case SDLK_CRSEL:              return "CRSEL";
+        case SDLK_CURRENCYSUBUNIT:    return "CURRENCYSUBUNIT";
+        case SDLK_CURRENCYUNIT:       return "CURRENCYUNIT";
+        case SDLK_CUT:                return "CUT";
+        case SDLK_d:                  return "d";
+        case SDLK_DECIMALSEPARATOR:   return "DECIMALSEPARATOR";
+        case SDLK_DELETE:             return "DELETE";
+        case SDLK_DISPLAYSWITCH:      return "DISPLAYSWITCH";
+        case SDLK_DOWN:               return "DOWN";
+        case SDLK_e:                  return "e";
+        case SDLK_EJECT:              return "EJECT";
+        case SDLK_END:                return "END";
+        case SDLK_EQUALS:             return "EQUALS";
+        case SDLK_ESCAPE:             return "ESCAPE";
+        case SDLK_EXECUTE:            return "EXECUTE";
+        case SDLK_EXSEL:              return "EXSEL";
+        case SDLK_f:                  return "f";
+        case SDLK_F1:                 return "F1";
+        case SDLK_F10:                return "F10";
+        case SDLK_F11:                return "F11";
+        case SDLK_F12:                return "F12";
+        case SDLK_F13:                return "F13";
+        case SDLK_F14:                return "F14";
+        case SDLK_F15:                return "F15";
+        case SDLK_F16:                return "F16";
+        case SDLK_F17:                return "F17";
+        case SDLK_F18:                return "F18";
+        case SDLK_F19:                return "F19";
+        case SDLK_F2:                 return "F2";
+        case SDLK_F20:                return "F20";
+        case SDLK_F21:                return "F21";
+        case SDLK_F22:                return "F22";
+        case SDLK_F23:                return "F23";
+        case SDLK_F24:                return "F24";
+        case SDLK_F3:                 return "F3";
+        case SDLK_F4:                 return "F4";
+        case SDLK_F5:                 return "F5";
+        case SDLK_F7:                 return "F7";
+        case SDLK_F8:                 return "F8";
+        case SDLK_F9:                 return "F9";
+        case SDLK_FIND:               return "FIND";
+        case SDLK_g:                  return "g";
+        case SDLK_BACKQUOTE:          return "BACKQUOTE";
+        case SDLK_h:                  return "h";
+        case SDLK_HELP:               return "HELP";
+        case SDLK_HOME:               return "HOME";
+        case SDLK_i:                  return "i";
+        case SDLK_INSERT:             return "INSERT";
+        case SDLK_j:                  return "j";
+        case SDLK_k:                  return "k";
+        case SDLK_KBDILLUMDOWN:       return "KBDILLUMDOWN";
+        case SDLK_KBDILLUMTOGGLE:     return "KBDILLUMTOGGLE";
+        case SDLK_KBDILLUMUP:         return "KBDILLUMUP";
+        case SDLK_KP_0:               return "KP_0";
+        case SDLK_KP_00:              return "KP_00";
+        case SDLK_KP_000:             return "KP_000";
+        case SDLK_KP_1:               return "KP_1";
+        case SDLK_KP_2:               return "KP_2";
+        case SDLK_KP_3:               return "KP_3";
+        case SDLK_KP_4:               return "KP_4";
+        case SDLK_KP_5:               return "KP_5";
+        case SDLK_KP_6:               return "KP_6";
+        case SDLK_KP_7:               return "KP_7";
+        case SDLK_KP_8:               return "KP_8";
+        case SDLK_KP_9:               return "KP_9";
+        case SDLK_KP_A:               return "KP_A";
+        case SDLK_KP_AMPERSAND:       return "KP_AMPERSAND";
+        case SDLK_KP_AT:              return "KP_AT";
+        case SDLK_KP_B:               return "KP_B";
+        case SDLK_KP_BACKSPACE:       return "KP_BACKSPACE";
+        case SDLK_KP_BINARY:          return "KP_BINARY:";
+        case SDLK_KP_C:               return "KP_C";
+        case SDLK_KP_CLEAR:           return "KP_CLEAR";
+        case SDLK_KP_CLEARENTRY:      return "KP_CLEARENTRY";
+        case SDLK_KP_COLON:           return "KP_COLON";
+        case SDLK_KP_COMMA:           return "KP_COMMA";
+        case SDLK_KP_D:               return "KP_D";
+        case SDLK_KP_DBLAMPERSAND:    return "KP_DBLAMPERSAND";
+        case SDLK_KP_DBLVERTICALBAR:  return "KP_DBLVERTICALBAR";
+        case SDLK_KP_DECIMAL:         return "KP_DECIMAL";
+        case SDLK_KP_DIVIDE:          return "KP_DIVIDE";
+        case SDLK_KP_E:               return "KP_E";
+        case SDLK_KP_ENTER:           return "KP_ENTER";
+        case SDLK_KP_EQUALS:          return "KP_EQUALS";
+        case SDLK_KP_EQUALSAS400:     return "KP_EQUALSAS400";
+        case SDLK_KP_EXCLAM:          return "KP_EXCLAM";
+        case SDLK_KP_F:               return "KP_F";
+        case SDLK_KP_GREATER:         return "KP_GREATER";
+        case SDLK_KP_HASH:            return "KP_HASH";
+        case SDLK_KP_HEXADECIMAL:     return "KP_HEXADECIMAL";
+        case SDLK_KP_LEFTBRACE:       return "KP_LEFTBRACE";
+        case SDLK_KP_LEFTPAREN:       return "KP_LEFTPAREN";
+        case SDLK_KP_LESS:            return "KP_LESS";
+        case SDLK_KP_MEMADD:          return "KP_MEMADD";
+        case SDLK_KP_MEMCLEAR:        return "KP_MEMCLEAR";
+        case SDLK_KP_MEMDIVIDE:       return "KP_MEMDIVIDE";
+        case SDLK_KP_MEMMULTIPLY:     return "KP_MEMMULTIPLY";
+        case SDLK_KP_MEMRECALL:       return "KP_MEMRECALL";
+        case SDLK_KP_MEMSTORE:        return "KP_MEMSTORE";
+        case SDLK_KP_MEMSUBTRACT:     return "KP_MEMSUBTRACT";
+        case SDLK_KP_MINUS:           return "KP_MINUS";
+        case SDLK_KP_MULTIPLY:        return "KP_MULTIPLY";
+        case SDLK_KP_OCTAL:           return "KP_OCTAL";
+        case SDLK_KP_PERCENT:         return "KP_PERCENT";
+        case SDLK_KP_PERIOD:          return "KP_PERIOD";
+        case SDLK_KP_PLUS:            return "KP_PLUS";
+        case SDLK_KP_PLUSMINUS:       return "KP_PLUSMINUS";
+        case SDLK_KP_POWER:           return "KP_POWER";
+        case SDLK_KP_RIGHTBRACE:      return "KP_RIGHTBRACE";
+        case SDLK_KP_RIGHTPAREN:      return "KP_RIGHTPAREN";
+        case SDLK_KP_SPACE:           return "KP_SPACE";
+        case SDLK_KP_TAB:             return "KP_TAB";
+        case SDLK_KP_VERTICALBAR:     return "KP_VERTICALBAR";
+        case SDLK_KP_XOR:             return "KP_XOR";
+        case SDLK_l:                  return "l";
+        case SDLK_LALT:               return "LALT";
+        case SDLK_LCTRL:              return "LCTRL";
+        case SDLK_LEFT:               return "LEFT";
+        case SDLK_LEFTBRACKET:        return "LEFTBRACKET";
+        case SDLK_LGUI:               return "LGUI";
+        case SDLK_LSHIFT:             return "LSHIFT";
+        case SDLK_m:                  return "m";
+        case SDLK_MAIL:               return "MAIL";
+        case SDLK_MEDIASELECT:        return "MEDIASELECT";
+        case SDLK_MENU:               return "MENU";
+        case SDLK_MINUS:              return "MINUS";
+        case SDLK_MODE:               return "MODE";
+        case SDLK_MUTE:               return "MUTE";
+        case SDLK_n:                  return "n";
+        case SDLK_NUMLOCKCLEAR:       return "NUMLOCKCLEAR";
+        case SDLK_o:                  return "o";
+        case SDLK_OPER:               return "OPER";
+        case SDLK_OUT:                return "OUT";
+        case SDLK_p:                  return "p";
+        case SDLK_PAGEDOWN:           return "PAGEDOWN";
+        case SDLK_PAGEUP:             return "PAGEUP";
+        case SDLK_PASTE:              return "PASTE";
+        case SDLK_PAUSE:              return "PAUSE";
+        case SDLK_PERIOD:             return "PERIOD";
+        case SDLK_POWER:              return "POWER";
+        case SDLK_PRINTSCREEN:        return "PRINTSCREEN";
+        case SDLK_PRIOR:              return "PRIOR";
+        case SDLK_q:                  return "q";
+        case SDLK_r:                  return "r";
+        case SDLK_RALT:               return "RALT";
+        case SDLK_RCTRL:              return "RCTRL";
+        case SDLK_RETURN:             return "RETURN";
+        case SDLK_RETURN2:            return "RETURN2";
+        case SDLK_RGUI:               return "RGUI";
+        case SDLK_RIGHT:              return "RIGHT";
+        case SDLK_RIGHTBRACKET:       return "RIGHTBRACKET";
+        case SDLK_RSHIFT:             return "RSHIFT";
+        case SDLK_s:                  return "s";
+        case SDLK_SCROLLLOCK:         return "SCROLLLOCK";
+        case SDLK_SELECT:             return "SELECT";
+        case SDLK_SEMICOLON:          return "SEMICOLON";
+        case SDLK_SEPARATOR:          return "SEPARATOR";
+        case SDLK_SLASH:              return "SLASH";
+        case SDLK_SLEEP:              return "SLEEP";
+        case SDLK_SPACE:              return "SPACE";
+        case SDLK_STOP:               return "STOP";
+        case SDLK_SYSREQ:             return "SYSREQ";
+        case SDLK_t:                  return "t";
+        case SDLK_TAB:                return "TAB";
+        case SDLK_THOUSANDSSEPARATOR: return "THOUSANDSSEPARATOR";
+        case SDLK_u:                  return "u";
+        case SDLK_UNDO:               return "UNDO";
+        case SDLK_UNKNOWN:            return "UNKNOWN";
+        case SDLK_UP:                 return "UP";
+        case SDLK_v:                  return "v";
+        case SDLK_VOLUMEDOWN:         return "VOLUMEDOWN";
+        case SDLK_VOLUMEUP:           return "VOLUMEUP";
+        case SDLK_w:                  return "w";
+        case SDLK_WWW:                return "WWW";
+        case SDLK_x:                  return "x";
+        case SDLK_y:                  return "y";
+        case SDLK_z:                  return "z";
+        case SDLK_AMPERSAND:          return "AMPERSAND";
+        case SDLK_ASTERISK:           return "ASTERISK";
+        case SDLK_AT:                 return "AT";
+        case SDLK_CARET:              return "CARET";
+        case SDLK_COLON:              return "COLON";
+        case SDLK_DOLLAR:             return "DOLLAR";
+        case SDLK_EXCLAIM:            return "EXCLAIM";
+        case SDLK_GREATER:            return "GREATER";
+        case SDLK_HASH:               return "HASH";
+        case SDLK_LEFTPAREN:          return "LEFTPAREN";
+        case SDLK_LESS:               return "LESS";
+        case SDLK_PERCENT:            return "PERCENT";
+        case SDLK_PLUS:               return "PLUS";
+        case SDLK_QUESTION:           return "QUESTION";
+        case SDLK_QUOTEDBL:           return "QUOTEDBL";
+        case SDLK_RIGHTPAREN:         return "RIGHTPAREN";
+        case SDLK_UNDERSCORE:         return "UNDERSCORE";
+
+        default: return "unsupported";
+    }
+}
+
 typedef struct octaspire_sdl2_texture_t octaspire_sdl2_texture_t;
 
 static octaspire_container_hash_map_t * dern_sdl2_private_textures              = 0;
 static size_t                           dern_sdl2_private_next_free_texture_uid = 0;
+
+static octaspire_container_hash_map_t * dern_sdl2_private_fonts                 = 0;
+static size_t                           dern_sdl2_private_next_free_font_uid    = 0;
+
+static octaspire_container_hash_map_t * dern_sdl2_private_music                 = 0;
+static size_t                           dern_sdl2_private_next_free_music_uid   = 0;
+
+static octaspire_container_hash_map_t * dern_sdl2_private_sounds                = 0;
+static size_t                           dern_sdl2_private_next_free_sound_uid   = 0;
 
 octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_path(
     char const * const path,
@@ -400,9 +654,18 @@ void octaspire_sdl2_texture_print(
 
 static char const * const DERN_SDL2_PLUGIN_NAME = "dern_sdl2";
 
+void dern_sdl2_clean_up_resources()
+{
+    octaspire_container_hash_map_clear(dern_sdl2_private_textures);
+    octaspire_container_hash_map_clear(dern_sdl2_private_fonts);
+    octaspire_container_hash_map_clear(dern_sdl2_private_music);
+    octaspire_container_hash_map_clear(dern_sdl2_private_sounds);
+}
+
 void dern_sdl2_window_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
+    dern_sdl2_clean_up_resources();
     SDL_DestroyWindow((SDL_Window*)payload);
     payload = 0;
 }
@@ -410,6 +673,7 @@ void dern_sdl2_window_clean_up_callback(void *payload)
 void dern_sdl2_renderer_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
+    dern_sdl2_clean_up_resources();
     SDL_DestroyRenderer((SDL_Renderer*)payload);
     payload = 0;
 }
@@ -431,6 +695,57 @@ static octaspire_sdl2_texture_t * dern_sdl2_private_helper_uid_to_texture(
     return (octaspire_sdl2_texture_t*)octaspire_container_hash_map_element_get_value(elem);
 }
 
+static TTF_Font * dern_sdl2_private_helper_uid_to_font(
+    void const * const payload)
+{
+    size_t const key = (size_t)payload;
+    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+
+    octaspire_container_hash_map_element_t * elem =
+        octaspire_container_hash_map_get(dern_sdl2_private_fonts, hash, &key);
+
+    if (!elem)
+    {
+        return 0;
+    }
+
+    return (TTF_Font*)octaspire_container_hash_map_element_get_value(elem);
+}
+
+static Mix_Music * dern_sdl2_private_helper_uid_to_music(
+    void const * const payload)
+{
+    size_t const key = (size_t)payload;
+    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+
+    octaspire_container_hash_map_element_t * elem =
+        octaspire_container_hash_map_get(dern_sdl2_private_music, hash, &key);
+
+    if (!elem)
+    {
+        return 0;
+    }
+
+    return (Mix_Music*)octaspire_container_hash_map_element_get_value(elem);
+}
+
+static Mix_Chunk * dern_sdl2_private_helper_uid_to_sound(
+    void const * const payload)
+{
+    size_t const key = (size_t)payload;
+    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+
+    octaspire_container_hash_map_element_t * elem =
+        octaspire_container_hash_map_get(dern_sdl2_private_sounds, hash, &key);
+
+    if (!elem)
+    {
+        return 0;
+    }
+
+    return (Mix_Chunk*)octaspire_container_hash_map_element_get_value(elem);
+}
+
 void dern_sdl2_texture_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
@@ -445,10 +760,6 @@ void dern_sdl2_texture_clean_up_callback(void *payload)
         return;
     }
 
-    //octaspire_sdl2_texture_release(texture);
-    //texture = 0;
-    //payload = 0;
-
     octaspire_helpers_verify_true(octaspire_container_hash_map_remove(
         dern_sdl2_private_textures,
         hash,
@@ -458,16 +769,64 @@ void dern_sdl2_texture_clean_up_callback(void *payload)
 void dern_sdl2_font_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
-    // TODO XXX crash here
-    //TTF_CloseFont((TTF_Font*)payload);
-    payload = 0;
+
+    size_t const key = (size_t const)payload;
+    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+
+    TTF_Font * font = dern_sdl2_private_helper_uid_to_font(payload);
+
+    if (!font)
+    {
+        return;
+    }
+
+    TTF_CloseFont(font);
+    font = 0;
+
+    octaspire_helpers_verify_true(octaspire_container_hash_map_remove(
+        dern_sdl2_private_fonts,
+        hash,
+        &key));
 }
 
 void dern_sdl2_music_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
-    Mix_FreeMusic((Mix_Music*)payload);
-    payload = 0;
+
+    size_t const key = (size_t const)payload;
+    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+
+    Mix_Music* music = dern_sdl2_private_helper_uid_to_music(payload);
+
+    if (!music)
+    {
+        return;
+    }
+
+    octaspire_helpers_verify_true(octaspire_container_hash_map_remove(
+        dern_sdl2_private_music,
+        hash,
+        &key));
+}
+
+void dern_sdl2_sound_clean_up_callback(void *payload)
+{
+    octaspire_helpers_verify_not_null(payload);
+
+    size_t const key = (size_t const)payload;
+    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+
+    Mix_Chunk* sound = dern_sdl2_private_helper_uid_to_sound(payload);
+
+    if (!sound)
+    {
+        return;
+    }
+
+    octaspire_helpers_verify_true(octaspire_container_hash_map_remove(
+        dern_sdl2_private_sounds,
+        hash,
+        &key));
 }
 
 octaspire_dern_value_t *dern_sdl2_Init(
@@ -581,6 +940,17 @@ octaspire_dern_value_t *dern_sdl2_Init(
     }
 #endif
 
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-init' failed. Mix_Init failed. Error message is '%s'.",
+            Mix_GetError());
+    }
+#endif
+
     dern_sdl2_private_textures = octaspire_container_hash_map_new_with_size_t_keys(
         sizeof(octaspire_sdl2_texture_t*),
         true,
@@ -594,6 +964,48 @@ octaspire_dern_value_t *dern_sdl2_Init(
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
             "Builtin 'sdl2-init' failed. Cannot allocate texture map.");
+    }
+
+    dern_sdl2_private_fonts = octaspire_container_hash_map_new_with_size_t_keys(
+        sizeof(TTF_Font*),
+        true,
+        (octaspire_container_hash_map_element_callback_function_t)0,
+        octaspire_dern_vm_get_allocator(vm));
+
+    if (!dern_sdl2_private_fonts)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-init' failed. Cannot allocate font map.");
+    }
+
+    dern_sdl2_private_music = octaspire_container_hash_map_new_with_size_t_keys(
+        sizeof(Mix_Music*),
+        true,
+        (octaspire_container_hash_map_element_callback_function_t)Mix_FreeMusic,
+        octaspire_dern_vm_get_allocator(vm));
+
+    if (!dern_sdl2_private_music)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-init' failed. Cannot allocate music map.");
+    }
+
+    dern_sdl2_private_sounds = octaspire_container_hash_map_new_with_size_t_keys(
+        sizeof(Mix_Chunk*),
+        true,
+        (octaspire_container_hash_map_element_callback_function_t)Mix_FreeChunk,
+        octaspire_dern_vm_get_allocator(vm));
+
+    if (!dern_sdl2_private_sounds)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-init' failed. Cannot allocate sound map.");
     }
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
@@ -653,6 +1065,83 @@ octaspire_dern_value_t *dern_sdl2_Delay(
     return octaspire_dern_vm_create_new_value_boolean(
         vm,
         true);
+}
+
+octaspire_dern_value_t *dern_sdl2_PollEvent(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-PollEvent' expects zero arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    SDL_Event event;
+
+    if (SDL_PollEvent(&event))
+    {
+        octaspire_dern_value_t * result = octaspire_dern_vm_create_new_value_vector(vm);
+        octaspire_helpers_verify_not_null(result);
+
+        octaspire_helpers_verify_true(octaspire_dern_vm_push_value(vm, result));
+
+        octaspire_dern_value_t * typeValue = 0;
+
+        switch (event.type)
+        {
+            case SDL_QUIT:
+            {
+                typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "QUIT");
+                octaspire_helpers_verify_not_null(typeValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+            }
+            break;
+
+            case SDL_KEYDOWN:
+            {
+                typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEYDOWN");
+                octaspire_helpers_verify_not_null(typeValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+
+                octaspire_dern_value_t * keyValue =
+                    octaspire_dern_vm_create_new_value_string_from_c_string(
+                        vm,
+                        dern_sdl2_private_helper_sdl_keycode_to_c_string(event.key.keysym.sym));
+
+                octaspire_helpers_verify_not_null(keyValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &keyValue);
+            }
+            break;
+
+            default:
+            {
+                typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "UNSUPPORTED");
+                octaspire_helpers_verify_not_null(typeValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+            }
+            break;
+        }
+
+        octaspire_helpers_verify_true(octaspire_dern_vm_pop_value(vm, result));
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return result;
+    }
+    else
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_nil(vm);
+    }
 }
 
 octaspire_dern_value_t *dern_sdl2_CreateTexture(
@@ -966,7 +1455,19 @@ octaspire_dern_value_t *dern_sdl2_CreateTextureFromFontAndText(
             octaspire_dern_c_data_get_payload_typename(cDataFont));
     }
 
-    TTF_Font * const font = octaspire_dern_c_data_get_payload(cDataFont);
+    size_t const key = (size_t)octaspire_dern_c_data_get_payload(cDataFont);
+
+    TTF_Font * const font =
+        dern_sdl2_private_helper_uid_to_font((void const * const)key);
+
+    if (!font)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateTextureFromFontAndText' failed: no font with key %zu loaded.",
+            key);
+    }
 
     // Text
 
@@ -1078,6 +1579,148 @@ octaspire_dern_value_t *dern_sdl2_CreateTextureFromFontAndText(
 #endif
 }
 
+octaspire_dern_value_t *dern_sdl2_CreateSound(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateSound' expects two arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_symbol(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateSound' expects symbol as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    bool isPath = false;
+
+    if (octaspire_dern_value_as_symbol_is_equal_to_c_string(firstArg, "PATH"))
+    {
+        isPath = true;
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(firstArg, "BASE64"))
+    {
+        isPath = false;
+    }
+    else
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateSound' expects symbol 'PATH' or 'BASE64' "
+            "as first argument. Symbol '%s' was given.",
+            octaspire_dern_value_as_symbol_get_c_string(firstArg));
+    }
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_string(secondArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateSound' expects string as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY
+    char const * const pathOrBuffer = octaspire_dern_value_as_string_get_c_string(secondArg);
+
+    Mix_Chunk * sound = 0;
+
+    if (isPath)
+    {
+        sound = Mix_LoadWAV(pathOrBuffer);
+    }
+    else
+    {
+        octaspire_container_vector_t * vec = octaspire_helpers_base64_decode(
+            octaspire_dern_value_as_string_get_c_string(secondArg),
+            octaspire_dern_value_as_string_get_length_in_octets(secondArg),
+            octaspire_dern_vm_get_allocator(vm));
+
+        // TODO XXX check and report error.
+        octaspire_helpers_verify_not_null(vec);
+
+        SDL_RWops * const rw = SDL_RWFromMem(
+            octaspire_container_vector_get_element_at(vec, 0),
+            octaspire_container_vector_get_length(vec));
+        sound = Mix_LoadWAV_RW(rw, 1);
+
+        octaspire_container_vector_release(vec);
+        vec = 0;
+    }
+
+    if (!sound)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-CreateSound' failed: %s.",
+            Mix_GetError());
+    }
+
+    ++dern_sdl2_private_next_free_sound_uid;
+
+    if (!octaspire_container_hash_map_put(
+            dern_sdl2_private_sounds,
+            octaspire_container_hash_map_helper_size_t_get_hash(
+                dern_sdl2_private_next_free_sound_uid),
+            &dern_sdl2_private_next_free_sound_uid,
+            &sound))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-CreateSound' failed: internal sound save failed.");
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_SDL2_PLUGIN_NAME,
+        "sound",
+        "dern_sdl2_sound_clean_up_callback",
+        "",
+        "",
+        "",
+        false,
+        (void*)dern_sdl2_private_next_free_sound_uid);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Your SDL2 plugin is currently compiled without SDL2 mixer support. "
+        "Compile it with SDL2 mixer support to be able to use the mixer from Dern.");
+#endif
+}
+
 octaspire_dern_value_t *dern_sdl2_CreateMusic(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1136,9 +1779,9 @@ octaspire_dern_value_t *dern_sdl2_CreateMusic(
     octaspire_dern_value_t const * const secondArg =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
 
-    octaspire_helpers_verify_not_null(firstArg);
+    octaspire_helpers_verify_not_null(secondArg);
 
-    if (!octaspire_dern_value_is_string(firstArg))
+    if (!octaspire_dern_value_is_string(secondArg))
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
@@ -1185,6 +1828,21 @@ octaspire_dern_value_t *dern_sdl2_CreateMusic(
             Mix_GetError());
     }
 
+    ++dern_sdl2_private_next_free_music_uid;
+
+    if (!octaspire_container_hash_map_put(
+            dern_sdl2_private_music,
+            octaspire_container_hash_map_helper_size_t_get_hash(
+                dern_sdl2_private_next_free_music_uid),
+            &dern_sdl2_private_next_free_music_uid,
+            &music))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-CreateMusic' failed: internal music save failed.");
+    }
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_c_data(
         vm,
@@ -1195,7 +1853,7 @@ octaspire_dern_value_t *dern_sdl2_CreateMusic(
         "",
         "",
         false,
-        music);
+        (void*)dern_sdl2_private_next_free_music_uid);
 #else
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_from_c_string(
@@ -1203,6 +1861,246 @@ octaspire_dern_value_t *dern_sdl2_CreateMusic(
         "Your SDL2 plugin is currently compiled without SDL2 mixer support. "
         "Compile it with SDL2 mixer support to be able to use the mixer from Dern.");
 #endif
+}
+
+octaspire_dern_value_t *dern_sdl2_PlayMusic(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs < 1 || numArgs > 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-PlayMusic' expects one or two arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-PlayMusic' expects music as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cDataRenderer = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cDataRenderer,
+            DERN_SDL2_PLUGIN_NAME,
+            "music"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-PlayMusic' expects 'dern_sdl2' and 'music' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cDataRenderer),
+            octaspire_dern_c_data_get_payload_typename(cDataRenderer));
+    }
+
+    octaspire_dern_c_data_t * const cDataMusic = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cDataMusic,
+            DERN_SDL2_PLUGIN_NAME,
+            "music"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-PlayMusic' expects 'dern_sdl2' and 'music' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cDataMusic),
+            octaspire_dern_c_data_get_payload_typename(cDataMusic));
+    }
+
+    size_t const key = (size_t)octaspire_dern_c_data_get_payload(cDataMusic);
+
+    Mix_Music * const music =
+        dern_sdl2_private_helper_uid_to_music((void const * const)key);
+
+    if (!music)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-PlayMusic' failed: no music with key %zu loaded.",
+            key);
+    }
+
+    int loops = -1;
+
+    if (numArgs == 2)
+    {
+        octaspire_dern_value_t const * const secondArg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+        octaspire_helpers_verify_not_null(secondArg);
+
+        if (!octaspire_dern_value_is_integer(secondArg))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-PlayMusic' expects integer for loop count as second argument. "
+                "Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+        }
+
+        loops = octaspire_dern_value_as_integer_get_value(secondArg);
+    }
+
+    if (Mix_PlayMusic(music, loops) == -1)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-PlayMusic' failed: %s.",
+            Mix_GetError());
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_PlaySound(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs < 2 || numArgs > 3)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-PlaySound' expects two or three arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-PlaySound' expects sound as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cDataSound = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cDataSound,
+            DERN_SDL2_PLUGIN_NAME,
+            "sound"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-PlaySound' expects 'dern_sdl2' and 'sound' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cDataSound),
+            octaspire_dern_c_data_get_payload_typename(cDataSound));
+    }
+
+    size_t const key = (size_t)octaspire_dern_c_data_get_payload(cDataSound);
+
+    Mix_Chunk * const sound =
+        dern_sdl2_private_helper_uid_to_sound((void const * const)key);
+
+    if (!sound)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-PlaySound' failed: no sound with key %zu loaded.",
+            key);
+    }
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_integer(secondArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-PlaySound' expects integer for channel as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    int const channel = octaspire_dern_value_as_integer_get_value(secondArg);
+
+    int loops = 0;
+
+    if (numArgs == 3)
+    {
+        octaspire_dern_value_t const * const thirdArg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+
+        octaspire_helpers_verify_not_null(thirdArg);
+
+        if (!octaspire_dern_value_is_integer(thirdArg))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-PlaySound' expects integer for loop count as third argument. "
+                "Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(thirdArg->typeTag));
+        }
+
+        loops = octaspire_dern_value_as_integer_get_value(thirdArg);
+    }
+
+    if (Mix_PlayChannel(channel, sound, loops) == -1)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-PlaySound' failed: %s.",
+            Mix_GetError());
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
 octaspire_dern_value_t *dern_sdl2_CreateWindow(
@@ -1594,6 +2492,21 @@ octaspire_dern_value_t *dern_sdl2_CreateFont(
             TTF_GetError());
     }
 
+    ++dern_sdl2_private_next_free_font_uid;
+
+    if (!octaspire_container_hash_map_put(
+            dern_sdl2_private_fonts,
+            octaspire_container_hash_map_helper_size_t_get_hash(
+                dern_sdl2_private_next_free_font_uid),
+            &dern_sdl2_private_next_free_font_uid,
+            &font))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-CreateFont' failed: internal font save failed.");
+    }
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_c_data(
         vm,
@@ -1604,7 +2517,7 @@ octaspire_dern_value_t *dern_sdl2_CreateFont(
         "",
         "",
         false,
-        font);
+        (void*)dern_sdl2_private_next_free_font_uid);
 }
 
 octaspire_dern_value_t *dern_sdl2_CreateRenderer(
@@ -3294,6 +4207,10 @@ octaspire_dern_value_t *dern_sdl2_Quit(
     TTF_Quit();
 #endif
 
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY
+    Mix_Quit();
+#endif
+
     SDL_Quit();
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
@@ -3334,6 +4251,18 @@ bool dern_sdl2_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
+            "sdl2-PollEvent",
+            dern_sdl2_PollEvent,
+            4,
+            "(sdl2-PollEvent) -> <nill or array>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
             "sdl2-CreateTexture",
             dern_sdl2_CreateTexture,
             4,
@@ -3362,6 +4291,42 @@ bool dern_sdl2_init(
             dern_sdl2_CreateMusic,
             2,
             "(sdl2-CreateMusic isPath pathOrBuffer) -> <music or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-CreateSound",
+            dern_sdl2_CreateSound,
+            2,
+            "(sdl2-CreateSound isPath pathOrBuffer) -> <sound or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-PlayMusic",
+            dern_sdl2_PlayMusic,
+            2,
+            "(sdl2-PlayMusic music <optional numberOfTimesToPlay or -1>) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-PlaySound",
+            dern_sdl2_PlaySound,
+            3,
+            "(sdl2-PlaySound sound channel <optional numberOfTimesToLoop or -1>) -> <true or error message>",
             true,
             targetEnv))
     {
@@ -3601,3 +4566,20 @@ bool dern_sdl2_init(
     return true;
 }
 
+bool dern_sdl2_clean(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_environment_t * const targetEnv)
+{
+    octaspire_helpers_verify_true(vm && targetEnv);
+
+    octaspire_container_hash_map_release(dern_sdl2_private_textures);
+    dern_sdl2_private_textures = 0;
+
+    octaspire_container_hash_map_release(dern_sdl2_private_fonts);
+    dern_sdl2_private_fonts = 0;
+
+    octaspire_container_hash_map_release(dern_sdl2_private_music);
+    dern_sdl2_private_music = 0;
+
+    return true;
+}
