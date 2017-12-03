@@ -5,11 +5,11 @@
 (define renderer as (sdl2-CreateRenderer window -1 'SOFTWARE) [renderer])
 ;(define texture as (sdl2-CreateTexture renderer 'PATH [examples/octaspireO128.png] true) [texture])
 
-(define music  as (sdl2-CreateMusic 'PATH [resources/music/title_screen.wav]) [title screen music])
-(define sound1 as (sdl2-CreateSound 'PATH [resources/sound/sfx_sounds_pause3_in.wav]) [title screen music])
-(define sound2 as (sdl2-CreateSound 'PATH [resources/sound/sfx_menu_move4.wav]) [menu sound])
-(define sound3 as (sdl2-CreateSound 'PATH [resources/sound/sfx_sounds_button4.wav]) [button sound])
-(define font   as (sdl2-CreateFont  'PATH [resources/font/Lato-Black.ttf] 32) [font])
+(define music  as (sdl2-CreateMusic 'PATH [examples/resources/music/title_screen.wav]) [title screen music])
+(define sound1 as (sdl2-CreateSound 'PATH [examples/resources/sound/sfx_sounds_pause3_in.wav]) [title screen music])
+(define sound2 as (sdl2-CreateSound 'PATH [examples/resources/sound/sfx_menu_move4.wav]) [menu sound])
+(define sound3 as (sdl2-CreateSound 'PATH [examples/resources/sound/sfx_sounds_button4.wav]) [button sound])
+(define font   as (sdl2-CreateFont  'PATH [examples/resources/font/Lato-Black.ttf] 32) [font])
 
 (define textureFromFontAndText as
   (sdl2-CreateTextureFromFontAndText renderer font [Press '1', '2' or '3' to play sound effects] [white] false)

@@ -113,19 +113,26 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_ncurses.so der
 printf "$YELLOW\n"
 cat << EnDoFmEsSaGe
 8. Building the 'dern_sdl2' (binary) plugin.  PLEASE NOTE: This plugin
-   requires development version of 'SDL2' library (i.e. headers) to be
+   requires development version of few 'SDL2' libraries (i.e. headers) to be
    installed on the system; otherwise compilation will fail. Failure will
    not affect other steps, so if this step fails and you don't want to use
    binary plugin 'dern_sdl2', you don't have to do anything. Otherwise,
-   to install development version of library 'SDL2':
+   to install development versions of the required 'SDL2' libraries:
 
-       - Debian, Ubuntu, Raspberry Pi: sudo apt-get install libsdl2-dev
+       - Debian, Ubuntu, Raspberry Pi:
+         sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
        - More systems added later...
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
 echoToDefs
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -c plugins/dern_sdl2.c `sdl2-config --cflags`
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I . -o libdern_sdl2.so dern_sdl2.o `sdl2-config --libs`
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -shared        \
+    -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION                \
+    -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY         \
+    -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY         \
+    -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY           \
+    `sdl2-config --cflags`                                     \
+    -I . -o libdern_sdl2.so plugins/dern_sdl2.c                \
+    `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
 
 

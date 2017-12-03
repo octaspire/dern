@@ -173,6 +173,8 @@ RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     echo "Copying files for binary 'dern_sdl2' plugin example..."
     cp "$PROJECT_PATH/doc/examples/plugins/dern_sdl2/dern-sdl2-example.dern" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    cp -R "$PROJECT_PATH/doc/examples/plugins/dern_sdl2/resources" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "Copying embedding example..."
     cp "$PROJECT_PATH/doc/examples/embedding-example.c" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/examples/"
