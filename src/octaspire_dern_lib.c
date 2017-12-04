@@ -308,7 +308,10 @@ void octaspire_dern_lib_release(octaspire_dern_lib_t *self)
             bool (*libCleanFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const);
 
             octaspire_container_utf8_string_t *libCleanFuncName =
-                octaspire_container_utf8_string_new_format(self->allocator, "%s_clean", name);
+                octaspire_container_utf8_string_new_format(
+                    self->allocator,
+                    "%s_clean",
+                    octaspire_container_utf8_string_get_c_string(self->name));
 
             octaspire_helpers_verify_not_null(libCleanFuncName);
 
@@ -325,26 +328,24 @@ void octaspire_dern_lib_release(octaspire_dern_lib_t *self)
                 self->errorMessage =
                     octaspire_container_utf8_string_new_format(
                         self->allocator,
-                        "Binary library (name='%s' fileName='%s'):\n"
+                        "Binary library (name='%s'):\n"
                         "GetProcAddress failed on the clean function for the library.",
-                        name,
-                        fileName);
+                        octaspire_container_utf8_string_get_c_string(self->name));
 
                 octaspire_helpers_verify_not_null(self->errorMessage);
             }
             else
             {
                 if (!(*libCleanFunc)(
-                        vm,
-                        octaspire_dern_vm_get_global_environment(vm)->value.environment))
+                        self->vm,
+                        octaspire_dern_vm_get_global_environment(self->vm)->value.environment))
                 {
                     self->errorMessage =
                         octaspire_container_utf8_string_new_format(
                             self->allocator,
-                            "Binary library (name='%s' fileName='%s'):\n"
+                            "Binary library (name='%s'):\n"
                             "clean function failed.",
-                            name,
-                            fileName);
+                            octaspire_container_utf8_string_get_c_string(self->name));
 
                     octaspire_helpers_verify_not_null(self->errorMessage);
                 }
