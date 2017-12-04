@@ -134,16 +134,38 @@ cat << EnDoFmEsSaGe
    'dern_sdl2', you don't have to do anything. Otherwise, download and
    use 'SDL2' library for windows by giving the following commands:
 
-        a) curl -O https://www.libsdl.org/release/SDL2-devel-2.0.7-mingw.tar.gz
-        b) tar xzf SDL2-devel-2.0.7-mingw.tar.gz
-        c) cp SDL2-2.0.7/i686-w64-mingw32/bin/SDL2.dll .
-        d) how-to-build/windows.sh
+        curl -O https://www.libsdl.org/release/SDL2-devel-2.0.7-mingw.tar.gz
+        tar xzf SDL2-devel-2.0.7-mingw.tar.gz
+        cp SDL2-2.0.7/i686-w64-mingw32/bin/SDL2.dll .
+        curl -O https://www.libsdl.org/projects/SDL_image/release/SDL2_image-devel-2.0.2-mingw.tar.gz
+        tar xzf SDL2_image-devel-2.0.2-mingw.tar.gz
+        cp SDL2_image-2.0.2/i686-w64-mingw32/bin/*.dll .
+        curl -O https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-devel-2.0.2-mingw.tar.gz
+        tar xzf SDL2_mixer-devel-2.0.2-mingw.tar.gz
+        cp SDL2_mixer-2.0.2/i686-w64-mingw32/bin/*.dll .
+        curl -O https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-2.0.14-mingw.tar.gz
+        tar xzf SDL2_ttf-devel-2.0.14-mingw.tar.gz
+        cp SDL2_ttf-2.0.14/i686-w64-mingw32/bin/*.dll .
+        how-to-build/windows.sh
 -------------------------------------------------------------------------------
 EnDoFmEsSaGe
 echoToDefs
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I . -I SDL2-2.0.7/i686-w64-mingw32/include/SDL2 -Dmain=SDL_main -c plugins/dern_sdl2.c
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -fPIC -I .           \
+    -I SDL2-2.0.7/i686-w64-mingw32/include/SDL2                \
+    -I SDL2_image-2.0.2/i686-w64-mingw32/include/SDL2          \
+    -I SDL2_mixer-2.0.2/i686-w64-mingw32/include/SDL2          \
+    -I SDL2_ttf-2.0.14/i686-w64-mingw32/include/SDL2           \
+    -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
+    -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION                \
+    -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY         \
+    -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY         \
+    -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY           \
+-Dmain=SDL_main -c plugins/dern_sdl2.c
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra -shared -I .         \
-    -o libdern_sdl2.dll dern_sdl2.o -L . imp.a -L SDL2-2.0.7/i686-w64-mingw32/lib -lSDL2
+    -o libdern_sdl2.dll dern_sdl2.o -L . imp.a                 \
+    -L SDL2-2.0.7/i686-w64-mingw32/lib -L SDL2_image-2.0.2/i686-w64-mingw32/lib \
+    -L SDL2_mixer-2.0.2/i686-w64-mingw32/lib -L SDL2_ttf-2.0.14/i686-w64-mingw32/lib \
+    -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
 
 
