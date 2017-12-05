@@ -482,7 +482,7 @@ moreInput:
 
                 if (!evaluatedValue)
                 {
-                    octaspire_dern_vm_pop_value(vm, evaluatedValue); // evaluatedValue
+                    octaspire_dern_vm_pop_value(vm, value);
                     octaspire_input_rewind(input);
                     octaspire_dern_repl_print_message_c_str("+ ", OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
                     goto moreInput;

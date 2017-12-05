@@ -258,6 +258,54 @@ static char const *dern_sdl2_private_helper_sdl_keycode_to_c_string(
     }
 }
 
+static char const *dern_sdl2_private_helper_sdl_pixelformat_to_c_string(
+    Uint32 const format)
+{
+    switch (format)
+    {
+        case SDL_PIXELFORMAT_UNKNOWN:        return "UNKNOWN";
+        case SDL_PIXELFORMAT_INDEX1LSB:      return "INDEX1LSB";
+        case SDL_PIXELFORMAT_INDEX1MSB:      return "INDEX1MSB";
+        case SDL_PIXELFORMAT_INDEX4LSB:      return "INDEX4LSB";
+        case SDL_PIXELFORMAT_INDEX4MSB:      return "INDEX4MSB";
+        case SDL_PIXELFORMAT_INDEX8:         return "INDEX8";
+        case SDL_PIXELFORMAT_RGB332:         return "RGB332";
+        case SDL_PIXELFORMAT_RGB444:         return "RGB444";
+        case SDL_PIXELFORMAT_RGB555:         return "RGB555";
+        case SDL_PIXELFORMAT_BGR555:         return "BGR555";
+        case SDL_PIXELFORMAT_ARGB4444:       return "ARGB4444";
+        case SDL_PIXELFORMAT_RGBA4444:       return "RGBA4444";
+        case SDL_PIXELFORMAT_ABGR4444:       return "ABGR4444";
+        case SDL_PIXELFORMAT_BGRA4444:       return "BGRA4444";
+        case SDL_PIXELFORMAT_ARGB1555:       return "ARGB1555";
+        case SDL_PIXELFORMAT_RGBA5551:       return "RGBA5551";
+        case SDL_PIXELFORMAT_ABGR1555:       return "ABGR1555";
+        case SDL_PIXELFORMAT_BGRA5551:       return "BGRA5551";
+        case SDL_PIXELFORMAT_RGB565:         return "RGB565";
+        case SDL_PIXELFORMAT_BGR565:         return "BGR565";
+        case SDL_PIXELFORMAT_RGB24:          return "RGB24";
+        case SDL_PIXELFORMAT_BGR24:          return "BGR24";
+        case SDL_PIXELFORMAT_RGB888:         return "RGB888";
+        case SDL_PIXELFORMAT_RGBX8888:       return "RGBX8888";
+        case SDL_PIXELFORMAT_BGR888:         return "BGR888";
+        case SDL_PIXELFORMAT_BGRX8888:       return "BGRX8888";
+        case SDL_PIXELFORMAT_ARGB2101010:    return "ARGB2101010";
+        case SDL_PIXELFORMAT_RGBA32:         return "RGBA32";
+        case SDL_PIXELFORMAT_ARGB32:         return "ARGB32";
+        case SDL_PIXELFORMAT_BGRA32:         return "BGRA32";
+        case SDL_PIXELFORMAT_ABGR32:         return "ABGR32";
+        case SDL_PIXELFORMAT_YV12:           return "YV12";
+        case SDL_PIXELFORMAT_IYUV:           return "IYUV";
+        case SDL_PIXELFORMAT_YUY2:           return "YUY2";
+        case SDL_PIXELFORMAT_UYVY:           return "UYVY";
+        case SDL_PIXELFORMAT_YVYU:           return "YVYU";
+        case SDL_PIXELFORMAT_NV12:           return "NV12";
+        case SDL_PIXELFORMAT_NV21:           return "NV21";
+
+        default: return "unsupported";
+    }
+}
+
 typedef struct octaspire_sdl2_texture_t octaspire_sdl2_texture_t;
 
 static octaspire_container_hash_map_t * dern_sdl2_private_textures              = 0;
@@ -1159,7 +1207,7 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Builtin 'sdl2-CreateTexture' expects four argument. "
+            "Builtin 'sdl2-CreateTexture' expects four arguments. "
             "%zu arguments were given.",
             numArgs);
     }
@@ -1335,6 +1383,124 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
         "",
         false,
         (void*)dern_sdl2_private_next_free_texture_uid);
+}
+
+octaspire_dern_value_t *dern_sdl2_QueryTexture(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-QueryTexture' expects one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-QueryTexture' expects texture as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cData = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_SDL2_PLUGIN_NAME,
+            "texture"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-QueryTexture' expects 'dern_sdl2' and 'texture' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+    }
+
+    size_t const key = (size_t)octaspire_dern_c_data_get_payload(cData);
+
+    octaspire_sdl2_texture_t const * const texture =
+        dern_sdl2_private_helper_uid_to_texture((void const * const)key);
+
+    if (!texture)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-QueryTexture' failed: no texture with key %zu loaded.",
+            key);
+    }
+
+    octaspire_helpers_verify_not_null(texture);
+    octaspire_helpers_verify_not_null(texture->texture);
+
+    Uint32 format = 0;
+    int w = 0;
+    int h = 0;
+
+    if (SDL_QueryTexture(texture->texture, &format, 0, &w, &h) < 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-QueryTexture' failed: %s",
+            SDL_GetError());
+    }
+
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_create_new_value_vector(vm);
+
+    octaspire_helpers_verify_not_null(result);
+
+    octaspire_helpers_verify_true(octaspire_dern_vm_push_value(vm, result));
+
+    octaspire_dern_value_t const * element =
+        octaspire_dern_vm_create_new_value_symbol_from_c_string(
+            vm,
+            dern_sdl2_private_helper_sdl_pixelformat_to_c_string(format));
+
+    octaspire_helpers_verify_not_null(element);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_value_as_vector_push_back_element(result, &element));
+
+    element = octaspire_dern_vm_create_new_value_integer(vm, w);
+
+    octaspire_helpers_verify_not_null(element);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_value_as_vector_push_back_element(result, &element));
+
+    element = octaspire_dern_vm_create_new_value_integer(vm, h);
+
+    octaspire_helpers_verify_not_null(element);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_value_as_vector_push_back_element(result, &element));
+
+    octaspire_helpers_verify_true(octaspire_dern_vm_pop_value(vm, result));
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
 }
 
 static SDL_Color octaspire_dern_sdl2_helpers_c_string_to_sdl_color(
@@ -3397,6 +3563,7 @@ octaspire_dern_value_t *dern_sdl2_RenderCopy(
                     "Builtin 'sdl2-RenderCopy' expects integer as "
                     "%zu. element in the vector given as the fourth argument. "
                     "Type  '%s' was given.",
+                    i,
                     octaspire_dern_value_helper_get_type_as_c_string(numVal->typeTag));
             }
 
@@ -4267,6 +4434,18 @@ bool dern_sdl2_init(
             dern_sdl2_CreateTexture,
             4,
             "(sdl2-CreateTexture renderer isPath pathOrBuffer isBlend) -> <texture or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-QueryTexture",
+            dern_sdl2_QueryTexture,
+            1,
+            "(sdl2-QueryTexture texture) -> <(format, w, h) or error message>",
             true,
             targetEnv))
     {

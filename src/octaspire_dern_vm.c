@@ -2871,10 +2871,20 @@ octaspire_dern_value_t *octaspire_dern_vm_private_parse_token(
         }
         break;
 
-        // TODO XXX add rest of types
-        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN:
+        default:
         {
-            abort();
+            octaspire_container_utf8_string_t *str =
+                octaspire_dern_lexer_token_to_string(token);
+
+            octaspire_helpers_verify_not_null(str);
+
+            result = octaspire_dern_vm_create_new_value_error_format(
+                self,
+                "unexpected %s",
+                octaspire_container_utf8_string_get_c_string(str));
+
+            octaspire_container_utf8_string_release(str);
+            str = 0;
         }
     }
 
@@ -2992,7 +3002,10 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
 
             if (octaspire_container_vector_is_empty(vec))
             {
-                result = octaspire_dern_vm_create_new_value_error(
+                octaspire_dern_vm_pop_value(self, environment);
+                octaspire_dern_vm_pop_value(self, value);
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
+                return octaspire_dern_vm_create_new_value_error(
                     self,
                     octaspire_container_utf8_string_new(
                         "Cannot evaluate empty vector '()'",

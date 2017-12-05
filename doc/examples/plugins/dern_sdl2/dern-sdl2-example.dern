@@ -24,8 +24,8 @@
 (sdl2-RenderClear renderer)
 (sdl2-RenderCopy renderer textureFromBase64 nil '(100 100 32 32))
 
-;; TODO XXX add accessors for the size of the texture
-(sdl2-RenderCopy renderer textureFromFontAndText nil '(200 200 280 24))
+(define tprop as (sdl2-QueryTexture textureFromFontAndText) [properties of texture])
+(sdl2-RenderCopy renderer textureFromFontAndText nil (vector 10 200 (ln@ tprop 1) (ln@ tprop 2)))
 
 (sdl2-PlayMusic music)
 
