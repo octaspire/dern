@@ -3389,15 +3389,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_input_file_open(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    if (!octaspire_dern_vm_is_file_system_access_allowed(vm))
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
-            vm,
-            "Builtin 'input-file-open' cannot be executed; file system access is denied by VM. "
-            "Enable file system access in VM before trying to run this code.");
-    }
-
     octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
     octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
@@ -3440,15 +3431,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_output_file_open(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    if (!octaspire_dern_vm_is_file_system_access_allowed(vm))
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
-            vm,
-            "Builtin 'output-file-open' cannot be executed; file system access is denied by VM. "
-            "Enable file system access in VM before trying to run this code.");
-    }
-
     octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
     octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
@@ -3490,15 +3472,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_io_file_open(
     octaspire_dern_value_t *environment)
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
-
-    if (!octaspire_dern_vm_is_file_system_access_allowed(vm))
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
-            vm,
-            "Builtin 'io-file-open' cannot be executed; file system access is denied by VM. "
-            "Enable file system access in VM before trying to run this code.");
-    }
 
     octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
     octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);

@@ -161,7 +161,6 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
     printf("-c        --color-diagnostics        : use colors on unix like systems\n");
     printf("-i        --interactive              : start REPL after any -e string or [file]s are evaluated\n");
     printf("-e string --evaluate string          : evaluate a string without entering the REPL (see -i)\n");
-    printf("-f        --allow-file-system-access : Allow code to access file system (read and write files)\n");
     printf("-v        --version                  : print version information and exit\n");
     printf("-h        --help                     : print this help message and exit\n");
     printf("-g        --debug                    : print every form to stderr before it is evaluated\n");
@@ -293,10 +292,6 @@ int main(int argc, char *argv[])
             else if (strcmp(argv[i], "-e") == 0 || strcmp(argv[i], "--evaluate") == 0)
             {
                 evaluate = true;
-            }
-            else if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--allow-file-system-access") == 0)
-            {
-                vmConfig.fileSystemAccessAllowed = true;
             }
             else if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--version") == 0)
             {

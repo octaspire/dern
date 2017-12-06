@@ -39,7 +39,6 @@ typedef octaspire_input_t*
 typedef struct octaspire_dern_vm_config_t
 {
     octaspire_dern_vm_custom_require_source_file_loader_t preLoaderForRequireSrc;
-    bool fileSystemAccessAllowed;
     bool debugModeOn;
 }
 octaspire_dern_vm_config_t;
@@ -288,8 +287,6 @@ void octaspire_dern_vm_set_prevent_gc(octaspire_dern_vm_t * const self, bool con
 void octaspire_dern_vm_set_gc_trigger_limit(
     octaspire_dern_vm_t * const self,
     size_t const numAllocs);
-
-bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self);
 
 octaspire_dern_vm_custom_require_source_file_loader_t
 octaspire_dern_vm_get_custom_require_source_file_pre_loader(

@@ -83,7 +83,6 @@ octaspire_dern_vm_config_t octaspire_dern_vm_config_default(void)
     octaspire_dern_vm_config_t result =
     {
         .preLoaderForRequireSrc  = 0,
-        .fileSystemAccessAllowed = false,
         .debugModeOn             = false
     };
 
@@ -4222,11 +4221,6 @@ void octaspire_dern_vm_set_prevent_gc(octaspire_dern_vm_t * const self, bool con
 void octaspire_dern_vm_set_gc_trigger_limit(octaspire_dern_vm_t * const self, size_t const numAllocs)
 {
     self->gcTriggerLimit = numAllocs;
-}
-
-bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self)
-{
-    return self->config.fileSystemAccessAllowed;
 }
 
 octaspire_dern_vm_custom_require_source_file_loader_t

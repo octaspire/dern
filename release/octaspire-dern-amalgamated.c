@@ -22051,10 +22051,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "281"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "282"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.281.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.282.0"
 
 
 
@@ -23245,7 +23245,6 @@ typedef octaspire_input_t*
 typedef struct octaspire_dern_vm_config_t
 {
     octaspire_dern_vm_custom_require_source_file_loader_t preLoaderForRequireSrc;
-    bool fileSystemAccessAllowed;
     bool debugModeOn;
 }
 octaspire_dern_vm_config_t;
@@ -23494,8 +23493,6 @@ void octaspire_dern_vm_set_prevent_gc(octaspire_dern_vm_t * const self, bool con
 void octaspire_dern_vm_set_gc_trigger_limit(
     octaspire_dern_vm_t * const self,
     size_t const numAllocs);
-
-bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self);
 
 octaspire_dern_vm_custom_require_source_file_loader_t
 octaspire_dern_vm_get_custom_require_source_file_pre_loader(
@@ -31678,15 +31675,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_input_file_open(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    if (!octaspire_dern_vm_is_file_system_access_allowed(vm))
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
-            vm,
-            "Builtin 'input-file-open' cannot be executed; file system access is denied by VM. "
-            "Enable file system access in VM before trying to run this code.");
-    }
-
     octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
     octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
@@ -31729,15 +31717,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_output_file_open(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    if (!octaspire_dern_vm_is_file_system_access_allowed(vm))
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
-            vm,
-            "Builtin 'output-file-open' cannot be executed; file system access is denied by VM. "
-            "Enable file system access in VM before trying to run this code.");
-    }
-
     octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
     octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
@@ -31779,15 +31758,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_io_file_open(
     octaspire_dern_value_t *environment)
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
-
-    if (!octaspire_dern_vm_is_file_system_access_allowed(vm))
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
-            vm,
-            "Builtin 'io-file-open' cannot be executed; file system access is denied by VM. "
-            "Enable file system access in VM before trying to run this code.");
-    }
 
     octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
     octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
@@ -41584,7 +41554,6 @@ octaspire_dern_vm_config_t octaspire_dern_vm_config_default(void)
     octaspire_dern_vm_config_t result =
     {
         .preLoaderForRequireSrc  = 0,
-        .fileSystemAccessAllowed = false,
         .debugModeOn             = false
     };
 
@@ -45725,11 +45694,6 @@ void octaspire_dern_vm_set_gc_trigger_limit(octaspire_dern_vm_t * const self, si
     self->gcTriggerLimit = numAllocs;
 }
 
-bool octaspire_dern_vm_is_file_system_access_allowed(octaspire_dern_vm_t const * const self)
-{
-    return self->config.fileSystemAccessAllowed;
-}
-
 octaspire_dern_vm_custom_require_source_file_loader_t
 octaspire_dern_vm_get_custom_require_source_file_pre_loader(
         octaspire_dern_vm_t * const self)
@@ -46720,7 +46684,6 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
     printf("-c        --color-diagnostics        : use colors on unix like systems\n");
     printf("-i        --interactive              : start REPL after any -e string or [file]s are evaluated\n");
     printf("-e string --evaluate string          : evaluate a string without entering the REPL (see -i)\n");
-    printf("-f        --allow-file-system-access : Allow code to access file system (read and write files)\n");
     printf("-v        --version                  : print version information and exit\n");
     printf("-h        --help                     : print this help message and exit\n");
     printf("-g        --debug                    : print every form to stderr before it is evaluated\n");
@@ -46852,10 +46815,6 @@ int main(int argc, char *argv[])
             else if (strcmp(argv[i], "-e") == 0 || strcmp(argv[i], "--evaluate") == 0)
             {
                 evaluate = true;
-            }
-            else if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--allow-file-system-access") == 0)
-            {
-                vmConfig.fileSystemAccessAllowed = true;
             }
             else if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--version") == 0)
             {
@@ -61607,32 +61566,9 @@ TEST octaspire_dern_vm_multiline_comment_missing_chars_test(void)
     PASS();
 }
 
-TEST octaspire_dern_vm_io_file_open_failure_because_file_system_access_is_denied_test(void)
-{
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
-
-    octaspire_dern_value_t *evaluatedValue =
-        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
-            vm,
-            "(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])");
-
-    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
-    ASSERT_STR_EQ(
-        "Builtin 'io-file-open' cannot be executed; file system access is denied by VM. "
-        "Enable file system access in VM before trying to run this code.\n"
-        "\tAt form: >>>>>>>>>>(io-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
-
-    octaspire_dern_vm_release(vm);
-    vm = 0;
-
-    PASS();
-}
-
-TEST octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowed_test(void)
+TEST octaspire_dern_vm_io_file_open_success_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -61670,32 +61606,9 @@ TEST octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowe
     PASS();
 }
 
-TEST octaspire_dern_vm_input_file_open_failure_because_file_system_access_is_denied_test(void)
-{
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
-
-    octaspire_dern_value_t *evaluatedValue =
-        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
-            vm,
-            "(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])");
-
-    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
-    ASSERT_STR_EQ(
-        "Builtin 'input-file-open' cannot be executed; file system access is denied by VM. "
-        "Enable file system access in VM before trying to run this code.\n"
-        "\tAt form: >>>>>>>>>>(input-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
-
-    octaspire_dern_vm_release(vm);
-    vm = 0;
-
-    PASS();
-}
-
-TEST octaspire_dern_vm_input_file_open_success_because_file_system_access_is_allowed_test(void)
+TEST octaspire_dern_vm_input_file_open_success_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -61733,32 +61646,9 @@ TEST octaspire_dern_vm_input_file_open_success_because_file_system_access_is_all
     PASS();
 }
 
-TEST octaspire_dern_vm_output_file_open_failure_because_file_system_access_is_denied_test(void)
-{
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
-
-    octaspire_dern_value_t *evaluatedValue =
-        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
-            vm,
-            "(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])");
-
-    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
-    ASSERT_STR_EQ(
-        "Builtin 'output-file-open' cannot be executed; file system access is denied by VM. "
-        "Enable file system access in VM before trying to run this code.\n"
-        "\tAt form: >>>>>>>>>>(output-file-open [" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt])<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
-
-    octaspire_dern_vm_release(vm);
-    vm = 0;
-
-    PASS();
-}
-
-TEST octaspire_dern_vm_output_file_open_success_because_file_system_access_is_allowed_test(void)
+TEST octaspire_dern_vm_output_file_open_success_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -61779,7 +61669,6 @@ TEST octaspire_dern_vm_output_file_open_success_because_file_system_access_is_al
 TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_output_file_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -61808,7 +61697,6 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_output_file
 TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_input_file_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -61837,7 +61725,6 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_input_file_
 TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_io_file_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -61866,7 +61753,6 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_io_file_tes
 TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_integer_failure_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -61899,7 +61785,6 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_integer_fai
 TEST octaspire_dern_vm_port_supports_input_question_mark_called_without_arguments_failure_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -61924,7 +61809,6 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_without_argument
 TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_input_file_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -61953,7 +61837,6 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_input_file
 TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_output_file_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -61982,7 +61865,6 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_output_fil
 TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_io_file_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -62011,7 +61893,6 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_io_file_te
 TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_integer_failure_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -62044,7 +61925,6 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_integer_fa
 TEST octaspire_dern_vm_port_supports_output_question_mark_called_without_arguments_failure_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -62069,7 +61949,6 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_without_argumen
 TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -62155,7 +62034,6 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
 TEST octaspire_dern_vm_port_dist_called_with_a_file_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -62232,7 +62110,6 @@ TEST octaspire_dern_vm_port_dist_called_with_a_file_test(void)
 TEST octaspire_dern_vm_port_seek_called_with_a_file_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -62336,7 +62213,6 @@ TEST octaspire_dern_vm_port_seek_called_with_a_file_test(void)
 TEST octaspire_dern_vm_input_file_open_with_file_system_access_allowed_failure_on_missing_file_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -62368,7 +62244,6 @@ TEST octaspire_dern_vm_input_file_open_with_file_system_access_allowed_failure_o
 TEST octaspire_dern_vm_port_write_failure_on_input_file_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -62442,7 +62317,6 @@ TEST octaspire_dern_vm_port_write_failure_on_input_file_test(void)
 TEST octaspire_dern_vm_port_length_test(void)
 {
     octaspire_dern_vm_config_t config = octaspire_dern_vm_config_default();
-    config.fileSystemAccessAllowed = true;
 
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new_with_config(octaspireDernVmTestAllocator, octaspireDernVmTestStdio, config);
 
@@ -66243,12 +66117,9 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_multiline_comment_test);
     RUN_TEST(octaspire_dern_vm_multiline_comment_missing_chars_test);
 
-    RUN_TEST(octaspire_dern_vm_io_file_open_failure_because_file_system_access_is_denied_test);
-    RUN_TEST(octaspire_dern_vm_io_file_open_success_because_file_system_access_is_allowed_test);
-    RUN_TEST(octaspire_dern_vm_input_file_open_failure_because_file_system_access_is_denied_test);
-    RUN_TEST(octaspire_dern_vm_input_file_open_success_because_file_system_access_is_allowed_test);
-    RUN_TEST(octaspire_dern_vm_output_file_open_failure_because_file_system_access_is_denied_test);
-    RUN_TEST(octaspire_dern_vm_output_file_open_success_because_file_system_access_is_allowed_test);
+    RUN_TEST(octaspire_dern_vm_io_file_open_success_test);
+    RUN_TEST(octaspire_dern_vm_input_file_open_success_test);
+    RUN_TEST(octaspire_dern_vm_output_file_open_success_test);
 
     RUN_TEST(octaspire_dern_vm_port_supports_input_question_mark_called_with_output_file_test);
     RUN_TEST(octaspire_dern_vm_port_supports_input_question_mark_called_with_input_file_test);
