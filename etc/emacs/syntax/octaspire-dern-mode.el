@@ -1,6 +1,11 @@
 ; Based on tutorial on emacswiki.org/emacs/ModeTutorial
+(require 'highlight)
 
-(defvar octaspire-dern-mode-hook nil)
+(defvar octaspire-dern-mode-hook
+  (lambda ()
+    (hlt-highlight-regexp-region nil nil "|newline|" 'highlight)
+    (hlt-highlight-regexp-region nil nil "|tab|"     'highlight)
+    (hlt-highlight-regexp-region nil nil "|bar|"     'highlight)))
 
 (defvar octaspire-dern-mode-map
   (let ((map (make-keymap)))
@@ -36,16 +41,17 @@
 
 (defvar octaspire-dern-mode-syntax-table
   (let ((st (make-syntax-table)))
-    (modify-syntax-entry ?\; "<"   st)
-    (modify-syntax-entry ?\n ">"   st)
-    (modify-syntax-entry ?'  "'"   st)
-    (modify-syntax-entry ?(  "()"  st)
-    (modify-syntax-entry ?)  ")("  st)
-    (modify-syntax-entry ?[  "|"   st)
-    (modify-syntax-entry ?]  "|"   st)
-    ;(modify-syntax-entry ?\|  "/"   st)
-    ;(modify-syntax-entry ?|  "/"   st)
-    (modify-syntax-entry ?|  "\""   st)
+    (modify-syntax-entry ?\; "<"       st)
+    (modify-syntax-entry ?\n ">"       st)
+    (modify-syntax-entry ?'  "'"       st)
+    (modify-syntax-entry ?(  "()"      st)
+    (modify-syntax-entry ?)  ")("      st)
+    (modify-syntax-entry ?[  "|"       st)
+    (modify-syntax-entry ?]  "|"       st)
+    (modify-syntax-entry ?|  "\""      st)
+    (modify-syntax-entry ?#  ". 14b"   st)
+    (modify-syntax-entry ?!  ". 23b"   st)
+    ;(modify-syntax-entry ?`  "\\"      st)
     st)
   "Syntax table for octaspire-dern-mode")
 
