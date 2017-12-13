@@ -743,6 +743,17 @@ static octaspire_sdl2_texture_t * dern_sdl2_private_helper_uid_to_texture(
     return (octaspire_sdl2_texture_t*)octaspire_container_hash_map_element_get_value(elem);
 }
 
+void dern_sdl2_release_texture_with_uid(void * element)
+{
+    octaspire_sdl2_texture_t * texture = dern_sdl2_private_helper_uid_to_texture(element);
+
+    if (texture)
+    {
+        octaspire_sdl2_texture_release(texture);
+        texture = 0;
+    }
+}
+
 static TTF_Font * dern_sdl2_private_helper_uid_to_font(
     void const * const payload)
 {
@@ -1003,7 +1014,7 @@ octaspire_dern_value_t *dern_sdl2_Init(
         sizeof(octaspire_sdl2_texture_t*),
         true,
         (octaspire_container_hash_map_element_callback_function_t)
-            octaspire_sdl2_texture_release,
+            dern_sdl2_release_texture_with_uid,
         octaspire_dern_vm_get_allocator(vm));
 
     if (!dern_sdl2_private_textures)

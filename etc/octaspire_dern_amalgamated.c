@@ -22052,9 +22052,9 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "282"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "3"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.282.1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.282.3"
 
 
 
@@ -22252,11 +22252,8 @@ extern "C" {
 
 typedef struct octaspire_dern_c_data_t octaspire_dern_c_data_t;
 
-struct octaspire_dern_lib_t;
-
 octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const pluginName,
-    struct octaspire_dern_lib_t * const library,
     char const * const typeNameForPayload,
     void * const payload,
     char const * const cleanUpCallbackName,
@@ -27505,7 +27502,6 @@ limitations under the License.
 struct octaspire_dern_c_data_t
 {
     octaspire_container_utf8_string_t         *pluginName;
-    octaspire_dern_lib_t                      *library;
     octaspire_container_utf8_string_t         *typeNameForPayload;
     void                                      *payload;
     octaspire_container_utf8_string_t         *cleanUpCallbackName;
@@ -27519,7 +27515,6 @@ struct octaspire_dern_c_data_t
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const pluginName,
-    octaspire_dern_lib_t * const library,
     char const * const typeNameForPayload,
     void * const payload,
     char const * const cleanUpCallbackName,
@@ -27537,9 +27532,12 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
         return self;
     }
 
-    self->allocator             = allocator;
-    self->pluginName            = octaspire_container_utf8_string_new(pluginName,         self->allocator);
-    self->library               = library;
+    self->allocator = allocator;
+
+    self->pluginName = octaspire_container_utf8_string_new(
+        pluginName,
+        self->allocator);
+
     self->typeNameForPayload    = octaspire_container_utf8_string_new(typeNameForPayload, self->allocator);
     self->payload               = payload;
     self->cleanUpCallbackName   = octaspire_container_utf8_string_new(cleanUpCallbackName, self->allocator);
@@ -27557,7 +27555,6 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
 {
     return octaspire_dern_c_data_new(
         octaspire_container_utf8_string_get_c_string(other->pluginName),
-        other->library,
         octaspire_container_utf8_string_get_c_string(other->typeNameForPayload),
         other->payload,
         octaspire_container_utf8_string_get_c_string(other->cleanUpCallbackName),
@@ -27574,32 +27571,6 @@ void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
     {
         return;
     }
-
-    octaspire_helpers_verify_not_null(self->cleanUpCallbackName);
-
-#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
-    if (!octaspire_container_utf8_string_is_empty(self->cleanUpCallbackName) &&
-         self->library)
-    {
-#ifdef _WIN32
-        HINSTANCE * const handle = octaspire_dern_lib_get_handle(self->library);
-        void (*func)(void * const payload);
-        func = (void (*)(void * const))GetProcAddress(*handle, octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName));
-        if (func)
-        {
-            func(self->payload);
-        }
-#else
-        void * const handle = octaspire_dern_lib_get_handle(self->library);
-        void (*func)(void * const payload);
-        func = (void (*)(void * const))dlsym(handle, octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName));
-        if (func)
-        {
-            func(self->payload);
-        }
-#endif
-    }
-#endif
 
     octaspire_container_utf8_string_release(self->cleanUpCallbackName);
     self->cleanUpCallbackName = 0;
@@ -43769,11 +43740,8 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     octaspire_dern_value_t * const result =
         octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_C_DATA);
 
-    octaspire_dern_lib_t *lib = octaspire_dern_vm_get_library(self, pluginName);
-
     result->value.cData = octaspire_dern_c_data_new(
         pluginName,
-        lib,
         typeNameForPayload,
         payload,
         cleanUpCallbackName,

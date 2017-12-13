@@ -26,7 +26,6 @@ limitations under the License.
 struct octaspire_dern_c_data_t
 {
     octaspire_container_utf8_string_t         *pluginName;
-    octaspire_dern_lib_t                      *library;
     octaspire_container_utf8_string_t         *typeNameForPayload;
     void                                      *payload;
     octaspire_container_utf8_string_t         *cleanUpCallbackName;
@@ -40,7 +39,6 @@ struct octaspire_dern_c_data_t
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const pluginName,
-    octaspire_dern_lib_t * const library,
     char const * const typeNameForPayload,
     void * const payload,
     char const * const cleanUpCallbackName,
@@ -58,9 +56,12 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
         return self;
     }
 
-    self->allocator             = allocator;
-    self->pluginName            = octaspire_container_utf8_string_new(pluginName,         self->allocator);
-    self->library               = library;
+    self->allocator = allocator;
+
+    self->pluginName = octaspire_container_utf8_string_new(
+        pluginName,
+        self->allocator);
+
     self->typeNameForPayload    = octaspire_container_utf8_string_new(typeNameForPayload, self->allocator);
     self->payload               = payload;
     self->cleanUpCallbackName   = octaspire_container_utf8_string_new(cleanUpCallbackName, self->allocator);
@@ -78,7 +79,6 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
 {
     return octaspire_dern_c_data_new(
         octaspire_container_utf8_string_get_c_string(other->pluginName),
-        other->library,
         octaspire_container_utf8_string_get_c_string(other->typeNameForPayload),
         other->payload,
         octaspire_container_utf8_string_get_c_string(other->cleanUpCallbackName),
@@ -95,32 +95,6 @@ void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
     {
         return;
     }
-
-    octaspire_helpers_verify_not_null(self->cleanUpCallbackName);
-
-#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
-    if (!octaspire_container_utf8_string_is_empty(self->cleanUpCallbackName) &&
-         self->library)
-    {
-#ifdef _WIN32
-        HINSTANCE * const handle = octaspire_dern_lib_get_handle(self->library);
-        void (*func)(void * const payload);
-        func = (void (*)(void * const))GetProcAddress(*handle, octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName));
-        if (func)
-        {
-            func(self->payload);
-        }
-#else
-        void * const handle = octaspire_dern_lib_get_handle(self->library);
-        void (*func)(void * const payload);
-        func = (void (*)(void * const))dlsym(handle, octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName));
-        if (func)
-        {
-            func(self->payload);
-        }
-#endif
-    }
-#endif
 
     octaspire_container_utf8_string_release(self->cleanUpCallbackName);
     self->cleanUpCallbackName = 0;

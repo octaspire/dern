@@ -2298,11 +2298,8 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     octaspire_dern_value_t * const result =
         octaspire_dern_vm_private_create_new_value_struct(self, OCTASPIRE_DERN_VALUE_TAG_C_DATA);
 
-    octaspire_dern_lib_t *lib = octaspire_dern_vm_get_library(self, pluginName);
-
     result->value.cData = octaspire_dern_c_data_new(
         pluginName,
-        lib,
         typeNameForPayload,
         payload,
         cleanUpCallbackName,
