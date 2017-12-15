@@ -3,7 +3,12 @@
 (sdl2-Init 'VIDEO 'AUDIO)
 (define window   as (sdl2-CreateWindow [test] 'CENTERED 'CENTERED 512 512) [window])
 (define renderer as (sdl2-CreateRenderer window -1 'SOFTWARE) [renderer])
-;(define texture as (sdl2-CreateTexture renderer 'PATH [examples/octaspireO128.png] true) [texture])
+
+(define textureFromFileSystem as (sdl2-CreateTexture
+        renderer
+        'PATH
+        [examples/resources/image/octaspireO128.bmp]
+        true) [texture])
 
 (if (sdl2-has-mix) (do
     (define music  as (sdl2-CreateMusic 'PATH [examples/resources/music/title_screen.wav])         [title screen music] in (env-global))
@@ -14,15 +19,17 @@
 (if (sdl2-has-ttf)
     (define font   as (sdl2-CreateFont  'PATH [examples/resources/font/Lato-Black.ttf] 32) [font] in (env-global)))
 
-(if (sdl2-has-img) (do
-    (define textureFromFontAndText as
-            (sdl2-CreateTextureFromFontAndText renderer font [Press '1', '2' or '3' to play sound effects] [white] false)
-            [texture from font and text])
+(if (sdl2-has-img)
     (define textureFromBase64 as
             (sdl2-CreateTexture renderer 'BASE64
             [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]
             true)
-            [texture from base64 encoded data])))
+            [texture from base64 encoded data]))
+
+(if (sdl2-has-ttf)
+    (define textureFromFontAndText as
+            (sdl2-CreateTextureFromFontAndText renderer font [Press '1', '2' or '3' to play sound effects] [white] false)
+            [texture from font and text]))
 
 (sdl2-RenderClear renderer)
 
@@ -35,6 +42,9 @@
 
 (if (sdl2-has-mix)
     (sdl2-PlayMusic music))
+
+(define tprop as (sdl2-QueryTexture textureFromFileSystem) [properties of texture])
+(sdl2-RenderCopy renderer textureFromFileSystem  nil (vector 10 250 (ln@ tprop 1) (ln@ tprop 2)))
 
 (sdl2-SetRenderDrawColor renderer 255 0 0 255)
 (sdl2-SetRenderDrawColor renderer 255 0 0 255)
