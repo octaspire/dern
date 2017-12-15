@@ -1,6 +1,9 @@
 (require 'dern_sdl2)
 
-(sdl2-Init 'VIDEO 'AUDIO)
+(if (sdl2-has-mix)
+    (sdl2-Init 'VIDEO 'AUDIO)
+    (sdl2-Init 'VIDEO))
+
 (define window   as (sdl2-CreateWindow [test] 'CENTERED 'CENTERED 512 512) [window])
 (define renderer as (sdl2-CreateRenderer window -1 'SOFTWARE) [renderer])
 
