@@ -1,26 +1,41 @@
 #!/usr/bin/env sh
 
-YELLOW="$(tput setaf 3 ; tput bold)"
-GREEN="$(tput setaf 2 ; tput bold)"
+BLUE="$(tput setaf 4)"
+YELLOW="$(tput setaf 3)"
+RED="$(tput setaf 1)"
+GREEN="$(tput setaf 2)"
+BOLD="$(tput bold)"
 NOCOLOR="$(tput setaf 9 ; tput sgr0)"
 
 CC=clang
 COVERAGE=""
 
-echoAndRun() { echo "$@" ; "$@" ; }
-echoToDefs() { printf "$NOCOLOR\n" ; }
+EXAMPLE_NAME=""
+EXAMPLE_ERROR_HINT=""
+EXAMPLE_SUCCESS_RUN=""
+
+echoAndRun() {
+    printf "%bBuilding %b$EXAMPLE_NAME...%b" $BLUE $BOLD $NOCOLOR
+    "$@" > /dev/null 2>&1;
+
+    if [ "$?" -ne 0 ] ; then
+        printf "\n%bFAIL. POTENTIAL FIX: %b$EXAMPLE_ERROR_HINT\n"  $RED $BOLD
+    else
+        echo $BLUE
+        echo "$@"
+        printf "%bRUN WITH %b$EXAMPLE_SUCCESS_RUN\n" $GREEN $BOLD
+    fi
+    printf "$NOCOLOR\n"
+}
 
 if [ "$#" -ge "1" ]; then CC=$1; fi
 if [ "$2" = "--coverage" ]; then COVERAGE=$2; fi
 
 
 
-printf "$YELLOW\n"
-cat << EnDoFmEsSaGe
-1. Building stand alone unit test runner to test the release
--------------------------------------------------------------------------------
-EnDoFmEsSaGe
-echoToDefs
+EXAMPLE_NAME="stand alone unit test runner"
+EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_SUCCESS_RUN="./octaspire-dern-unit-test-runner"
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
     -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION      \
     -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
@@ -31,12 +46,9 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
 
 
 
-printf "$YELLOW\n"
-cat << EnDoFmEsSaGe
-2. Building the embedding example
--------------------------------------------------------------------------------
-EnDoFmEsSaGe
-echoToDefs
+EXAMPLE_NAME="embedding example"
+EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_SUCCESS_RUN="./embedding-example"
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
     -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
 -I . examples/embedding-example.c -lm                          \
@@ -44,24 +56,18 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
 
 
 
-printf "$YELLOW\n"
-cat << EnDoFmEsSaGe
-3. Building the binary library example
--------------------------------------------------------------------------------
-EnDoFmEsSaGe
-echoToDefs
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -dynamiclib          \
-    -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION                \
--I . -o libmylib.dylib examples/mylib.c
+EXAMPLE_NAME="binary library example"
+EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_SUCCESS_RUN="DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/use-mylib.dern"
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -dynamiclib  \
+           -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION \
+           -I . -o libmylib.dylib examples/mylib.c
 
 
 
-printf "$YELLOW\n"
-cat << EnDoFmEsSaGe
-4. Building the interactive Dern REPL
--------------------------------------------------------------------------------
-EnDoFmEsSaGe
-echoToDefs
+EXAMPLE_NAME="interactive Dern REPL"
+EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_SUCCESS_RUN="./octaspire-dern-repl -c"
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
     -DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION           \
     -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS                     \
@@ -70,63 +76,36 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra                      \
 
 
 
-printf "$YELLOW\n"
-cat << EnDoFmEsSaGe
-5. Building the 'dern_socket' (binary) plugin.
--------------------------------------------------------------------------------
-EnDoFmEsSaGe
-echoToDefs
+EXAMPLE_NAME="Dern socket plugin"
+EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_SUCCESS_RUN="DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/irc-client.dern"
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra -dynamiclib          \
-    -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION                \
--I . -o libdern_socket.dylib plugins/dern_socket.c
+           -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION         \
+           -I . -o libdern_socket.dylib plugins/dern_socket.c
 
 
 
-printf "$YELLOW\n"
-cat << EnDoFmEsSaGe
-6. Building the 'dern_dir' (binary) plugin.
--------------------------------------------------------------------------------
-EnDoFmEsSaGe
-echoToDefs
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -dynamiclib          \
-    -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION                \
--I . -o libdern_dir.dylib plugins/dern_dir.c
+EXAMPLE_NAME="Dern dir plugin"
+EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_SUCCESS_RUN="DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-dir-example.dern"
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -dynamiclib  \
+           -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION \
+           -I . -o libdern_dir.dylib plugins/dern_dir.c
 
 
 
-printf "$YELLOW\n"
-cat << EnDoFmEsSaGe
-7. Building the 'dern_ncurses' (binary) plugin.  PLEASE NOTE: This plugin
-   requires development version of 'ncurses' library (i.e. headers) to be
-   installed on the system; otherwise compilation will fail. Failure will
-   not affect other steps, so if this step fails and you don't want to use
-   binary plugin 'dern_ncurses', you don't have to do anything. Otherwise,
-   to install development version of library 'ncurses':
-
-       - macOS: should be already installed. Can also be installed, for
-                example, with homebrew: brew install ncurses
--------------------------------------------------------------------------------
-EnDoFmEsSaGe
-echoToDefs
-echoAndRun $CC -O2 -std=c99 -Wall -Wextra -dynamiclib          \
-    -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION                \
--I . -o libdern_ncurses.dylib -lncurses plugins/dern_ncurses.c
+EXAMPLE_NAME="Dern ncurses plugin"
+EXAMPLE_ERROR_HINT="with homebrew: brew install ncurses"
+EXAMPLE_SUCCESS_RUN="DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-ncurses-example.dern"
+echoAndRun $CC -O2 -std=c99 -Wall -Wextra -dynamiclib  \
+           -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION \
+           -I . -o libdern_ncurses.dylib plugins/dern_ncurses.c -lncurses
 
 
 
-printf "$YELLOW\n"
-cat << EnDoFmEsSaGe
-8. Building the 'dern_sdl2' (binary) plugin.  PLEASE NOTE: This plugin
-   requires development versions of few 'SDL2' libraries (i.e. headers) to be
-   installed on the system; otherwise compilation will fail. Failure will
-   not affect other steps, so if this step fails and you don't want to use
-   binary plugin 'dern_sdl2', you don't have to do anything. Otherwise,
-   to install development versions of the required 'SDL2' libraries:
-
-       - macOS: with homebrew: brew install sdl2 sdl2_image sdl2_mixer sdl2_ttf
--------------------------------------------------------------------------------
-EnDoFmEsSaGe
-echoToDefs
+EXAMPLE_NAME="Dern SDL2 plugin"
+EXAMPLE_ERROR_HINT="with homebrew: brew install sdl2 sdl2_image sdl2_mixer sdl2_ttf"
+EXAMPLE_SUCCESS_RUN="DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-sdl2-example.dern"
 echoAndRun $CC -O2 -std=c99 -Wall -Wextra -dynamiclib          \
     -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION                \
     -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY         \
@@ -135,23 +114,3 @@ echoAndRun $CC -O2 -std=c99 -Wall -Wextra -dynamiclib          \
     `sdl2-config --cflags`                                     \
     -I . -o libdern_sdl2.dylib plugins/dern_sdl2.c             \
     `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf
-
-
-
-printf "\nDone.\n$GREEN"
-echo   "=================================================================="
-echo   "Run programs and examples like this:"
-echo   "=================================================================="
-printf "%b1)%b ./octaspire-dern-unit-test-runner\n" $YELLOW $GREEN
-printf "%b2)%b ./embedding-example\n" $YELLOW $GREEN
-printf "%b3)%b DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/use-mylib.dern\n" $YELLOW $GREEN
-printf "%b4)%b ./octaspire-dern-repl -c\n" $YELLOW $GREEN
-printf "%b5)%b DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-sockets-echo-server.dern\n" $YELLOW $GREEN
-printf "%b+)%b DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-sockets-echo-client.dern\n" $YELLOW $GREEN
-printf "%b6)%b DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-dir-example.dern\n" $YELLOW $GREEN
-printf "%b7)%b DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-ncurses-example.dern\n" $YELLOW $GREEN
-printf "%b8)%b DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-sdl2-example.dern\n" $YELLOW $GREEN
-printf "%b9)%b DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/irc-client.dern\n" $YELLOW $GREEN
-echo "=================================================================="
-echoToDefs
-
