@@ -77,7 +77,7 @@ echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -fPIC -shared -I . -shared -o libder
 
 
 EXAMPLE_NAME="Dern ncurses plugin"
-EXAMPLE_ERROR_HINT="Haiku: pkgman install ncurses_x86_devel"
+EXAMPLE_ERROR_HINT="Haiku: pkgman install ncurses6_x86_devel"
 EXAMPLE_SUCCESS_RUN="LIBRARY_PATH=\$LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-ncurses-example.dern"
 echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -fPIC -I . -shared -o libdern_ncurses.so plugins/dern_ncurses.c -lncursesw
 
