@@ -80,3 +80,10 @@ EXAMPLE_NAME="Dern ncurses plugin"
 EXAMPLE_ERROR_HINT="Midnight BSD: install ncurses(w)"
 EXAMPLE_SUCCESS_RUN='LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-ncurses-example.dern'
 echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -fPIC -I . -I /usr/local/include -shared -o libdern_ncurses.so plugins/dern_ncurses.c -L /usr/local/lib/ -lncursesw
+
+
+
+EXAMPLE_NAME="Dern SDL2 plugin"
+EXAMPLE_ERROR_HINT="Midnight BSD: cd /usr/mports/ftp/curl\nsudo make install clean\ncd\ncurl -O https://www.libsdl.org/release/SDL2-2.0.7.tar.gz\ntar zxf SDL2-2.0.7.tar.gz\ncd SDL2-2.0.7.tar.gz\n./configure --build=i386-pc-freebsd\ngmake\nsudo gmake install"
+EXAMPLE_SUCCESS_RUN="LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-sdl2-example.dern"
+echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -fPIC -shared -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION $(sdl2-config --cflags) -I . -o libdern_sdl2.so plugins/dern_sdl2.c $(sdl2-config --libs)
