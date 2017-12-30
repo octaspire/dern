@@ -22051,9 +22051,9 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "297"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "4"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.297.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.297.4"
 
 
 
@@ -36180,12 +36180,16 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_binary_file(
 
     octaspire_container_utf8_string_t *fileName = octaspire_container_utf8_string_new_format(
         octaspire_dern_vm_get_allocator(vm),
-#if defined(__APPLE__)
-        "lib%s.dylib",
-#elif _WIN32
-        "lib%s.dll",
-#else
+#ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
         "lib%s.so",
+#else
+    #ifdef __APPLE__
+        "lib%s.dylib",
+    #elif _WIN32
+        "lib%s.dll",
+    #else
+        "lib%s.so",
+    #endif
 #endif
         name);
 
@@ -46689,10 +46693,12 @@ static void octaspire_dern_repl_private_cleanup(void)
 
 #ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
 void main(int argc, char *argv[])
-#elif _WIN32
-int main(int argc, char *argv[], char *environ[])
 #else
-int main(int argc, char *argv[])
+    #ifdef _WIN32
+    int main(int argc, char *argv[], char *environ[])
+    #else
+    int main(int argc, char *argv[])
+    #endif
 #endif
 {
 #ifndef OCTASPIRE_PLAN9_IMPLEMENTATION
@@ -46834,6 +46840,7 @@ int main(int argc, char *argv[])
     input = octaspire_input_new_from_c_string("", allocator);
     vm    = octaspire_dern_vm_new_with_config(allocator, stdio, vmConfig);
 
+#ifndef OCTASPIRE_PLAN9_IMPLEMENTATION
 #ifndef _WIN32
     extern char **environ;
 #endif
@@ -46842,6 +46849,7 @@ int main(int argc, char *argv[])
     {
         octaspire_dern_vm_add_environment_variable(vm, *var);
     }
+#endif
 
     // Eval all files given as cmdline args
     for (size_t i = 0; i < octaspire_container_vector_get_length(stringsToBeEvaluated); ++i)

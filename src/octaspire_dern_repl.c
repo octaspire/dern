@@ -199,10 +199,12 @@ static void octaspire_dern_repl_private_cleanup(void)
 
 #ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
 void main(int argc, char *argv[])
-#elif _WIN32
-int main(int argc, char *argv[], char *environ[])
 #else
-int main(int argc, char *argv[])
+    #ifdef _WIN32
+    int main(int argc, char *argv[], char *environ[])
+    #else
+    int main(int argc, char *argv[])
+    #endif
 #endif
 {
 #ifndef OCTASPIRE_PLAN9_IMPLEMENTATION
@@ -344,6 +346,7 @@ int main(int argc, char *argv[])
     input = octaspire_input_new_from_c_string("", allocator);
     vm    = octaspire_dern_vm_new_with_config(allocator, stdio, vmConfig);
 
+#ifndef OCTASPIRE_PLAN9_IMPLEMENTATION
 #ifndef _WIN32
     extern char **environ;
 #endif
@@ -352,6 +355,7 @@ int main(int argc, char *argv[])
     {
         octaspire_dern_vm_add_environment_variable(vm, *var);
     }
+#endif
 
     // Eval all files given as cmdline args
     for (size_t i = 0; i < octaspire_container_vector_get_length(stringsToBeEvaluated); ++i)
