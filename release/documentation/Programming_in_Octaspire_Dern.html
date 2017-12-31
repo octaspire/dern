@@ -513,6 +513,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_linux_freebsd_openbsd_netbsd_openindiana_dragonfly_bsd_midnightbsd_minix_3_haiku_syllable_desktop_macos_termux">Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Syllable Desktop, macOS, Termux</a></li>
 <li><a href="#_plan9">Plan9</a></li>
 <li><a href="#_windows_using_mingw_and_git">Windows using MinGW and Git</a></li>
+<li><a href="#_reactos">ReactOS</a></li>
 </ul>
 </li>
 <li><a href="#_hello_world">Hello world</a></li>
@@ -571,7 +572,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Documentation for Octaspire Dern programming language version 0.297.4</p>
+<p>Documentation for Octaspire Dern programming language version 0.299.0</p>
 </div>
 </div>
 </div>
@@ -612,7 +613,7 @@ can be tested by <strong>howto</strong> or not.</p>
 </div>
 <div class="paragraph">
 <p>Dern has also library system, that allows one to load libraries using builtin <code>require</code>.
-On Unix-like systems Dern also supports loading of binary libraries (.so files). For the
+On most systems Dern also supports loading of binary libraries (.so, .dll or .dylib  files). For the
 end user, it doesn&#8217;t matter whether the library she loaded was binary or written in Dern;
 it can be used exactly the same way.</p>
 </div>
@@ -635,7 +636,7 @@ the <strong>release</strong>-directory of the version controlled source distribu
 </div>
 <div class="paragraph">
 <p>Dern is portable and is tested and known to run in Linux, FreeBSD, OpenBSD, NetBSD,
-OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Windows, macOS and Termux.
+OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Windows, ReactOS, macOS and Termux.
 The <code>how-to-build</code>-directory of the amalgamated source release contains build script
 for all tested platforms.</p>
 </div>
@@ -707,9 +708,8 @@ More scripts for different platforms will be added later.</p>
 <h3 id="_plan9">Plan9</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash"><span></span>hget -o release.tar.bz2 http://octaspire.com/dern/release.tar.bz2
-bunzip2 release.tar.bz2
-tar xf release.tar
+<pre class="pygments highlight"><code data-lang="bash"><span></span>hget http://octaspire.com/dern/release.tar.bz2 &gt; release.tar.bz2
+tar xf release.tar.bz2
 <span class="tok-nb">cd</span> release/*
 rc how-to-build/Plan9.sh</code></pre>
 </div>
@@ -757,6 +757,26 @@ above. Run examples and programs in the <strong>Command Prompt</strong> window
 </div>
 <div class="paragraph">
 <p>More scripts for different tools might be added later.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_reactos">ReactOS</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <strong>ReactOS Applications Manager</strong> to install <strong>CodeBlocks with GCC compiler</strong> and <strong>a web browser</strong> and
+<strong>7-Zip</strong>. Remember the path where you installed CodeBlocks. Add <strong>CodeBlocks\MinGW\bin</strong> and
+<strong>CodeBlocks\MinGW</strong> into the <strong>PATH</strong>.
+Use a web browser to download Dern release from
+<a href="https://octaspire.io/dern/release.tar.bz2">https://octaspire.io/dern/release.tar.bz2</a>.
+Extract the file two times using 7-Zip, first into <strong>release.tar</strong> and then into <strong>release</strong>.
+Go to the path where you extracted the archive and into the <strong>version-x.y.z</strong> directory.
+Run command <strong>how-to-build\ReactOS.bat</strong>. If you need, you can download curses and SDL2
+libraries and headers from
+<a href="https://octaspire.io/dern/windeps.zip">https://octaspire.io/dern/windeps.zip</a>.
+Extract the archive and move the contents into the <strong>version-x.y.z</strong> directory.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -1983,7 +2003,7 @@ can be used to (by giving different compiler flags):</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-12-30 16:48:33 EET
+Last updated 2018-01-01 15:35:51 EET
 </div>
 </div>
 </body>
