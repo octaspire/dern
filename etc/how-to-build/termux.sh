@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/data/data/com.termux/files/usr/bin/sh
 
 BLUE="$(tput setaf 4)"
 RED="$(tput setaf 1)"
