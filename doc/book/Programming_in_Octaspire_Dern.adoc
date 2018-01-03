@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.300.2
+Documentation for Octaspire Dern programming language version 0.301.2
 
 == About
 
@@ -61,7 +61,8 @@ the *release*-directory of the version controlled source distribution and from
 http://www.octaspire.com/dern/release.tar.bz2[octaspire.com/dern/release.tar.bz2].
 
 Dern is portable and is tested and known to run in Linux, FreeBSD, OpenBSD, NetBSD,
-OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Windows, ReactOS, macOS and Termux.
+OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Windows, ReactOS, macOS, Termux,
+Syllable Destop and AROS.
 The `how-to-build`-directory of the amalgamated source release contains build script
 for all tested platforms.
 
@@ -96,7 +97,7 @@ The amalgamated source release is the recommended way of using Dern, if you don'
 modify Dern itself. To use the amalgamated release, you will need only a C compiler and
 C standard library supporting C99.
 
-=== Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Syllable Desktop, macOS, Termux
+=== Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Syllable Desktop, macOS, Termux, AROS
 
 :source-highlighter: pygments
 :pygments-style: colorful
@@ -113,7 +114,7 @@ sh how-to-build/YOUR_PLATFORM_NAME_HERE.XX
 
 replace *YOUR_PLATFORM_NAME_HERE.XX* with *FreeBSD.sh*, *NetBSD.sh*, *OpenBSD.sh*,
 *OpenIndiana.sh*, *DragonFlyBSD.sh*, *MidnightBSD*, *linux.sh*, *minix3.sh*,
-*haiku.sh*, *SyllableDesktop.sh*, *macOS.sh* or *termux.sh*.
+*haiku.sh*, *SyllableDesktop.sh*, *macOS.sh*, *termux.sh* or *AROS.sh*.
 More scripts for different platforms will be added later.
 
 
