@@ -3731,7 +3731,11 @@ void octaspire_dern_vm_print_stack(
     printf("Stack has %zu elements\n", octaspire_container_vector_get_length(self->stack));
     for (ptrdiff_t i = (ptrdiff_t)octaspire_container_vector_get_length(self->stack) - 1; i >= 0; --i)
     {
+#ifdef __AROS__
+        printf("--------------------------- #%ld ------------------------\n", i);
+#else
         printf("--------------------------- #%td ------------------------\n", i);
+#endif
         octaspire_dern_value_print(
             octaspire_container_vector_get_element_at(self->stack, i),
             self->allocator);

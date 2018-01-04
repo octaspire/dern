@@ -8061,7 +8061,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_ln_at_sign(
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
                     "Index to builtin 'ln@' is not valid for the given vector. "
+#ifdef __AROS__
+                    "Index '%ld' was given.",
+#else
                     "Index '%td' was given.",
+#endif
                     index);
             }
 
@@ -8303,7 +8307,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
                     "Index to builtin 'cp@' is not valid for the given string. "
+#ifdef __AROS__
+                    "Index '%ld' was given.",
+#else
                     "Index '%td' was given.",
+#endif
                     index);
             }
 

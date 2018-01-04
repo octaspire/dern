@@ -22051,9 +22051,9 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "301"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "2"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "3"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.301.2"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.301.3"
 
 
 
@@ -28023,7 +28023,11 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
         {
             return octaspire_container_utf8_string_new_format(
                 allocator,
+#ifdef __AROS__
+                "<input-port:%s (%ld octets)>",
+#else
                 "<input-port:%s (%td octets)>",
+#endif
                 octaspire_container_utf8_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
@@ -28032,7 +28036,11 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
         {
             return octaspire_container_utf8_string_new_format(
                 allocator,
+#ifdef __AROS__
+                "<output-port:%s (%ld octets)>",
+#else
                 "<output-port:%s (%td octets)>",
+#endif
                 octaspire_container_utf8_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
@@ -28041,7 +28049,11 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
         {
             return octaspire_container_utf8_string_new_format(
                 allocator,
+#ifdef __AROS__
+                "<input-output-port:%s (%ld octets)>",
+#else
                 "<input-output-port:%s (%td octets)>",
+#endif
                 octaspire_container_utf8_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
@@ -28050,7 +28062,11 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
         {
             return octaspire_container_utf8_string_new_format(
                 allocator,
+#ifdef __AROS__
+                "<NOT-OPEN-port:%s (%ld octets)>",
+#else
                 "<NOT-OPEN-port:%s (%td octets)>",
+#endif
                 octaspire_container_utf8_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
@@ -36317,7 +36333,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_ln_at_sign(
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
                     "Index to builtin 'ln@' is not valid for the given vector. "
+#ifdef __AROS__
+                    "Index '%ld' was given.",
+#else
                     "Index '%td' was given.",
+#endif
                     index);
             }
 
@@ -36559,7 +36579,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
                     "Index to builtin 'cp@' is not valid for the given string. "
+#ifdef __AROS__
+                    "Index '%ld' was given.",
+#else
                     "Index '%td' was given.",
+#endif
                     index);
             }
 
@@ -45176,7 +45200,11 @@ void octaspire_dern_vm_print_stack(
     printf("Stack has %zu elements\n", octaspire_container_vector_get_length(self->stack));
     for (ptrdiff_t i = (ptrdiff_t)octaspire_container_vector_get_length(self->stack) - 1; i >= 0; --i)
     {
+#ifdef __AROS__
+        printf("--------------------------- #%ld ------------------------\n", i);
+#else
         printf("--------------------------- #%td ------------------------\n", i);
+#endif
         octaspire_dern_value_print(
             octaspire_container_vector_get_element_at(self->stack, i),
             self->allocator);

@@ -305,7 +305,11 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
         {
             return octaspire_container_utf8_string_new_format(
                 allocator,
+#ifdef __AROS__
+                "<input-port:%s (%ld octets)>",
+#else
                 "<input-port:%s (%td octets)>",
+#endif
                 octaspire_container_utf8_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
@@ -314,7 +318,11 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
         {
             return octaspire_container_utf8_string_new_format(
                 allocator,
+#ifdef __AROS__
+                "<output-port:%s (%ld octets)>",
+#else
                 "<output-port:%s (%td octets)>",
+#endif
                 octaspire_container_utf8_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
@@ -323,7 +331,11 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
         {
             return octaspire_container_utf8_string_new_format(
                 allocator,
+#ifdef __AROS__
+                "<input-output-port:%s (%ld octets)>",
+#else
                 "<input-output-port:%s (%td octets)>",
+#endif
                 octaspire_container_utf8_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
@@ -332,7 +344,11 @@ octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
         {
             return octaspire_container_utf8_string_new_format(
                 allocator,
+#ifdef __AROS__
+                "<NOT-OPEN-port:%s (%ld octets)>",
+#else
                 "<NOT-OPEN-port:%s (%td octets)>",
+#endif
                 octaspire_container_utf8_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
