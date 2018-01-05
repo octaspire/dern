@@ -32,7 +32,7 @@
 #include <ncursesw/ncurses.h>
 #endif
 
-#if defined(__APPLE__) || defined(__OpenBSD__) || defined(__HAIKU__) || defined(__NetBSD__) || defined(__ANDROID__)
+#if defined(__APPLE__) || defined(__OpenBSD__) || defined(__HAIKU__) || defined(__ANDROID__)
 #undef KEY_BACKSPACE
 #define KEY_BACKSPACE 127
 #endif
