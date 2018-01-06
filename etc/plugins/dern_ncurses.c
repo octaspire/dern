@@ -1,12 +1,12 @@
 #ifdef _WIN32
-#define OCTASPIRE_DERN_AMALGAMATED_NO_BOOL
-#define PDC_WIDE
-#include "curses.h"
-#include "panel.h"
-#define true  1
-#define false 0
-#undef KEY_BACKSPACE
-#define KEY_BACKSPACE 8
+    #define OCTASPIRE_DERN_AMALGAMATED_NO_BOOL
+    #define PDC_WIDE
+    #include "curses.h"
+    #include "panel.h"
+    #define true  1
+    #define false 0
+    #undef KEY_BACKSPACE
+    #define KEY_BACKSPACE 8
 #endif
 
 #include "octaspire-dern-amalgamated.c"
@@ -18,27 +18,27 @@
 #define _XOPEN_SOURCE_EXTENDED 1
 
 #ifndef _WIN32
-
-#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(__minix)
-#include <curses.h>
-#elif defined(__DragonFly__)
-#include <ncurses/curses.h>
-#elif defined(__sun) && defined(__SVR4)
-// Solaris, OpenIndiana
-#include <ncurses/curses.h>
-#elif defined(__FreeBSD__) || defined(__HAIKU__) || defined(__MidnightBSD__) || defined(__SYLLABLE__) || defined(__APPLE__)
-#include <ncurses.h>
-#else
-#include <ncursesw/ncurses.h>
+    #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(__minix)
+        #include <curses.h>
+    #elif defined(__DragonFly__)
+        #include <ncurses/curses.h>
+    #elif defined(__sun) && defined(__SVR4)
+        // Solaris, OpenIndiana
+        #include <ncurses/curses.h>
+    #elif defined(__FreeBSD__) || defined(__HAIKU__) || defined(__MidnightBSD__) || defined(__SYLLABLE__) || defined(__APPLE__)
+        #include <ncurses.h>
+    #else
+        #include <ncursesw/ncurses.h>
+    #endif
 #endif
 
-#if defined(__APPLE__) || defined(__OpenBSD__) || defined(__HAIKU__) || defined(__ANDROID__)
-#undef KEY_BACKSPACE
-#define KEY_BACKSPACE 127
+#ifndef OCTASPIRE_DERN_NCURSES_ADDITIONAL_KEY_BACKSPACE
+    #define OCTASPIRE_DERN_NCURSES_ADDITIONAL_KEY_BACKSPACE 127
 #endif
 
+#ifndef OCTASPIRE_DERN_NCURSES_ADDITIONAL_KEY_DC
+    #define OCTASPIRE_DERN_NCURSES_ADDITIONAL_KEY_DC 8
 #endif
-
 
 static char const * const DERN_NCURSES_PLUGIN_NAME = "dern_ncurses";
 
@@ -210,8 +210,15 @@ octaspire_dern_value_t *dern_ncurses_getch(
         }
 
         case KEY_BACKSPACE:
+        case OCTASPIRE_DERN_NCURSES_ADDITIONAL_KEY_BACKSPACE:
         {
             return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_BACKSPACE");
+        }
+
+        case KEY_DC:
+        case OCTASPIRE_DERN_NCURSES_ADDITIONAL_KEY_DC:
+        {
+            return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_DC");
         }
 
         // TODO add more special keys
