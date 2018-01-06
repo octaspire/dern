@@ -243,7 +243,7 @@
             (show-input-line)
             (return)))
 
-    (if (and (== 'KEY_BACKSPACE char) (> (len user-input-buffer) 0))
+    (if (and (or (== 'KEY_BACKSPACE char) (== 'KEY_DC char)) (> (len user-input-buffer) 0))
           (do
             (-- user-input-buffer)
             (show-input-line)
