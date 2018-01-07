@@ -21,6 +21,7 @@ limitations under the License.
 #include <unistd.h>
 #include <locale.h>
 #include <octaspire/core/octaspire_input.h>
+#include <octaspire/core/octaspire_helpers.h>
 #include <octaspire/dern/octaspire_dern_config.h>
 #include "external/octaspire_dern_banner_color.h"
 #include "external/octaspire_dern_banner_white.h"
@@ -370,7 +371,7 @@ void main(int argc, char *argv[])
                 vm,
                 octaspire_container_utf8_string_get_c_string(str));
 
-        assert(value);
+        octaspire_helpers_verify_not_null(value);
 
         if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
         {
@@ -400,7 +401,7 @@ void main(int argc, char *argv[])
                 vm,
                 argv[userFilesStartIdx]);
 
-        assert(value);
+        octaspire_helpers_verify_not_null(value);
 
         if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
         {
@@ -451,77 +452,82 @@ moreInput:
 
             octaspire_dern_value_t *value = octaspire_dern_vm_parse(vm, input);
 
-            if (!value)
+            do
             {
-                octaspire_input_rewind(input);
-                octaspire_dern_repl_print_message_c_str("| ", OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
-                goto moreInput;
-            }
-            else if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
-            {
-                octaspire_container_utf8_string_t *str = octaspire_dern_value_to_string(value, allocator);
-
-                octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
-
-                printf("\n");
-
-                octaspire_container_utf8_string_release(str);
-                str = 0;
-
-                octaspire_input_clear(input);
-                goto newInput;
-            }
-            else
-            {
-                octaspire_dern_vm_push_value(vm, value);
-
-                octaspire_dern_value_t *evaluatedValue = octaspire_dern_vm_eval_in_global_environment(
-                        vm,
-                        value);
-
-                if (!evaluatedValue)
+                if (!value)
                 {
-                    octaspire_dern_vm_pop_value(vm, value);
                     octaspire_input_rewind(input);
-                    octaspire_dern_repl_print_message_c_str("+ ", OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+                    octaspire_dern_repl_print_message_c_str("| ", OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
                     goto moreInput;
                 }
                 else if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                 {
-                    printf("--------------------\n");
-                    octaspire_dern_value_print(evaluatedValue, octaspire_dern_vm_get_allocator(vm));
+                    octaspire_container_utf8_string_t *str = octaspire_dern_value_to_string(value, allocator);
+
+                    octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
+
+                    printf("\n");
+
+                    octaspire_container_utf8_string_release(str);
+                    str = 0;
+
                     octaspire_input_clear(input);
                     goto newInput;
                 }
-
-                octaspire_dern_vm_push_value(vm, evaluatedValue);
-
-                assert(evaluatedValue);
-
-                octaspire_container_utf8_string_t *str =
-                    octaspire_dern_value_to_string(evaluatedValue, allocator);
-
-                assert(str);
-
-                if (evaluatedValue->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
-                {
-                    octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
-                }
                 else
                 {
-                    octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_OUTPUT, useColors);
+                    octaspire_dern_vm_push_value(vm, value);
+
+                    octaspire_dern_value_t *evaluatedValue = octaspire_dern_vm_eval_in_global_environment(
+                            vm,
+                            value);
+
+                    if (!evaluatedValue)
+                    {
+                        octaspire_dern_vm_pop_value(vm, value);
+                        octaspire_input_rewind(input);
+                        octaspire_dern_repl_print_message_c_str("+ ", OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+                        goto moreInput;
+                    }
+                    else if (evaluatedValue->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+                    {
+                        printf("--------------------\n");
+                        octaspire_dern_value_print(evaluatedValue, octaspire_dern_vm_get_allocator(vm));
+                        octaspire_input_clear(input);
+                        goto newInput;
+                    }
+
+                    octaspire_dern_vm_push_value(vm, evaluatedValue);
+
+                    octaspire_container_utf8_string_t *str =
+                        octaspire_dern_value_to_string(evaluatedValue, allocator);
+
+                    octaspire_helpers_verify_not_null(str);
+
+                    if (evaluatedValue->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+                    {
+                        octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
+                        octaspire_input_clear(input);
+                    }
+                    else
+                    {
+                        octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_OUTPUT, useColors);
+                    }
+
+                    printf("\n");
+
+                    octaspire_container_utf8_string_release(str);
+                    str = 0;
+
+                    octaspire_dern_vm_pop_value(vm, evaluatedValue); // evaluatedValue
+                    octaspire_dern_vm_pop_value(vm, value); // value
+
+                    //octaspire_input_clear(input);
                 }
 
-                printf("\n");
-
-                octaspire_container_utf8_string_release(str);
-                str = 0;
-
-                octaspire_dern_vm_pop_value(vm, evaluatedValue); // evaluatedValue
-                octaspire_dern_vm_pop_value(vm, value); // value
-
-                octaspire_input_clear(input);
+                value = octaspire_dern_vm_parse(vm, input);
             }
+            while (value);
         }
 
         octaspire_container_utf8_string_release(line);
