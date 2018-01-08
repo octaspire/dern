@@ -1,6 +1,8 @@
 #include "octaspire-dern-amalgamated.c"
 #include "SDL.h"
 
+int const OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE = 32766;
+
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY
 #include "SDL_image.h"
 #endif
@@ -322,6 +324,8 @@ static size_t                           dern_sdl2_private_next_free_music_uid   
 static octaspire_container_hash_map_t * dern_sdl2_private_sounds                = 0;
 static size_t                           dern_sdl2_private_next_free_sound_uid   = 0;
 #endif
+
+static octaspire_container_vector_t   * dern_sdl2_private_controllers           = 0;
 
 octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_path(
     char const * const path,
@@ -717,6 +721,8 @@ void dern_sdl2_clean_up_resources()
     octaspire_container_hash_map_clear(dern_sdl2_private_music);
     octaspire_container_hash_map_clear(dern_sdl2_private_sounds);
 #endif
+
+    octaspire_container_vector_clear(dern_sdl2_private_controllers);
 }
 
 void dern_sdl2_window_clean_up_callback(void *payload)
@@ -1092,6 +1098,51 @@ octaspire_dern_value_t *dern_sdl2_Init(
     }
 #endif
 
+    dern_sdl2_private_controllers = octaspire_container_vector_new(
+        sizeof(SDL_Joystick*),
+        true,
+        (octaspire_container_hash_map_element_callback_function_t)SDL_JoystickClose,
+        octaspire_dern_vm_get_allocator(vm));
+
+    if (!dern_sdl2_private_controllers)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-init' failed. Cannot allocate controller vector.");
+    }
+
+
+    SDL_Joystick *controller = 0;
+
+    if (flags & SDL_INIT_JOYSTICK)
+    {
+        for (int i = 0; i < SDL_NumJoysticks(); ++i)
+        {
+            controller = SDL_JoystickOpen(i);
+
+            if (!controller)
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'sdl2-init' failed. Cannot open controller %i of %i.",
+                    i,
+                    SDL_NumJoysticks());
+            }
+
+            if (!octaspire_container_vector_push_back_element(dern_sdl2_private_controllers, &controller))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'sdl2-init' failed. Cannot save controller %i of %i.",
+                    i,
+                    SDL_NumJoysticks());
+            }
+        }
+    }
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(
         vm,
@@ -1189,6 +1240,58 @@ octaspire_dern_value_t *dern_sdl2_PollEvent(
                 typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "QUIT");
                 octaspire_helpers_verify_not_null(typeValue);
                 octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+            }
+            break;
+
+            case SDL_JOYAXISMOTION:
+            {
+                if (event.jaxis.axis == 0)
+                {
+                    if (event.jaxis.value < -OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE)
+                    {
+                        typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "JOYAXISLEFT");
+                        octaspire_helpers_verify_not_null(typeValue);
+                        octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+                    }
+                    else if (event.jaxis.value > OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE)
+                    {
+                        typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "JOYAXISRIGHT");
+                        octaspire_helpers_verify_not_null(typeValue);
+                        octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+                    }
+                }
+                else
+                {
+                    if (event.jaxis.value < -OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE)
+                    {
+                        typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "JOYAXISUP");
+                        octaspire_helpers_verify_not_null(typeValue);
+                        octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+                    }
+                    else if (event.jaxis.value > OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE)
+                    {
+                        typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "JOYAXISDOWN");
+                        octaspire_helpers_verify_not_null(typeValue);
+                        octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+                    }
+                }
+            }
+            break;
+
+            case SDL_JOYBUTTONDOWN:
+            {
+                typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "JOYBUTTONDOWN");
+                octaspire_helpers_verify_not_null(typeValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+
+                octaspire_dern_value_t * keyValue =
+                    octaspire_dern_vm_create_new_value_string_format(
+                        vm,
+                        "%i",
+                        (int)event.jbutton.button);
+
+                octaspire_helpers_verify_not_null(keyValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &keyValue);
             }
             break;
 

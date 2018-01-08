@@ -2914,6 +2914,11 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
 
+    if (octaspire_dern_vm_is_quit(self))
+    {
+        return octaspire_dern_vm_create_new_value_nil(self);
+    }
+
     if (self->config.debugModeOn)
     {
         octaspire_container_utf8_string_t *str =

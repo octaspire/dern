@@ -22050,10 +22050,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "304"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "305"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.304.1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.305.0"
 
 
 
@@ -44383,6 +44383,11 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
 
+    if (octaspire_dern_vm_is_quit(self))
+    {
+        return octaspire_dern_vm_create_new_value_nil(self);
+    }
+
     if (self->config.debugModeOn)
     {
         octaspire_container_utf8_string_t *str =
@@ -47048,7 +47053,7 @@ moreInput:
 
                 value = octaspire_dern_vm_parse(vm, input);
             }
-            while (value);
+            while (value && !octaspire_dern_vm_is_quit(vm));
         }
 
         octaspire_container_utf8_string_release(line);

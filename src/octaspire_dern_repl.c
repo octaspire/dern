@@ -527,7 +527,7 @@ moreInput:
 
                 value = octaspire_dern_vm_parse(vm, input);
             }
-            while (value);
+            while (value && !octaspire_dern_vm_is_quit(vm));
         }
 
         octaspire_container_utf8_string_release(line);

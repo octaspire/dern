@@ -1,8 +1,28 @@
 (require 'dern_sdl2)
 
+(define print-usage as (fn ()
+        (println [--help        show this help message and exit])
+        (println [--joystick    enable joysticks and other game controllers]))
+        [print usage and exit]
+        '()
+        howto-ok)
+
+(define command-line-args as (host-get-command-line-arguments) [command line arguments given when started])
+
+(if (> (len (find command-line-args [--help])) 0)
+     (do
+        (print-usage)
+        (exit)))
+
+(define init-vec as '(sdl2-Init 'VIDEO) [SDL2 is initialized by evaluating this vector])
+
 (if (sdl2-has-mix)
-    (sdl2-Init 'VIDEO 'AUDIO)
-    (sdl2-Init 'VIDEO))
+    (+= init-vec ''AUDIO))
+
+(if (> (len (find command-line-args [--joystick])) 0)
+    (+= init-vec ''JOYSTICK))
+
+(eval init-vec)
 
 (define window   as (sdl2-CreateWindow [test] 'CENTERED 'CENTERED 512 512) [window])
 (define renderer as (sdl2-CreateRenderer window -1 'SOFTWARE) [renderer])
@@ -64,10 +84,11 @@
        (define event as (sdl2-PollEvent) [event from sdl2])
        (define type  as nil [type of event])
        (if (!= event nil) (= type (ln@ event 0)))
-       (select (== type 'QUIT)    (= running false))
-               (== type 'KEYDOWN) (do
-                                    (if (and (== (ln@ event 1) [1]) (sdl2-has-mix))  (sdl2-PlaySound sound1 -1 0))
-                                    (if (and (== (ln@ event 1) [2]) (sdl2-has-mix)) (sdl2-PlaySound sound2 -1 0)
-                                    (if (and (== (ln@ event 1) [3]) (sdl2-has-mix)) (sdl2-PlaySound sound3 -1 0)))))
+       (select (== type 'QUIT)          (= running false)
+               (== type 'JOYBUTTONDOWN) (println [Joystick button {} pressed] (ln@ event 1))
+               (== type 'KEYDOWN)       (do
+                                          (if (and (== (ln@ event 1) [1]) (sdl2-has-mix)) (sdl2-PlaySound sound1 -1 0))
+                                          (if (and (== (ln@ event 1) [2]) (sdl2-has-mix)) (sdl2-PlaySound sound2 -1 0))
+                                          (if (and (== (ln@ event 1) [3]) (sdl2-has-mix)) (sdl2-PlaySound sound3 -1 0)))))
 
 (sdl2-Quit)
