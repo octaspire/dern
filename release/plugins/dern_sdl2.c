@@ -1249,30 +1249,54 @@ octaspire_dern_value_t *dern_sdl2_PollEvent(
                 {
                     if (event.jaxis.value < -OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE)
                     {
-                        typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "JOYAXISLEFT");
+                        typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "JOYAXIS");
                         octaspire_helpers_verify_not_null(typeValue);
                         octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+
+                        octaspire_dern_value_t * dirValue =
+                            octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "left");
+
+                        octaspire_helpers_verify_not_null(dirValue);
+                        octaspire_dern_value_as_vector_push_back_element(result, &dirValue);
                     }
                     else if (event.jaxis.value > OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE)
                     {
-                        typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "JOYAXISRIGHT");
+                        typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "JOYAXIS");
                         octaspire_helpers_verify_not_null(typeValue);
                         octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+
+                        octaspire_dern_value_t * dirValue =
+                            octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "right");
+
+                        octaspire_helpers_verify_not_null(dirValue);
+                        octaspire_dern_value_as_vector_push_back_element(result, &dirValue);
                     }
                 }
                 else
                 {
                     if (event.jaxis.value < -OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE)
                     {
-                        typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "JOYAXISUP");
+                        typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "JOYAXIS");
                         octaspire_helpers_verify_not_null(typeValue);
                         octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+
+                        octaspire_dern_value_t * dirValue =
+                            octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "up");
+
+                        octaspire_helpers_verify_not_null(dirValue);
+                        octaspire_dern_value_as_vector_push_back_element(result, &dirValue);
                     }
                     else if (event.jaxis.value > OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE)
                     {
-                        typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "JOYAXISDOWN");
+                        typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "JOYAXIS");
                         octaspire_helpers_verify_not_null(typeValue);
                         octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+
+                        octaspire_dern_value_t * dirValue =
+                            octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "down");
+
+                        octaspire_helpers_verify_not_null(dirValue);
+                        octaspire_dern_value_as_vector_push_back_element(result, &dirValue);
                     }
                 }
             }

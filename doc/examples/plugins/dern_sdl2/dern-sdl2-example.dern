@@ -83,9 +83,10 @@
 (while running
        (define event as (sdl2-PollEvent) [event from sdl2])
        (define type  as nil [type of event])
-       (if (!= event nil) (= type (ln@ event 0)))
+       (if (and (!= event nil) (> (len event) 0)) (= type (ln@ event 0)))
        (select (== type 'QUIT)          (= running false)
                (== type 'JOYBUTTONDOWN) (println [Joystick button {} pressed] (ln@ event 1))
+               (== type 'JOYAXIS)       (println [Joystick axis   {}]         (ln@ event 1))
                (== type 'KEYDOWN)       (do
                                           (if (and (== (ln@ event 1) [1]) (sdl2-has-mix)) (sdl2-PlaySound sound1 -1 0))
                                           (if (and (== (ln@ event 1) [2]) (sdl2-has-mix)) (sdl2-PlaySound sound2 -1 0))
