@@ -15,6 +15,89 @@ int const OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE = 32766;
 #include "SDL_ttf.h"
 #endif
 
+
+
+
+
+/////////////////////////////// timer //////////////////////////////////////////
+typedef struct octaspire_sdl2_timer_t
+{
+    octaspire_memory_allocator_t *allocator;
+    double                        seconds;
+    Uint64                        countNow;
+    Uint64                        countPrevious;
+}
+octaspire_sdl2_timer_t;
+
+void octaspire_sdl2_timer_reset(
+    octaspire_sdl2_timer_t * const self)
+{
+    self->seconds       = 0;
+    self->countNow      = SDL_GetPerformanceCounter();
+    self->countPrevious = self->countNow;
+}
+
+octaspire_sdl2_timer_t *octaspire_sdl2_timer_new(
+    octaspire_memory_allocator_t * const allocator)
+{
+    octaspire_sdl2_timer_t *self = octaspire_memory_allocator_malloc(
+        allocator,
+        sizeof(octaspire_sdl2_timer_t));
+
+    if (!self)
+    {
+        return self;
+    }
+
+    self->allocator      = allocator;
+
+    octaspire_sdl2_timer_reset(self);
+
+    return self;
+}
+
+void octaspire_sdl2_timer_release(
+    octaspire_sdl2_timer_t * const self)
+{
+    if (!self)
+    {
+        return;
+    }
+
+    octaspire_memory_allocator_free(self->allocator, self);
+}
+
+void octaspire_sdl2_timer_update(
+    octaspire_sdl2_timer_t * const self)
+{
+    self->countPrevious = self->countNow;
+    self->countNow      = SDL_GetPerformanceCounter();
+
+    Uint64 const countDiff = self->countNow - self->countPrevious;
+
+    self->seconds = (double)countDiff / (double)SDL_GetPerformanceFrequency();
+}
+
+double octaspire_sdl2_timer_get_seconds(
+    octaspire_sdl2_timer_t const * const self)
+{
+    return self->seconds;
+}
+
+double octaspire_sdl2_timer_get_milliseconds(
+    octaspire_sdl2_timer_t const * const self)
+{
+    return self->seconds * 1000.0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+octaspire_sdl2_timer_t * dern_sdl2_private_timer = 0;
+
+
+
 static char const *dern_sdl2_private_helper_sdl_keycode_to_c_string(
     SDL_Keycode const code)
 {
@@ -722,6 +805,9 @@ void dern_sdl2_clean_up_resources()
     octaspire_container_hash_map_clear(dern_sdl2_private_sounds);
 #endif
 
+    octaspire_sdl2_timer_release(dern_sdl2_private_timer);
+    dern_sdl2_private_timer = 0;
+
     octaspire_container_vector_clear(dern_sdl2_private_controllers);
 }
 
@@ -1098,6 +1184,11 @@ octaspire_dern_value_t *dern_sdl2_Init(
     }
 #endif
 
+    dern_sdl2_private_timer =
+        octaspire_sdl2_timer_new(octaspire_dern_vm_get_allocator(vm));
+
+    octaspire_helpers_verify_not_null(dern_sdl2_private_timer);
+
     dern_sdl2_private_controllers = octaspire_container_vector_new(
         sizeof(SDL_Joystick*),
         true,
@@ -1147,6 +1238,92 @@ octaspire_dern_value_t *dern_sdl2_Init(
     return octaspire_dern_vm_create_new_value_boolean(
         vm,
         true);
+}
+
+octaspire_dern_value_t *dern_sdl2_TimerUpdate(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-TimerUpdate' expects zero arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_helpers_verify_not_null(dern_sdl2_private_timer);
+    octaspire_sdl2_timer_update(dern_sdl2_private_timer);
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(
+        vm,
+        true);
+}
+
+octaspire_dern_value_t *dern_sdl2_TimerReset(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-TimerReset' expects zero arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_helpers_verify_not_null(dern_sdl2_private_timer);
+    octaspire_sdl2_timer_reset(dern_sdl2_private_timer);
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(
+        vm,
+        true);
+}
+
+octaspire_dern_value_t *dern_sdl2_TimerGetSeconds(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-TimerGetSeconds' expects zero arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_helpers_verify_not_null(dern_sdl2_private_timer);
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_real(
+        vm,
+        octaspire_sdl2_timer_get_seconds(dern_sdl2_private_timer));
 }
 
 octaspire_dern_value_t *dern_sdl2_Delay(
@@ -4674,6 +4851,42 @@ bool dern_sdl2_init(
             dern_sdl2_Init,
             1,
             "(sdl2-Init flags...) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-TimerUpdate",
+            dern_sdl2_TimerUpdate,
+            0,
+            "(sdl2-TimerUpdate) -> true",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-TimerReset",
+            dern_sdl2_TimerReset,
+            0,
+            "(sdl2-TimerReset) -> true",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-TimerGetSeconds",
+            dern_sdl2_TimerGetSeconds,
+            0,
+            "(sdl2-TimerGetSeconds) -> real",
             true,
             targetEnv))
     {
