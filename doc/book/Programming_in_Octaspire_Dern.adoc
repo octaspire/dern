@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.306.0
+Documentation for Octaspire Dern programming language version 0.307.0
 
 == About
 
@@ -740,8 +740,12 @@ Here is small example:
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-(howto 1 2 3)
-(howto [a] [b] [ab)
+; Enter these two forms into the REPL
+(howto 1 2 3)                    ; ((+ 1 2) (+ 2 1))
+(howto [a] [b] [ab])             ; ((+ [a] [b]))
+
+(println (howto 1 2 3))          ; prints ((+ 1 2) (+ 2 1))
+(println (howto [a] [b] [ab]))   ; prints ((+ [a] [b]))
 ----
 
 
@@ -928,6 +932,28 @@ TODO
 
 
 == Searching and indexing
+
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,dern]
+----
+(define names as '(Mike John Lola Alice Lola) [names])
+
+(println (find names 'Mike))  ; prints (0)
+(println (find names 'John))  ; prints (1)
+(println (find names 'Lola))  ; prints (2 4)
+
+(println (find names 'Mike 'John 'Lola))  ; prints ((0) (1) (2 4))
+
+
+(define rooms as (hash-map 'Mike 100 'John 101 'Lola '(102 103) 'Alice 104) [room numbers])
+
+(println (find rooms 'Mike))    ; prints 100
+(println (find rooms 'Lola))    ; prints (102 103)
+(println (find rooms 'Nobody))  ; prints nil
+----
 
 TODO
 

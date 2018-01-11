@@ -572,7 +572,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Documentation for Octaspire Dern programming language version 0.306.0</p>
+<p>Documentation for Octaspire Dern programming language version 0.307.0</p>
 </div>
 </div>
 </div>
@@ -1329,8 +1329,12 @@ be added later.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="dern"><span></span><span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">)</span>
-<span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-s">[a]</span> <span class="tok-s">[b]</span> <span class="tok-s">[ab)</span></code></pre>
+<pre class="pygments highlight"><code data-lang="dern"><span></span><span class="tok-c tok-c-Singleline">; Enter these two forms into the REPL</span>
+<span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">)</span>                    <span class="tok-c tok-c-Singleline">; ((+ 1 2) (+ 2 1))</span>
+<span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-s">[a]</span> <span class="tok-s">[b]</span> <span class="tok-s">[ab]</span><span class="tok-p">)</span>             <span class="tok-c tok-c-Singleline">; ((+ [a] [b]))</span>
+
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">))</span>          <span class="tok-c tok-c-Singleline">; prints ((+ 1 2) (+ 2 1))</span>
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-s">[a]</span> <span class="tok-s">[b]</span> <span class="tok-s">[ab]</span><span class="tok-p">))</span>   <span class="tok-c tok-c-Singleline">; prints ((+ [a] [b]))</span></code></pre>
 </div>
 </div>
 </div>
@@ -1514,6 +1518,24 @@ only for reading and <code>output-file-open</code> will open file only for writi
 <div class="sect1">
 <h2 id="_searching_and_indexing">Searching and indexing</h2>
 <div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="dern"><span></span><span class="tok-p">(</span><span class="tok-nb">define </span><span class="tok-nv">names</span> <span class="tok-nv">as</span> <span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-nv">Mike</span> <span class="tok-nv">John</span> <span class="tok-nv">Lola</span> <span class="tok-nv">Alice</span> <span class="tok-nv">Lola</span><span class="tok-p">)</span> <span class="tok-s">[names]</span><span class="tok-p">)</span>
+
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">find </span><span class="tok-nv">names</span> <span class="tok-ss">&#39;Mike</span><span class="tok-p">))</span>  <span class="tok-c tok-c-Singleline">; prints (0)</span>
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">find </span><span class="tok-nv">names</span> <span class="tok-ss">&#39;John</span><span class="tok-p">))</span>  <span class="tok-c tok-c-Singleline">; prints (1)</span>
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">find </span><span class="tok-nv">names</span> <span class="tok-ss">&#39;Lola</span><span class="tok-p">))</span>  <span class="tok-c tok-c-Singleline">; prints (2 4)</span>
+
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">find </span><span class="tok-nv">names</span> <span class="tok-ss">&#39;Mike</span> <span class="tok-ss">&#39;John</span> <span class="tok-ss">&#39;Lola</span><span class="tok-p">))</span>  <span class="tok-c tok-c-Singleline">; prints ((0) (1) (2 4))</span>
+
+
+<span class="tok-p">(</span><span class="tok-nb">define </span><span class="tok-nv">rooms</span> <span class="tok-nv">as</span> <span class="tok-p">(</span><span class="tok-nb">hash-map </span><span class="tok-ss">&#39;Mike</span> <span class="tok-mi">100</span> <span class="tok-ss">&#39;John</span> <span class="tok-mi">101</span> <span class="tok-ss">&#39;Lola</span> <span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-mi">102</span> <span class="tok-mi">103</span><span class="tok-p">)</span> <span class="tok-ss">&#39;Alice</span> <span class="tok-mi">104</span><span class="tok-p">)</span> <span class="tok-s">[room numbers]</span><span class="tok-p">)</span>
+
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">find </span><span class="tok-nv">rooms</span> <span class="tok-ss">&#39;Mike</span><span class="tok-p">))</span>    <span class="tok-c tok-c-Singleline">; prints 100</span>
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">find </span><span class="tok-nv">rooms</span> <span class="tok-ss">&#39;Lola</span><span class="tok-p">))</span>    <span class="tok-c tok-c-Singleline">; prints (102 103)</span>
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">find </span><span class="tok-nv">rooms</span> <span class="tok-ss">&#39;Nobody</span><span class="tok-p">))</span>  <span class="tok-c tok-c-Singleline">; prints nil</span></code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>TODO</p>
 </div>
@@ -2004,7 +2026,7 @@ can be used to (by giving different compiler flags):</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-01-10 14:59:34 EET
+Last updated 2018-01-11 15:30:43 EET
 </div>
 </div>
 </body>
