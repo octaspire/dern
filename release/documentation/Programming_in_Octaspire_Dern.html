@@ -572,7 +572,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Documentation for Octaspire Dern programming language version 0.307.0</p>
+<p>Documentation for Octaspire Dern programming language version 0.308.0</p>
 </div>
 </div>
 </div>
@@ -1325,16 +1325,31 @@ be added later.</p>
 <h2 id="_getting_help_with_code_howto_code">Getting help with <code>howto</code></h2>
 <div class="sectionbody">
 <div class="paragraph">
+<p>Function <code>howto</code> can be used for asking howto do something. It is given first the arguments and then the expected result. It returns a vector containing
+a listing of forms to do the task. Not all functions support <code>howto</code>, but many do. Usually functions supporting <code>howto</code> should not have (large) side effects.
+When writing Dern functions, one has to decide whether those functions should support <code>howto</code> or not.</p>
+</div>
+<div class="paragraph">
 <p>Here is small example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="dern"><span></span><span class="tok-c tok-c-Singleline">; Enter these two forms into the REPL</span>
-<span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">)</span>                    <span class="tok-c tok-c-Singleline">; ((+ 1 2) (+ 2 1))</span>
-<span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-s">[a]</span> <span class="tok-s">[b]</span> <span class="tok-s">[ab]</span><span class="tok-p">)</span>             <span class="tok-c tok-c-Singleline">; ((+ [a] [b]))</span>
+<pre class="pygments highlight"><code data-lang="dern"><span></span><span class="tok-c tok-c-Singleline">; Enter these forms into the REPL</span>
+<span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">)</span>                              <span class="tok-c tok-c-Singleline">; ((+ 1 2) (+ 2 1))</span>
+<span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-s">[a]</span> <span class="tok-s">[b]</span> <span class="tok-s">[ab]</span><span class="tok-p">)</span>                       <span class="tok-c tok-c-Singleline">; ((+ [a] [b]))</span>
+<span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-nv">John</span> <span class="tok-nv">Mike</span> <span class="tok-nv">Alice</span> <span class="tok-nv">Lola</span><span class="tok-p">)</span> <span class="tok-mi">0</span> <span class="tok-ss">&#39;John</span><span class="tok-p">)</span>
+<span class="tok-c tok-c-Singleline">; ((ln@ (quote (John Mike Alice Lola)) 0) (cp@ (quote (John Mike Alice Lola)) 0))</span>
+<span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-nv">John</span> <span class="tok-nv">Mike</span> <span class="tok-nv">Alice</span> <span class="tok-nv">Lola</span><span class="tok-p">)</span> <span class="tok-ss">&#39;Lola</span> <span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">))</span>
+<span class="tok-c tok-c-Singleline">; ((find (quote (John Mike Alice Lola)) (quote Lola)))</span>
 
-<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">))</span>          <span class="tok-c tok-c-Singleline">; prints ((+ 1 2) (+ 2 1))</span>
-<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-s">[a]</span> <span class="tok-s">[b]</span> <span class="tok-s">[ab]</span><span class="tok-p">))</span>   <span class="tok-c tok-c-Singleline">; prints ((+ [a] [b]))</span></code></pre>
+
+<span class="tok-c tok-c-Singleline">; Or print them</span>
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-mi">3</span><span class="tok-p">))</span>                              <span class="tok-c tok-c-Singleline">; prints ((+ 1 2) (+ 2 1))</span>
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-s">[a]</span> <span class="tok-s">[b]</span> <span class="tok-s">[ab]</span><span class="tok-p">))</span>                       <span class="tok-c tok-c-Singleline">; prints ((+ [a] [b]))</span>
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-nv">John</span> <span class="tok-nv">Mike</span> <span class="tok-nv">Alice</span> <span class="tok-nv">Lola</span><span class="tok-p">)</span> <span class="tok-mi">0</span> <span class="tok-ss">&#39;John</span><span class="tok-p">))</span>
+<span class="tok-c tok-c-Singleline">; prints ((ln@ (quote (John Mike Alice Lola)) 0) (cp@ (quote (John Mike Alice Lola)) 0))</span>
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">howto </span><span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-nv">John</span> <span class="tok-nv">Mike</span> <span class="tok-nv">Alice</span> <span class="tok-nv">Lola</span><span class="tok-p">)</span> <span class="tok-ss">&#39;Lola</span> <span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">)))</span>
+<span class="tok-c tok-c-Singleline">; prints ((find (quote (John Mike Alice Lola)) (quote Lola)))</span></code></pre>
 </div>
 </div>
 </div>
@@ -2026,7 +2041,7 @@ can be used to (by giving different compiler flags):</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-01-11 15:30:43 EET
+Last updated 2018-01-11 21:04:21 EET
 </div>
 </div>
 </body>

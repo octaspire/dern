@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.307.0
+Documentation for Octaspire Dern programming language version 0.308.0
 
 == About
 
@@ -733,6 +733,10 @@ Here are few examples:
 
 == Getting help with `howto`
 
+Function `howto` can be used for asking howto do something. It is given first the arguments and then the expected result. It returns a vector containing
+a listing of forms to do the task. Not all functions support `howto`, but many do. Usually functions supporting `howto` should not have (large) side effects.
+When writing Dern functions, one has to decide whether those functions should support `howto` or not.
+
 Here is small example:
 
 :source-highlighter: pygments
@@ -740,12 +744,22 @@ Here is small example:
 :pygments-linenums-mode: inline
 [source,dern]
 ----
-; Enter these two forms into the REPL
-(howto 1 2 3)                    ; ((+ 1 2) (+ 2 1))
-(howto [a] [b] [ab])             ; ((+ [a] [b]))
+; Enter these forms into the REPL
+(howto 1 2 3)                              ; ((+ 1 2) (+ 2 1))
+(howto [a] [b] [ab])                       ; ((+ [a] [b]))
+(howto '(John Mike Alice Lola) 0 'John)
+; ((ln@ (quote (John Mike Alice Lola)) 0) (cp@ (quote (John Mike Alice Lola)) 0))
+(howto '(John Mike Alice Lola) 'Lola '(3))
+; ((find (quote (John Mike Alice Lola)) (quote Lola)))
 
-(println (howto 1 2 3))          ; prints ((+ 1 2) (+ 2 1))
-(println (howto [a] [b] [ab]))   ; prints ((+ [a] [b]))
+
+; Or print them
+(println (howto 1 2 3))                              ; prints ((+ 1 2) (+ 2 1))
+(println (howto [a] [b] [ab]))                       ; prints ((+ [a] [b]))
+(println (howto '(John Mike Alice Lola) 0 'John))
+; prints ((ln@ (quote (John Mike Alice Lola)) 0) (cp@ (quote (John Mike Alice Lola)) 0))
+(println (howto '(John Mike Alice Lola) 'Lola '(3)))
+; prints ((find (quote (John Mike Alice Lola)) (quote Lola)))
 ----
 
 
