@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.308.0
+Documentation for Octaspire Dern programming language version 0.310.0
 
 == About
 
@@ -967,6 +967,10 @@ TODO
 (println (find rooms 'Mike))    ; prints 100
 (println (find rooms 'Lola))    ; prints (102 103)
 (println (find rooms 'Nobody))  ; prints nil
+
+
+(println (find [012345 abc abc abc] [abc]))  ; prints (7 11 15)
+(println (find [012345] |3|))                ; prints (3)
 ----
 
 TODO

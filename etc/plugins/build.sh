@@ -40,6 +40,10 @@ if [ "$platform" == "Linux" ]; then
         -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY   \
         -c -fPIC -I ../../release dern_sdl2.c `sdl2-config --cflags`
     gcc -Wall -Wextra -pedantic -std=c99 -shared -o libdern_sdl2.so dern_sdl2.o `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+
+    echo "--- plugin easing    ---"
+    gcc -g -Wall -Wextra -std=gnu99 -c -fPIC -I ../../release dern_easing.c
+    gcc -g -Wall -Wextra -std=gnu99 -shared -o libdern_easing.so dern_easing.o
 fi
 
 

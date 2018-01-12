@@ -365,6 +365,10 @@ int32_t octaspire_dern_value_as_integer_get_value(
 double octaspire_dern_value_as_real_get_value(
     octaspire_dern_value_t const * const self);
 
+void octaspire_dern_value_as_real_set_value(
+    octaspire_dern_value_t * const self,
+    double const value);
+
 double octaspire_dern_value_as_number_get_value(
     octaspire_dern_value_t const * const self);
 
@@ -522,9 +526,13 @@ octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
     octaspire_dern_value_tag_t const typeTag,
     ptrdiff_t const possiblyNegativeIndex);
 
-octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_of_type_at_const(
+octaspire_dern_value_t const * octaspire_dern_value_as_vector_get_element_of_type_at_const(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_tag_t const typeTag,
+    ptrdiff_t const possiblyNegativeIndex);
+
+octaspire_dern_value_tag_t octaspire_dern_value_as_vector_get_element_type_at_const(
+    octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
 
 octaspire_dern_value_t *octaspire_dern_value_as_list_get_element_at(

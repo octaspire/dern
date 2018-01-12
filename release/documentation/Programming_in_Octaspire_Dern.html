@@ -572,7 +572,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Documentation for Octaspire Dern programming language version 0.308.0</p>
+<p>Documentation for Octaspire Dern programming language version 0.310.0</p>
 </div>
 </div>
 </div>
@@ -1548,7 +1548,11 @@ only for reading and <code>output-file-open</code> will open file only for writi
 
 <span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">find </span><span class="tok-nv">rooms</span> <span class="tok-ss">&#39;Mike</span><span class="tok-p">))</span>    <span class="tok-c tok-c-Singleline">; prints 100</span>
 <span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">find </span><span class="tok-nv">rooms</span> <span class="tok-ss">&#39;Lola</span><span class="tok-p">))</span>    <span class="tok-c tok-c-Singleline">; prints (102 103)</span>
-<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">find </span><span class="tok-nv">rooms</span> <span class="tok-ss">&#39;Nobody</span><span class="tok-p">))</span>  <span class="tok-c tok-c-Singleline">; prints nil</span></code></pre>
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">find </span><span class="tok-nv">rooms</span> <span class="tok-ss">&#39;Nobody</span><span class="tok-p">))</span>  <span class="tok-c tok-c-Singleline">; prints nil</span>
+
+
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">find </span><span class="tok-s">[012345 abc abc abc]</span> <span class="tok-s">[abc]</span><span class="tok-p">))</span>  <span class="tok-c tok-c-Singleline">; prints (7 11 15)</span>
+<span class="tok-p">(</span><span class="tok-nb">println </span><span class="tok-p">(</span><span class="tok-nb">find </span><span class="tok-s">[012345]</span> <span class="tok-sc">|3|</span><span class="tok-p">))</span>                <span class="tok-c tok-c-Singleline">; prints (3)</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2041,7 +2045,7 @@ can be used to (by giving different compiler flags):</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-01-11 21:04:21 EET
+Last updated 2018-01-14 17:04:56 EET
 </div>
 </div>
 </body>

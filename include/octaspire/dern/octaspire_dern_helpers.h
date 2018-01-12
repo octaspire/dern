@@ -18,6 +18,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_HELPERS_H
 
 #include <octaspire/core/octaspire_container_hash_map.h>
+#include <octaspire/core/octaspire_memory.h>
 #include "octaspire/dern/octaspire_dern_value.h"
 
 #ifdef __cplusplus
@@ -27,6 +28,8 @@ extern "C" {
 int octaspire_dern_helpers_compare_value_hash_maps(
     octaspire_container_hash_map_t const * const firstValueHashMap,
     octaspire_container_hash_map_t const * const otherValueHashMap);
+
+double octaspire_dern_helpers_atof(char const * const str, octaspire_memory_allocator_t * const allocator);
 
 #ifdef __cplusplus
 }

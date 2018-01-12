@@ -1267,21 +1267,11 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
     size_t   endIndexInInput = startIndexInInput;
     bool     endsInDelimiter = false;
 
-    octaspire_container_utf8_string_t *tmpStr =
-        octaspire_container_utf8_string_new("", allocator);
-
-    if (!tmpStr)
-    {
-        return octaspire_dern_lexer_token_new(
-            OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
-            "Memory allocation failed",
-            octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-            octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
-            octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
-            allocator);
-    }
-
+    double   factor          = 1;
     uint32_t prevChar        = 0;
+
+    char digits[256]         = {'\0'};
+    size_t nextDigitIndex    = 0;
 
     while (octaspire_input_is_good(input))
     {
@@ -1292,9 +1282,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
         {
             if (minusRead)
             {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
                 return octaspire_dern_lexer_token_new(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                     "Number can contain only one '-' character",
@@ -1312,9 +1299,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
 
             if (charsRead > 0)
             {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
                 return octaspire_dern_lexer_token_new(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                     "Number can have '-' character only in the beginning",
@@ -1331,27 +1315,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
             }
 
             minusRead = true;
-            if (!octaspire_container_utf8_string_push_back_ucs_character(tmpStr, c))
-            {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
-                return octaspire_dern_lexer_token_new(
-                    OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
-                    "Memory allocation failed",
-                    octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                    octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
-                    octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
-                    allocator);
-            }
+            factor    = -factor;
         }
         else if (c == '.')
         {
             if (dotRead)
             {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
                 return octaspire_dern_lexer_token_new(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                     "Number can contain only one '.' character",
@@ -1369,9 +1338,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
 
             if (charsRead == 0)
             {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
                 return octaspire_dern_lexer_token_new(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                     "Character '.' cannot start a number",
@@ -1388,35 +1354,21 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
             }
 
             dotRead = true;
-            if (!octaspire_container_utf8_string_push_back_ucs_character(tmpStr, c))
-            {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
-                return octaspire_dern_lexer_token_new(
-                    OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
-                    "Memory allocation failed",
-                    octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                    octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
-                    octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
-                    allocator);
-            }
         }
         else if (isdigit((int const)c))
         {
-            if (!octaspire_container_utf8_string_push_back_ucs_character(tmpStr, c))
+            if (dotRead)
             {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
-                return octaspire_dern_lexer_token_new(
-                    OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
-                    "Memory allocation failed",
-                    octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                    octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
-                    octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
-                    allocator);
+                factor /= 10;
             }
+
+            if (nextDigitIndex >= 256)
+            {
+                abort();
+            }
+
+            digits[nextDigitIndex] = c;
+            ++nextDigitIndex;
         }
         else if (octaspire_dern_lexer_private_is_delimeter(c))
         {
@@ -1426,9 +1378,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
         }
         else
         {
-            octaspire_container_utf8_string_release(tmpStr);
-            tmpStr = 0;
-
             return octaspire_dern_lexer_token_new_format(
                 OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                 octaspire_dern_lexer_token_position_init(
@@ -1456,9 +1405,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
 
     if (prevChar == '.')
     {
-        octaspire_container_utf8_string_release(tmpStr);
-        tmpStr = 0;
-
         return octaspire_dern_lexer_token_new(
                 OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                 "Character '.' cannot end a number",
@@ -1476,9 +1422,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
 
     if (prevChar == '-')
     {
-        octaspire_container_utf8_string_release(tmpStr);
-        tmpStr = 0;
-
         return octaspire_dern_lexer_token_new(
                 OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                 "Character '-' cannot end a number",
@@ -1494,12 +1437,17 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
                 allocator);
     }
 
+    size_t value = 0;
+
+    for (size_t i = 0; i < nextDigitIndex; ++i)
+    {
+        char const c = digits[nextDigitIndex - 1 - i];
+        value += (pow(10, i) * (c - '0'));
+    }
+
     if (dotRead)
     {
-        double const resultValue = atof(octaspire_container_utf8_string_get_c_string(tmpStr));
-
-        octaspire_container_utf8_string_release(tmpStr);
-        tmpStr = 0;
+        double const resultValue = (double)value * factor;
 
         return octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_REAL,
@@ -1516,11 +1464,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
             allocator);
     }
 
-    int32_t const resultValue =
-        (int32_t)atol(octaspire_container_utf8_string_get_c_string(tmpStr));
-
-    octaspire_container_utf8_string_release(tmpStr);
-    tmpStr = 0;
+    int32_t const resultValue = (int32_t)value * factor;
 
     return octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER,

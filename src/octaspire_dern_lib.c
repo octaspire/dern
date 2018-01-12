@@ -39,6 +39,7 @@ struct octaspire_dern_lib_t
 #else
     void                              *binaryLibHandle;
 #endif
+    bool (*libMarkFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const);
 #endif
     octaspire_dern_lib_tag_t           typeTag;
     char                               padding[4];
@@ -69,6 +70,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_source(
 #else
     self->binaryLibHandle = 0;
 #endif
+    self->libMarkFunc = 0;
 #endif
 
     octaspire_dern_value_t *value =
@@ -195,6 +197,21 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
                 octaspire_helpers_verify_not_null(self->errorMessage);
             }
         }
+
+        // Mark function
+
+        octaspire_container_utf8_string_t *libMarkFuncName =
+            octaspire_container_utf8_string_new_format(self->allocator, "%s_mark_all", name);
+
+        octaspire_helpers_verify_not_null(libMarkFuncName);
+
+        self->libMarkFunc =
+            (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))GetProcAddress(
+                self->binaryLibHandle,
+                octaspire_container_utf8_string_get_c_string(libMarkFuncName));
+
+        octaspire_container_utf8_string_release(libMarkFuncName);
+        libMarkFuncName = 0;
     }
 #else
         // Clear any old errors
@@ -270,6 +287,29 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
                     //self->binaryLibHandle = 0;
                 }
             }
+
+            // Mark function
+
+            octaspire_container_utf8_string_t *libMarkFuncName =
+                octaspire_container_utf8_string_new_format(self->allocator, "%s_mark_all", name);
+
+            octaspire_helpers_verify_not_null(libMarkFuncName);
+
+            self->libMarkFunc =
+                (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))dlsym(
+                    self->binaryLibHandle,
+                    octaspire_container_utf8_string_get_c_string(libMarkFuncName));
+
+            octaspire_container_utf8_string_release(libMarkFuncName);
+            libMarkFuncName = 0;
+
+            /*char *error = dlerror();
+
+            if (!error && libMarkFunc)
+            {
+                self->libMarkFunc = libMarkFunc;
+            }
+            */
         }
 #endif
 #else
@@ -441,6 +481,27 @@ char const *octaspire_dern_lib_get_error_message(octaspire_dern_lib_t const * co
     }
 
     return octaspire_container_utf8_string_get_c_string(self->errorMessage);
+}
+
+bool octaspire_dern_lib_mark_all(octaspire_dern_lib_t * const self)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(self);
+    
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+    if (!self->libMarkFunc)
+    {
+        return 0;
+    }
+
+    if (!(*self->libMarkFunc)(
+            self->vm,
+            octaspire_dern_vm_get_global_environment(self->vm)->value.environment))
+    {
+        return false;
+    }
+#endif
+
+    return true;
 }
 
 void *octaspire_dern_lib_get_handle(octaspire_dern_lib_t * const self)

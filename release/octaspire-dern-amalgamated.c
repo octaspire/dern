@@ -22050,10 +22050,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "308"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "310"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.308.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.310.0"
 
 
 
@@ -22771,6 +22771,10 @@ int32_t octaspire_dern_value_as_integer_get_value(
 double octaspire_dern_value_as_real_get_value(
     octaspire_dern_value_t const * const self);
 
+void octaspire_dern_value_as_real_set_value(
+    octaspire_dern_value_t * const self,
+    double const value);
+
 double octaspire_dern_value_as_number_get_value(
     octaspire_dern_value_t const * const self);
 
@@ -22928,9 +22932,13 @@ octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
     octaspire_dern_value_tag_t const typeTag,
     ptrdiff_t const possiblyNegativeIndex);
 
-octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_of_type_at_const(
+octaspire_dern_value_t const * octaspire_dern_value_as_vector_get_element_of_type_at_const(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_tag_t const typeTag,
+    ptrdiff_t const possiblyNegativeIndex);
+
+octaspire_dern_value_tag_t octaspire_dern_value_as_vector_get_element_type_at_const(
+    octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
 
 octaspire_dern_value_t *octaspire_dern_value_as_list_get_element_at(
@@ -23022,6 +23030,8 @@ extern "C" {
 int octaspire_dern_helpers_compare_value_hash_maps(
     octaspire_container_hash_map_t const * const firstValueHashMap,
     octaspire_container_hash_map_t const * const otherValueHashMap);
+
+double octaspire_dern_helpers_atof(char const * const str, octaspire_memory_allocator_t * const allocator);
 
 #ifdef __cplusplus
 }
@@ -23191,6 +23201,8 @@ void octaspire_dern_lib_release(octaspire_dern_lib_t *self);
 bool octaspire_dern_lib_is_good(octaspire_dern_lib_t const * const self);
 
 char const *octaspire_dern_lib_get_error_message(octaspire_dern_lib_t const * const self);
+
+bool octaspire_dern_lib_mark_all(octaspire_dern_lib_t * const self);
 
 void *octaspire_dern_lib_get_handle(octaspire_dern_lib_t * const self);
 
@@ -25893,21 +25905,11 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
     size_t   endIndexInInput = startIndexInInput;
     bool     endsInDelimiter = false;
 
-    octaspire_container_utf8_string_t *tmpStr =
-        octaspire_container_utf8_string_new("", allocator);
-
-    if (!tmpStr)
-    {
-        return octaspire_dern_lexer_token_new(
-            OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
-            "Memory allocation failed",
-            octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-            octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
-            octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
-            allocator);
-    }
-
+    double   factor          = 1;
     uint32_t prevChar        = 0;
+
+    char digits[256]         = {'\0'};
+    size_t nextDigitIndex    = 0;
 
     while (octaspire_input_is_good(input))
     {
@@ -25918,9 +25920,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
         {
             if (minusRead)
             {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
                 return octaspire_dern_lexer_token_new(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                     "Number can contain only one '-' character",
@@ -25938,9 +25937,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
 
             if (charsRead > 0)
             {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
                 return octaspire_dern_lexer_token_new(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                     "Number can have '-' character only in the beginning",
@@ -25957,27 +25953,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
             }
 
             minusRead = true;
-            if (!octaspire_container_utf8_string_push_back_ucs_character(tmpStr, c))
-            {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
-                return octaspire_dern_lexer_token_new(
-                    OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
-                    "Memory allocation failed",
-                    octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                    octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
-                    octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
-                    allocator);
-            }
+            factor    = -factor;
         }
         else if (c == '.')
         {
             if (dotRead)
             {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
                 return octaspire_dern_lexer_token_new(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                     "Number can contain only one '.' character",
@@ -25995,9 +25976,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
 
             if (charsRead == 0)
             {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
                 return octaspire_dern_lexer_token_new(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                     "Character '.' cannot start a number",
@@ -26014,35 +25992,21 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
             }
 
             dotRead = true;
-            if (!octaspire_container_utf8_string_push_back_ucs_character(tmpStr, c))
-            {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
-                return octaspire_dern_lexer_token_new(
-                    OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
-                    "Memory allocation failed",
-                    octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                    octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
-                    octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
-                    allocator);
-            }
         }
         else if (isdigit((int const)c))
         {
-            if (!octaspire_container_utf8_string_push_back_ucs_character(tmpStr, c))
+            if (dotRead)
             {
-                octaspire_container_utf8_string_release(tmpStr);
-                tmpStr = 0;
-
-                return octaspire_dern_lexer_token_new(
-                    OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
-                    "Memory allocation failed",
-                    octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                    octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
-                    octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
-                    allocator);
+                factor /= 10;
             }
+
+            if (nextDigitIndex >= 256)
+            {
+                abort();
+            }
+
+            digits[nextDigitIndex] = c;
+            ++nextDigitIndex;
         }
         else if (octaspire_dern_lexer_private_is_delimeter(c))
         {
@@ -26052,9 +26016,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
         }
         else
         {
-            octaspire_container_utf8_string_release(tmpStr);
-            tmpStr = 0;
-
             return octaspire_dern_lexer_token_new_format(
                 OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                 octaspire_dern_lexer_token_position_init(
@@ -26082,9 +26043,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
 
     if (prevChar == '.')
     {
-        octaspire_container_utf8_string_release(tmpStr);
-        tmpStr = 0;
-
         return octaspire_dern_lexer_token_new(
                 OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                 "Character '.' cannot end a number",
@@ -26102,9 +26060,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
 
     if (prevChar == '-')
     {
-        octaspire_container_utf8_string_release(tmpStr);
-        tmpStr = 0;
-
         return octaspire_dern_lexer_token_new(
                 OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                 "Character '-' cannot end a number",
@@ -26120,12 +26075,17 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
                 allocator);
     }
 
+    size_t value = 0;
+
+    for (size_t i = 0; i < nextDigitIndex; ++i)
+    {
+        char const c = digits[nextDigitIndex - 1 - i];
+        value += (pow(10, i) * (c - '0'));
+    }
+
     if (dotRead)
     {
-        double const resultValue = atof(octaspire_container_utf8_string_get_c_string(tmpStr));
-
-        octaspire_container_utf8_string_release(tmpStr);
-        tmpStr = 0;
+        double const resultValue = (double)value * factor;
 
         return octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_REAL,
@@ -26142,11 +26102,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
             allocator);
     }
 
-    int32_t const resultValue =
-        (int32_t)atol(octaspire_container_utf8_string_get_c_string(tmpStr));
-
-    octaspire_container_utf8_string_release(tmpStr);
-    tmpStr = 0;
+    int32_t const resultValue = (int32_t)value * factor;
 
     return octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER,
@@ -27051,6 +27007,7 @@ struct octaspire_dern_lib_t
 #else
     void                              *binaryLibHandle;
 #endif
+    bool (*libMarkFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const);
 #endif
     octaspire_dern_lib_tag_t           typeTag;
     char                               padding[4];
@@ -27081,6 +27038,7 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_source(
 #else
     self->binaryLibHandle = 0;
 #endif
+    self->libMarkFunc = 0;
 #endif
 
     octaspire_dern_value_t *value =
@@ -27207,6 +27165,21 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
                 octaspire_helpers_verify_not_null(self->errorMessage);
             }
         }
+
+        // Mark function
+
+        octaspire_container_utf8_string_t *libMarkFuncName =
+            octaspire_container_utf8_string_new_format(self->allocator, "%s_mark_all", name);
+
+        octaspire_helpers_verify_not_null(libMarkFuncName);
+
+        self->libMarkFunc =
+            (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))GetProcAddress(
+                self->binaryLibHandle,
+                octaspire_container_utf8_string_get_c_string(libMarkFuncName));
+
+        octaspire_container_utf8_string_release(libMarkFuncName);
+        libMarkFuncName = 0;
     }
 #else
         // Clear any old errors
@@ -27282,6 +27255,29 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
                     //self->binaryLibHandle = 0;
                 }
             }
+
+            // Mark function
+
+            octaspire_container_utf8_string_t *libMarkFuncName =
+                octaspire_container_utf8_string_new_format(self->allocator, "%s_mark_all", name);
+
+            octaspire_helpers_verify_not_null(libMarkFuncName);
+
+            self->libMarkFunc =
+                (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))dlsym(
+                    self->binaryLibHandle,
+                    octaspire_container_utf8_string_get_c_string(libMarkFuncName));
+
+            octaspire_container_utf8_string_release(libMarkFuncName);
+            libMarkFuncName = 0;
+
+            /*char *error = dlerror();
+
+            if (!error && libMarkFunc)
+            {
+                self->libMarkFunc = libMarkFunc;
+            }
+            */
         }
 #endif
 #else
@@ -27453,6 +27449,27 @@ char const *octaspire_dern_lib_get_error_message(octaspire_dern_lib_t const * co
     }
 
     return octaspire_container_utf8_string_get_c_string(self->errorMessage);
+}
+
+bool octaspire_dern_lib_mark_all(octaspire_dern_lib_t * const self)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(self);
+    
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+    if (!self->libMarkFunc)
+    {
+        return 0;
+    }
+
+    if (!(*self->libMarkFunc)(
+            self->vm,
+            octaspire_dern_vm_get_global_environment(self->vm)->value.environment))
+    {
+        return false;
+    }
+#endif
+
+    return true;
 }
 
 void *octaspire_dern_lib_get_handle(octaspire_dern_lib_t * const self)
@@ -28270,6 +28287,26 @@ int octaspire_dern_helpers_compare_value_hash_maps(
     return 0;
 }
 
+double octaspire_dern_helpers_atof(char const * const str, octaspire_memory_allocator_t * const allocator)
+{
+    octaspire_input_t * input = octaspire_input_new_from_c_string(str, allocator);
+    octaspire_helpers_verify_not_null(input);
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(input, allocator);
+    octaspire_helpers_verify_not_null(token);
+
+    if (octaspire_dern_lexer_token_get_type_tag(token) != OCTASPIRE_DERN_LEXER_TOKEN_TAG_REAL)
+    {
+        return octaspire_dern_lexer_token_get_real_value(token);
+    }
+    if (octaspire_dern_lexer_token_get_type_tag(token) != OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER)
+    {
+        return octaspire_dern_lexer_token_get_integer_value(token);
+    }
+    else
+    {
+        return 0;
+    }
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../src/octaspire_dern_helpers.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39464,6 +39501,14 @@ double octaspire_dern_value_as_real_get_value(
     return self->value.real;
 }
 
+void octaspire_dern_value_as_real_set_value(
+    octaspire_dern_value_t * const self,
+    double const value)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_REAL);
+    self->value.real = value;
+}
+
 double octaspire_dern_value_as_number_get_value(
     octaspire_dern_value_t const * const self)
 {
@@ -39839,8 +39884,9 @@ bool octaspire_dern_value_as_integer_add(
                     self->typeTag = OCTASPIRE_DERN_VALUE_TAG_REAL;
                     self->value.real = self->value.integer;
 
-                    self->value.real +=
-                        atof(octaspire_container_utf8_string_get_c_string(other->value.string));
+                    self->value.real += octaspire_dern_helpers_atof(
+                        octaspire_container_utf8_string_get_c_string(other->value.string),
+                        octaspire_dern_vm_get_allocator(self->vm));
 
                     return true;
                 }
@@ -39940,8 +39986,9 @@ bool octaspire_dern_value_as_integer_subtract(
                     self->typeTag = OCTASPIRE_DERN_VALUE_TAG_REAL;
                     self->value.real = self->value.integer;
 
-                    self->value.real -=
-                        atof(octaspire_container_utf8_string_get_c_string(other->value.string));
+                    self->value.real -= octaspire_dern_helpers_atof(
+                        octaspire_container_utf8_string_get_c_string(other->value.string),
+                        octaspire_dern_vm_get_allocator(self->vm));
 
                     return true;
                 }
@@ -40037,8 +40084,9 @@ bool octaspire_dern_value_as_real_add(
             {
                 if (octaspire_container_utf8_string_contains_char(other->value.string, (uint32_t)'.'))
                 {
-                    self->value.real +=
-                        atof(octaspire_container_utf8_string_get_c_string(other->value.string));
+                    self->value.real += octaspire_dern_helpers_atof(
+                        octaspire_container_utf8_string_get_c_string(other->value.string),
+                        octaspire_dern_vm_get_allocator(self->vm));
 
                     return true;
                 }
@@ -40133,8 +40181,9 @@ bool octaspire_dern_value_as_real_subtract(
             {
                 if (octaspire_container_utf8_string_contains_char(other->value.string, (uint32_t)'.'))
                 {
-                    self->value.real -=
-                        atof(octaspire_container_utf8_string_get_c_string(other->value.string));
+                    self->value.real -= octaspire_dern_helpers_atof(
+                        octaspire_container_utf8_string_get_c_string(other->value.string),
+                        octaspire_dern_vm_get_allocator(self->vm));
 
                     return true;
                 }
@@ -40803,6 +40852,23 @@ octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_of_type
     }
 
     return 0;
+}
+
+octaspire_dern_value_tag_t octaspire_dern_value_as_vector_get_element_type_at_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex)
+{
+    octaspire_dern_value_t const *result =
+        octaspire_dern_value_as_vector_get_element_at_const(
+            self,
+            possiblyNegativeIndex);
+
+    if (!result)
+    {
+        return OCTASPIRE_DERN_VALUE_TAG_ILLEGAL;
+    }
+
+    return result->typeTag;
 }
 
 octaspire_dern_value_t *octaspire_dern_value_as_list_get_element_at(
@@ -43977,18 +44043,8 @@ bool octaspire_dern_vm_gc(octaspire_dern_vm_t *self)
 
 bool octaspire_dern_vm_private_mark_all(octaspire_dern_vm_t *self)
 {
-    /*
-    octaspire_helpers_verify_not_null(self->globalEnvironment);
-    // TODO XXX global env need not be in the stack anymore
-    if (self->globalEnvironment)
-    {
-        octaspire_dern_vm_private_mark(self, self->globalEnvironment);
-    }
-    */
-
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
 
-    // Stack seems to grow during iter. Maybe push without pop somewhere?
     for (size_t i = 0; i < octaspire_container_vector_get_length(self->stack); ++i)
     {
         octaspire_dern_value_t * const value =
@@ -44003,6 +44059,20 @@ bool octaspire_dern_vm_private_mark_all(octaspire_dern_vm_t *self)
 
             octaspire_helpers_verify_not_null(false);
             return false;
+        }
+    }
+
+    if (self->libraries)
+    {
+        octaspire_container_hash_map_element_iterator_t iterator =
+            octaspire_container_hash_map_element_iterator_init(self->libraries);
+
+        while (iterator.element)
+        {
+            octaspire_dern_lib_mark_all(
+                ((octaspire_dern_lib_t*)octaspire_container_hash_map_element_get_value(iterator.element)));
+
+            octaspire_container_hash_map_element_iterator_next(&iterator);
         }
     }
 

@@ -21,6 +21,7 @@ limitations under the License.
 #include <octaspire/core/octaspire_helpers.h>
 #include <octaspire/core/octaspire_input.h>
 #include <octaspire/core/octaspire_container_vector.h>
+#include <octaspire/core/octaspire_container_hash_map.h>
 #include <octaspire/core/octaspire_helpers.h>
 #include "octaspire/dern/octaspire_dern_value.h"
 #include "octaspire/dern/octaspire_dern_environment.h"
@@ -2508,18 +2509,8 @@ bool octaspire_dern_vm_gc(octaspire_dern_vm_t *self)
 
 bool octaspire_dern_vm_private_mark_all(octaspire_dern_vm_t *self)
 {
-    /*
-    octaspire_helpers_verify_not_null(self->globalEnvironment);
-    // TODO XXX global env need not be in the stack anymore
-    if (self->globalEnvironment)
-    {
-        octaspire_dern_vm_private_mark(self, self->globalEnvironment);
-    }
-    */
-
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
 
-    // Stack seems to grow during iter. Maybe push without pop somewhere?
     for (size_t i = 0; i < octaspire_container_vector_get_length(self->stack); ++i)
     {
         octaspire_dern_value_t * const value =
@@ -2534,6 +2525,20 @@ bool octaspire_dern_vm_private_mark_all(octaspire_dern_vm_t *self)
 
             octaspire_helpers_verify_not_null(false);
             return false;
+        }
+    }
+
+    if (self->libraries)
+    {
+        octaspire_container_hash_map_element_iterator_t iterator =
+            octaspire_container_hash_map_element_iterator_init(self->libraries);
+
+        while (iterator.element)
+        {
+            octaspire_dern_lib_mark_all(
+                ((octaspire_dern_lib_t*)octaspire_container_hash_map_element_get_value(iterator.element)));
+
+            octaspire_container_hash_map_element_iterator_next(&iterator);
         }
     }
 

@@ -1,4 +1,7 @@
 #include "octaspire/dern/octaspire_dern_helpers.h"
+#include "octaspire/dern/octaspire_dern_lexer.h"
+#include "octaspire/core/octaspire_input.h"
+#include "octaspire/core/octaspire_helpers.h"
 
 int octaspire_dern_helpers_compare_value_hash_maps(
     octaspire_container_hash_map_t const * const firstValueHashMap,
@@ -49,3 +52,23 @@ int octaspire_dern_helpers_compare_value_hash_maps(
     return 0;
 }
 
+double octaspire_dern_helpers_atof(char const * const str, octaspire_memory_allocator_t * const allocator)
+{
+    octaspire_input_t * input = octaspire_input_new_from_c_string(str, allocator);
+    octaspire_helpers_verify_not_null(input);
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(input, allocator);
+    octaspire_helpers_verify_not_null(token);
+
+    if (octaspire_dern_lexer_token_get_type_tag(token) != OCTASPIRE_DERN_LEXER_TOKEN_TAG_REAL)
+    {
+        return octaspire_dern_lexer_token_get_real_value(token);
+    }
+    if (octaspire_dern_lexer_token_get_type_tag(token) != OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER)
+    {
+        return octaspire_dern_lexer_token_get_integer_value(token);
+    }
+    else
+    {
+        return 0;
+    }
+}
