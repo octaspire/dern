@@ -369,6 +369,10 @@ void octaspire_dern_value_as_real_set_value(
     octaspire_dern_value_t * const self,
     double const value);
 
+void octaspire_dern_value_as_number_set_value(
+    octaspire_dern_value_t * const self,
+    double const value);
+
 double octaspire_dern_value_as_number_get_value(
     octaspire_dern_value_t const * const self);
 

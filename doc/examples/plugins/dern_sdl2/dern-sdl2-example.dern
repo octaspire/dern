@@ -1,4 +1,5 @@
 (require 'dern_sdl2)
+(require 'dern_easing)
 
 (define print-usage as (fn ()
         (println [--help        show this help message and exit])
@@ -40,7 +41,7 @@
     (define sound3 as (sdl2-CreateSound 'PATH [examples/resources/sound/sfx_sounds_button4.wav])   [button sound]       in (env-global))))
 
 (if (sdl2-has-ttf)
-    (define font   as (sdl2-CreateFont  'PATH [examples/resources/font/Lato-Black.ttf] 32) [font] in (env-global)))
+    (define font   as (sdl2-CreateFont  'PATH [examples/resources/font/Lato-Black.ttf] 18) [font] in (env-global)))
 
 (if (sdl2-has-img)
     (define textureFromBase64 as
@@ -51,42 +52,50 @@
 
 (if (sdl2-has-ttf)
     (define textureFromFontAndText as
-            (sdl2-CreateTextureFromFontAndText renderer font [Press '1', '2' or '3' to play sound effects] [white] false)
+            (sdl2-CreateTextureFromFontAndText renderer font [Press '1', '2' or '3' to play sound effects. Press '9' to ease.] [white] false)
             [texture from font and text]))
-
-(sdl2-RenderClear renderer)
-
-(if (sdl2-has-img)
-    (sdl2-RenderCopy renderer textureFromBase64 nil '(100 100 32 32)))
-
-(if (and (sdl2-has-img) (sdl2-has-ttf)) (do
-    (define tprop as (sdl2-QueryTexture textureFromFontAndText) [properties of texture])
-    (sdl2-RenderCopy renderer textureFromFontAndText nil (vector 10 200 (ln@ tprop 1) (ln@ tprop 2)))))
 
 (if (sdl2-has-mix)
     (sdl2-PlayMusic music))
 
-(define tprop as (sdl2-QueryTexture textureFromFileSystem) [properties of texture])
-(sdl2-RenderCopy renderer textureFromFileSystem  nil (vector 10 250 (ln@ tprop 1) (ln@ tprop 2)))
 
-(sdl2-SetRenderDrawColor renderer 255 0 0 255)
-(sdl2-SetRenderDrawColor renderer 255 0 0 255)
-(sdl2-RenderDrawLine renderer 0 0 200 200)
-(sdl2-RenderDrawPoint renderer 100 10)
-(sdl2-RenderDrawRect renderer 200 200 50 50)
-(sdl2-SetRenderDrawColor renderer 255 255 0 255)
-(sdl2-RenderFillRect renderer 250 150 50 50)
-(sdl2-RenderPresent renderer)
-
-(define running as true [is running or not])
-
-(define targetFPS as 20 [target FPS])
+(define running             as true              [is running or not])
+(define targetFPS           as 20                [target FPS])
 (define targetFrameDuration as (/ 1.0 targetFPS) [time for a frame to last])
+(define origoX              as 256               [X-coordinate of center for drawing])
+(define origoY              as 256               [Y-coordinate of center for drawing])
+
+(define render as (fn ()
+        (if (sdl2-has-img)
+            (sdl2-RenderCopy renderer textureFromBase64 nil '(100 100 32 32)))
+
+        (if (and (sdl2-has-img) (sdl2-has-ttf)) (do
+            (define tprop as (sdl2-QueryTexture textureFromFontAndText) [properties of texture])
+            (sdl2-RenderCopy renderer textureFromFontAndText nil (vector 10 200 (ln@ tprop 1) (ln@ tprop 2)))))
+
+        (define tprop as (sdl2-QueryTexture textureFromFileSystem) [properties of texture])
+        (sdl2-RenderCopy renderer textureFromFileSystem  nil (vector origoX origoY (ln@ tprop 1) (ln@ tprop 2)))
+
+        (sdl2-SetRenderDrawColor renderer 255 0 0   255)
+        (sdl2-RenderDrawLine     renderer 0 0 200 200)
+        (sdl2-RenderDrawPoint    renderer 100 10)
+        (sdl2-RenderDrawRect     renderer 200 200 50 50)
+        (sdl2-SetRenderDrawColor renderer 255 255 0 255)
+        (sdl2-RenderFillRect     renderer 250 150 50 50)
+        (sdl2-SetRenderDrawColor renderer 0 0 0   255)
+        (sdl2-RenderPresent renderer))
+    [render]
+    '()
+    howto-ok)
 
 (while running
        (sdl2-TimerUpdate)
        (define dt as (sdl2-TimerGetSeconds) [dt])
        (sdl2-TimerReset)
+       (sdl2-RenderClear renderer)
+       (render)
+       (sdl2-RenderPresent renderer)
+       (easing-update dt)
        (define event as (sdl2-PollEvent) [event from sdl2])
        (define type  as nil [type of event])
        (if (and (!= event nil) (> (len event) 0)) (= type (ln@ event 0)))
@@ -94,6 +103,7 @@
                (== type 'JOYBUTTONDOWN) (println [Joystick button {} pressed] (ln@ event 1))
                (== type 'JOYAXIS)       (println [Joystick axis   {}]         (ln@ event 1))
                (== type 'KEYDOWN)       (do
+                                          (if      (== (ln@ event 1) [9])                 (easing-add 'in-out-back origoX 100 256 3 1.70158))
                                           (if (and (== (ln@ event 1) [1]) (sdl2-has-mix)) (sdl2-PlaySound sound1 -1 0))
                                           (if (and (== (ln@ event 1) [2]) (sdl2-has-mix)) (sdl2-PlaySound sound2 -1 0))
                                           (if (and (== (ln@ event 1) [3]) (sdl2-has-mix)) (sdl2-PlaySound sound3 -1 0))))

@@ -22050,10 +22050,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "310"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "312"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.310.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.312.0"
 
 
 
@@ -22772,6 +22772,10 @@ double octaspire_dern_value_as_real_get_value(
     octaspire_dern_value_t const * const self);
 
 void octaspire_dern_value_as_real_set_value(
+    octaspire_dern_value_t * const self,
+    double const value);
+
+void octaspire_dern_value_as_number_set_value(
     octaspire_dern_value_t * const self,
     double const value);
 
@@ -39507,6 +39511,23 @@ void octaspire_dern_value_as_real_set_value(
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_REAL);
     self->value.real = value;
+}
+
+void octaspire_dern_value_as_number_set_value(
+    octaspire_dern_value_t * const self,
+    double const value)
+{
+    octaspire_helpers_verify_true(
+        octaspire_dern_value_is_number(self));
+
+    if (octaspire_dern_value_is_real(self))
+    {
+        self->value.real = value;
+    }
+    else
+    {
+        self->value.integer = (int32_t)value;
+    }
 }
 
 double octaspire_dern_value_as_number_get_value(
