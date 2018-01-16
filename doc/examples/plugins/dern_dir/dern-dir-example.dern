@@ -1,9 +1,4 @@
-#! This example assumes that you have the dern-socket-echo-server.dern
-   running at the same time.
-!#
-
 (require 'dern_dir)
 
 (define v as (dir-get-listing [.]) [directory listing])
 (println v)
-

@@ -1,0 +1,15 @@
+(require 'dern_easing)
+
+(define x as 100 [value to be eased])
+
+(easing-add 'in-out-back                ; type of easing
+             x                          ; value to ease
+             100 300                    ; ease starting from 100 with change of 300
+             1                          ; duration of the ease in seconds
+             1.70158                    ; overshoot value for the 'in-out-back' ease
+             [println 'easing-done])    ; optional string to be evaluated when the easing is done
+
+(while (easing-has-any)
+       (easing-update 0.1)              ; Update with time step of 0.1 seconds
+       (println x))
+
