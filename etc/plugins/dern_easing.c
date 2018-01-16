@@ -513,15 +513,16 @@ octaspire_dern_ease_type_t;
 
 typedef struct octaspire_dern_ease_t
 {
-    octaspire_dern_ease_type_t typeTag;
-    double                     t;
-    double                     b;
-    double                     c;
-    double                     d;
-    double                     s;
-    double                     a;
-    double                     p;
-    octaspire_dern_value_t *   targetValue;
+    octaspire_dern_ease_type_t          typeTag;
+    double                              t;
+    double                              b;
+    double                              c;
+    double                              d;
+    double                              s;
+    double                              a;
+    double                              p;
+    octaspire_dern_value_t *            targetValue;
+    octaspire_container_utf8_string_t * evalOnDone;
 }
 octaspire_dern_ease_t;
 
@@ -549,7 +550,7 @@ octaspire_dern_value_t *dern_easing_add(
             numArgs);
     }
 
-    octaspire_dern_ease_t ease = {.targetValue = 0};
+    octaspire_dern_ease_t ease = {.targetValue = 0, .evalOnDone = 0};
 
     octaspire_dern_value_t const * const typeNameArg =
         octaspire_dern_value_as_vector_get_element_of_type_at_const(arguments, OCTASPIRE_DERN_VALUE_TAG_SYMBOL, 0);
@@ -637,35 +638,124 @@ octaspire_dern_value_t *dern_easing_add(
 
     if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "linear"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
-                "Builtin 'easing-add' expects five arguments if type is 'linear'. "
+                "Builtin 'easing-add' expects five or six arguments if type is 'linear'. "
                 "%zu arguments were given.",
                 numArgs);
         }
 
         ease.typeTag      = OCTASPIRE_EASING_LINEAR;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-quad"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
-                "Builtin 'easing-add' expects five arguments if type is 'in-quad'. "
+                "Builtin 'easing-add' expects five or six arguments if type is 'in-quad'. "
                 "%zu arguments were given.",
                 numArgs);
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_QUAD;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "out-quad"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'easing-add' expects five or six arguments if type is 'out-quad'. "
+                "%zu arguments were given.",
+                numArgs);
+        }
+
+        ease.typeTag      = OCTASPIRE_EASING_OUT_QUAD;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
+    }
+    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "out-quad"))
+    {
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -676,24 +766,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_OUT_QUAD;
-    }
-    else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "out-quad"))
-    {
-        if (numArgs > 5)
-        {
-            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
-                vm,
-                "Builtin 'easing-add' expects five arguments if type is 'out-quad'. "
-                "%zu arguments were given.",
-                numArgs);
-        }
 
-        ease.typeTag      = OCTASPIRE_EASING_OUT_QUAD;
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-out-quad"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -704,10 +805,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_OUT_QUAD;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-cubic"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -718,10 +844,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_CUBIC;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "out-cubic"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -732,10 +883,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_OUT_CUBIC;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-out-cubic"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -746,10 +922,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_OUT_CUBIC;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-quart"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -760,10 +961,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_QUART;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "out-quart"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -774,10 +1000,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_OUT_QUART;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-out-quart"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -788,10 +1039,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_OUT_QUART;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-quint"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -802,10 +1078,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_QUINT;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "out-quint"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -816,10 +1117,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_OUT_QUINT;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-out-quint"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -830,10 +1156,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_OUT_QUINT;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-sine"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -844,10 +1195,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_SINE;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "out-sine"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -858,10 +1234,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_OUT_SINE;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-out-sine"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -872,10 +1273,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_OUT_SINE;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-expo"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -886,10 +1312,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_EXPO;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "out-expo"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -900,10 +1351,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_OUT_EXPO;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-out-expo"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -914,10 +1390,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_OUT_EXPO;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-circ"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -928,10 +1429,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_CIRC;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "out-circ"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -942,10 +1468,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_OUT_CIRC;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-out-circ"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -956,15 +1507,40 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_OUT_CIRC;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-elastic"))
     {
-        if (numArgs > 7)
+        if (numArgs != 7 && numArgs != 8)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
-                "Builtin 'easing-add' expects sevin arguments if type is 'in-elastic'. "
+                "Builtin 'easing-add' expects seven arguments if type is 'in-elastic'. "
                 "%zu arguments were given.",
                 numArgs);
         }
@@ -1005,10 +1581,36 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.p = octaspire_dern_value_as_number_get_value(periodValue);
+
+
+        if (numArgs == 8)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "out-elastic"))
     {
-        if (numArgs > 7)
+        if (numArgs != 7 && numArgs != 8)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -1053,10 +1655,36 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.p = octaspire_dern_value_as_number_get_value(periodValue);
+
+
+        if (numArgs == 8)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-out-elastic"))
     {
-        if (numArgs > 7)
+        if (numArgs != 7 && numArgs != 8)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -1103,10 +1731,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.p = octaspire_dern_value_as_number_get_value(periodValue);
+
+        if (numArgs == 8)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-back"))
     {
-        if (numArgs > 6)
+        if (numArgs != 6 && numArgs != 7)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -1134,10 +1787,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.s = octaspire_dern_value_as_number_get_value(overshootValue);
+
+        if (numArgs == 7)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "out-back"))
     {
-        if (numArgs > 6)
+        if (numArgs != 6 && numArgs != 7)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -1165,10 +1843,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.s = octaspire_dern_value_as_number_get_value(overshootValue);
+
+        if (numArgs == 7)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-out-back"))
     {
-        if (numArgs != 6)
+        if (numArgs != 6 && numArgs != 7)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -1196,10 +1899,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.s = octaspire_dern_value_as_number_get_value(overshootValue);
+
+        if (numArgs == 7)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-bounce"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -1210,10 +1938,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_BOUNCE;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "out-bounce"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -1224,10 +1977,35 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_BOUNCE;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "in-out-bounce"))
     {
-        if (numArgs > 5)
+        if (numArgs != 5 && numArgs != 6)
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -1238,6 +2016,31 @@ octaspire_dern_value_t *dern_easing_add(
         }
 
         ease.typeTag      = OCTASPIRE_EASING_IN_BOUNCE;
+
+        if (numArgs == 6)
+        {
+            octaspire_dern_value_t const * const evalOnDoneVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, numArgs - 1);
+
+            octaspire_helpers_verify_not_null(evalOnDoneVal);
+
+            if (!octaspire_dern_value_is_text(evalOnDoneVal))
+            {
+                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Type %s was given as %zu. argument.",
+                    octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
+                    numArgs);
+            }
+
+            ease.evalOnDone = octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_helpers_verify_not_null(ease.evalOnDone);
+        }
     }
     else
     {
@@ -1314,9 +2117,27 @@ octaspire_dern_value_t *dern_easing_update(
 
         ease->t += dt;
 
-        if (ease->t >= ease->d)//|| octaspire_dern_value_as_number_get_value(ease->targetValue) > (ease->b + ease->c))
+        if (ease->t >= ease->d)
         {
             octaspire_dern_value_as_number_set_value(ease->targetValue, ease->b + ease->c);
+
+            if (ease->evalOnDone)
+            {
+                octaspire_dern_value_t const * const result = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+                    vm,
+                    octaspire_container_utf8_string_get_c_string(ease->evalOnDone));
+
+                octaspire_container_utf8_string_release(ease->evalOnDone);
+                ease->evalOnDone = 0;
+
+                if (result && octaspire_dern_value_is_error(result))
+                {
+                    octaspire_dern_value_print(
+                        result,
+                        octaspire_dern_vm_get_allocator(vm));
+                }
+            }
+
             octaspire_container_vector_remove_element_at(dern_easing_private_easings, i);
         }
         else
