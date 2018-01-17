@@ -128,7 +128,6 @@ double octaspire_easing_in_out_bounce(double const t, double const b, double con
 // t: current time, b: beginning value, c: change in value, d: duration
 double octaspire_easing_linear(double const t, double const b, double const c, double const d)
 {
-    printf("%g %g %g %g\n", t, b, c, d);
     return c*t/d + b;
 }
 

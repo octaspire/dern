@@ -744,6 +744,20 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
                     return 0;
                 }
             }
+            else if (octaspire_container_utf8_string_is_equal_to_c_string(self->value.character, "["))
+            {
+                if (!octaspire_container_utf8_string_concatenate_c_string(result, "|string-start|"))
+                {
+                    return 0;
+                }
+            }
+            else if (octaspire_container_utf8_string_is_equal_to_c_string(self->value.character, "]"))
+            {
+                if (!octaspire_container_utf8_string_concatenate_c_string(result, "|string-end|"))
+                {
+                    return 0;
+                }
+            }
             else
             {
                 if (!octaspire_container_utf8_string_concatenate_format(
@@ -1861,6 +1875,44 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
             return octaspire_dern_lexer_token_new(
                 OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER,
                 "\t",
+                octaspire_dern_lexer_token_position_init(
+                    startLine,
+                    octaspire_input_get_line_number(input)),
+                octaspire_dern_lexer_token_position_init(
+                    startColumn,
+                    octaspire_input_get_column_number(input) - (endsInDelimiter ? 1 : 0)),
+                octaspire_dern_lexer_token_position_init(
+                    startIndexInInput,
+                    endIndexInInput),
+                allocator);
+        }
+        else if (octaspire_container_utf8_string_is_equal_to_c_string(tmpStr, "string-start"))
+        {
+            octaspire_container_utf8_string_release(tmpStr);
+            tmpStr = 0;
+
+            return octaspire_dern_lexer_token_new(
+                OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER,
+                "[",
+                octaspire_dern_lexer_token_position_init(
+                    startLine,
+                    octaspire_input_get_line_number(input)),
+                octaspire_dern_lexer_token_position_init(
+                    startColumn,
+                    octaspire_input_get_column_number(input) - (endsInDelimiter ? 1 : 0)),
+                octaspire_dern_lexer_token_position_init(
+                    startIndexInInput,
+                    endIndexInInput),
+                allocator);
+        }
+        else if (octaspire_container_utf8_string_is_equal_to_c_string(tmpStr, "string-end"))
+        {
+            octaspire_container_utf8_string_release(tmpStr);
+            tmpStr = 0;
+
+            return octaspire_dern_lexer_token_new(
+                OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER,
+                "]",
                 octaspire_dern_lexer_token_position_init(
                     startLine,
                     octaspire_input_get_line_number(input)),

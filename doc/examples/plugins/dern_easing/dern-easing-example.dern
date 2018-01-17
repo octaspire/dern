@@ -13,3 +13,11 @@
        (easing-update 0.1)              ; Update with time step of 0.1 seconds
        (println x))
 
+(easing-add 'linear x 0 10 1 [println |string-start|easing-done|string-start|])
+
+(while (easing-has-any)
+       (easing-update 0.1)              ; Update with time step of 0.1 seconds
+       (print [{} ]  x))
+
+(println)
+
