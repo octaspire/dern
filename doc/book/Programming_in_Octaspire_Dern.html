@@ -572,7 +572,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Documentation for Octaspire Dern programming language version 0.315.0</p>
+<p>Documentation for Octaspire Dern programming language version 0.316.0</p>
 </div>
 </div>
 </div>
@@ -865,11 +865,18 @@ of it directly to the interactive REPL.</p>
  <span class="tok-mf">3.14</span>             <span class="tok-c tok-c-Singleline">; These are real</span>
 <span class="tok-mf">-1.12</span>
 <span class="tok-s">[Hello]</span>           <span class="tok-c tok-c-Singleline">; These are strings (utf-8)</span>
-<span class="tok-s">[Hello</span><span class="tok-se">|newline|</span><span class="tok-s">]</span>
+<span class="tok-s">[Hell</span><span class="tok-se">|6F|</span><span class="tok-s">]</span>        <span class="tok-c tok-c-Singleline">; Hello</span>
+<span class="tok-s">[Hello</span><span class="tok-se">|newline|</span><span class="tok-s">]</span>  <span class="tok-c tok-c-Singleline">; Hello and newline</span>
+<span class="tok-s">[私はガラスを食べられます。それは私を傷つけません。]</span>
 <span class="tok-sc">|a|</span>               <span class="tok-c tok-c-Singleline">; These are characters (utf-8)</span>
-<span class="tok-sc">|newline|</span>
-<span class="tok-sc">|tab|</span>
-<span class="tok-sc">|bar|</span>
+<span class="tok-sc">|newline|</span>         <span class="tok-c tok-c-Singleline">; \n</span>
+<span class="tok-sc">|tab|</span>             <span class="tok-c tok-c-Singleline">; \t</span>
+<span class="tok-sc">|bar|</span>             <span class="tok-c tok-c-Singleline">; |</span>
+<span class="tok-sc">|string-start|</span>    <span class="tok-c tok-c-Singleline">; [</span>
+<span class="tok-sc">|string-end|</span>      <span class="tok-c tok-c-Singleline">; ]</span>
+<span class="tok-sc">|61|</span>              <span class="tok-c tok-c-Singleline">; a in hexadecimal notation</span>
+<span class="tok-sc">|7A|</span>              <span class="tok-c tok-c-Singleline">; z in hexadecimal notation</span>
+<span class="tok-sc">|30DC|</span>            <span class="tok-c tok-c-Singleline">; ボ in hexadecimal notation (katakana letter BO)</span>
 <span class="tok-no">true</span>              <span class="tok-c tok-c-Singleline">; These are booleans</span>
 <span class="tok-no">false</span>
 <span class="tok-no">nil</span>               <span class="tok-c tok-c-Singleline">; Nil</span>
@@ -887,6 +894,18 @@ of it directly to the interactive REPL.</p>
 of the line. Dern has also <strong>multiline comments</strong> that are written between <code>\#!</code> and <code>!#</code>.
 Note that string delimiters in Dern are <code>[</code> and <code>]</code> and not <code>"</code>;
 this way dern code can be written inside C-programs without escaping.</p>
+</div>
+<div class="paragraph">
+<p>Strings can be embedded in strings like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="dern"><span></span><span class="tok-s">[this is a string </span><span class="tok-se">|string-start|</span><span class="tok-s">and here is another inside it</span><span class="tok-se">|string-end|</span><span class="tok-s">]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This can be useful sometimes, for example, if you need to evaluate a string as a program and need it to have
+strings inside.</p>
 </div>
 </div>
 </div>
@@ -2045,7 +2064,7 @@ can be used to (by giving different compiler flags):</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-01-17 22:12:04 EET
+Last updated 2018-01-18 21:41:36 EET
 </div>
 </div>
 </body>

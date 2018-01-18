@@ -10,6 +10,9 @@ syn match dernChar "\v\|.\|"
 syn match dernChar "\v\|newline\|"
 syn match dernChar "\v\|tab\|"
 syn match dernChar "\v\|bar\|"
+syn match dernChar "\v\|string\-start\|"
+syn match dernChar "\v\|string\-end\|"
+syn match dernChar "\v\|[0-9a-fA-F]+\|"
 hi link dernChar Character
 
 syn region dernString contains=dernEscape start=/\v\[/ skip=/\v\|\]\|/ end=/\v\]/
@@ -17,6 +20,9 @@ syn match dernEscape "\v\|.\|" contained
 syn match dernEscape "\v\|newline\|" contained
 syn match dernEscape "\v\|tab\|" contained
 syn match dernEscape "\v\|bar\|" contained
+syn match dernEscape "\v\|string\-start\|" contained
+syn match dernEscape "\v\|string\-end\|" contained
+syn match dernEscape "\v\|[0-9a-fA-F]+\|" contained
 syn match dernEscape "\v\{\}" contained
 hi link dernString String
 

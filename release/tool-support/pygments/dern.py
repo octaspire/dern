@@ -47,11 +47,11 @@ class DernLexer(RegexLexer):
                 ('\#\!', Comment.Multiline, 'comment_multiline'),
                 (r"'" + valid_name, String.Symbol),
                 (r"('|\.)", Operator),
-                (r'(\|.?\||\|bar\||\|newline\||\|tab\|)', String.Char),
+                (r'(\|.?\||\|bar\||\|newline\||\|tab\||\|string-start\||\|string-end\||\|[0-9a-fA-F]+\|)', String.Char),
                 ],
                 'string' : [
                     (r'\]', String, '#pop'),
-                    (r"(\|bar\||\|newline\||\|tab\|)", String.Escape),
+                    (r"(\|bar\||\|newline\||\|tab\||\|string-start\||\|string-end\||\|[0-9a-fA-F]+\|)", String.Escape),
                     (r"(\{\})", String.Escape),
                     (r'[^\]\|\{\}]+', String),
                     ],

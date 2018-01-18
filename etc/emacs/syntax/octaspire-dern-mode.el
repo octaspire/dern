@@ -3,9 +3,12 @@
 
 (defvar octaspire-dern-mode-hook
   (lambda ()
-    (hlt-highlight-regexp-region nil nil "|newline|" 'highlight)
-    (hlt-highlight-regexp-region nil nil "|tab|"     'highlight)
-    (hlt-highlight-regexp-region nil nil "|bar|"     'highlight)))
+    (hlt-highlight-regexp-region nil nil "|newline|"       'highlight)
+    (hlt-highlight-regexp-region nil nil "|tab|"           'highlight)
+    (hlt-highlight-regexp-region nil nil "|bar|"           'highlight)
+    (hlt-highlight-regexp-region nil nil "|string\-start|" 'highlight)
+    (hlt-highlight-regexp-region nil nil "|string\-end|"   'highlight)
+    (hlt-highlight-regexp-region nil nil "|[0-9a-fA-F]+|"  'highlight)))
 
 (defvar octaspire-dern-mode-map
   (let ((map (make-keymap)))

@@ -7,7 +7,7 @@ end
 
 include "number.lang"
 
-vardef SPECIALCHAR = "\|newline\||\|tab\||\|bar\|"
+vardef SPECIALCHAR = "\|newline\||\|tab\||\|bar\||\|string\-start\||\|string-end\||\|[0-9a-fA-F]+\|"
 
 environment string delim "[" "]" begin
     specialchar = $SPECIALCHAR
