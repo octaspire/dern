@@ -76,6 +76,13 @@ echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -dynamiclib -DOCTASPIRE_DERN_AMALGAM
 
 
 
+EXAMPLE_NAME="Dern easing plugin"
+EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_SUCCESS_RUN="DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-easing-example.dern"
+echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -dynamiclib -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -I . -shared -o libdern_easing.dylib plugins/dern_easing.c
+
+
+
 EXAMPLE_NAME="Dern ncurses plugin"
 EXAMPLE_ERROR_HINT="with homebrew: brew install ncurses"
 EXAMPLE_SUCCESS_RUN="DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-ncurses-example.dern"

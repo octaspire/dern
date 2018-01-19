@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.316.1
+Documentation for Octaspire Dern programming language version 0.317.0
 
 == About
 
