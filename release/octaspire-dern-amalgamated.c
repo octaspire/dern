@@ -22051,9 +22051,9 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "316"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.316.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.316.1"
 
 
 
@@ -33280,7 +33280,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_print(
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
-            "Builtin 'println' one or more arguments.");
+            "Builtin 'print' expects one or more arguments.");
     }
 
     octaspire_dern_value_t const * const fmtStr =
@@ -39525,7 +39525,7 @@ void octaspire_dern_value_print(
     octaspire_memory_allocator_t *allocator)
 {
     octaspire_container_utf8_string_t *str = octaspire_dern_value_to_string(self, allocator);
-    printf("%s\n", octaspire_container_utf8_string_get_c_string(str));
+    printf("%s", octaspire_container_utf8_string_get_c_string(str));
     octaspire_container_utf8_string_release(str);
     str = 0;
 }

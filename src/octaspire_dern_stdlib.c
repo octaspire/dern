@@ -4915,7 +4915,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_print(
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
             vm,
-            "Builtin 'println' one or more arguments.");
+            "Builtin 'print' expects one or more arguments.");
     }
 
     octaspire_dern_value_t const * const fmtStr =

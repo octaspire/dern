@@ -1686,7 +1686,7 @@ void octaspire_dern_value_print(
     octaspire_memory_allocator_t *allocator)
 {
     octaspire_container_utf8_string_t *str = octaspire_dern_value_to_string(self, allocator);
-    printf("%s\n", octaspire_container_utf8_string_get_c_string(str));
+    printf("%s", octaspire_container_utf8_string_get_c_string(str));
     octaspire_container_utf8_string_release(str);
     str = 0;
 }
