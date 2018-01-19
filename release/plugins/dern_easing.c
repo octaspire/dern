@@ -111,16 +111,60 @@ double octaspire_easing_in_out_expo(double t, double const b, double const c, do
 double octaspire_easing_in_circ(double t, double const b, double const c, double const d);
 double octaspire_easing_out_circ(double t, double const b, double const c, double const d);
 double octaspire_easing_in_out_circ(double t, double const b, double const c, double const d);
-double octaspire_easing_in_elastic(double t, double const b, double const c, double const d, double a, double p);
-double octaspire_easing_out_elastic(double t, double const b, double const c, double const d, double a, double p);
-double octaspire_easing_in_out_elastic(double t, double const b, double const c, double const d, double a, double p);
-double octaspire_easing_in_back(double t, double const b, double const c, double const d, double const s);
-double octaspire_easing_out_back(double t, double const b, double const c, double const d, double const s);
-double octaspire_easing_in_out_back(double t, double const b, double const c, double const d, double s);
+
+double octaspire_easing_in_elastic(
+    double t,
+    double const b,
+    double const c,
+    double const d,
+    double a,
+    double p);
+
+double octaspire_easing_out_elastic(
+    double t,
+    double const b,
+    double const c,
+    double const d,
+    double a,
+    double p);
+
+double octaspire_easing_in_out_elastic(
+    double t,
+    double const b,
+    double const c,
+    double const d,
+    double a,
+    double p);
+
+double octaspire_easing_in_back(
+    double t,
+    double const b,
+    double const c,
+    double const d,
+    double const s);
+
+double octaspire_easing_out_back(
+    double t,
+    double const b,
+    double const c,
+    double const d,
+    double const s);
+
+double octaspire_easing_in_out_back(
+    double t,
+    double const b,
+    double const c,
+    double const d,
+    double s);
+
 double octaspire_easing_in_bounce(double const t, double const b, double const c, double const d);
 double octaspire_easing_out_bounce(double t, double const b, double const c, double const d);
-double octaspire_easing_in_out_bounce(double const t, double const b, double const c, double const d);
 
+double octaspire_easing_in_out_bounce(
+    double const t,
+    double const b,
+    double const c,
+    double const d);
 
 
 
@@ -156,7 +200,7 @@ double octaspire_easing_in_out_quad(double t, double const b, double const c, do
 
     if (t < 1)
     {
-        return (c / 2) * pow(t,2) + b;
+        return (c / 2) * pow(t, 2) + b;
     }
 
     return -c / 2 * ((t-1) * (t-3) - 1) + b;
@@ -177,7 +221,7 @@ double octaspire_easing_in_cubic(double t, double const b, double const c, doubl
 double octaspire_easing_out_cubic(double t, double const b, double const c, double const d)
 {
     t = (t / d) - 1;
-    return c * (pow(t,3) + 1) + b;
+    return c * (pow(t, 3) + 1) + b;
 }
 
 // cubic easing in/out - acceleration until halfway, then deceleration
@@ -329,9 +373,16 @@ double octaspire_easing_in_out_circ(double t, double const b, double const c, do
 
 
 /////////// ELASTIC EASING: exponentially decaying sine wave  //////////////
-// t: current time, b: beginning value, c: change in value, d: duration, a: amplitude (optional), p: period (optional)
+// t: current time, b: beginning value, c: change in value, d: duration, a: amplitude (optional),
+// p: period (optional)
 // t and d can be in frames or seconds/milliseconds
-double octaspire_easing_in_elastic(double t, double const b, double const c, double const d, double a, double p)
+double octaspire_easing_in_elastic(
+    double t,
+    double const b,
+    double const c,
+    double const d,
+    double a,
+    double p)
 {
     double s = 0;
 
@@ -348,10 +399,16 @@ double octaspire_easing_in_elastic(double t, double const b, double const c, dou
     else s = p/(2*M_PI) * asin (c/a);
 
     t -= 1;
-    return -(a*pow(2,10*t) * sin( (t*d-s)*(2*M_PI)/p )) + b;
+    return -(a*pow(2, 10*t) * sin( (t*d-s)*(2*M_PI)/p )) + b;
 }
 
-double octaspire_easing_out_elastic(double t, double const b, double const c, double const d, double a, double p)
+double octaspire_easing_out_elastic(
+    double t,
+    double const b,
+    double const c,
+    double const d,
+    double a,
+    double p)
 {
     double s = 0;
 
@@ -365,10 +422,16 @@ double octaspire_easing_out_elastic(double t, double const b, double const c, do
 
     if (a < fabs(c)) { a=c; s=p/4; }
     else s = p/(2*M_PI) * asin (c/a);
-    return a*pow(2,-10*t) * sin( (t*d-s)*(2*M_PI)/p ) + c + b;
+    return a*pow(2, -10*t) * sin( (t*d-s)*(2*M_PI)/p ) + c + b;
 }
 
-double octaspire_easing_in_out_elastic(double t, double const b, double const c, double const d, double a, double p)
+double octaspire_easing_in_out_elastic(
+    double t,
+    double const b,
+    double const c,
+    double const d,
+    double a,
+    double p)
 {
     double s = 0;
 
@@ -386,29 +449,41 @@ double octaspire_easing_in_out_elastic(double t, double const b, double const c,
     if (t < 1)
     {
         --t;
-        return -.5*(a*pow(2,10*t) * sin( (t*d-s)*(2*M_PI)/p )) + b;
+        return -.5*(a*pow(2, 10*t) * sin( (t*d-s)*(2*M_PI)/p )) + b;
     }
 
     --t;
-    return a*pow(2,-10*t) * sin( (t*d-s)*(2*M_PI)/p )*.5 + c + b;
+    return a*pow(2, -10*t) * sin( (t*d-s)*(2*M_PI)/p )*.5 + c + b;
 }
 
 
 /////////// BACK EASING: overshooting cubic easing: (s+1)*t^3 - s*t^2  //////////////
 // back easing in - backtracking slightly, then reversing direction and moving to target
-// t: current time, b: beginning value, c: change in value, d: duration, s: overshoot amount (optional)
+// t: current time, b: beginning value, c: change in value, d: duration,
+// s: overshoot amount (optional)
 // t and d can be in frames or seconds/milliseconds
 // s controls the amount of overshoot: higher s means greater overshoot
 // s has a default value of 1.70158, which produces an overshoot of 10 percent
 // s==0 produces cubic easing with no overshoot
-double octaspire_easing_in_back(double t, double const b, double const c, double const d, double const s)
+double octaspire_easing_in_back(
+    double t,
+    double const b,
+    double const c,
+    double const d,
+    double const s)
 {
     t /= d;
     return c*t*t*((s+1)*t - s) + b;
 }
 
-// back easing out - moving towards target, overshooting it slightly, then reversing and coming back to target
-double octaspire_easing_out_back(double t, double const b, double const c, double const d, double const s)
+// back easing out - moving towards target, overshooting it slightly, then reversing
+// and coming back to target
+double octaspire_easing_out_back(
+    double t,
+    double const b,
+    double const c,
+    double const d,
+    double const s)
 {
     t = (t / d) -1;
     return c*(t*t*((s+1)*t + s) + 1) + b;
@@ -416,7 +491,12 @@ double octaspire_easing_out_back(double t, double const b, double const c, doubl
 
 // back easing in/out - backtracking slightly, then reversing direction and moving to target,
 // then overshooting target, reversing, and finally coming back to target
-double octaspire_easing_in_out_back(double t, double const b, double const c, double const d, double s)
+double octaspire_easing_in_out_back(
+    double t,
+    double const b,
+    double const c,
+    double const d,
+    double s)
 {
     t /= (d * 0.5);
     s *= 1.525;
@@ -466,7 +546,11 @@ double octaspire_easing_out_bounce(double t, double const b, double const c, dou
 }
 
 // bounce easing in/out
-double octaspire_easing_in_out_bounce(double const t, double const b, double const c, double const d)
+double octaspire_easing_in_out_bounce(
+    double const t,
+    double const b,
+    double const c,
+    double const d)
 {
     if (t < d/2) return octaspire_easing_in_bounce (t*2, 0, c, d) * .5 + b;
     return octaspire_easing_out_bounce (t*2-d, 0, c, d) * .5 + c*.5 + b;
@@ -525,7 +609,7 @@ typedef struct octaspire_dern_ease_t
 }
 octaspire_dern_ease_t;
 
-static octaspire_container_vector_t * dern_easing_private_easings               = 0;
+static octaspire_container_vector_t * dern_easing_private_easings = 0;
 
 
 
@@ -552,7 +636,10 @@ octaspire_dern_value_t *dern_easing_add(
     octaspire_dern_ease_t ease = {.targetValue = 0, .evalOnDone = 0};
 
     octaspire_dern_value_t const * const typeNameArg =
-        octaspire_dern_value_as_vector_get_element_of_type_at_const(arguments, OCTASPIRE_DERN_VALUE_TAG_SYMBOL, 0);
+        octaspire_dern_value_as_vector_get_element_of_type_at_const(
+            arguments,
+            OCTASPIRE_DERN_VALUE_TAG_SYMBOL,
+            0);
 
     if (!typeNameArg)
     {
@@ -574,8 +661,8 @@ octaspire_dern_value_t *dern_easing_add(
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Builtin 'easing-add' expects real or integer as the easing target value as the first argument. "
-            "Type '%s' was given.",
+            "Builtin 'easing-add' expects real or integer as the easing target value as "
+            "the first argument. Type '%s' was given.",
             octaspire_dern_value_helper_get_type_as_c_string(ease.targetValue->typeTag));
     }
 
@@ -634,7 +721,6 @@ octaspire_dern_value_t *dern_easing_add(
 
 
 
-
     if (octaspire_dern_value_as_symbol_is_equal_to_c_string(typeNameArg, "linear"))
     {
         if (numArgs != 5 && numArgs != 6)
@@ -658,11 +744,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -697,11 +785,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -736,11 +826,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -775,11 +867,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -814,11 +908,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -853,11 +949,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -892,11 +990,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -931,11 +1031,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -970,11 +1072,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1009,11 +1113,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1048,11 +1154,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1087,11 +1195,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1126,11 +1236,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1165,11 +1277,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1204,11 +1318,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1243,11 +1359,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1282,10 +1400,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. "
                     "Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
@@ -1321,11 +1442,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1360,11 +1483,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1399,11 +1524,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1438,11 +1565,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1477,11 +1606,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1516,11 +1647,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1564,8 +1697,8 @@ octaspire_dern_value_t *dern_easing_add(
         ease.a = octaspire_dern_value_as_number_get_value(amplitudeValue);
 
 
-
-        octaspire_dern_value_t const * const periodValue = octaspire_dern_value_as_vector_get_element_at_const(arguments, 6);
+        octaspire_dern_value_t const * const periodValue =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, 6);
 
         octaspire_helpers_verify_not_null(periodValue);
 
@@ -1591,11 +1724,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1621,7 +1756,8 @@ octaspire_dern_value_t *dern_easing_add(
 
         ease.typeTag      = OCTASPIRE_EASING_OUT_ELASTIC;
 
-        octaspire_dern_value_t const * const amplitudeValue = octaspire_dern_value_as_vector_get_element_at_const(arguments, 5);
+        octaspire_dern_value_t const * const amplitudeValue =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, 5);
 
         octaspire_helpers_verify_not_null(amplitudeValue);
 
@@ -1638,8 +1774,8 @@ octaspire_dern_value_t *dern_easing_add(
         ease.a = octaspire_dern_value_as_number_get_value(amplitudeValue);
 
 
-
-        octaspire_dern_value_t const * const periodValue = octaspire_dern_value_as_vector_get_element_at_const(arguments, 6);
+        octaspire_dern_value_t const * const periodValue =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, 6);
 
         octaspire_helpers_verify_not_null(periodValue);
 
@@ -1665,11 +1801,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1740,11 +1878,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1796,11 +1936,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1852,11 +1994,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1908,11 +2052,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1947,11 +2093,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -1986,11 +2134,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -2025,11 +2175,13 @@ octaspire_dern_value_t *dern_easing_add(
 
             if (!octaspire_dern_value_is_text(evalOnDoneVal))
             {
-                octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'easing-add' expects text (string or symbol) as the value to be evaluated when easing is done. "
-                    "Type %s was given as %zu. argument.",
+                    "Builtin 'easing-add' expects text (string or symbol) as the value to be "
+                    "evaluated when easing is done. Type %s was given as %zu. argument.",
                     octaspire_dern_value_helper_get_type_as_c_string(evalOnDoneVal->typeTag),
                     numArgs);
             }
@@ -2109,7 +2261,9 @@ octaspire_dern_value_t *dern_easing_update(
     while (i < octaspire_container_vector_get_length(dern_easing_private_easings))
     {
         octaspire_dern_ease_t * const ease =
-            (octaspire_dern_ease_t*)octaspire_container_vector_get_element_at(dern_easing_private_easings, i);
+            (octaspire_dern_ease_t*)octaspire_container_vector_get_element_at(
+                dern_easing_private_easings,
+                i);
 
         octaspire_helpers_verify_not_null(ease);
         octaspire_helpers_verify_not_null(ease->targetValue);
@@ -2122,9 +2276,10 @@ octaspire_dern_value_t *dern_easing_update(
 
             if (ease->evalOnDone)
             {
-                octaspire_dern_value_t const * const result = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
-                    vm,
-                    octaspire_container_utf8_string_get_c_string(ease->evalOnDone));
+                octaspire_dern_value_t const * const result =
+                    octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+                        vm,
+                        octaspire_container_utf8_string_get_c_string(ease->evalOnDone));
 
                 octaspire_container_utf8_string_release(ease->evalOnDone);
                 ease->evalOnDone = 0;
@@ -2141,39 +2296,211 @@ octaspire_dern_value_t *dern_easing_update(
         }
         else
         {
-            switch(ease->typeTag)
+            switch (ease->typeTag)
             {
-                case OCTASPIRE_EASING_LINEAR:            octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_linear(ease->t, ease->b, ease->c, ease->d));                            break;
-                case OCTASPIRE_EASING_IN_QUAD:           octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_quad(ease->t, ease->b, ease->c, ease->d));                           break;
-                case OCTASPIRE_EASING_OUT_QUAD:          octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_out_quad(ease->t, ease->b, ease->c, ease->d));                          break;
-                case OCTASPIRE_EASING_IN_OUT_QUAD:       octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_out_quad(ease->t, ease->b, ease->c, ease->d));                       break;
-                case OCTASPIRE_EASING_IN_CUBIC:          octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_cubic(ease->t, ease->b, ease->c, ease->d));                          break;
-                case OCTASPIRE_EASING_OUT_CUBIC:         octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_out_cubic(ease->t, ease->b, ease->c, ease->d));                         break;
-                case OCTASPIRE_EASING_IN_OUT_CUBIC:      octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_out_cubic(ease->t, ease->b, ease->c, ease->d));                      break;
-                case OCTASPIRE_EASING_IN_QUART:          octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_quart(ease->t, ease->b, ease->c, ease->d));                          break;
-                case OCTASPIRE_EASING_OUT_QUART:         octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_out_quart(ease->t, ease->b, ease->c, ease->d));                         break;
-                case OCTASPIRE_EASING_IN_OUT_QUART:      octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_out_quart(ease->t, ease->b, ease->c, ease->d));                      break;
-                case OCTASPIRE_EASING_IN_QUINT:          octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_quint (ease->t, ease->b, ease->c, ease->d));                         break;
-                case OCTASPIRE_EASING_OUT_QUINT:         octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_out_quint(ease->t, ease->b, ease->c, ease->d));                         break;
-                case OCTASPIRE_EASING_IN_OUT_QUINT:      octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_out_quint(ease->t, ease->b, ease->c, ease->d));                      break;
-                case OCTASPIRE_EASING_IN_SINE:           octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_sine(ease->t, ease->b, ease->c, ease->d));                           break;
-                case OCTASPIRE_EASING_OUT_SINE:          octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_out_sine(ease->t, ease->b, ease->c, ease->d));                          break;
-                case OCTASPIRE_EASING_IN_OUT_SINE:       octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_out_sine(ease->t, ease->b, ease->c, ease->d));                       break;
-                case OCTASPIRE_EASING_IN_EXPO:           octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_expo(ease->t, ease->b, ease->c, ease->d));                           break;
-                case OCTASPIRE_EASING_OUT_EXPO:          octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_out_expo(ease->t, ease->b, ease->c, ease->d));                          break;
-                case OCTASPIRE_EASING_IN_OUT_EXPO:       octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_out_expo(ease->t, ease->b, ease->c, ease->d));                       break;
-                case OCTASPIRE_EASING_IN_CIRC:           octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_circ(ease->t, ease->b, ease->c, ease->d));                           break;
-                case OCTASPIRE_EASING_OUT_CIRC:          octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_out_circ(ease->t, ease->b, ease->c, ease->d));                          break;
-                case OCTASPIRE_EASING_IN_OUT_CIRC:       octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_out_circ(ease->t, ease->b, ease->c, ease->d));                       break;
-                case OCTASPIRE_EASING_IN_ELASTIC:        octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_elastic(ease->t, ease->b, ease->c, ease->d, ease->a, ease->p));      break;
-                case OCTASPIRE_EASING_OUT_ELASTIC:       octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_out_elastic(ease->t, ease->b, ease->c, ease->d, ease->a, ease->p));     break;
-                case OCTASPIRE_EASING_IN_OUT_ELASTIC:    octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_out_elastic(ease->t, ease->b, ease->c, ease->d, ease->a, ease->p));  break;
-                case OCTASPIRE_EASING_IN_BACK:           octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_back(ease->t, ease->b, ease->c, ease->d, ease->s));                  break;
-                case OCTASPIRE_EASING_OUT_BACK:          octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_out_back(ease->t, ease->b, ease->c, ease->d, ease->s));                 break;
-                case OCTASPIRE_EASING_IN_OUT_BACK:       octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_out_back(ease->t, ease->b, ease->c, ease->d, ease->s));              break;
-                case OCTASPIRE_EASING_IN_BOUNCE:         octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_bounce(ease->t, ease->b, ease->c, ease->d));                         break;
-                case OCTASPIRE_EASING_OUT_BOUNCE:        octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_out_bounce(ease->t, ease->b, ease->c, ease->d));                        break;
-                case OCTASPIRE_EASING_IN_OUT_BOUNCE:     octaspire_dern_value_as_number_set_value(ease->targetValue, octaspire_easing_in_out_bounce(ease->t, ease->b, ease->c, ease->d));                     break;
+                case OCTASPIRE_EASING_LINEAR:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_linear(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_QUAD:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_quad(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_OUT_QUAD:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_out_quad(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_OUT_QUAD:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_out_quad(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_CUBIC:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_cubic(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_OUT_CUBIC:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_out_cubic(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_OUT_CUBIC:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_out_cubic(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_QUART:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_quart(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_OUT_QUART:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_out_quart(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_OUT_QUART:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_out_quart(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_QUINT:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_quint (ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_OUT_QUINT:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_out_quint(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_OUT_QUINT:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_out_quint(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_SINE:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_sine(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_OUT_SINE:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_out_sine(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_OUT_SINE:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_out_sine(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_EXPO:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_expo(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_OUT_EXPO:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_out_expo(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_OUT_EXPO:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_out_expo(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_CIRC:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_circ(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_OUT_CIRC:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_out_circ(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_OUT_CIRC:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_out_circ(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_ELASTIC:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_elastic(
+                            ease->t,
+                            ease->b,
+                            ease->c,
+                            ease->d,
+                            ease->a,
+                            ease->p));
+                break;
+
+                case OCTASPIRE_EASING_OUT_ELASTIC:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_out_elastic(
+                            ease->t,
+                            ease->b,
+                            ease->c,
+                            ease->d,
+                            ease->a,
+                            ease->p));
+                break;
+
+                case OCTASPIRE_EASING_IN_OUT_ELASTIC:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_out_elastic(
+                            ease->t,
+                            ease->b,
+                            ease->c,
+                            ease->d,
+                            ease->a,
+                            ease->p));
+                break;
+
+                case OCTASPIRE_EASING_IN_BACK:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_back(ease->t, ease->b, ease->c, ease->d, ease->s));
+                break;
+
+                case OCTASPIRE_EASING_OUT_BACK:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_out_back(ease->t, ease->b, ease->c, ease->d, ease->s));
+                break;
+
+                case OCTASPIRE_EASING_IN_OUT_BACK:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_out_back(ease->t, ease->b, ease->c, ease->d, ease->s));
+                break;
+
+                case OCTASPIRE_EASING_IN_BOUNCE:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_bounce(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_OUT_BOUNCE:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_out_bounce(ease->t, ease->b, ease->c, ease->d));
+                break;
+
+                case OCTASPIRE_EASING_IN_OUT_BOUNCE:
+                    octaspire_dern_value_as_number_set_value(
+                        ease->targetValue,
+                        octaspire_easing_in_out_bounce(ease->t, ease->b, ease->c, ease->d));
+                break;
             }
 
             ++i;
@@ -2301,3 +2628,4 @@ bool dern_easing_clean(
 
     return true;
 }
+

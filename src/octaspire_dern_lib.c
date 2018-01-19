@@ -160,8 +160,8 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
 
         octaspire_helpers_verify_not_null(libInitFuncName);
 
-        libInitFunc =
-            (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))GetProcAddress(
+        libInitFunc = (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))
+            GetProcAddress(
                 self->binaryLibHandle,
                 octaspire_container_utf8_string_get_c_string(libInitFuncName));
 
@@ -206,9 +206,10 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
         octaspire_helpers_verify_not_null(libMarkFuncName);
 
         self->libMarkFunc =
-            (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))GetProcAddress(
-                self->binaryLibHandle,
-                octaspire_container_utf8_string_get_c_string(libMarkFuncName));
+            (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))
+                GetProcAddress(
+                    self->binaryLibHandle,
+                    octaspire_container_utf8_string_get_c_string(libMarkFuncName));
 
         octaspire_container_utf8_string_release(libMarkFuncName);
         libMarkFuncName = 0;
@@ -356,9 +357,10 @@ void octaspire_dern_lib_release(octaspire_dern_lib_t *self)
             octaspire_helpers_verify_not_null(libCleanFuncName);
 
             libCleanFunc =
-                (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))GetProcAddress(
-                    self->binaryLibHandle,
-                    octaspire_container_utf8_string_get_c_string(libCleanFuncName));
+                (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))
+                    GetProcAddress(
+                        self->binaryLibHandle,
+                        octaspire_container_utf8_string_get_c_string(libCleanFuncName));
 
             octaspire_container_utf8_string_release(libCleanFuncName);
             libCleanFuncName = 0;

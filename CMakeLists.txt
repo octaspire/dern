@@ -18,7 +18,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(octaspire-dern C)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 317)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 319)
 set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
 
 message("== Building ${PROJECT_NAME} ${OCTASPIRE_DERN_CONFIG_VERSION_MAJOR}.${OCTASPIRE_DERN_CONFIG_VERSION_MINOR}.${OCTASPIRE_DERN_CONFIG_VERSION_PATCH}")
@@ -68,10 +68,11 @@ if(NOT TARGET octaspire-core)
     message("-----------------------------------------------")
 endif(NOT TARGET octaspire-core)
 
-file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
-file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/octaspire/dern/*.h")
-file(GLOB MANUAL1 "${CMAKE_CURRENT_SOURCE_DIR}/doc/man/man1/octaspire-dern-repl.1")
-file(GLOB MANUAL3 "${CMAKE_CURRENT_SOURCE_DIR}/doc/man/man3/octaspire-dern.3")
+file(GLOB SOURCES               "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
+file(GLOB HEADERS               "${CMAKE_CURRENT_SOURCE_DIR}/include/octaspire/dern/*.h")
+file(GLOB BINARY_PLUGIN_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/etc/plugins/*.c")
+file(GLOB MANUAL1               "${CMAKE_CURRENT_SOURCE_DIR}/doc/man/man1/octaspire-dern-repl.1")
+file(GLOB MANUAL3               "${CMAKE_CURRENT_SOURCE_DIR}/doc/man/man3/octaspire-dern.3")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/octaspire_core/include")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
@@ -137,7 +138,7 @@ add_custom_target(
 
 add_custom_target(
     vera-dern
-    COMMAND vera++ --error ${SOURCES} ${HEADERS})
+    COMMAND vera++ --root "${CMAKE_CURRENT_SOURCE_DIR}/external/vera" --profile octaspire --error ${SOURCES} ${HEADERS} ${BINARY_PLUGIN_SOURCES})
 
 add_custom_target(
     new-release-dern

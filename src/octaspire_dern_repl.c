@@ -156,15 +156,19 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
     octaspire_dern_repl_print_banner(useColors);
     octaspire_dern_repl_print_version(useColors);
     printf("\nusage: %s [option] ... [file] ...\n", binaryName);
-    printf("\nwhere [option] is one of the values listed below and every\n");
-    printf("[file] is loaded and evaluated before the REPL is started or closed.\n");
-    printf("If any of -e string or [file] is used, REPL is not started unless -i is used.\n\n");
-    printf("-c        --color-diagnostics        : use colors on unix like systems\n");
-    printf("-i        --interactive              : start REPL after any -e string or [file]s are evaluated\n");
-    printf("-e string --evaluate string          : evaluate a string without entering the REPL (see -i)\n");
-    printf("-v        --version                  : print version information and exit\n");
-    printf("-h        --help                     : print this help message and exit\n");
-    printf("-g        --debug                    : print every form to stderr before it is evaluated\n");
+
+    char const * const str =
+        "\nwhere [option] is one of the values listed below and every\n"
+        "[file] is loaded and evaluated before the REPL is started or closed.\n"
+        "If any of -e string or [file] is used, REPL is not started unless -i is used.\n\n"
+        "-c        --color-diagnostics : use colors on unix like systems\n"
+        "-i        --interactive       : start REPL after any -e string or [file]s are evaluated\n"
+        "-e string --evaluate string   : evaluate a string without entering the REPL (see -i)\n"
+        "-v        --version           : print version information and exit\n"
+        "-h        --help              : print this help message and exit\n"
+        "-g        --debug             : print every form to stderr before it is evaluated\n";
+
+    printf("%s", str);
 }
 
 
@@ -405,7 +409,8 @@ void main(int argc, char *argv[])
 
         if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
         {
-            octaspire_container_utf8_string_t *str = octaspire_dern_value_to_string(value, allocator);
+            octaspire_container_utf8_string_t *str =
+                octaspire_dern_value_to_string(value, allocator);
 
             octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
 
@@ -457,14 +462,22 @@ moreInput:
                 if (!value)
                 {
                     octaspire_input_rewind(input);
-                    octaspire_dern_repl_print_message_c_str("| ", OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+
+                    octaspire_dern_repl_print_message_c_str(
+                        "| ",
+                        OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+
                     goto moreInput;
                 }
                 else if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                 {
-                    octaspire_container_utf8_string_t *str = octaspire_dern_value_to_string(value, allocator);
+                    octaspire_container_utf8_string_t *str =
+                        octaspire_dern_value_to_string(value, allocator);
 
-                    octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
+                    octaspire_dern_repl_print_message(
+                        str,
+                        OCTASPIRE_DERN_REPL_MESSAGE_ERROR,
+                        useColors);
 
                     printf("\n");
 
@@ -478,7 +491,8 @@ moreInput:
                 {
                     octaspire_dern_vm_push_value(vm, value);
 
-                    octaspire_dern_value_t *evaluatedValue = octaspire_dern_vm_eval_in_global_environment(
+                    octaspire_dern_value_t *evaluatedValue =
+                        octaspire_dern_vm_eval_in_global_environment(
                             vm,
                             value);
 
@@ -486,13 +500,21 @@ moreInput:
                     {
                         octaspire_dern_vm_pop_value(vm, value);
                         octaspire_input_rewind(input);
-                        octaspire_dern_repl_print_message_c_str("+ ", OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+
+                        octaspire_dern_repl_print_message_c_str(
+                            "+ ",
+                            OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+
                         goto moreInput;
                     }
                     else if (evaluatedValue->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                     {
                         printf("--------------------\n");
-                        octaspire_dern_value_print(evaluatedValue, octaspire_dern_vm_get_allocator(vm));
+                        
+                        octaspire_dern_value_print(
+                            evaluatedValue,
+                            octaspire_dern_vm_get_allocator(vm));
+
                         octaspire_input_clear(input);
                         goto newInput;
                     }
@@ -506,12 +528,19 @@ moreInput:
 
                     if (evaluatedValue->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                     {
-                        octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
+                        octaspire_dern_repl_print_message(
+                            str,
+                            OCTASPIRE_DERN_REPL_MESSAGE_ERROR,
+                            useColors);
+
                         octaspire_input_clear(input);
                     }
                     else
                     {
-                        octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_OUTPUT, useColors);
+                        octaspire_dern_repl_print_message(
+                            str,
+                            OCTASPIRE_DERN_REPL_MESSAGE_OUTPUT,
+                            useColors);
                     }
 
                     printf("\n");
@@ -557,3 +586,4 @@ octaspire_dern_repl_cleanup:
     return exitCode;
 #endif
 }
+

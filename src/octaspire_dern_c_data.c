@@ -62,13 +62,29 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
         pluginName,
         self->allocator);
 
-    self->typeNameForPayload    = octaspire_container_utf8_string_new(typeNameForPayload, self->allocator);
-    self->payload               = payload;
-    self->cleanUpCallbackName   = octaspire_container_utf8_string_new(cleanUpCallbackName, self->allocator);
-    self->stdLibLenCallbackName = octaspire_container_utf8_string_new(stdLibLenCallbackName, self->allocator);
-    self->stdLibLinkAtCallbackName = octaspire_container_utf8_string_new(stdLibLinkAtCallbackName, self->allocator);
-    self->stdLibCopyAtCallbackName = octaspire_container_utf8_string_new(stdLibCopyAtCallbackName, self->allocator);
-    self->copyingAllowed        = copyingAllowed;
+    self->typeNameForPayload = octaspire_container_utf8_string_new(
+        typeNameForPayload,
+        self->allocator);
+
+    self->payload = payload;
+
+    self->cleanUpCallbackName = octaspire_container_utf8_string_new(
+        cleanUpCallbackName,
+        self->allocator);
+
+    self->stdLibLenCallbackName = octaspire_container_utf8_string_new(
+        stdLibLenCallbackName,
+        self->allocator);
+
+    self->stdLibLinkAtCallbackName = octaspire_container_utf8_string_new(
+        stdLibLinkAtCallbackName,
+        self->allocator);
+
+    self->stdLibCopyAtCallbackName = octaspire_container_utf8_string_new(
+        stdLibCopyAtCallbackName,
+        self->allocator);
+
+    self->copyingAllowed = copyingAllowed;
 
     return self;
 }
@@ -148,7 +164,9 @@ bool octaspire_dern_c_data_is_equal(
         return false;
     }
 
-    if (octaspire_container_utf8_string_is_equal(self->typeNameForPayload, other->typeNameForPayload))
+    if (octaspire_container_utf8_string_is_equal(
+        self->typeNameForPayload,
+        other->typeNameForPayload))
     {
         return false;
     }

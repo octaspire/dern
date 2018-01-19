@@ -28,7 +28,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_c_data.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 typedef octaspire_input_t*
@@ -75,31 +75,56 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_io_file(
     octaspire_dern_vm_t *self,
     char const * const path);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_nil       (octaspire_dern_vm_t *self);
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_boolean   (octaspire_dern_vm_t *self, bool    const value);
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_integer   (octaspire_dern_vm_t *self, int32_t const value);
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_real      (octaspire_dern_vm_t *self, double  const value);
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_string    (octaspire_dern_vm_t *self, octaspire_container_utf8_string_t * const value);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_nil(octaspire_dern_vm_t *self);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_multiline_comment    (octaspire_dern_vm_t *self, octaspire_container_utf8_string_t * const value);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_boolean(
+    octaspire_dern_vm_t *self,
+    bool const value);
 
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_integer(
+    octaspire_dern_vm_t *self,
+    int32_t const value);
+
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_real(
+    octaspire_dern_vm_t *self,
+    double const value);
+
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_string(
+    octaspire_dern_vm_t *self,
+    octaspire_container_utf8_string_t * const value);
+
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_multiline_comment(
+    octaspire_dern_vm_t *self,
+    octaspire_container_utf8_string_t * const value);
 
 octaspire_dern_value_t *octaspire_dern_vm_create_new_value_string_format(
     octaspire_dern_vm_t *self,
     char const * const fmt,
     ...);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_string_from_c_string     (octaspire_dern_vm_t *self, char const * const value);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_string_from_c_string(
+    octaspire_dern_vm_t *self,
+    char const * const value);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_character (octaspire_dern_vm_t *self, octaspire_container_utf8_string_t * const value);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_character(
+    octaspire_dern_vm_t *self,
+    octaspire_container_utf8_string_t * const value);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_character_from_uint32t (octaspire_dern_vm_t *self, uint32_t const value);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_character_from_uint32t(
+    octaspire_dern_vm_t *self,
+    uint32_t const value);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol    (octaspire_dern_vm_t *self, octaspire_container_utf8_string_t * const value);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol(
+    octaspire_dern_vm_t *self,
+    octaspire_container_utf8_string_t * const value);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol_from_c_string    (octaspire_dern_vm_t *self, char const * const value);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol_from_c_string(
+    octaspire_dern_vm_t *self,
+    char const * const value);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_error     (octaspire_dern_vm_t *self, octaspire_container_utf8_string_t * const value);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_error(
+    octaspire_dern_vm_t *self,
+    octaspire_container_utf8_string_t * const value);
 
 octaspire_dern_value_t *octaspire_dern_vm_create_new_value_error_format(
     octaspire_dern_vm_t *self,
@@ -119,23 +144,32 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_vector_from_va
     size_t const numArgs,
     ...);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_vector      (octaspire_dern_vm_t *self);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_vector(
+    octaspire_dern_vm_t *self);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_hash_map    (octaspire_dern_vm_t *self);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_hash_map(
+    octaspire_dern_vm_t *self);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_queue       (octaspire_dern_vm_t *self);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_queue(
+    octaspire_dern_vm_t *self);
 
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_queue_with_max_length (
         octaspire_dern_vm_t * const self,
         size_t const maxLength);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_list        (octaspire_dern_vm_t *self);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_list(octaspire_dern_vm_t *self);
 
-octaspire_dern_value_t *octaspire_dern_vm_create_new_value_hash_map_from_hash_map(octaspire_dern_vm_t *self, octaspire_container_hash_map_t * const value);
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_hash_map_from_hash_map(
+    octaspire_dern_vm_t *self,
+    octaspire_container_hash_map_t * const value);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_environment (octaspire_dern_vm_t *self, octaspire_dern_value_t *enclosing);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_environment(
+    octaspire_dern_vm_t *self,
+    octaspire_dern_value_t *enclosing);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_environment_from_environment (octaspire_dern_vm_t *self, octaspire_dern_environment_t * const value);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_environment_from_environment(
+    octaspire_dern_vm_t *self,
+    octaspire_dern_environment_t * const value);
 
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_function(
     octaspire_dern_vm_t *self,
@@ -143,8 +177,15 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_function(
     char const * const docstr,
     octaspire_container_vector_t *docVec);
 
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_special     (octaspire_dern_vm_t *self, octaspire_dern_special_t * const value, char const * const docstr);
-struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_builtin     (octaspire_dern_vm_t *self, octaspire_dern_builtin_t * const value, char const * const docstr);
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_special(
+    octaspire_dern_vm_t *self,
+    octaspire_dern_special_t * const value,
+    char const * const docstr);
+
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_builtin(
+    octaspire_dern_vm_t *self,
+    octaspire_dern_builtin_t * const value,
+    char const * const docstr);
 
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     octaspire_dern_vm_t * const self,
@@ -162,14 +203,20 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data_from_ex
     octaspire_dern_c_data_t * const cData);
 
 bool octaspire_dern_vm_push_value(octaspire_dern_vm_t *self, struct octaspire_dern_value_t *value);
-bool octaspire_dern_vm_pop_value (octaspire_dern_vm_t *self, struct octaspire_dern_value_t *valueForBalanceCheck);
-    void const * octaspire_dern_vm_get_top_value(octaspire_dern_vm_t const * const self);
+
+bool octaspire_dern_vm_pop_value(
+    octaspire_dern_vm_t *self,
+    struct octaspire_dern_value_t *valueForBalanceCheck);
+
+void const * octaspire_dern_vm_get_top_value(octaspire_dern_vm_t const * const self);
 
 struct octaspire_dern_value_t *octaspire_dern_vm_peek_value(octaspire_dern_vm_t *self);
 
 bool octaspire_dern_vm_gc(octaspire_dern_vm_t *self);
 
-octaspire_dern_value_t *octaspire_dern_vm_parse(octaspire_dern_vm_t *self, octaspire_input_t *input);
+octaspire_dern_value_t *octaspire_dern_vm_parse(
+    octaspire_dern_vm_t *self,
+    octaspire_input_t *input);
 
 octaspire_dern_value_t *octaspire_dern_vm_eval_in_global_environment(
     octaspire_dern_vm_t *self,
@@ -249,11 +296,11 @@ bool octaspire_dern_vm_create_and_define_new_integer(
 size_t octaspire_dern_vm_get_stack_length(
     octaspire_dern_vm_t const * const self);
 
-
 void octaspire_dern_vm_print_stack(
     octaspire_dern_vm_t const * const self);
 
-octaspire_dern_value_t *octaspire_dern_vm_helper_create_new_value_vector_of_integers_from_vector_of_size_t(
+octaspire_dern_value_t *
+octaspire_dern_vm_helper_create_new_value_vector_of_integers_from_vector_of_size_t(
     octaspire_dern_vm_t * const self,
     octaspire_container_vector_t const * const vectorContainingSizeTs);
 
@@ -330,7 +377,7 @@ char const *octaspire_dern_vm_get_environment_variable_at(
     ptrdiff_t const index);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif

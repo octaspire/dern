@@ -21,7 +21,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_value.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 struct octaspire_dern_vm_t;
@@ -88,7 +88,7 @@ int octaspire_dern_environment_compare(
     octaspire_dern_environment_t const * const other);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif

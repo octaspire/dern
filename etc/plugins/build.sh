@@ -71,6 +71,14 @@ if [ "$platform" == "MacOS" ]; then
         -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY   \
         -c -fPIC -I ../../release dern_sdl2.c `sdl2-config --cflags`
     clang -Wall -Wextra -pedantic -std=c99 -dynamiclib -o libdern_sdl2.dylib dern_sdl2.o `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+
+    echo "--- plugin easing     ---"
+    clang -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_easing.c
+    clang -Wall -Wextra -std=c99 -dynamiclib -o libdern_easing.dylib dern_easing.o
+
+    echo "--- plugin animation     ---"
+    clang -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_animation.c
+    clang -Wall -Wextra -std=c99 -dynamiclib -o libdern_animation.dylib dern_animation.o
 fi
 
 if [ "$platform" == "MinGW" ]; then

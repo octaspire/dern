@@ -1,3 +1,19 @@
+/******************************************************************************
+Octaspire Dern - Programming language
+Copyright 2017 www.octaspire.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+******************************************************************************/
 #include "octaspire-dern-amalgamated.c"
 #include "SDL.h"
 
@@ -14,10 +30,6 @@ int const OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE = 32766;
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
 #include "SDL_ttf.h"
 #endif
-
-
-
-
 
 /////////////////////////////// timer //////////////////////////////////////////
 typedef struct octaspire_sdl2_timer_t
@@ -4132,9 +4144,6 @@ octaspire_dern_value_t *dern_sdl2_SetRenderDrawBlendMode(
 
     SDL_Renderer * const renderer = octaspire_dern_c_data_get_payload(cData);
 
-
-
-
     octaspire_dern_value_t const * const blendModeArg =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
 
@@ -4946,7 +4955,8 @@ bool dern_sdl2_init(
             "sdl2-CreateTextureFromFontAndText",
             dern_sdl2_CreateTextureFromFontAndText,
             4,
-            "(sdl2-CreateTextureFromFontAndText renderer font text color isBlend) -> <texture or error message>",
+            "(sdl2-CreateTextureFromFontAndText renderer font text color isBlend) -> "
+            "<texture or error message>",
             true,
             targetEnv))
     {
@@ -5291,3 +5301,4 @@ bool dern_sdl2_clean(
 
     return true;
 }
+

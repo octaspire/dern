@@ -22,7 +22,7 @@ limitations under the License.
 #include <octaspire/core/octaspire_container_utf8_string.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 typedef struct octaspire_dern_c_data_t octaspire_dern_c_data_t;
@@ -74,7 +74,7 @@ bool octaspire_dern_c_data_is_copying_allowed(
     octaspire_dern_c_data_t const * const self);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif

@@ -238,7 +238,10 @@ ptrdiff_t octaspire_dern_port_write(
         self->typeTag == OCTASPIRE_DERN_PORT_TAG_OUTPUT_FILE)
     {
         octaspire_helpers_verify_not_null(self->value.file);
-        size_t const numItemsWritten = fwrite(buffer, sizeof(char), bufferSizeInOctets, self->value.file);
+
+        size_t const numItemsWritten =
+            fwrite(buffer, sizeof(char), bufferSizeInOctets, self->value.file);
+
         return (ptrdiff_t)numItemsWritten;
     }
 
@@ -256,7 +259,10 @@ ptrdiff_t octaspire_dern_port_read(
         self->typeTag == OCTASPIRE_DERN_PORT_TAG_IO_FILE)
     {
         octaspire_helpers_verify_not_null(self->value.file);
-        size_t const numItemsRead = fread(buffer, sizeof(char), bufferSizeInOctets, self->value.file);
+
+        size_t const numItemsRead =
+            fread(buffer, sizeof(char), bufferSizeInOctets, self->value.file);
+
         return (ptrdiff_t)numItemsRead;
     }
 

@@ -1,3 +1,19 @@
+/******************************************************************************
+Octaspire Dern - Programming language
+Copyright 2017 www.octaspire.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+******************************************************************************/
 #include "octaspire-dern-amalgamated.c"
 #ifdef _WIN32
 #include <winsock2.h>
@@ -114,7 +130,7 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
 #ifdef _WIN32
     WSADATA wsa;
 
-    if (WSAStartup(MAKEWORD(2,2), &wsa) != 0)
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_string_format(

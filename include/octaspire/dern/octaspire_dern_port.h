@@ -22,7 +22,7 @@ limitations under the License.
 #include <octaspire/core/octaspire_container_utf8_string.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 typedef enum
@@ -88,7 +88,7 @@ bool octaspire_dern_port_supports_input(
     octaspire_dern_port_t const * const self);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif

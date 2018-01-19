@@ -28,7 +28,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_c_data.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 typedef enum
@@ -58,7 +58,8 @@ octaspire_dern_value_tag_t;
 
 struct octaspire_dern_vm_t;
 
-char const * octaspire_dern_value_helper_get_type_as_c_string(octaspire_dern_value_tag_t const typeTag);
+char const * octaspire_dern_value_helper_get_type_as_c_string(
+    octaspire_dern_value_tag_t const typeTag);
 
 typedef struct octaspire_dern_value_t octaspire_dern_value_t;
 
@@ -182,7 +183,6 @@ bool octaspire_dern_builtin_is_howto_allowed(
 octaspire_container_utf8_string_t *octaspire_dern_builtin_to_string(
     octaspire_dern_builtin_t const * const self,
     octaspire_memory_allocator_t * const allocator);
-
 
 
 
@@ -361,6 +361,10 @@ bool octaspire_dern_value_as_boolean_get_value(
 
 int32_t octaspire_dern_value_as_integer_get_value(
     octaspire_dern_value_t const * const self);
+
+void octaspire_dern_value_as_integer_set_value(
+    octaspire_dern_value_t * const self,
+    int32_t const value);
 
 double octaspire_dern_value_as_real_get_value(
     octaspire_dern_value_t const * const self);
@@ -571,7 +575,8 @@ octaspire_dern_value_t *octaspire_dern_value_as_hash_map_get_value_for_symbol_ke
     octaspire_dern_value_t * const self,
     char const * const keySymbolsContentAsCString);
 
-octaspire_dern_value_t const *octaspire_dern_value_as_hash_map_get_value_for_symbol_key_using_c_string_const(
+octaspire_dern_value_t const *
+octaspire_dern_value_as_hash_map_get_value_for_symbol_key_using_c_string_const(
     octaspire_dern_value_t const * const self,
     char const * const keySymbolsContentAsCString);
 
@@ -587,7 +592,7 @@ int octaspire_dern_value_compare(
 bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif

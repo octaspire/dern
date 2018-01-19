@@ -23,7 +23,7 @@ limitations under the License.
 #include <octaspire/core/octaspire_input.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 typedef enum
@@ -110,10 +110,6 @@ char const *octaspire_dern_lexer_token_get_multiline_comment_value_as_c_string(
 
 
 
-
-
-
-
 octaspire_dern_lexer_token_position_t *octaspire_dern_lexer_token_get_position_line(
     octaspire_dern_lexer_token_t const * const self);
 
@@ -122,7 +118,6 @@ octaspire_dern_lexer_token_position_t *octaspire_dern_lexer_token_get_position_c
 
 octaspire_dern_lexer_token_position_t *octaspire_dern_lexer_token_get_position_ucs_index(
     octaspire_dern_lexer_token_t const * const self);
-
 
 
 
@@ -142,7 +137,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
     octaspire_memory_allocator_t *allocator);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif

@@ -175,7 +175,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
     self->column =
         octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_lexer_token_position_t));
 
-    self->ucsIndex = 
+    self->ucsIndex =
         octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_lexer_token_position_t));
 
     if (!self->line || !self->column || !self->ucsIndex)
@@ -233,7 +233,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
                 return 0;
             }
 
-            assert(octaspire_container_utf8_string_get_error_status(self->value.string) == OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
+            octaspire_helpers_verify_true(
+                octaspire_container_utf8_string_get_error_status(self->value.string) ==
+                OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
         }
         break;
 
@@ -250,7 +252,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
                 return 0;
             }
 
-            assert(octaspire_container_utf8_string_get_error_status(self->value.comment) == OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
+            octaspire_helpers_verify_true(
+                octaspire_container_utf8_string_get_error_status(self->value.comment) ==
+                OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
         }
         break;
 
@@ -267,7 +271,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
                 return 0;
             }
 
-            assert(octaspire_container_utf8_string_get_error_status(self->value.moreInputRequired) == OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
+            octaspire_helpers_verify_true(
+                octaspire_container_utf8_string_get_error_status(self->value.moreInputRequired) ==
+                OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
         }
         break;
 
@@ -284,8 +290,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
                 return 0;
             }
 
-            assert(octaspire_container_utf8_string_get_error_status(self->value.character) == OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
-
+            octaspire_helpers_verify_true(
+                octaspire_container_utf8_string_get_error_status(self->value.character) ==
+                OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
         }
         break;
 
@@ -302,7 +309,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
                 return 0;
             }
 
-            assert(octaspire_container_utf8_string_get_error_status(self->value.symbol) == OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
+            octaspire_helpers_verify_true(
+                octaspire_container_utf8_string_get_error_status(self->value.symbol) ==
+                OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
         }
         break;
 
@@ -319,7 +328,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
                 return 0;
             }
 
-            assert(octaspire_container_utf8_string_get_error_status(self->value.error) == OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
+            octaspire_helpers_verify_true(
+                octaspire_container_utf8_string_get_error_status(self->value.error) ==
+                OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
         }
         break;
     }
@@ -451,8 +462,8 @@ char const *octaspire_dern_lexer_token_get_type_tag_as_c_string(
         (size_t)tag <
             (sizeof(octaspire_dern_lexer_private_token_tag_types_as_c_strings) /
                 sizeof(octaspire_dern_lexer_private_token_tag_types_as_c_strings[0])));
-    return
-        octaspire_dern_lexer_private_token_tag_types_as_c_strings[tag];
+
+    return octaspire_dern_lexer_private_token_tag_types_as_c_strings[tag];
 }
 
 char const *octaspire_dern_lexer_token_get_string_value_as_c_string(
@@ -548,17 +559,23 @@ bool octaspire_dern_lexer_token_is_equal(
     {
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_STRING:
         {
-            return octaspire_container_utf8_string_is_equal(self->value.string, other->value.string);
+            return octaspire_container_utf8_string_is_equal(
+                self->value.string,
+                other->value.string);
         }
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER:
         {
-            return octaspire_container_utf8_string_is_equal(self->value.character, other->value.character);
+            return octaspire_container_utf8_string_is_equal(
+                self->value.character,
+                other->value.character);
         }
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SYMBOL:
         {
-            return octaspire_container_utf8_string_is_equal(self->value.symbol, other->value.symbol);
+            return octaspire_container_utf8_string_is_equal(
+                self->value.symbol,
+                other->value.symbol);
         }
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR:
@@ -582,14 +599,15 @@ bool octaspire_dern_lexer_token_is_equal(
         {
             // To prevent clang compiler warning on level
             // -Weverything without using #pragma
-            return
-                (self->value.real >= other->value.real) &&
-                (self->value.real <= other->value.real);
+            return (self->value.real >= other->value.real) &&
+                   (self->value.real <= other->value.real);
         }
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT:
         {
-            return octaspire_container_utf8_string_is_equal(self->value.comment, other->value.comment);
+            return octaspire_container_utf8_string_is_equal(
+                self->value.comment,
+                other->value.comment);
         }
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_LPAREN:
@@ -699,7 +717,7 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
         {
             if (!octaspire_container_utf8_string_concatenate_format(
                 result,
-                "real %g", 
+                "real %g",
                 self->value.real))
             {
                 return 0;
@@ -730,28 +748,36 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
                     return 0;
                 }
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(self->value.character, "\n"))
+            else if (octaspire_container_utf8_string_is_equal_to_c_string(
+                self->value.character,
+                "\n"))
             {
                 if (!octaspire_container_utf8_string_concatenate_c_string(result, "|newline|"))
                 {
                     return 0;
                 }
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(self->value.character, "\t"))
+            else if (octaspire_container_utf8_string_is_equal_to_c_string(
+                self->value.character,
+                "\t"))
             {
                 if (!octaspire_container_utf8_string_concatenate_c_string(result, "|tab|"))
                 {
                     return 0;
                 }
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(self->value.character, "["))
+            else if (octaspire_container_utf8_string_is_equal_to_c_string(
+                self->value.character,
+                "["))
             {
                 if (!octaspire_container_utf8_string_concatenate_c_string(result, "|string-start|"))
                 {
                     return 0;
                 }
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(self->value.character, "]"))
+            else if (octaspire_container_utf8_string_is_equal_to_c_string(
+                self->value.character,
+                "]"))
             {
                 if (!octaspire_container_utf8_string_concatenate_c_string(result, "|string-end|"))
                 {
@@ -1264,9 +1290,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_quote(
     }
 }
 
-
-
-
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_number(
     octaspire_input_t *input,
     octaspire_memory_allocator_t *allocator,
@@ -1516,8 +1539,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
         return octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
             "Memory allocation failed",
-            octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-            octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                octaspire_input_get_column_number(input)),
             octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
             allocator);
     }
@@ -1543,8 +1570,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
                 return octaspire_dern_lexer_token_new(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                     "After last ']' of string there must be dern delimiter",
-                    octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                    octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
+                    octaspire_dern_lexer_token_position_init(
+                        startLine,
+                        octaspire_input_get_line_number(input)),
+                    octaspire_dern_lexer_token_position_init(
+                        startColumn,
+                        octaspire_input_get_column_number(input)),
                     octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
                     allocator);
             }
@@ -1563,8 +1594,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
                 return octaspire_dern_lexer_token_new(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                     "String must begin with character '['",
-                    octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                    octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
+                    octaspire_dern_lexer_token_position_init(
+                        startLine,
+                        octaspire_input_get_line_number(input)),
+                    octaspire_dern_lexer_token_position_init(
+                        startColumn,
+                        octaspire_input_get_column_number(input)),
                     octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
                     allocator);
             }
@@ -1593,22 +1628,34 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
                     return octaspire_dern_lexer_token_new(
                         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                         "Problem with a character embedded in string: (character is not complete)",
-                        octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                        octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
-                        octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
+                        octaspire_dern_lexer_token_position_init(
+                            startLine,
+                            octaspire_input_get_line_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startColumn, octaspire_input_get_column_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startIndexInInput,
+                            endIndexInInput),
                         allocator);
                 }
 
-                if (octaspire_dern_lexer_token_get_type_tag(charToken) == OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR)
+                if (octaspire_dern_lexer_token_get_type_tag(charToken) ==
+                    OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR)
                 {
                     octaspire_container_utf8_string_release(tmpStr);
                     tmpStr = 0;
 
                     octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new_format(
                         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
-                        octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                        octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
-                        octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
+                        octaspire_dern_lexer_token_position_init(
+                            startLine,
+                            octaspire_input_get_line_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startColumn,
+                            octaspire_input_get_column_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startIndexInInput,
+                            endIndexInInput),
                         allocator,
                         "Problem with a character embedded in string: (%s)",
                         octaspire_dern_lexer_token_get_error_value_as_c_string(charToken));
@@ -1620,7 +1667,10 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
                 }
 
                 // TODO check that char available
-                c = octaspire_container_utf8_string_get_ucs_character_at_index(charToken->value.character, 0);
+                c = octaspire_container_utf8_string_get_ucs_character_at_index(
+                    charToken->value.character,
+                    0);
+
                 if (!octaspire_container_utf8_string_push_back_ucs_character(tmpStr, c))
                 {
                     octaspire_container_utf8_string_release(tmpStr);
@@ -1632,9 +1682,15 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
                     return octaspire_dern_lexer_token_new(
                         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                         "Memory allocation failed",
-                        octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                        octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
-                        octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
+                        octaspire_dern_lexer_token_position_init(
+                            startLine,
+                            octaspire_input_get_line_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startColumn,
+                            octaspire_input_get_column_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startIndexInInput,
+                            endIndexInInput),
                         allocator);
                 }
 
@@ -1654,9 +1710,15 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
                     return octaspire_dern_lexer_token_new(
                         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                         "Memory allocation failed",
-                        octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                        octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
-                        octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
+                        octaspire_dern_lexer_token_position_init(
+                            startLine,
+                            octaspire_input_get_line_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startColumn,
+                            octaspire_input_get_column_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startIndexInInput,
+                            endIndexInInput),
                         allocator);
                 }
             }
@@ -1684,8 +1746,12 @@ loopEnd:
         return octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
             "String must end with character ']'",
-            octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-            octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                octaspire_input_get_column_number(input)),
             octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
             allocator);
     }
@@ -1731,8 +1797,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
         return octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
             "Memory allocation failed",
-            octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-            octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                octaspire_input_get_column_number(input)),
             octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
             allocator);
     }
@@ -1770,8 +1840,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
                 return octaspire_dern_lexer_token_new(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                     "Character must begin with character '|'",
-                    octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                    octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
+                    octaspire_dern_lexer_token_position_init(
+                        startLine,
+                        octaspire_input_get_line_number(input)),
+                    octaspire_dern_lexer_token_position_init(
+                        startColumn,
+                        octaspire_input_get_column_number(input)),
                     octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
                     allocator);
             }
@@ -1792,9 +1866,15 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
                     return octaspire_dern_lexer_token_new(
                         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                         "Memory allocation failed",
-                        octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                        octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
-                        octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
+                        octaspire_dern_lexer_token_position_init(
+                            startLine,
+                            octaspire_input_get_line_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startColumn,
+                            octaspire_input_get_column_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startIndexInInput,
+                            endIndexInInput),
                         allocator);
                 }
             }
@@ -1821,8 +1901,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
         return octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
             "Character must end with character '|'",
-            octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-            octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                octaspire_input_get_column_number(input)),
             octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
             allocator);
     }
@@ -1927,17 +2011,23 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
         else if (
             strspn(
                 octaspire_container_utf8_string_get_c_string(tmpStr),
-                "0123456789abcdefABCDEF") == octaspire_container_utf8_string_get_length_in_ucs_characters(tmpStr))
+                "0123456789abcdefABCDEF") ==
+                    octaspire_container_utf8_string_get_length_in_ucs_characters(tmpStr))
         {
             if (octaspire_container_utf8_string_get_length_in_ucs_characters(tmpStr) > 8)
             {
                 octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new_format(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
-                    octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                    octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
+                    octaspire_dern_lexer_token_position_init(
+                        startLine,
+                        octaspire_input_get_line_number(input)),
+                    octaspire_dern_lexer_token_position_init(
+                        startColumn,
+                        octaspire_input_get_column_number(input)),
                     octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
                     allocator,
-                    "Number of hex digits (%zu) in character definition may not be larger than eight",
+                    "Number of hex digits (%zu) in character definition may not be larger "
+                    "than eight",
                     octaspire_container_utf8_string_get_length_in_ucs_characters(tmpStr));
 
                 octaspire_container_utf8_string_release(tmpStr);
@@ -1993,8 +2083,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
         {
             octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new_format(
                 OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
-                octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
+                octaspire_dern_lexer_token_position_init(
+                    startLine,
+                    octaspire_input_get_line_number(input)),
+                octaspire_dern_lexer_token_position_init(
+                    startColumn,
+                    octaspire_input_get_column_number(input)),
                 octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
                 allocator,
                 "Unknown character constant |%s|",
@@ -2012,8 +2106,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
         octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
             "Character cannot be empty: ||",
-            octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-            octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                octaspire_input_get_column_number(input)),
             octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
             allocator);
 
@@ -2063,8 +2161,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_
         return octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
             "Memory allocation failed",
-            octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-            octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                octaspire_input_get_column_number(input)),
             octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
             allocator);
     }
@@ -2089,8 +2191,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_
             return octaspire_dern_lexer_token_new(
                 OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                 "Memory allocation failed",
-                octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
+                octaspire_dern_lexer_token_position_init(
+                    startLine,
+                    octaspire_input_get_line_number(input)),
+                octaspire_dern_lexer_token_position_init(
+                    startColumn,
+                    octaspire_input_get_column_number(input)),
                 octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
                 allocator);
         }
@@ -2111,8 +2217,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_
             return octaspire_dern_lexer_token_new(
                 OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                 "Symbol cannot be empty",
-                octaspire_dern_lexer_token_position_init(startLine,   octaspire_input_get_line_number(input)),
-                octaspire_dern_lexer_token_position_init(startColumn, octaspire_input_get_column_number(input)),
+                octaspire_dern_lexer_token_position_init(
+                    startLine,
+                    octaspire_input_get_line_number(input)),
+                octaspire_dern_lexer_token_position_init(
+                    startColumn,
+                    octaspire_input_get_column_number(input)),
                 octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
                 allocator);
     }

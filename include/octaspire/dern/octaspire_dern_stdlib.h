@@ -24,7 +24,7 @@ limitations under the License.
 #endif
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_input_file_open(
@@ -455,7 +455,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_howto(
     octaspire_dern_value_t *environment);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif

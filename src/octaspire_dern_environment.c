@@ -287,18 +287,21 @@ octaspire_dern_value_t *octaspire_dern_environment_extend(
             formalsVec,
             (ptrdiff_t)(octaspire_container_vector_get_length(formalsVec) - 2));
 
-        octaspire_container_vector_t *actualVec = octaspire_container_vector_new_with_preallocated_elements(
-            sizeof(octaspire_dern_value_t*),
-            true,
-            numNormalArgsAfterDot,
-            0,
-            self->allocator);
+        octaspire_container_vector_t *actualVec =
+            octaspire_container_vector_new_with_preallocated_elements(
+                sizeof(octaspire_dern_value_t*),
+                true,
+                numNormalArgsAfterDot,
+                0,
+                self->allocator);
 
-        octaspire_dern_value_t *actual = octaspire_dern_vm_create_new_value_vector_from_vector(self->vm, actualVec);
+        octaspire_dern_value_t *actual =
+            octaspire_dern_vm_create_new_value_vector_from_vector(self->vm, actualVec);
 
         //octaspire_dern_vm_push_value(self->vm, actual);
 
-        for (size_t i = numNormalArgs; i < octaspire_container_vector_get_length(argumentsVec); ++i)
+        for (size_t i = numNormalArgs;
+             i < octaspire_container_vector_get_length(argumentsVec); ++i)
         {
             octaspire_dern_value_t *actualAfterDot =
                 octaspire_container_vector_get_element_at(
@@ -405,7 +408,8 @@ static octaspire_container_utf8_string_t *octaspire_dern_environment_private_to_
     octaspire_dern_environment_t const * const self,
     size_t const depth)
 {
-    octaspire_container_utf8_string_t *indent = octaspire_container_utf8_string_new("", self->allocator);
+    octaspire_container_utf8_string_t *indent =
+        octaspire_container_utf8_string_new("", self->allocator);
 
     for (size_t i = 0; i < depth; ++i)
     {
@@ -419,8 +423,9 @@ static octaspire_container_utf8_string_t *octaspire_dern_environment_private_to_
 
     if (self->enclosing)
     {
-        octaspire_container_utf8_string_t *enclosing =
-            octaspire_dern_environment_private_to_string(self->enclosing->value.environment, depth + 1);
+        octaspire_container_utf8_string_t *enclosing = octaspire_dern_environment_private_to_string(
+            self->enclosing->value.environment,
+            depth + 1);
 
         octaspire_container_utf8_string_concatenate_format(
             result,
@@ -459,7 +464,8 @@ static octaspire_container_utf8_string_t *octaspire_dern_environment_private_to_
 
     octaspire_container_vector_sort(
         sortVec,
-        (octaspire_container_vector_element_compare_function_t)octaspire_dern_environment_helper_compare_function);
+        (octaspire_container_vector_element_compare_function_t)
+            octaspire_dern_environment_helper_compare_function);
 
     for (size_t i = 0; i < octaspire_container_vector_get_length(sortVec); ++i)
     {
@@ -474,7 +480,8 @@ static octaspire_container_utf8_string_t *octaspire_dern_environment_private_to_
         octaspire_dern_value_t const * const value =
             octaspire_container_hash_map_element_get_value(element);
 
-        octaspire_container_utf8_string_t *keyAsStr = octaspire_dern_value_to_string(key, self->allocator);
+        octaspire_container_utf8_string_t *keyAsStr =
+            octaspire_dern_value_to_string(key, self->allocator);
 
         octaspire_container_utf8_string_t *valueAsStr =
             octaspire_dern_value_to_string(value, self->allocator);

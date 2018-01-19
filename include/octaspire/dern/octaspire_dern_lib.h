@@ -25,7 +25,7 @@ limitations under the License.
 #include <octaspire/core/octaspire_input.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 typedef enum
@@ -61,7 +61,7 @@ bool octaspire_dern_lib_mark_all(octaspire_dern_lib_t * const self);
 void *octaspire_dern_lib_get_handle(octaspire_dern_lib_t * const self);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif
