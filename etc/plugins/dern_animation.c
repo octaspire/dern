@@ -487,7 +487,7 @@ bool dern_animation_mark_all(
         octaspire_dern_value_mark(animation->targetValueDstY);
         octaspire_dern_value_mark(animation->targetValueDstW);
         octaspire_dern_value_mark(animation->targetValueDstH);
-                
+
         octaspire_container_hash_map_element_iterator_next(&iterator);
     }
 
