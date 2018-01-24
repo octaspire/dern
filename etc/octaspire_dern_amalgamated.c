@@ -22091,10 +22091,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "320"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "321"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.320.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.321.0"
 
 
 
@@ -33598,7 +33598,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
 #ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
                 (int32_t)strtol(
 #else
+    #ifdef __amigaos__
+                (int32_t)strtol(
+    #else
                 (int32_t)strtoimax(
+    #endif
 #endif
                 octaspire_dern_value_as_string_get_c_string(value),
                 0,
@@ -47559,6 +47563,8 @@ void main(int argc, char *argv[])
 #else
     #ifdef _WIN32
     int main(int argc, char *argv[], char *environ[])
+    #elif __amigaos__
+    int main(int argc, char *argv[], char *environ[])
     #else
     int main(int argc, char *argv[])
     #endif
@@ -47705,7 +47711,9 @@ void main(int argc, char *argv[])
 
 #ifndef OCTASPIRE_PLAN9_IMPLEMENTATION
 #ifndef _WIN32
+    #ifndef __amigaos__
     extern char **environ;
+    #endif
 #endif
 
     for (char **var = environ; *var; ++var)

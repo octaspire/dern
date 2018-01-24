@@ -4981,7 +4981,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
 #ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
                 (int32_t)strtol(
 #else
+    #ifdef __amigaos__
+                (int32_t)strtol(
+    #else
                 (int32_t)strtoimax(
+    #endif
 #endif
                 octaspire_dern_value_as_string_get_c_string(value),
                 0,

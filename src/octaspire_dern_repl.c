@@ -207,6 +207,8 @@ void main(int argc, char *argv[])
 #else
     #ifdef _WIN32
     int main(int argc, char *argv[], char *environ[])
+    #elif __amigaos__
+    int main(int argc, char *argv[], char *environ[])
     #else
     int main(int argc, char *argv[])
     #endif
@@ -353,7 +355,9 @@ void main(int argc, char *argv[])
 
 #ifndef OCTASPIRE_PLAN9_IMPLEMENTATION
 #ifndef _WIN32
+    #ifndef __amigaos__
     extern char **environ;
+    #endif
 #endif
 
     for (char **var = environ; *var; ++var)
