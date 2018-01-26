@@ -514,6 +514,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_plan9">Plan9</a></li>
 <li><a href="#_windows_using_mingw_and_git">Windows using MinGW and Git</a></li>
 <li><a href="#_reactos">ReactOS</a></li>
+<li><a href="#_amigaos_4_x">AmigaOS 4.x</a></li>
 </ul>
 </li>
 <li><a href="#_hello_world">Hello world</a></li>
@@ -572,7 +573,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Documentation for Octaspire Dern programming language version 0.321.0</p>
+<p>Documentation for Octaspire Dern programming language version 0.323.0</p>
 </div>
 </div>
 </div>
@@ -637,7 +638,7 @@ the <strong>release</strong>-directory of the version controlled source distribu
 <div class="paragraph">
 <p>Dern is portable and is tested and known to run in Linux, FreeBSD, OpenBSD, NetBSD,
 OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Windows, ReactOS, macOS, Termux,
-Syllable Destop and AROS.
+Syllable Destop, AROS and Amiga.
 The <code>how-to-build</code>-directory of the amalgamated source release contains build script
 for all tested platforms.</p>
 </div>
@@ -756,9 +757,6 @@ above. Run examples and programs in the <strong>Command Prompt</strong> window
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p>More scripts for different tools might be added later.</p>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_reactos">ReactOS</h3>
@@ -778,6 +776,27 @@ libraries and headers from
 Extract the archive and move the contents into the <strong>version-x.y.z</strong> directory.</p>
 </li>
 </ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_amigaos_4_x">AmigaOS 4.x</h3>
+<div class="paragraph">
+<p>Download and install <a href="http://www.hyperion-entertainment.biz/index.php/downloads?view=download&amp;layout=form&amp;file=82">AmigaOS SDK</a>
+Download and extract
+<a href="http://aminet.net/util/arc/bzip2.lha">bzip2</a> to get <code>bzip2_68k</code> executable.
+Download the
+<a href="http://octaspire.com/dern/release.tar.bz2">amalgamated Dern source release</a>.</p>
+</div>
+<div class="paragraph">
+<p>Open Shell window and run the following commands:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>bzip2_68k -dk release.tar.bz2
+tar xf release.tar
+<span class="tok-nb">cd</span> release/#?
+sh how-to-build/AmigaOS41.sh</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -2064,7 +2083,7 @@ can be used to (by giving different compiler flags):</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-01-24 21:46:40 EET
+Last updated 2018-01-26 21:58:06 EET
 </div>
 </div>
 </body>

@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.321.0
+Documentation for Octaspire Dern programming language version 0.323.0
 
 == About
 
@@ -62,7 +62,7 @@ http://www.octaspire.com/dern/release.tar.bz2[octaspire.com/dern/release.tar.bz2
 
 Dern is portable and is tested and known to run in Linux, FreeBSD, OpenBSD, NetBSD,
 OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Windows, ReactOS, macOS, Termux,
-Syllable Destop and AROS.
+Syllable Destop, AROS and Amiga.
 The `how-to-build`-directory of the amalgamated source release contains build script
 for all tested platforms.
 
@@ -164,10 +164,6 @@ above. Run examples and programs in the *Command Prompt* window
 (NOT in the Git Bash window).
 
 
-More scripts for different tools might be added later.
-
-
-
 
 === ReactOS
 
@@ -185,6 +181,26 @@ Extract the archive and move the contents into the *version-x.y.z* directory.
 
 
 
+=== AmigaOS 4.x
+
+Download and install http://www.hyperion-entertainment.biz/index.php/downloads?view=download&layout=form&file=82[AmigaOS SDK]
+Download and extract
+http://aminet.net/util/arc/bzip2.lha[bzip2] to get `bzip2_68k` executable.
+Download the 
+http://octaspire.com/dern/release.tar.bz2[amalgamated Dern source release].
+
+Open Shell window and run the following commands:
+
+:source-highlighter: pygments
+:pygments-style: colorful
+:pygments-linenums-mode: inline
+[source,bash]
+----
+bzip2_68k -dk release.tar.bz2
+tar xf release.tar
+cd release/#?
+sh how-to-build/AmigaOS41.sh
+----
 
 
 

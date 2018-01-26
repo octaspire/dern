@@ -34,21 +34,22 @@ if [ "$2" = "--coverage" ]; then COVERAGE=$2; fi
 
 
 
-#EXAMPLE_NAME="stand alone unit test runner"
-#EXAMPLE_ERROR_HINT="Install $CC compiler?"
-#EXAMPLE_SUCCESS_RUN="octaspire-dern-unit-test-runner"
-#echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION -DGREATEST_ENABLE_ANSI_COLORS $COVERAGE -I . octaspire-dern-amalgamated.c -lm -o octaspire-dern-unit-test-runner
-
-
-
 EXAMPLE_NAME="embedding example"
-EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_ERROR_HINT="Install $CC compiler? See http://www.amigaos.net/content/81/sdk"
 EXAMPLE_SUCCESS_RUN="embedding-example"
 echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -I . examples/embedding-example.c -lm -o embedding-example
 
 
 
 EXAMPLE_NAME="interactive Dern REPL"
-EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_ERROR_HINT="Install $CC compiler? See http://www.amigaos.net/content/81/sdk"
 EXAMPLE_SUCCESS_RUN="octaspire-dern-repl"
 echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION -I . octaspire-dern-amalgamated.c -lm -o octaspire-dern-repl
+
+
+
+EXAMPLE_NAME="stand alone unit test runner"
+EXAMPLE_ERROR_HINT="$CC compiler might be missing, or there might be too little memory."
+EXAMPLE_SUCCESS_RUN="octaspire-dern-unit-test-runner"
+echoAndRun "$CC" -O0 -std=c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION -DGREATEST_ENABLE_ANSI_COLORS $COVERAGE -I . octaspire-dern-amalgamated.c -lm -o octaspire-dern-unit-test-runner
+
