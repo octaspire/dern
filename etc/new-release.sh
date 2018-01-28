@@ -150,6 +150,8 @@ RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     cp "$PROJECT_PATH/etc/plugins/dern_easing.c" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/plugins/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+    cp "$PROJECT_PATH/etc/plugins/dern_animation.c" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/plugins/"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     cp "$PROJECT_PATH/etc/plugins/dern_sdl2.c" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/plugins/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
