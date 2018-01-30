@@ -454,8 +454,16 @@ void octaspire_dern_lib_release(octaspire_dern_lib_t *self)
                 }
             }
 
-            dlclose(self->binaryLibHandle);
-            self->binaryLibHandle = 0;
+            octaspire_dern_vm_config_t const * const config =
+                octaspire_dern_vm_get_config_const(self->vm);
+
+            octaspire_helpers_verify_not_null(config);
+
+            if (!config->noDlClose)
+            {
+                dlclose(self->binaryLibHandle);
+                self->binaryLibHandle = 0;
+            }
         }
 #endif
 #endif

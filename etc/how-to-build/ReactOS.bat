@@ -25,6 +25,14 @@ gcc -O2 -std=c99 -Wall -Wextra -fPIC -shared -I . -o libdern_socket.dll plugins\
 gcc -O2 -std=c99 -Wall -Wextra -fPIC -shared -I . -shared -o libdern_dir.dll plugins\dern_dir.c -lKernel32 -L . imp.a
 @ECHO --------------------------------------------------------------------------
 
+@ECHO ---- Dern easing plugin: octaspire-dern-repl examples\dern-easing-example.dern
+gcc -O2 -std=c99 -Wall -Wextra -fPIC -shared -I . -shared -o libdern_easing.dll plugins\dern_easing.c -L . imp.a
+@ECHO --------------------------------------------------------------------------
+
+@ECHO ---- Dern animation plugin: octaspire-dern-repl examples\dern-animation-example.dern
+gcc -O2 -std=c99 -Wall -Wextra -fPIC -shared -I . -shared -o libdern_animation.dll plugins\dern_animation.c -L . imp.a
+@ECHO --------------------------------------------------------------------------
+
 @ECHO ---- Dern ncurses plugin:  octaspire-dern-repl examples\dern-ncurses-example.dern
 gcc -O2 -std=c99 -Wall -Wextra -fPIC -I . -shared -o libdern_ncurses.dll plugins\dern_ncurses.c -L . -lpdcurses imp.a
 @ECHO --------------------------------------------------------------------------

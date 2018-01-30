@@ -22091,10 +22091,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "326"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "327"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.326.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.327.0"
 
 
 
@@ -23301,6 +23301,7 @@ typedef struct octaspire_dern_vm_config_t
 {
     octaspire_dern_vm_custom_require_source_file_loader_t preLoaderForRequireSrc;
     bool debugModeOn;
+    bool noDlClose;
 }
 octaspire_dern_vm_config_t;
 
@@ -23636,6 +23637,9 @@ size_t octaspire_dern_vm_get_number_of_environment_variables(
 char const *octaspire_dern_vm_get_environment_variable_at(
     octaspire_dern_vm_t const * const self,
     ptrdiff_t const index);
+
+octaspire_dern_vm_config_t const * octaspire_dern_vm_get_config_const(
+    octaspire_dern_vm_t const * const self);
 
 #ifdef __cplusplus
 /* extern "C" */ }
@@ -27685,8 +27689,16 @@ void octaspire_dern_lib_release(octaspire_dern_lib_t *self)
                 }
             }
 
-            dlclose(self->binaryLibHandle);
-            self->binaryLibHandle = 0;
+            octaspire_dern_vm_config_t const * const config =
+                octaspire_dern_vm_get_config_const(self->vm);
+
+            octaspire_helpers_verify_not_null(config);
+
+            if (!config->noDlClose)
+            {
+                dlclose(self->binaryLibHandle);
+                self->binaryLibHandle = 0;
+            }
         }
 #endif
 #endif
@@ -42272,7 +42284,8 @@ octaspire_dern_vm_config_t octaspire_dern_vm_config_default(void)
     octaspire_dern_vm_config_t result =
     {
         .preLoaderForRequireSrc  = 0,
-        .debugModeOn             = false
+        .debugModeOn             = false,
+        .noDlClose               = false
     };
 
     return result;
@@ -46707,6 +46720,12 @@ char const *octaspire_dern_vm_get_environment_variable_at(
     return octaspire_container_utf8_string_get_c_string(str);
 }
 
+octaspire_dern_vm_config_t const * octaspire_dern_vm_get_config_const(
+    octaspire_dern_vm_t const * const self)
+{
+    return &(self->config);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../src/octaspire_dern_vm.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47522,7 +47541,10 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
         "-e string --evaluate string   : evaluate a string without entering the REPL (see -i)\n"
         "-v        --version           : print version information and exit\n"
         "-h        --help              : print this help message and exit\n"
-        "-g        --debug             : print every form to stderr before it is evaluated\n";
+        "-g        --debug             : print every form to stderr before it is evaluated\n"
+        "-d        --no-dlclose        : do not close dynamic libraries;\n"
+        "                                useful when searching memory leaks from plugins\n"
+        "                                using Valgrind\n";
 
     printf("%s", str);
 }
@@ -47671,6 +47693,10 @@ void main(int argc, char *argv[])
             else if (strcmp(argv[i], "-g") == 0 || strcmp(argv[i], "--debug") == 0)
             {
                 vmConfig.debugModeOn = true;
+            }
+            else if (strcmp(argv[i], "-d") == 0 || strcmp(argv[i], "--no-dlclose") == 0)
+            {
+                vmConfig.noDlClose = true;
             }
             else
             {

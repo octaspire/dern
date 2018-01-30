@@ -166,7 +166,10 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
         "-e string --evaluate string   : evaluate a string without entering the REPL (see -i)\n"
         "-v        --version           : print version information and exit\n"
         "-h        --help              : print this help message and exit\n"
-        "-g        --debug             : print every form to stderr before it is evaluated\n";
+        "-g        --debug             : print every form to stderr before it is evaluated\n"
+        "-d        --no-dlclose        : do not close dynamic libraries;\n"
+        "                                useful when searching memory leaks from plugins\n"
+        "                                using Valgrind\n";
 
     printf("%s", str);
 }
@@ -315,6 +318,10 @@ void main(int argc, char *argv[])
             else if (strcmp(argv[i], "-g") == 0 || strcmp(argv[i], "--debug") == 0)
             {
                 vmConfig.debugModeOn = true;
+            }
+            else if (strcmp(argv[i], "-d") == 0 || strcmp(argv[i], "--no-dlclose") == 0)
+            {
+                vmConfig.noDlClose = true;
             }
             else
             {

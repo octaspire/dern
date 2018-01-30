@@ -40,6 +40,7 @@ typedef struct octaspire_dern_vm_config_t
 {
     octaspire_dern_vm_custom_require_source_file_loader_t preLoaderForRequireSrc;
     bool debugModeOn;
+    bool noDlClose;
 }
 octaspire_dern_vm_config_t;
 
@@ -375,6 +376,9 @@ size_t octaspire_dern_vm_get_number_of_environment_variables(
 char const *octaspire_dern_vm_get_environment_variable_at(
     octaspire_dern_vm_t const * const self,
     ptrdiff_t const index);
+
+octaspire_dern_vm_config_t const * octaspire_dern_vm_get_config_const(
+    octaspire_dern_vm_t const * const self);
 
 #ifdef __cplusplus
 /* extern "C" */ }

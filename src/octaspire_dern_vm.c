@@ -86,7 +86,8 @@ octaspire_dern_vm_config_t octaspire_dern_vm_config_default(void)
     octaspire_dern_vm_config_t result =
     {
         .preLoaderForRequireSrc  = 0,
-        .debugModeOn             = false
+        .debugModeOn             = false,
+        .noDlClose               = false
     };
 
     return result;
@@ -4519,5 +4520,11 @@ char const *octaspire_dern_vm_get_environment_variable_at(
     }
 
     return octaspire_container_utf8_string_get_c_string(str);
+}
+
+octaspire_dern_vm_config_t const * octaspire_dern_vm_get_config_const(
+    octaspire_dern_vm_t const * const self)
+{
+    return &(self->config);
 }
 

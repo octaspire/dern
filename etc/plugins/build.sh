@@ -34,12 +34,12 @@ if [ "$platform" == "Linux" ]; then
     gcc -g -Wall -Wextra -std=c99 -shared -o libdern_dir.so dern_dir.o
 
     echo "--- plugin SDL2    ---"
-    gcc -Wall -Wextra -pedantic -g -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION \
+    gcc -g -Wall -Wextra -pedantic -g -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION \
         -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY \
         -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY \
         -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY   \
         -c -fPIC -I ../../release dern_sdl2.c `sdl2-config --cflags`
-    gcc -Wall -Wextra -pedantic -std=c99 -shared -o libdern_sdl2.so dern_sdl2.o `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+    gcc -g -Wall -Wextra -pedantic -std=c99 -shared -o libdern_sdl2.so dern_sdl2.o `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
     echo "--- plugin easing    ---"
     gcc -g -Wall -Wextra -std=gnu99 -c -fPIC -I ../../release dern_easing.c
@@ -61,24 +61,24 @@ if [ "$platform" == "MacOS" ]; then
     clang -g -Wall -Wextra -std=c99 -dynamiclib -o libdern_openssl.dylib dern_openssl.o -L /usr/local/opt/openssl/lib -lssl -lcrypto
 
     echo "--- plugin dir     ---"
-    clang -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_dir.c
-    clang -Wall -Wextra -std=c99 -dynamiclib -o libdern_dir.dylib dern_dir.o
+    clang -g -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_dir.c
+    clang -g -Wall -Wextra -std=c99 -dynamiclib -o libdern_dir.dylib dern_dir.o
 
     echo "--- plugin SDL2    ---"
-    clang -Wall -Wextra -pedantic -g -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION \
+    clang -g -Wall -Wextra -pedantic -g -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION \
         -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY \
         -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY \
         -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY   \
         -c -fPIC -I ../../release dern_sdl2.c `sdl2-config --cflags`
-    clang -Wall -Wextra -pedantic -std=c99 -dynamiclib -o libdern_sdl2.dylib dern_sdl2.o `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+    clang -g -Wall -Wextra -pedantic -std=c99 -dynamiclib -o libdern_sdl2.dylib dern_sdl2.o `sdl2-config --libs` -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
     echo "--- plugin easing     ---"
-    clang -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_easing.c
-    clang -Wall -Wextra -std=c99 -dynamiclib -o libdern_easing.dylib dern_easing.o
+    clang -g -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_easing.c
+    clang -g -Wall -Wextra -std=c99 -dynamiclib -o libdern_easing.dylib dern_easing.o
 
     echo "--- plugin animation     ---"
-    clang -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_animation.c
-    clang -Wall -Wextra -std=c99 -dynamiclib -o libdern_animation.dylib dern_animation.o
+    clang -g -Wall -Wextra -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -c -fPIC -I ../../release dern_animation.c
+    clang -g -Wall -Wextra -std=c99 -dynamiclib -o libdern_animation.dylib dern_animation.o
 fi
 
 if [ "$platform" == "MinGW" ]; then

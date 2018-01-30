@@ -86,6 +86,13 @@ echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -fPIC -shared -I . -shared -o libder
 
 
 
+EXAMPLE_NAME="Dern animation plugin"
+EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_SUCCESS_RUN="octaspire-dern-repl examples\\dern-animation-example.dern"
+echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -fPIC -shared -I . -shared -o libdern_animation.dll plugins/dern_animation.c -L . imp.a
+
+
+
 EXAMPLE_NAME="Dern ncurses plugin"
 read -rd '' EXAMPLE_ERROR_HINT << EOF
     a) Go to https://pdcurses.sourceforge.io

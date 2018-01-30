@@ -76,6 +76,20 @@ echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -fPIC -shared -I . -shared -o libder
 
 
 
+EXAMPLE_NAME="Dern easing plugin"
+EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_SUCCESS_RUN="LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-easing-example.dern"
+echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -fPIC -shared -I . -shared -o libdern_easing.so plugins/dern_easing.c
+
+
+
+EXAMPLE_NAME="Dern animation plugin"
+EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_SUCCESS_RUN="LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-animation-example.dern"
+echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -fPIC -shared -I . -shared -o libdern_animation.so plugins/dern_animation.c
+
+
+
 EXAMPLE_NAME="Dern ncurses plugin"
 EXAMPLE_ERROR_HINT="MINIX 3: pkgin install ncursesw"
 EXAMPLE_SUCCESS_RUN="LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:. ./octaspire-dern-repl examples/dern-ncurses-example.dern"
