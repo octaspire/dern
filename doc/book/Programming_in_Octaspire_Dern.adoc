@@ -5,7 +5,7 @@ Programming in Octaspire Dern
 :toc:
 :source-highlighter: pygments
 
-Documentation for Octaspire Dern programming language version 0.330.0
+Documentation for Octaspire Dern programming language version 0.330.3
 
 == About
 
@@ -132,8 +132,7 @@ cd release/*
 rc how-to-build/Plan9.sh
 ----
 
-Please note, that Dern in Plan9 is currently EXPERIMENTAL, can crash and should be used only for
-testing and development/fixing purposes.
+Please note, that Dern in Plan9 is currently EXPERIMENTAL.
 
 
 
@@ -150,8 +149,7 @@ cd release/*
 rc how-to-build/Plan9-arm.sh
 ----
 
-Please note, that Dern in Plan9 is currently EXPERIMENTAL, can crash and should be used only for
-testing and development/fixing purposes.
+Please note, that Dern in Plan9 is currently EXPERIMENTAL.
 
 
 

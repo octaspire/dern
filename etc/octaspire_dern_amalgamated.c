@@ -209,9 +209,9 @@ limitations under the License.
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "90"
-#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "1"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.90.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.90.1"
 
 
 
@@ -5171,7 +5171,11 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_vformat(
 #endif
         n = vsnprintf(
             buffer,
+    #ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
+            buflen - 1,
+    #else
             buflen,
+    #endif
             fmt,
             copyOfVarArgs);
 
@@ -22092,9 +22096,9 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "330"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "3"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.330.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.330.3"
 
 
 
