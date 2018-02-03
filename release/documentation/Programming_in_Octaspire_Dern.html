@@ -512,6 +512,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_linux_freebsd_openbsd_netbsd_openindiana_dragonfly_bsd_midnightbsd_minix_3_haiku_syllable_desktop_macos_termux_aros">Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Syllable Desktop, macOS, Termux, AROS</a></li>
 <li><a href="#_plan9">Plan9</a></li>
+<li><a href="#_plan9_on_arm_architecture">Plan9 on ARM architecture</a></li>
 <li><a href="#_windows_using_mingw_and_git">Windows using MinGW and Git</a></li>
 <li><a href="#_reactos">ReactOS</a></li>
 <li><a href="#_amigaos_4_x">AmigaOS 4.x</a></li>
@@ -573,7 +574,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Documentation for Octaspire Dern programming language version 0.327.0</p>
+<p>Documentation for Octaspire Dern programming language version 0.330.0</p>
 </div>
 </div>
 </div>
@@ -714,6 +715,21 @@ More scripts for different platforms will be added later.</p>
 tar xf release.tar.bz2
 <span class="tok-nb">cd</span> release/*
 rc how-to-build/Plan9.sh</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Please note, that Dern in Plan9 is currently EXPERIMENTAL, can crash and should be used only for
+testing and development/fixing purposes.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_plan9_on_arm_architecture">Plan9 on ARM architecture</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>hget http://octaspire.com/dern/release.tar.bz2 &gt; release.tar.bz2
+tar xf release.tar.bz2
+<span class="tok-nb">cd</span> release/*
+rc how-to-build/Plan9-arm.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2083,7 +2099,7 @@ can be used to (by giving different compiler flags):</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-01-30 23:22:56 EET
+Last updated 2018-02-03 10:27:12 EET
 </div>
 </div>
 </body>
