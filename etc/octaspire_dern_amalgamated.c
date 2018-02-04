@@ -209,9 +209,9 @@ limitations under the License.
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "92"
-#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "1"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.92.0"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.92.1"
 
 
 
@@ -5228,15 +5228,20 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_vformat(
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat-nonliteral"
 #endif
+
+    #ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
         n = vsnprintf(
             buffer,
-    #ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
             buflen - 1,
-    #else
-            buflen,
-    #endif
             fmt,
             copyOfVarArgs);
+    #else
+        n = vsnprintf(
+            buffer,
+            buflen,
+            fmt,
+            copyOfVarArgs);
+    #endif
 
 #ifdef OCTASPIRE_CLANG_PRAGMAS_ENABLED
 #pragma clang diagnostic pop
@@ -22159,9 +22164,9 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "332"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.332.0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.332.1"
 
 
 
