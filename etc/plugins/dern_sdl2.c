@@ -858,7 +858,7 @@ static octaspire_sdl2_texture_t * dern_sdl2_private_helper_uid_to_texture(
 
 void dern_sdl2_release_texture_with_uid(void * element)
 {
-    octaspire_sdl2_texture_t * texture = dern_sdl2_private_helper_uid_to_texture(element);
+    octaspire_sdl2_texture_t * texture = (octaspire_sdl2_texture_t*)element;
 
     if (texture)
     {

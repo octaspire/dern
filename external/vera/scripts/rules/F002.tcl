@@ -3,8 +3,8 @@
 
 set maxDirectoryDepth [getParameter "max-directory-depth" 8]
 set maxDirnameLength [getParameter "max-dirname-length" 31]
-set maxFilenameLength [getParameter "max-filename-length" 31]
-set maxPathLength [getParameter "max-path-length" 100]
+set maxFilenameLength [getParameter "max-filename-length" 48]
+set maxPathLength [getParameter "max-path-length" 128]
 
 foreach fileName [getSourceFileNames] {
     if {[string length $fileName] > $maxPathLength} {

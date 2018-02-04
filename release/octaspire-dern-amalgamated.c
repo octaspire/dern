@@ -208,10 +208,10 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "90"
-#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "92"
+#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.90.1"
+#define OCTASPIRE_CORE_CONFIG_VERSION_STR   "Octaspire Core version 0.92.0"
 
 
 
@@ -247,7 +247,7 @@ limitations under the License.
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 typedef enum octaspire_utf8_decode_status_t
@@ -293,7 +293,7 @@ octaspire_utf8_decode_status_t octaspire_utf8_decode_character_from_buffer(
     int *numoctets);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif
@@ -328,7 +328,7 @@ limitations under the License.
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 typedef void *(*octaspire_memory_allocator_custom_malloc_function_t)(size_t size);
@@ -344,8 +344,6 @@ typedef struct octaspire_memory_allocator_config_t
 octaspire_memory_allocator_config_t;
 
 octaspire_memory_allocator_config_t octaspire_memory_allocator_config_default(void);
-
-
 
 
 typedef struct octaspire_memory_allocator_t octaspire_memory_allocator_t;
@@ -400,7 +398,7 @@ size_t octaspire_memory_allocator_get_number_of_future_allocations_to_be_rigged(
     octaspire_memory_allocator_t const * const self);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif
@@ -435,7 +433,7 @@ limitations under the License.
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 typedef struct octaspire_container_vector_t octaspire_container_vector_t;
@@ -596,7 +594,7 @@ bool octaspire_container_vector_permutation_iterator_next(
     octaspire_container_vector_permutation_iterator_t * const self);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif
@@ -738,9 +736,6 @@ octaspire_container_list_node_t const *octaspire_container_list_get_at_const(
     ptrdiff_t const possiblyNegativeIndex);
 
 
-
-
-
 typedef struct octaspire_container_list_node_iterator_t
 {
     octaspire_container_list_t      *list;
@@ -754,15 +749,12 @@ octaspire_container_list_node_iterator_t octaspire_container_list_node_iterator_
 bool octaspire_container_list_node_iterator_next(
     octaspire_container_list_node_iterator_t * const self);
 
-
-
-
-
 #ifdef __cplusplus
 }
 #endif
 
 #endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../include/octaspire/core/octaspire_container_list.h
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -880,6 +872,7 @@ bool octaspire_container_queue_iterator_next(
 #endif
 
 #endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../include/octaspire/core/octaspire_container_queue.h
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1201,6 +1194,7 @@ void octaspire_container_pair_clear(
 #endif
 
 #endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../include/octaspire/core/octaspire_container_pair.h
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1231,7 +1225,7 @@ limitations under the License.
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 typedef struct octaspire_stdio_t octaspire_stdio_t;
@@ -1258,7 +1252,7 @@ size_t octaspire_stdio_get_number_of_future_reads_to_be_rigged(
 octaspire_container_utf8_string_t *octaspire_stdio_read_line(octaspire_stdio_t *self, FILE *stream);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif
@@ -1293,7 +1287,7 @@ limitations under the License.
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 typedef struct octaspire_input_t octaspire_input_t;
@@ -1340,7 +1334,7 @@ size_t octaspire_input_get_ucs_character_index(octaspire_input_t const * const s
 void octaspire_input_print(octaspire_input_t const * const self);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif
@@ -1375,8 +1369,7 @@ limitations under the License.
 
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C"       {
 #endif
 
 // Hash map element
@@ -1490,8 +1483,6 @@ octaspire_container_hash_map_element_t *octaspire_container_hash_map_get_at_inde
     ptrdiff_t const possiblyNegativeIndex);
 
 
-
-
 typedef struct octaspire_container_hash_map_element_iterator_t
 {
     octaspire_container_hash_map_t *hashMap;
@@ -1508,8 +1499,6 @@ bool octaspire_container_hash_map_element_iterator_next(
     octaspire_container_hash_map_element_iterator_t * const self);
 
 
-
-
 typedef struct octaspire_container_hash_map_element_const_iterator_t
 {
     octaspire_container_hash_map_t const *hashMap;
@@ -1519,7 +1508,8 @@ typedef struct octaspire_container_hash_map_element_const_iterator_t
 }
 octaspire_container_hash_map_element_const_iterator_t;
 
-octaspire_container_hash_map_element_const_iterator_t octaspire_container_hash_map_element_const_iterator_init(
+octaspire_container_hash_map_element_const_iterator_t
+octaspire_container_hash_map_element_const_iterator_init(
     octaspire_container_hash_map_t const * const self);
 
 bool octaspire_container_hash_map_element_const_iterator_next(
@@ -1531,10 +1521,11 @@ uint32_t octaspire_container_hash_map_helper_size_t_get_hash(
     size_t const value);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../include/octaspire/core/octaspire_container_hash_map.h
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1565,7 +1556,7 @@ limitations under the License.
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"       {
 #endif
 
 #define OCTASPIRE_HELPERS_UNUSED_PARAMETER(x) (void)(x)
@@ -1627,7 +1618,7 @@ octaspire_container_utf8_string_t * octaspire_helpers_base64_encode(
     octaspire_memory_allocator_t * const allocator);
 
 #ifdef __cplusplus
-}
+/* extern "C" */ }
 #endif
 
 #endif
@@ -1932,6 +1923,7 @@ size_t octaspire_memory_allocator_get_number_of_future_allocations_to_be_rigged(
 {
     return self->numberOfFutureAllocationsToBeRigged;
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          ../src/octaspire_memory.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2516,15 +2508,20 @@ typedef enum octaspire_utf8_character_range_t
 octaspire_utf8_character_range_t;
 
 static octaspire_utf8_character_range_t octaspire_utf8_private_rangeof(uint32_t const character);
-//static octaspire_utf8_character_range_t   octaspire_utf8_private_rangeof          (octaspire_utf8_character_range_t const range);
-static uint32_t                           octaspire_utf8_private_high_order_bits  (octaspire_utf8_character_range_t const range);
-static void                               octaspire_utf8_private_set_bit          (uint32_t *bitset, size_t const index, bool const on);
-static void                               octaspire_utf8_private_set_bit_of_char  (unsigned char *bitset, size_t const index, bool const on);
-static bool                               octaspire_utf8_private_get_bit          (uint32_t const bitset, size_t const index);
-static bool                               octaspire_utf8_private_get_bit_of_uint8 (char const bitset, size_t const index);
+static uint32_t octaspire_utf8_private_high_order_bits  (octaspire_utf8_character_range_t const range);
+static void     octaspire_utf8_private_set_bit          (uint32_t *bitset, size_t const index, bool const on);
 
-static int                                octaspire_utf8_private_octets_in_next   (char const * const text, size_t const textLengthInOctets);
-static int                                octaspire_utf8_private_octets_in_next_from_buffer   (char const * const buffer, size_t const lengthInOctets, size_t const currentIndex);
+static void octaspire_utf8_private_set_bit_of_char(unsigned char *bitset, size_t const index, bool const on);
+
+static bool     octaspire_utf8_private_get_bit          (uint32_t const bitset, size_t const index);
+static bool     octaspire_utf8_private_get_bit_of_uint8 (char const bitset, size_t const index);
+
+static int octaspire_utf8_private_octets_in_next(char const * const text, size_t const textLengthInOctets);
+
+static int octaspire_utf8_private_octets_in_next_from_buffer(
+    char const * const buffer,
+    size_t const lengthInOctets,
+    size_t const currentIndex);
 
 octaspire_utf8_decode_status_t octaspire_utf8_private_decode_helper(
     char const * const buffer,
@@ -2619,7 +2616,9 @@ static bool octaspire_utf8_private_get_bit_of_uint8(char const bitset, size_t co
     return (((uint8_t)bitset) >> index) & 1;
 }
 
-octaspire_utf8_encode_status_t octaspire_utf8_encode_character(uint32_t const character, octaspire_utf8_character_t *result)
+octaspire_utf8_encode_status_t octaspire_utf8_encode_character(
+    uint32_t const character,
+    octaspire_utf8_character_t *result)
 {
     memset(result->octets, 0, 4);
     result->numoctets = 0;
@@ -2678,7 +2677,10 @@ octaspire_utf8_encode_status_t octaspire_utf8_encode_character(uint32_t const ch
 
             for (size_t i = 0; i < 4; ++i)
             {
-                octaspire_utf8_private_set_bit(&bitset, 16+i, octaspire_utf8_private_get_bit(character, 12+i));
+                octaspire_utf8_private_set_bit(
+                    &bitset,
+                    16+i,
+                    octaspire_utf8_private_get_bit(character, 12+i));
             }
 
             result->numoctets = 3;
@@ -2699,12 +2701,18 @@ octaspire_utf8_encode_status_t octaspire_utf8_encode_character(uint32_t const ch
 
             for (size_t i = 0; i < 6; ++i)
             {
-                octaspire_utf8_private_set_bit(&bitset, 16+i, octaspire_utf8_private_get_bit(character, 12+i));
+                octaspire_utf8_private_set_bit(
+                    &bitset,
+                    16+i,
+                    octaspire_utf8_private_get_bit(character, 12+i));
             }
 
             for (size_t i = 0; i < 3; ++i)
             {
-                octaspire_utf8_private_set_bit(&bitset, 24+i, octaspire_utf8_private_get_bit(character, 18+i));
+                octaspire_utf8_private_set_bit(
+                    &bitset,
+                    24+i,
+                    octaspire_utf8_private_get_bit(character, 18+i));
             }
 
             result->numoctets = 4;
@@ -2719,22 +2727,34 @@ octaspire_utf8_encode_status_t octaspire_utf8_encode_character(uint32_t const ch
 
     for (size_t i = 0; i < 8; ++i)
     {
-        octaspire_utf8_private_set_bit_of_char(&(result->octets[3]), i, octaspire_utf8_private_get_bit(bitset, i));
+        octaspire_utf8_private_set_bit_of_char(
+            &(result->octets[3]),
+            i,
+            octaspire_utf8_private_get_bit(bitset, i));
     }
 
     for (size_t i = 0; i < 8; ++i)
     {
-        octaspire_utf8_private_set_bit_of_char(&(result->octets[2]), i, octaspire_utf8_private_get_bit(bitset, 8+i));
+        octaspire_utf8_private_set_bit_of_char(
+            &(result->octets[2]),
+            i,
+            octaspire_utf8_private_get_bit(bitset, 8+i));
     }
 
     for (size_t i = 0; i < 8; ++i)
     {
-        octaspire_utf8_private_set_bit_of_char(&(result->octets[1]), i, octaspire_utf8_private_get_bit(bitset, 16+i));
+        octaspire_utf8_private_set_bit_of_char(
+            &(result->octets[1]),
+            i,
+            octaspire_utf8_private_get_bit(bitset, 16+i));
     }
 
     for (size_t i = 0; i < 8; ++i)
     {
-        octaspire_utf8_private_set_bit_of_char(&(result->octets[0]), i, octaspire_utf8_private_get_bit(bitset, 24+i));
+        octaspire_utf8_private_set_bit_of_char(
+            &(result->octets[0]),
+            i,
+            octaspire_utf8_private_get_bit(bitset, 24+i));
     }
 
     return OCTASPIRE_UTF8_ENCODE_STATUS_OK;
@@ -2764,7 +2784,10 @@ static int octaspire_utf8_private_octets_in_next(char const * const text, size_t
     return octaspire_utf8_private_octets_in_next_from_buffer(text, lengthInOctets, 0);
 }
 
-static int octaspire_utf8_private_octets_in_next_from_buffer(char const * const buffer, size_t const lengthInOctets, size_t const currentIndex)
+static int octaspire_utf8_private_octets_in_next_from_buffer(
+    char const * const buffer,
+    size_t const lengthInOctets,
+    size_t const currentIndex)
 {
     if (!buffer || currentIndex >= lengthInOctets)
         return 0;
@@ -2864,7 +2887,10 @@ octaspire_utf8_decode_status_t octaspire_utf8_private_decode_helper(
             for (size_t i = 0; i < 7; ++i)
             {
                 // INVALID_READ_OF_1
-                octaspire_utf8_private_set_bit(result, i, octaspire_utf8_private_get_bit_of_uint8(buffer[0], i));
+                octaspire_utf8_private_set_bit(
+                    result,
+                    i,
+                    octaspire_utf8_private_get_bit_of_uint8(buffer[0], i));
             }
         }
         break;
@@ -2875,12 +2901,18 @@ octaspire_utf8_decode_status_t octaspire_utf8_private_decode_helper(
 
             for (size_t i = 0; i < 5; ++i)
             {
-                octaspire_utf8_private_set_bit(result, i+6, octaspire_utf8_private_get_bit_of_uint8(buffer[0], i));
+                octaspire_utf8_private_set_bit(
+                    result,
+                    i+6,
+                    octaspire_utf8_private_get_bit_of_uint8(buffer[0], i));
             }
 
             for (size_t i = 0; i < 6; ++i)
             {
-                octaspire_utf8_private_set_bit(result, i,  octaspire_utf8_private_get_bit_of_uint8(buffer[1], i));
+                octaspire_utf8_private_set_bit(
+                    result,
+                    i,
+                    octaspire_utf8_private_get_bit_of_uint8(buffer[1], i));
             }
 
             if (*result <= 0x7F)
@@ -2896,17 +2928,26 @@ octaspire_utf8_decode_status_t octaspire_utf8_private_decode_helper(
 
             for (size_t i = 0; i < 4; ++i)
             {
-                octaspire_utf8_private_set_bit(result, i+12, octaspire_utf8_private_get_bit_of_uint8(buffer[0], i));
+                octaspire_utf8_private_set_bit(
+                    result,
+                    i+12,
+                    octaspire_utf8_private_get_bit_of_uint8(buffer[0], i));
             }
 
             for (size_t i = 0; i < 6; ++i)
             {
-                octaspire_utf8_private_set_bit(result, i+6, octaspire_utf8_private_get_bit_of_uint8(buffer[1], i));
+                octaspire_utf8_private_set_bit(
+                    result,
+                    i+6,
+                    octaspire_utf8_private_get_bit_of_uint8(buffer[1], i));
             }
 
             for (size_t i = 0; i < 6; ++i)
             {
-                octaspire_utf8_private_set_bit(result, i,  octaspire_utf8_private_get_bit_of_uint8(buffer[2], i));
+                octaspire_utf8_private_set_bit(
+                    result,
+                    i,
+                    octaspire_utf8_private_get_bit_of_uint8(buffer[2], i));
             }
 
             if (*result <= 2047)
@@ -2922,22 +2963,34 @@ octaspire_utf8_decode_status_t octaspire_utf8_private_decode_helper(
 
             for (size_t i = 0; i < 3; ++i)
             {
-                octaspire_utf8_private_set_bit(result, i+18, octaspire_utf8_private_get_bit_of_uint8(buffer[0], i));
+                octaspire_utf8_private_set_bit(
+                    result,
+                    i+18,
+                    octaspire_utf8_private_get_bit_of_uint8(buffer[0], i));
             }
 
             for (size_t i = 0; i < 6; ++i)
             {
-                octaspire_utf8_private_set_bit(result, i+12, octaspire_utf8_private_get_bit_of_uint8(buffer[1], i));
+                octaspire_utf8_private_set_bit(
+                    result,
+                    i+12,
+                    octaspire_utf8_private_get_bit_of_uint8(buffer[1], i));
             }
 
             for (size_t i = 0; i < 6; ++i)
             {
-                octaspire_utf8_private_set_bit(result, i+6, octaspire_utf8_private_get_bit_of_uint8(buffer[2], i));
+                octaspire_utf8_private_set_bit(
+                    result,
+                    i+6,
+                    octaspire_utf8_private_get_bit_of_uint8(buffer[2], i));
             }
 
             for (size_t i = 0; i < 6; ++i)
             {
-                octaspire_utf8_private_set_bit(result, i,  octaspire_utf8_private_get_bit_of_uint8(buffer[3], i));
+                octaspire_utf8_private_set_bit(
+                    result,
+                    i,
+                    octaspire_utf8_private_get_bit_of_uint8(buffer[3], i));
             }
 
             if (*result <= 65535)
@@ -2951,7 +3004,11 @@ octaspire_utf8_decode_status_t octaspire_utf8_private_decode_helper(
     return OCTASPIRE_UTF8_DECODE_STATUS_OK;
 }
 
-octaspire_utf8_decode_status_t octaspire_utf8_decode_character(char const * const text, size_t const textLengthInOctets, uint32_t *result, int *numoctets)
+octaspire_utf8_decode_status_t octaspire_utf8_decode_character(
+    char const * const text,
+    size_t const textLengthInOctets,
+    uint32_t *result,
+    int *numoctets)
 {
     if (!text || textLengthInOctets == 0 || text[0] == '\0')
     {
@@ -3005,7 +3062,9 @@ octaspire_utf8_decode_status_t octaspire_utf8_decode_character_from_buffer(
     }
 
     *result = 0;
-    *numoctets = octaspire_utf8_private_octets_in_next_from_buffer(buffer, bufferLengthInOctets, currentIndex);
+
+    *numoctets =
+        octaspire_utf8_private_octets_in_next_from_buffer(buffer, bufferLengthInOctets, currentIndex);
 
     if (*numoctets <= 0 || *numoctets > 4)
     {
@@ -3371,7 +3430,8 @@ bool octaspire_container_vector_remove_element_at(
         }
         else
         {
-            self->elementReleaseCallback(octaspire_container_vector_private_index_to_pointer(self, realIndex.index));
+            self->elementReleaseCallback(
+                octaspire_container_vector_private_index_to_pointer(self, realIndex.index));
         }
     }
 
@@ -3614,7 +3674,8 @@ bool octaspire_container_vector_replace_element_at(
         }
         else
         {
-            self->elementReleaseCallback(octaspire_container_vector_private_index_to_pointer(self, realIndex.index));
+            self->elementReleaseCallback(
+                octaspire_container_vector_private_index_to_pointer(self, realIndex.index));
         }
     }
 
@@ -3759,7 +3820,8 @@ void const * octaspire_container_vector_peek_front_element_const(
     return octaspire_container_vector_get_element_at_const(self, 0);
 }
 
-octaspire_container_vector_element_callback_t octaspire_container_vector_get_element_release_callback_const(octaspire_container_vector_t const * const self)
+octaspire_container_vector_element_callback_t
+octaspire_container_vector_get_element_release_callback_const(octaspire_container_vector_t const * const self)
 {
     return self->elementReleaseCallback;
 }
@@ -4198,8 +4260,6 @@ octaspire_container_list_node_t const *octaspire_container_list_node_get_previou
 }
 
 
-
-
 struct octaspire_container_list_t
 {
     octaspire_memory_allocator_t                *allocator;
@@ -4633,8 +4693,6 @@ octaspire_container_list_node_t const *octaspire_container_list_get_at_const(
 }
 
 
-
-
 octaspire_container_list_node_iterator_t octaspire_container_list_node_iterator_init(
     octaspire_container_list_t * const self)
 {
@@ -4916,8 +4974,6 @@ bool octaspire_container_queue_set_has_max_length(
 }
 
 
-
-
 octaspire_container_queue_iterator_t octaspire_container_queue_iterator_init(
     octaspire_container_queue_t * const self)
 {
@@ -5048,8 +5104,11 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_from_buff
         while (index < lengthInOctets)
         {
             // TODO XXX is (lengthInOctets - index) correct?
-            octaspire_utf8_decode_status_t status =
-                octaspire_utf8_decode_character(buffer + index, (lengthInOctets - index), &ucsChar, &numOctets);
+            octaspire_utf8_decode_status_t status = octaspire_utf8_decode_character(
+                buffer + index,
+                (lengthInOctets - index),
+                &ucsChar,
+                &numOctets);
 
             if (status != OCTASPIRE_UTF8_DECODE_STATUS_OK)
             {
@@ -5189,8 +5248,8 @@ octaspire_container_utf8_string_t *octaspire_container_utf8_string_new_vformat(
         {
             // Encoding error in C99 or, on older glibc, the output was truncated.
             // Try again with more space. Because we don't know how much
-            // space is required, lets double it (and make sure that the length is not zero). Because we don't know
-            // is the reason for failure an encoding error or missing space,
+            // space is required, lets double it (and make sure that the length is not zero).
+            // Because we don't know is the reason for failure an encoding error or missing space,
             // we will start counting to prevent looping forever.
             ++negativeResultCounter;
 
@@ -5466,9 +5525,11 @@ static octaspire_container_utf8_string_private_index_t octaspire_container_utf8_
     if (possiblyNegativeIndex < 0)
     {
         ptrdiff_t tmpIndex =
-            (ptrdiff_t)octaspire_container_utf8_string_get_length_in_ucs_characters(self) + possiblyNegativeIndex;
+            (ptrdiff_t)octaspire_container_utf8_string_get_length_in_ucs_characters(self) +
+            possiblyNegativeIndex;
 
-        if (tmpIndex >= 0 && (size_t)tmpIndex < octaspire_container_utf8_string_get_length_in_ucs_characters(self))
+        if (tmpIndex >= 0 &&
+            (size_t)tmpIndex < octaspire_container_utf8_string_get_length_in_ucs_characters(self))
         {
             result.index   = (size_t)tmpIndex;
             result.isValid = true;
@@ -7304,7 +7365,8 @@ octaspire_container_hash_map_t *octaspire_container_hash_map_new_with_size_t_key
         false,
         valueSizeInOctets,
         valueIsPointer,
-        (octaspire_container_hash_map_key_compare_function_t)octaspire_container_hash_map_helper_private_size_t_is_equal,
+        (octaspire_container_hash_map_key_compare_function_t)
+            octaspire_container_hash_map_helper_private_size_t_is_equal,
         (octaspire_container_hash_map_key_hash_function_t)octaspire_container_hash_map_helper_size_t_get_hash,
         (octaspire_container_hash_map_element_callback_function_t)0,
         valueReleaseCallback,
@@ -7675,7 +7737,7 @@ octaspire_container_hash_map_element_t *octaspire_container_hash_map_get_at_inde
 
                 counter += bucketSize;
             }
-         }
+        }
 
         return 0;
     }
@@ -7703,7 +7765,7 @@ octaspire_container_hash_map_element_t *octaspire_container_hash_map_get_at_inde
 
                 counter += bucketSize;
             }
-         }
+        }
 
         return 0;
     }
@@ -7807,10 +7869,6 @@ bool octaspire_container_hash_map_element_iterator_next(
 
     return self->element != 0;
 }
-
-
-
-
 
 
 octaspire_container_hash_map_element_const_iterator_t
@@ -7998,7 +8056,12 @@ octaspire_input_t *octaspire_input_new_from_path(
     octaspire_stdio_t *octaspireStdio)
 {
     size_t octetsAllocated = 0;
-    char *buffer = octaspire_helpers_path_to_buffer(path, &octetsAllocated, octaspireAllocator, octaspireStdio);
+
+    char *buffer = octaspire_helpers_path_to_buffer(
+        path,
+        &octetsAllocated,
+        octaspireAllocator,
+        octaspireStdio);
 
     if (!buffer)
     {
@@ -22095,10 +22158,10 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "330"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "3"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "332"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
-#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.330.3"
+#define OCTASPIRE_DERN_CONFIG_VERSION_STR   "Octaspire Dern version 0.332.0"
 
 
 
