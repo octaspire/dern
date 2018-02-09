@@ -44,14 +44,11 @@ typedef struct octaspire_dern_animation_t
     octaspire_container_utf8_string_t * evalOnDone;
     double                              currentFrameUptime;
     size_t                              currentFrameIndex;
+    int                                 loopCount;
 }
 octaspire_dern_animation_t;
 
 static octaspire_container_hash_map_t * dern_animation_private_animations               = 0;
-
-// frame:     srcX srcY srcW srcH dstX dtsY dstW dstH secondsToShow
-
-// animation: name optionalEvalOnDone optionalFrame0 optionalFrame1 optionalFrameN
 
 octaspire_dern_value_t *dern_animation_add(
     octaspire_dern_vm_t * const vm,
@@ -63,12 +60,12 @@ octaspire_dern_value_t *dern_animation_add(
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
     size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
 
-    if (numArgs < 9)
+    if (numArgs < 10)
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Builtin 'animation-add' expects at least 9 argument. "
+            "Builtin 'animation-add' expects at least 10 argument. "
             "%zu arguments were given.",
             numArgs);
     }
@@ -86,7 +83,8 @@ octaspire_dern_value_t *dern_animation_add(
         .targetValueDstH    = 0,
         .evalOnDone         = 0,
         .currentFrameUptime = 0,
-        .currentFrameIndex  = 0
+        .currentFrameIndex  = 0,
+        .loopCount          = 0,
     };
 
     octaspire_dern_value_t const * const nameArg =
@@ -148,37 +146,48 @@ octaspire_dern_value_t *dern_animation_add(
         }
     }
 
-    size_t firstFrameIndex = 10;
+    // String to be evaluated when done.
 
-    if (numArgs > 9)
+    octaspire_dern_value_t const * const stringToBeEvalOnDone =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 9);
+
+    if (octaspire_dern_value_is_string(stringToBeEvalOnDone))
     {
-        octaspire_dern_value_t const * const stringOrFrameArg =
-            octaspire_dern_value_as_vector_get_element_at_const(arguments, 9);
-
-        octaspire_helpers_verify_not_null(stringOrFrameArg);
-
-        if (octaspire_dern_value_is_string(stringOrFrameArg))
-        {
-            animation.evalOnDone = octaspire_container_utf8_string_new(
-                octaspire_dern_value_as_string_get_c_string(stringOrFrameArg),
-                octaspire_dern_vm_get_allocator(vm));
-        }
-        else if (octaspire_dern_value_is_vector(stringOrFrameArg))
-        {
-            firstFrameIndex = 9;
-        }
-        else
-        {
-            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_format(
-                vm,
-                "Builtin 'animation-add' expects string to be evaluated or vector for frame as "
-                "the 10. argument. Type '%s' was given.",
-                octaspire_dern_value_helper_get_type_as_c_string(stringOrFrameArg->typeTag));
-        }
+        animation.evalOnDone = octaspire_container_utf8_string_new(
+            octaspire_dern_value_as_string_get_c_string(stringToBeEvalOnDone),
+            octaspire_dern_vm_get_allocator(vm));
+    }
+    else
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'animation-add' expects string to be evaluated as "
+            "the 10. argument. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(stringToBeEvalOnDone->typeTag));
     }
 
-    for (size_t i = firstFrameIndex; i < numArgs; ++i)
+
+    octaspire_dern_value_t const * const loopCountArg =
+        octaspire_dern_value_as_vector_get_element_of_type_at_const(
+            arguments,
+            OCTASPIRE_DERN_VALUE_TAG_INTEGER,
+            10);
+
+    if (!loopCountArg)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'animation-add' expects integer for the loop count as the 11. argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(
+                octaspire_dern_value_as_vector_get_element_type_at_const(arguments, 10)));
+    }
+
+    animation.loopCount = octaspire_dern_value_as_integer_get_value(loopCountArg);
+
+    for (size_t i = 11; i < numArgs; ++i)
     {
         octaspire_dern_value_t const * const frameArg =
             octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
@@ -206,7 +215,7 @@ octaspire_dern_value_t *dern_animation_add(
                 i + 1,
                 octaspire_dern_value_as_vector_get_length(frameArg));
         }
-        
+
         octaspire_dern_animation_frame_t frame;
 
         for (size_t j = 0; j < 8; ++j)
@@ -240,7 +249,7 @@ octaspire_dern_value_t *dern_animation_add(
             }
 
         }
-        
+
         octaspire_dern_value_t const * const elemVal =
             octaspire_dern_value_as_vector_get_element_at_const(frameArg, 8);
 
@@ -336,38 +345,43 @@ octaspire_dern_value_t *dern_animation_update(
 
         size_t const numFrames = octaspire_container_vector_get_length(animation->frames);
 
-        for (size_t i = 0; i < numFrames; ++i)
+        octaspire_dern_animation_frame_t const * const frame =
+            (octaspire_dern_animation_frame_t const * const)octaspire_container_vector_get_element_at(
+                animation->frames, animation->currentFrameIndex);
+
+        if (frame)
         {
-            octaspire_dern_animation_frame_t const * const frame =
-                (octaspire_dern_animation_frame_t const * const)octaspire_container_vector_get_element_at(
-                    animation->frames, i);
-
-            octaspire_helpers_verify_not_null(frame);
-
-            animation->currentFrameUptime += dt;
-
             if (animation->currentFrameUptime >= frame->secondsToShow)
             {
                 animation->currentFrameUptime = 0;
+                ++(animation->currentFrameIndex);
 
                 if (animation->currentFrameIndex >= numFrames)
                 {
-                    animation->currentFrameIndex = 0;
+                    if (animation->loopCount < 0)
+                    {
+                        animation->currentFrameIndex = 0;
+                    }
+                    else if (animation->loopCount > 0)
+                    {
+                        --(animation->loopCount);
+                        animation->currentFrameIndex = 0;
+                    }
                 }
-                else
-                {
-                    ++(animation->currentFrameIndex);
-                }
-
-                octaspire_dern_value_as_integer_set_value(animation->targetValueSrcX, frame->srcX);
-                octaspire_dern_value_as_integer_set_value(animation->targetValueSrcY, frame->srcY);
-                octaspire_dern_value_as_integer_set_value(animation->targetValueSrcW, frame->srcW);
-                octaspire_dern_value_as_integer_set_value(animation->targetValueSrcH, frame->srcH);
-                octaspire_dern_value_as_integer_set_value(animation->targetValueDstX, frame->dstX);
-                octaspire_dern_value_as_integer_set_value(animation->targetValueDstY, frame->dstY);
-                octaspire_dern_value_as_integer_set_value(animation->targetValueDstW, frame->dstW);
-                octaspire_dern_value_as_integer_set_value(animation->targetValueDstH, frame->dstH);
             }
+            else
+            {
+                animation->currentFrameUptime += dt;
+            }
+
+            octaspire_dern_value_as_integer_set_value(animation->targetValueSrcX, frame->srcX);
+            octaspire_dern_value_as_integer_set_value(animation->targetValueSrcY, frame->srcY);
+            octaspire_dern_value_as_integer_set_value(animation->targetValueSrcW, frame->srcW);
+            octaspire_dern_value_as_integer_set_value(animation->targetValueSrcH, frame->srcH);
+            octaspire_dern_value_as_integer_set_value(animation->targetValueDstX, frame->dstX);
+            octaspire_dern_value_as_integer_set_value(animation->targetValueDstY, frame->dstY);
+            octaspire_dern_value_as_integer_set_value(animation->targetValueDstW, frame->dstW);
+            octaspire_dern_value_as_integer_set_value(animation->targetValueDstH, frame->dstH);
         }
 
         octaspire_container_hash_map_element_iterator_next(&iterator);
@@ -439,8 +453,8 @@ bool dern_animation_init(
             "animation-add",
             dern_animation_add,
             1,
-            "(animation-add name optionalEvalOnDone optionalFrame0 optionalFrame1 .. "
-            "optionalFrameN -> <true or error message>",
+            "(animation-add name sx sy sw sh tx ty tw th evalOnDone loopCount frame ..) -> "
+            "<true or error message>",
             true,
             targetEnv))
     {

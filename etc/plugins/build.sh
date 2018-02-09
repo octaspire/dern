@@ -44,6 +44,10 @@ if [ "$platform" == "Linux" ]; then
     echo "--- plugin easing    ---"
     gcc -g -Wall -Wextra -std=gnu99 -c -fPIC -I ../../release dern_easing.c
     gcc -g -Wall -Wextra -std=gnu99 -shared -o libdern_easing.so dern_easing.o
+
+    echo "--- plugin animation    ---"
+    gcc -g -Wall -Wextra -std=gnu99 -c -fPIC -I ../../release dern_animation.c
+    gcc -g -Wall -Wextra -std=gnu99 -shared -o libdern_animation.so dern_animation.o
 fi
 
 
