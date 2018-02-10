@@ -45,8 +45,24 @@ typedef struct octaspire_dern_animation_t
     double                              currentFrameUptime;
     size_t                              currentFrameIndex;
     int                                 loopCount;
+    size_t                              numTimesPlayed;
+    bool                                playing;
 }
 octaspire_dern_animation_t;
+
+void octaspire_dern_animation_set_playing(
+    octaspire_dern_animation_t * const self,
+    bool const playing)
+{
+    self->playing            = playing;
+    self->currentFrameIndex  = 0;
+    self->currentFrameUptime = 0;
+}
+
+bool octaspire_dern_animation_is_playing(octaspire_dern_animation_t const * const self)
+{
+    return self->playing;
+}
 
 static octaspire_container_hash_map_t * dern_animation_private_animations               = 0;
 
@@ -85,6 +101,8 @@ octaspire_dern_value_t *dern_animation_add(
         .currentFrameUptime = 0,
         .currentFrameIndex  = 0,
         .loopCount          = 0,
+        .numTimesPlayed     = 0,
+        .playing            = false
     };
 
     octaspire_dern_value_t const * const nameArg =
@@ -166,7 +184,6 @@ octaspire_dern_value_t *dern_animation_add(
             "the 10. argument. Type '%s' was given.",
             octaspire_dern_value_helper_get_type_as_c_string(stringToBeEvalOnDone->typeTag));
     }
-
 
     octaspire_dern_value_t const * const loopCountArg =
         octaspire_dern_value_as_vector_get_element_of_type_at_const(
@@ -280,6 +297,11 @@ octaspire_dern_value_t *dern_animation_add(
 
     octaspire_helpers_verify_not_null(nameStr);
 
+    octaspire_container_hash_map_remove(
+        dern_animation_private_animations,
+        octaspire_container_utf8_string_get_hash(nameStr),
+        &nameStr);
+
     octaspire_helpers_verify_true(octaspire_container_hash_map_put(
         dern_animation_private_animations,
         octaspire_container_utf8_string_get_hash(nameStr),
@@ -355,6 +377,192 @@ octaspire_dern_value_t *dern_animation_remove(
     return octaspire_dern_vm_create_new_value_integer(vm, numRemoved);
 }
 
+octaspire_dern_value_t *dern_animation_loop(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs < 1 || numArgs > 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'animation-loop' expects one or two arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    int loopCount = 0;
+
+    octaspire_dern_value_t const * const nameArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(nameArg);
+
+    if (!octaspire_dern_value_is_text(nameArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'animation-loop' expects text (string or symbol) as the first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(nameArg->typeTag));
+    }
+
+    octaspire_container_utf8_string_t * nameStr =
+        octaspire_container_utf8_string_new(
+            octaspire_dern_value_as_text_get_c_string(nameArg),
+            octaspire_dern_vm_get_allocator(vm));
+
+    octaspire_helpers_verify_not_null(nameStr);
+
+    octaspire_container_hash_map_element_t * const element = octaspire_container_hash_map_get(
+        dern_animation_private_animations,
+        octaspire_container_utf8_string_get_hash(nameStr),
+        &nameStr);
+
+    if (!element)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_dern_value_t * const result = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'animation-loop' cannot find animation with name '%s'.",
+            octaspire_container_utf8_string_get_c_string(nameStr));
+
+        octaspire_container_utf8_string_release(nameStr);
+        nameStr = 0;
+
+        return result;;
+    }
+
+    octaspire_dern_animation_t * const animation =
+        (octaspire_dern_animation_t * const)octaspire_container_hash_map_element_get_value(element);
+
+    octaspire_helpers_verify_not_null(animation);
+
+    if (numArgs > 1)
+    {
+        octaspire_dern_value_t const * const loopCountArg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+        if (!octaspire_dern_value_is_integer(loopCountArg))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'animation-loop' expects integer as the second argument. "
+                "Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(loopCountArg->typeTag));
+        }
+
+        animation->loopCount = octaspire_dern_value_as_integer_get_value(loopCountArg);
+    }
+
+    loopCount = animation->loopCount;
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_integer(vm, loopCount);
+}
+
+octaspire_dern_value_t *dern_animation_playing(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs < 1 || numArgs > 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'animation-playing' expects one or two arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    bool isPlaying = false;
+
+    octaspire_dern_value_t const * const nameArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(nameArg);
+
+    if (!octaspire_dern_value_is_text(nameArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'animation-playing' expects text (string or symbol) as the first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(nameArg->typeTag));
+    }
+
+    octaspire_container_utf8_string_t * nameStr =
+        octaspire_container_utf8_string_new(
+            octaspire_dern_value_as_text_get_c_string(nameArg),
+            octaspire_dern_vm_get_allocator(vm));
+
+    octaspire_helpers_verify_not_null(nameStr);
+
+    octaspire_container_hash_map_element_t * const element = octaspire_container_hash_map_get(
+        dern_animation_private_animations,
+        octaspire_container_utf8_string_get_hash(nameStr),
+        &nameStr);
+
+    if (!element)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_dern_value_t * const result = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'animation-playing' cannot find animation with name '%s'.",
+            octaspire_container_utf8_string_get_c_string(nameStr));
+
+        octaspire_container_utf8_string_release(nameStr);
+        nameStr = 0;
+
+        return result;;
+    }
+
+    octaspire_dern_animation_t * const animation =
+        (octaspire_dern_animation_t * const)octaspire_container_hash_map_element_get_value(element);
+
+    octaspire_helpers_verify_not_null(animation);
+
+    if (numArgs > 1)
+    {
+        octaspire_dern_value_t const * const playingArg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+        if (!octaspire_dern_value_is_boolean(playingArg))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'animation-playing' expects boolean as the second argument. "
+                "Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(playingArg->typeTag));
+        }
+
+        octaspire_dern_animation_set_playing(
+            animation,
+            octaspire_dern_value_as_boolean_get_value(playingArg));
+    }
+
+    isPlaying = octaspire_dern_animation_is_playing(animation);
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, isPlaying);
+}
+
 octaspire_dern_value_t *dern_animation_update(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -406,45 +614,51 @@ octaspire_dern_value_t *dern_animation_update(
         octaspire_helpers_verify_not_null(animation);
         octaspire_helpers_verify_not_null(animation->frames);
 
-        size_t const numFrames = octaspire_container_vector_get_length(animation->frames);
-
-        octaspire_dern_animation_frame_t const * const frame =
-            (octaspire_dern_animation_frame_t const * const)octaspire_container_vector_get_element_at(
-                animation->frames, animation->currentFrameIndex);
-
-        if (frame)
+        if (octaspire_dern_animation_is_playing(animation))
         {
-            if (animation->currentFrameUptime >= frame->secondsToShow)
-            {
-                animation->currentFrameUptime = 0;
-                ++(animation->currentFrameIndex);
+            size_t const numFrames = octaspire_container_vector_get_length(animation->frames);
 
-                if (animation->currentFrameIndex >= numFrames)
+            octaspire_dern_animation_frame_t const * const frame =
+                (octaspire_dern_animation_frame_t const * const)
+                    octaspire_container_vector_get_element_at(
+                        animation->frames, animation->currentFrameIndex);
+
+            if (frame)
+            {
+                if (animation->currentFrameUptime >= frame->secondsToShow)
                 {
-                    if (animation->loopCount < 0)
+                    animation->currentFrameUptime = 0;
+                    ++(animation->currentFrameIndex);
+
+                    if (animation->currentFrameIndex >= numFrames)
                     {
-                        animation->currentFrameIndex = 0;
-                    }
-                    else if (animation->loopCount > 0)
-                    {
-                        --(animation->loopCount);
-                        animation->currentFrameIndex = 0;
+                        ++(animation->numTimesPlayed);
+
+                        if ((animation->loopCount >= 0) &&
+                            ((int)(animation->numTimesPlayed) >= animation->loopCount))
+                        {
+                            octaspire_dern_animation_set_playing(animation, false);
+                        }
+                        else
+                        {
+                            animation->currentFrameIndex = 0;
+                        }
                     }
                 }
-            }
-            else
-            {
-                animation->currentFrameUptime += dt;
-            }
+                else
+                {
+                    animation->currentFrameUptime += dt;
+                }
 
-            octaspire_dern_value_as_integer_set_value(animation->targetValueSrcX, frame->srcX);
-            octaspire_dern_value_as_integer_set_value(animation->targetValueSrcY, frame->srcY);
-            octaspire_dern_value_as_integer_set_value(animation->targetValueSrcW, frame->srcW);
-            octaspire_dern_value_as_integer_set_value(animation->targetValueSrcH, frame->srcH);
-            octaspire_dern_value_as_integer_set_value(animation->targetValueDstX, frame->dstX);
-            octaspire_dern_value_as_integer_set_value(animation->targetValueDstY, frame->dstY);
-            octaspire_dern_value_as_integer_set_value(animation->targetValueDstW, frame->dstW);
-            octaspire_dern_value_as_integer_set_value(animation->targetValueDstH, frame->dstH);
+                octaspire_dern_value_as_integer_set_value(animation->targetValueSrcX, frame->srcX);
+                octaspire_dern_value_as_integer_set_value(animation->targetValueSrcY, frame->srcY);
+                octaspire_dern_value_as_integer_set_value(animation->targetValueSrcW, frame->srcW);
+                octaspire_dern_value_as_integer_set_value(animation->targetValueSrcH, frame->srcH);
+                octaspire_dern_value_as_integer_set_value(animation->targetValueDstX, frame->dstX);
+                octaspire_dern_value_as_integer_set_value(animation->targetValueDstY, frame->dstY);
+                octaspire_dern_value_as_integer_set_value(animation->targetValueDstW, frame->dstW);
+                octaspire_dern_value_as_integer_set_value(animation->targetValueDstH, frame->dstH);
+            }
         }
 
         octaspire_container_hash_map_element_iterator_next(&iterator);
@@ -530,6 +744,30 @@ bool dern_animation_init(
             dern_animation_remove,
             1,
             "(animation-remove name..) -> numRemoved",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "animation-loop",
+            dern_animation_loop,
+            1,
+            "(animation-loop name optionalLoopCount) -> <loopCount or error message> ",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "animation-playing",
+            dern_animation_playing,
+            1,
+            "(animation-playing name optionalBoolean) -> <isPlaying orr error message> ",
             true,
             targetEnv))
     {
