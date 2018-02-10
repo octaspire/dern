@@ -292,6 +292,69 @@ octaspire_dern_value_t *dern_animation_add(
         true);
 }
 
+octaspire_dern_value_t *dern_animation_remove(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs < 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'animation-remove' expects at least one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    size_t numRemoved = 0;
+
+    for (size_t i = 0; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t const * const nameArg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
+
+        octaspire_helpers_verify_not_null(nameArg);
+
+        if (!octaspire_dern_value_is_text(nameArg))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'animation-remove' expects text (string or symbol) as the %zu. argument. "
+                "Type '%s' was given.",
+                i + 1,
+                octaspire_dern_value_helper_get_type_as_c_string(nameArg->typeTag));
+        }
+
+        octaspire_container_utf8_string_t * nameStr =
+            octaspire_container_utf8_string_new(
+                octaspire_dern_value_as_text_get_c_string(nameArg),
+                octaspire_dern_vm_get_allocator(vm));
+
+        octaspire_helpers_verify_not_null(nameStr);
+
+        if (octaspire_container_hash_map_remove(
+            dern_animation_private_animations,
+            octaspire_container_utf8_string_get_hash(nameStr),
+            &nameStr))
+        {
+            ++numRemoved;
+        }
+
+        octaspire_container_utf8_string_release(nameStr);
+        nameStr = 0;
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_integer(vm, numRemoved);
+}
+
 octaspire_dern_value_t *dern_animation_update(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -455,6 +518,18 @@ bool dern_animation_init(
             1,
             "(animation-add name sx sy sw sh tx ty tw th evalOnDone loopCount frame ..) -> "
             "<true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "animation-remove",
+            dern_animation_remove,
+            1,
+            "(animation-remove name..) -> numRemoved",
             true,
             targetEnv))
     {
