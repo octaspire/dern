@@ -606,6 +606,7 @@ typedef struct octaspire_dern_ease_t
     double                              p;
     octaspire_dern_value_t *            targetValue;
     octaspire_container_utf8_string_t * evalOnDone;
+    bool                                isDone;
 }
 octaspire_dern_ease_t;
 
@@ -633,7 +634,7 @@ octaspire_dern_value_t *dern_easing_add(
             numArgs);
     }
 
-    octaspire_dern_ease_t ease = {.targetValue = 0, .evalOnDone = 0};
+    octaspire_dern_ease_t ease = {.targetValue = 0, .evalOnDone = 0, .isDone=false};
 
     octaspire_dern_value_t const * const typeNameArg =
         octaspire_dern_value_as_vector_get_element_of_type_at_const(
@@ -2273,6 +2274,7 @@ octaspire_dern_value_t *dern_easing_update(
         if (ease->t >= ease->d)
         {
             octaspire_dern_value_as_number_set_value(ease->targetValue, ease->b + ease->c);
+            ease->isDone = true;
 
             if (ease->evalOnDone)
             {
@@ -2280,9 +2282,6 @@ octaspire_dern_value_t *dern_easing_update(
                     octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
                         vm,
                         octaspire_container_utf8_string_get_c_string(ease->evalOnDone));
-
-                octaspire_container_utf8_string_release(ease->evalOnDone);
-                ease->evalOnDone = 0;
 
                 if (result && octaspire_dern_value_is_error(result))
                 {
@@ -2292,7 +2291,7 @@ octaspire_dern_value_t *dern_easing_update(
                 }
             }
 
-            octaspire_container_vector_remove_element_at(dern_easing_private_easings, i);
+            ++i;
         }
         else
         {
@@ -2506,6 +2505,27 @@ octaspire_dern_value_t *dern_easing_update(
             ++i;
         }
     }
+
+    i = 0;
+    while (i < octaspire_container_vector_get_length(dern_easing_private_easings))
+    {
+        octaspire_dern_ease_t * const ease =
+            (octaspire_dern_ease_t*)octaspire_container_vector_get_element_at(
+                dern_easing_private_easings,
+                i);
+
+        octaspire_helpers_verify_not_null(ease);
+
+        if (ease->isDone)
+        {
+            octaspire_container_vector_remove_element_at(dern_easing_private_easings, i);
+        }
+        else
+        {
+            ++i;
+        }
+    }
+
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(

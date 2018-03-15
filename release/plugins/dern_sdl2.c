@@ -1554,12 +1554,12 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
     size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
 
-    if (numArgs != 4)
+    if (numArgs != 4 && numArgs != 6)
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Builtin 'sdl2-CreateTexture' expects four arguments. "
+            "Builtin 'sdl2-CreateTexture' expects four or six arguments. "
             "%zu arguments were given.",
             numArgs);
     }
@@ -1654,50 +1654,121 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 3);
 
     octaspire_helpers_verify_not_null(fourthArg);
+    octaspire_sdl2_texture_t* texture = 0;
 
-    if (!octaspire_dern_value_is_boolean(fourthArg))
+    if (octaspire_dern_value_is_boolean(fourthArg))
+    {
+        bool const isBlend = octaspire_dern_value_as_boolean_get_value(fourthArg);
+
+        if (isPath)
+        {
+            texture = octaspire_sdl2_texture_new_from_path(
+                pathOrBuffer,
+                isBlend,
+                renderer,
+                octaspire_dern_vm_get_stdio(vm),
+                octaspire_dern_vm_get_allocator(vm));
+        }
+        else
+        {
+            octaspire_container_vector_t * vec = octaspire_helpers_base64_decode(
+                octaspire_dern_value_as_string_get_c_string(thirdArg),
+                octaspire_dern_value_as_string_get_length_in_octets(thirdArg),
+                octaspire_dern_vm_get_allocator(vm));
+
+            // TODO XXX check and report error.
+            octaspire_helpers_verify_not_null(vec);
+
+            texture = octaspire_sdl2_texture_new_from_buffer(
+                octaspire_container_vector_get_element_at_const(vec, 0),
+                octaspire_container_vector_get_length(vec),
+                "base64 encoded",
+                isBlend,
+                renderer,
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_container_vector_release(vec);
+            vec = 0;
+        }
+    }
+    else if (octaspire_dern_value_is_integer(fourthArg))
+    {
+        octaspire_dern_value_t const * const colorKeyGArg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, 4);
+
+        octaspire_helpers_verify_not_null(colorKeyGArg);
+
+        if (!octaspire_dern_value_is_integer(colorKeyGArg))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-CreateTexture' expects integer (green "
+                "component of a color key) as the fifth argument. "
+                "Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(colorKeyGArg->typeTag));
+        }
+
+        octaspire_dern_value_t const * const colorKeyBArg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, 5);
+
+        octaspire_helpers_verify_not_null(colorKeyBArg);
+
+        if (!octaspire_dern_value_is_integer(colorKeyBArg))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-CreateTexture' expects integer (blue "
+                "component of a color key) as the sixth argument. "
+                "Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(colorKeyBArg->typeTag));
+        }
+
+        if (isPath)
+        {
+            texture = octaspire_sdl2_texture_new_color_keyed_from_path(
+                pathOrBuffer,
+                octaspire_dern_value_as_integer_get_value(fourthArg),
+                octaspire_dern_value_as_integer_get_value(colorKeyGArg),
+                octaspire_dern_value_as_integer_get_value(colorKeyBArg),
+                renderer,
+                octaspire_dern_vm_get_stdio(vm),
+                octaspire_dern_vm_get_allocator(vm));
+        }
+        else
+        {
+            octaspire_container_vector_t * vec = octaspire_helpers_base64_decode(
+                octaspire_dern_value_as_string_get_c_string(thirdArg),
+                octaspire_dern_value_as_string_get_length_in_octets(thirdArg),
+                octaspire_dern_vm_get_allocator(vm));
+
+            // TODO XXX check and report error.
+            octaspire_helpers_verify_not_null(vec);
+
+            texture = octaspire_sdl2_texture_new_color_keyed_from_buffer(
+                octaspire_container_vector_get_element_at_const(vec, 0),
+                octaspire_container_vector_get_length(vec),
+                "base64 encoded",
+                octaspire_dern_value_as_integer_get_value(fourthArg),
+                octaspire_dern_value_as_integer_get_value(colorKeyGArg),
+                octaspire_dern_value_as_integer_get_value(colorKeyBArg),
+                renderer,
+                octaspire_dern_vm_get_allocator(vm));
+
+            octaspire_container_vector_release(vec);
+            vec = 0;
+        }
+    }
+    else
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Builtin 'sdl2-CreateTexture' expects boolean as fourth argument. "
+            "Builtin 'sdl2-CreateTexture' expects boolean (isBlend) or integer (red "
+            "component of a color key) as the fourth argument. "
             "Type '%s' was given.",
             octaspire_dern_value_helper_get_type_as_c_string(fourthArg->typeTag));
-    }
-
-    bool const isBlend = octaspire_dern_value_as_boolean_get_value(fourthArg);
-
-    octaspire_sdl2_texture_t* texture = 0;
-
-    if (isPath)
-    {
-        texture = octaspire_sdl2_texture_new_from_path(
-            pathOrBuffer,
-            isBlend,
-            renderer,
-            octaspire_dern_vm_get_stdio(vm),
-            octaspire_dern_vm_get_allocator(vm));
-    }
-    else
-    {
-        octaspire_container_vector_t * vec = octaspire_helpers_base64_decode(
-            octaspire_dern_value_as_string_get_c_string(thirdArg),
-            octaspire_dern_value_as_string_get_length_in_octets(thirdArg),
-            octaspire_dern_vm_get_allocator(vm));
-
-        // TODO XXX check and report error.
-        octaspire_helpers_verify_not_null(vec);
-
-        texture = octaspire_sdl2_texture_new_from_buffer(
-            octaspire_container_vector_get_element_at_const(vec, 0),
-            octaspire_container_vector_get_length(vec),
-            "base64 encoded",
-            isBlend,
-            renderer,
-            octaspire_dern_vm_get_allocator(vm));
-
-        octaspire_container_vector_release(vec);
-        vec = 0;
     }
 
     if (!texture)
@@ -4931,7 +5002,8 @@ bool dern_sdl2_init(
             "sdl2-CreateTexture",
             dern_sdl2_CreateTexture,
             4,
-            "(sdl2-CreateTexture renderer isPath pathOrBuffer isBlend) -> <texture or error message>",
+            "(sdl2-CreateTexture renderer isPath pathOrBuffer "
+            "<isBlend or colorKeyR colorKeyG colorKeyB>) -> <texture or error message>",
             true,
             targetEnv))
     {

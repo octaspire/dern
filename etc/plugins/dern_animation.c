@@ -324,17 +324,17 @@ octaspire_dern_value_t *dern_animation_remove(
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
     size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
 
-    if (numArgs < 1)
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Builtin 'animation-remove' expects at least one argument. "
-            "%zu arguments were given.",
-            numArgs);
-    }
-
     size_t numRemoved = 0;
+
+    if (!numArgs)
+    {
+        // Remove all
+        octaspire_helpers_verify_true(
+            octaspire_container_hash_map_clear(dern_animation_private_animations));
+
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_integer(vm, numRemoved);
+    }
 
     for (size_t i = 0; i < numArgs; ++i)
     {
@@ -743,7 +743,7 @@ bool dern_animation_init(
             "animation-remove",
             dern_animation_remove,
             1,
-            "(animation-remove name..) -> numRemoved",
+            "(animation-remove optionalName..) -> numRemoved",
             true,
             targetEnv))
     {

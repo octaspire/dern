@@ -69,7 +69,7 @@ if [ "$platform" == "MacOS" ]; then
     clang -g -Wall -Wextra -std=c99 -dynamiclib -o libdern_dir.dylib dern_dir.o
 
     echo "--- plugin SDL2    ---"
-    clang -g -Wall -Wextra -pedantic -g -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION \
+    clang -g -O0 -Wall -Wextra -pedantic -g -std=c99 -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION \
         -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY \
         -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY \
         -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY   \
