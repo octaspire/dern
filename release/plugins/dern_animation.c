@@ -32,6 +32,7 @@ octaspire_dern_animation_frame_t;
 
 typedef struct octaspire_dern_animation_t
 {
+    octaspire_memory_allocator_t *      allocator;
     octaspire_container_vector_t *      frames;
     octaspire_dern_value_t *            targetValueSrcX;
     octaspire_dern_value_t *            targetValueSrcY;
@@ -49,6 +50,63 @@ typedef struct octaspire_dern_animation_t
     bool                                playing;
 }
 octaspire_dern_animation_t;
+
+static octaspire_dern_animation_t * octaspire_dern_animation_new(
+    octaspire_memory_allocator_t * const allocator)
+{
+    octaspire_dern_animation_t * const self =
+        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_animation_t));
+
+    if (!self)
+    {
+        return 0;
+    }
+
+    self->allocator          = allocator;
+
+    self->frames             = octaspire_container_vector_new(
+        sizeof(octaspire_dern_animation_frame_t),
+        false,
+        0,
+        allocator);
+
+    self->targetValueSrcX    = 0;
+    self->targetValueSrcY    = 0;
+    self->targetValueSrcW    = 0;
+    self->targetValueSrcH    = 0;
+    self->targetValueDstX    = 0;
+    self->targetValueDstY    = 0;
+    self->targetValueDstW    = 0;
+    self->targetValueDstH    = 0;
+
+    self->evalOnDone         = octaspire_container_utf8_string_new(
+        "",
+        allocator);
+
+    self->currentFrameUptime = 0;
+    self->currentFrameIndex  = 0;
+    self->loopCount          = 0;
+    self->numTimesPlayed     = 0;
+    self->playing            = false;
+
+    return self;
+}
+
+static void octaspire_dern_animation_release(octaspire_dern_animation_t * const self)
+{
+    if (!self)
+    {
+        return;
+    }
+
+    octaspire_container_vector_release(self->frames);
+    self->frames = 0;
+
+    octaspire_container_utf8_string_release(self->evalOnDone);
+    self->evalOnDone = 0;
+
+    octaspire_memory_allocator_free(self->allocator, self);
+}
 
 void octaspire_dern_animation_set_playing(
     octaspire_dern_animation_t * const self,
@@ -86,24 +144,10 @@ octaspire_dern_value_t *dern_animation_add(
             numArgs);
     }
 
-    octaspire_dern_animation_t animation =
-    {
-        .frames             = 0,
-        .targetValueSrcX    = 0,
-        .targetValueSrcY    = 0,
-        .targetValueSrcW    = 0,
-        .targetValueSrcH    = 0,
-        .targetValueDstX    = 0,
-        .targetValueDstY    = 0,
-        .targetValueDstW    = 0,
-        .targetValueDstH    = 0,
-        .evalOnDone         = 0,
-        .currentFrameUptime = 0,
-        .currentFrameIndex  = 0,
-        .loopCount          = 0,
-        .numTimesPlayed     = 0,
-        .playing            = false
-    };
+    octaspire_dern_animation_t * animation = octaspire_dern_animation_new(
+        octaspire_dern_vm_get_allocator(vm));
+
+    octaspire_helpers_verify_not_null(animation);
 
     octaspire_dern_value_t const * const nameArg =
         octaspire_dern_value_as_vector_get_element_of_type_at_const(
@@ -113,6 +157,9 @@ octaspire_dern_value_t *dern_animation_add(
 
     if (!nameArg)
     {
+        octaspire_dern_animation_release(animation);
+        animation = 0;
+
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
@@ -121,14 +168,6 @@ octaspire_dern_value_t *dern_animation_add(
             octaspire_dern_value_helper_get_type_as_c_string(
                 octaspire_dern_value_as_vector_get_element_type_at_const(arguments, 0)));
     }
-
-    animation.frames = octaspire_container_vector_new(
-        sizeof(octaspire_dern_animation_frame_t),
-        false,
-        0,
-        octaspire_dern_vm_get_allocator(vm));
-
-    octaspire_helpers_verify_not_null(animation.frames);
 
     for (size_t i = 0; i < 8; ++i)
     {
@@ -140,6 +179,9 @@ octaspire_dern_value_t *dern_animation_add(
 
         if (!rectArg)
         {
+            octaspire_dern_animation_release(animation);
+            animation = 0;
+
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
@@ -152,14 +194,14 @@ octaspire_dern_value_t *dern_animation_add(
 
         switch (i)
         {
-            case 0:  animation.targetValueSrcX = rectArg; break;
-            case 1:  animation.targetValueSrcY = rectArg; break;
-            case 2:  animation.targetValueSrcW = rectArg; break;
-            case 3:  animation.targetValueSrcH = rectArg; break;
-            case 4:  animation.targetValueDstX = rectArg; break;
-            case 5:  animation.targetValueDstY = rectArg; break;
-            case 6:  animation.targetValueDstW = rectArg; break;
-            case 7:  animation.targetValueDstH = rectArg; break;
+            case 0:  animation->targetValueSrcX = rectArg; break;
+            case 1:  animation->targetValueSrcY = rectArg; break;
+            case 2:  animation->targetValueSrcW = rectArg; break;
+            case 3:  animation->targetValueSrcH = rectArg; break;
+            case 4:  animation->targetValueDstX = rectArg; break;
+            case 5:  animation->targetValueDstY = rectArg; break;
+            case 6:  animation->targetValueDstW = rectArg; break;
+            case 7:  animation->targetValueDstH = rectArg; break;
             default: abort();
         }
     }
@@ -171,12 +213,15 @@ octaspire_dern_value_t *dern_animation_add(
 
     if (octaspire_dern_value_is_string(stringToBeEvalOnDone))
     {
-        animation.evalOnDone = octaspire_container_utf8_string_new(
-            octaspire_dern_value_as_string_get_c_string(stringToBeEvalOnDone),
-            octaspire_dern_vm_get_allocator(vm));
+        octaspire_container_utf8_string_set_from_c_string(
+            animation->evalOnDone,
+            octaspire_dern_value_as_string_get_c_string(stringToBeEvalOnDone));
     }
     else
     {
+        octaspire_dern_animation_release(animation);
+        animation = 0;
+
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
@@ -193,6 +238,9 @@ octaspire_dern_value_t *dern_animation_add(
 
     if (!loopCountArg)
     {
+        octaspire_dern_animation_release(animation);
+        animation = 0;
+
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
@@ -202,7 +250,7 @@ octaspire_dern_value_t *dern_animation_add(
                 octaspire_dern_value_as_vector_get_element_type_at_const(arguments, 10)));
     }
 
-    animation.loopCount = octaspire_dern_value_as_integer_get_value(loopCountArg);
+    animation->loopCount = octaspire_dern_value_as_integer_get_value(loopCountArg);
 
     for (size_t i = 11; i < numArgs; ++i)
     {
@@ -213,6 +261,9 @@ octaspire_dern_value_t *dern_animation_add(
 
         if (!octaspire_dern_value_is_vector(frameArg))
         {
+            octaspire_dern_animation_release(animation);
+            animation = 0;
+
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
@@ -224,6 +275,9 @@ octaspire_dern_value_t *dern_animation_add(
 
         if (octaspire_dern_value_as_vector_get_length(frameArg) != 9)
         {
+            octaspire_dern_animation_release(animation);
+            animation = 0;
+
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
@@ -244,6 +298,9 @@ octaspire_dern_value_t *dern_animation_add(
 
             if (!octaspire_dern_value_is_integer(elemVal))
             {
+                octaspire_dern_animation_release(animation);
+                animation = 0;
+
                 octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
@@ -274,6 +331,9 @@ octaspire_dern_value_t *dern_animation_add(
 
         if (!octaspire_dern_value_is_real(elemVal))
         {
+            octaspire_dern_animation_release(animation);
+            animation = 0;
+
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
                 vm,
@@ -286,7 +346,7 @@ octaspire_dern_value_t *dern_animation_add(
 
         octaspire_helpers_verify_true(
             octaspire_container_vector_push_back_element(
-                animation.frames,
+                animation->frames,
                 &frame));
     }
 
@@ -695,17 +755,6 @@ octaspire_dern_value_t *dern_animation_has_any(
         !octaspire_container_hash_map_is_empty(dern_animation_private_animations));
 }
 
-static void dern_animation_private_release(octaspire_dern_animation_t * self)
-{
-    octaspire_helpers_verify_not_null(self);
-
-    octaspire_container_utf8_string_release(self->evalOnDone);
-    self->evalOnDone = 0;
-
-    octaspire_container_vector_release(self->frames);
-    self->frames = 0;
-}
-
 bool dern_animation_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv)
@@ -714,10 +763,10 @@ bool dern_animation_init(
 
     dern_animation_private_animations =
         octaspire_container_hash_map_new_with_octaspire_container_utf8_string_keys(
-            sizeof(octaspire_dern_animation_t),
-            false,
+            sizeof(octaspire_dern_animation_t*),
+            true,
             (octaspire_container_hash_map_element_callback_function_t)
-                dern_animation_private_release,
+                octaspire_dern_animation_release,
             octaspire_dern_vm_get_allocator(vm));
 
     if (!dern_animation_private_animations)
