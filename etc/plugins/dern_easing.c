@@ -2518,6 +2518,9 @@ octaspire_dern_value_t *dern_easing_update(
 
         if (ease->isDone)
         {
+            octaspire_container_utf8_string_release(ease->evalOnDone);
+            ease->evalOnDone = 0;
+
             octaspire_container_vector_remove_element_at(dern_easing_private_easings, i);
         }
         else

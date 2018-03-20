@@ -2,3 +2,6 @@
 	path = external/octaspire_core
 	url = https://github.com/octaspire/core.git
     branch = master
+[submodule "external/octaspire_dotfiles"]
+	path = external/octaspire_dotfiles
+	url = https://github.com/octaspire/dotfiles.git

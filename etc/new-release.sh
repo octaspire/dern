@@ -31,8 +31,6 @@ create_new_version() {
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     sed -i "s/set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH $PATCH)/set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH $NEW_PATCH)/" "$PROJECT_PATH/CMakeLists.txt"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    sed -i "s/Documentation for Octaspire Dern programming language version $MAJOR.$MINOR.$PATCH/Documentation for Octaspire Dern programming language version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/" "$PROJECT_PATH/doc/book/Programming_in_Octaspire_Dern.adoc"
-    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     sed -i "s/Octaspire Dern version $MAJOR.$MINOR.$PATCH/Octaspire Dern version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/" "$PROJECT_PATH/test/REPL/octaspire-dern-repl.exp"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
@@ -119,7 +117,7 @@ language using different tools; there are, for example, syntax files
 to allow Dern code to be syntax highlighted in Vim, Emacs, Pygments and
 GNU source-highlight.
 
-Directory 'documentation' contains the book 'Programming in Octaspire Dern'
+Directory 'documentation' contains the 'Octaspire Dern Manual'
 and directory 'examples' has some short examples.
 
 More information about Dern can be found from the homepage:
@@ -138,9 +136,7 @@ RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "Copying book to the release directory..."
-    cp "$PROJECT_PATH/doc/book/Programming_in_Octaspire_Dern.html" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/documentation/"
-    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
-    cp "$PROJECT_PATH/doc/book/Programming_in_Octaspire_Dern.pdf" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/documentation/"
+    cp "$PROJECT_PATH/doc/book/dern-manual.html" "$PROJECT_PATH/etc/release/version-$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH/documentation/"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 
     echo "Copying plugins..."

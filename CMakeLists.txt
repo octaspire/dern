@@ -18,8 +18,8 @@ cmake_minimum_required(VERSION 2.8.12)
 project(octaspire-dern C)
 
 set(OCTASPIRE_DERN_CONFIG_VERSION_MAJOR 0)
-set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 343)
-set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 1)
+set(OCTASPIRE_DERN_CONFIG_VERSION_MINOR 344)
+set(OCTASPIRE_DERN_CONFIG_VERSION_PATCH 0)
 
 message("== Building ${PROJECT_NAME} ${OCTASPIRE_DERN_CONFIG_VERSION_MAJOR}.${OCTASPIRE_DERN_CONFIG_VERSION_MINOR}.${OCTASPIRE_DERN_CONFIG_VERSION_PATCH}")
 
@@ -158,10 +158,7 @@ add_custom_target(
 
 add_custom_target(
     book-dern
-    #COMMAND asciidoctor -a source-highlighter=pygments -a max-width=70em --backend=html5 "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc")
-    COMMAND asciidoctor -r "${CMAKE_SOURCE_DIR}/etc/pygments_init.rb" -a source-highlighter=pygments --backend=html5 "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc"
-    COMMAND asciidoctor-pdf -r "${CMAKE_SOURCE_DIR}/etc/pygments_init.rb" -a source-highlighter=pygments "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc")
-    #COMMAND asciidoc -a source-highlighter=pygments --theme=flask --backend=html5 "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/Programming_in_Octaspire_Dern.adoc")
+    COMMAND emacs "${CMAKE_CURRENT_SOURCE_DIR}/doc/book/dern-manual.org" --funcall org-html-export-to-html --kill)
 
 if(NOT TARGET octaspire-dern-test-runner AND OCTASPIRE_DERN_UNIT_TEST)
     message("== Building of unit tests enabled for ${PROJECT_NAME}")
