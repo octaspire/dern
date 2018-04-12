@@ -1,0 +1,3 @@
+INFILE=$1
+FILE=$2
+cat $INFILE >> $FILE

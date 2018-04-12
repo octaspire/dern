@@ -1,4 +1,0 @@
-(require 'dern_dir)
-
-(define v as (dir-get-listing [.]) [directory listing])
-(println v)
