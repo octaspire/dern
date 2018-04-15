@@ -1101,7 +1101,50 @@ TODO
 *pygments* and *GNU source-highlight*.
 
 
-** Building the development repository
+** Using the development repository
+The amalgamated source release can be used without Make or other build tools;
+only a compiler is needed. It is the recommended way of using Dern and is
+available from the *release* directory of the git repository and from the
+*dern.tar.bz2* archives at octaspire.io and octaspire.com. However, when
+there is a need to modify Dern itself or to build the documentation, then
+some tools are needed and the Makefile in the git repository should be used.
+In this case the files to be modified are found from the *dev* directory.
+
+On different systems the required installation commands can vary. In any case, you should install
+a *C compiler* and *git*. Depending on the system, you might also need to install *GNU make*.
+If you want to build the documentation, you should also install *Emacs 25.x* or newer.
+
+This is all there should be to it; *octaspire core* and *octaspire_dotfiles* are included as
+git submodules. Note that at the moment, to be able to build the documentation, you must
+have the octaspire_dotfiles in use in your system (the submodule for the dotfiles is not used
+at the moment) and Emacs 25.x or newer installed.
+
+Example of using the development repository and the different targets available
+in the Makefile:
+
+#+BEGIN_SRC sh
+git clone https://github.com/octaspire/dern.git
+cd dern
+make submodules
+make
+make test
+make codestyle
+make cppcheck
+make valgrind
+make coverage
+
+release/octaspire-dern-repl
+
+make clean
+
+rm release/octaspire-dern-amalgamated.c
+make release/octaspire-dern-amalgamated.c
+
+rm release/documentation/dern-manual.html
+make release/documentation/dern-manual.html
+#+END_SRC
+
+
 *** Raspberry Pi, Debian and Ubuntu
 
 To build Dern from the regular source distribution in Raspberry Pi (Raspbian), Debian or Ubuntu (16.04 LTS) system:
@@ -1178,54 +1221,6 @@ make submodules
 make
 #+END_SRC
 
-*** Other systems and building the documentation
 
-On different systems the required commands can vary. In any case, you should install
-a *C compiler* and *git*. Depending on the system, you might also need to install *GNU make*.
-If you want to build the documentation, you should also install *Emacs 25.x* or newer.
-
-This is all there should be to it; *octaspire core* and *octaspire_dotfiles* are included as
-git submodules. Note that at the moment, to be able to build the documentation, you must
-have the octaspire_dotfiles in use in your system (the submodule for the dotfiles is not used
-at the moment) and Emacs 25.x or newer installed.
-
-
-** Running Dern
-
-To run the unit tests:
-
-#+BEGIN_SRC sh
-test/octaspire-dern-test-runner
-#+END_SRC
-
-To start the REPL with color diagnostics (requires support for ANSI color escapes):
-
-#+BEGIN_SRC sh
-./octaspire-dern-repl -c
-#+END_SRC
-
-To see the allowed options run:
-
-#+BEGIN_SRC sh
-./octaspire-dern-repl -h
-#+END_SRC
-
-** Using the amalgamated source
-
-*release*-directory of the development source distribution contains
-amalgamated version of the source code. All the headers, implementation
-files and unit tests are concatenated with a script into a single file.
-This one file is all that is needed to use Octaspire Dern. The same single file
-can be used to (by giving different compiler flags):
-
-- as an include in a project that wants to embed the Dern language
-- as a stand-alone Dern REPL
-- as a stand-alone unit test runner
-
-
-The amalgamated source release can also be downloaded from:
-
-- http://www.octaspire.com
-- https://octaspire.io
 
 [fn:1] https://en.wiktionary.org/wiki/dern
