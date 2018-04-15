@@ -1101,19 +1101,15 @@ TODO
 
 
 ** Building the development repository
-
-To build Dern without the unit tests, replace *cmake ..* with
-*cmake -DOCTASPIRE_DERN_UNIT_TEST=OFF ..* in the instructions that follow.
-
 *** Raspberry Pi, Debian and Ubuntu
 
 To build Dern from the regular source distribution in Raspberry Pi (Raspbian), Debian or Ubuntu (16.04 LTS) system:
 
 #+BEGIN_SRC sh
-sudo apt-get install cmake git
+sudo apt-get install git
 git clone https://github.com/octaspire/dern.git
-cd dern/build
-cmake ..
+cd dern
+make submodules
 make
 #+END_SRC
 
@@ -1122,10 +1118,10 @@ make
 To build on Arch Linux (Arch Linux ARM) system:
 
 #+BEGIN_SRC sh
-sudo pacman -S cmake git gcc make
+sudo pacman -S git gcc make
 git clone https://github.com/octaspire/dern.git
-cd dern/build
-cmake ..
+cd dern
+make submodules
 make
 #+END_SRC
 
@@ -1134,11 +1130,11 @@ make
 To build on Haiku (Version Walter (Revision hrev51127) x86_gcc2):
 
 #+BEGIN_SRC sh
-pkgman install gcc_x86 cmake_x86
+pkgman install gcc_x86
 git clone https://github.com/octaspire/dern.git
-cd dern/build
-CC=gcc-x86 cmake ..
-make
+cd dern
+make submodules
+CC=gcc-x86 make
 #+END_SRC
 
 *** FreeBSD
@@ -1146,10 +1142,10 @@ make
 To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:
 
 #+BEGIN_SRC sh
-sudo pkg install git cmake
+sudo pkg install git
 git clone https://github.com/octaspire/dern.git
-cd dern/build
-cmake ..
+cd dern
+make submodules
 make
 #+END_SRC
 
@@ -1158,12 +1154,11 @@ make
 To build on NetBSD (NetBSD-7.1-i386) system:
 
 #+BEGIN_SRC sh
-sudo pkgin install cmake git
+sudo pkgin install git
 git clone git://github.com/octaspire/dern
 cd dern
 perl -pi -e 's/https/git/' .gitmodules
-cd build
-cmake ..
+make submodules
 make
 #+END_SRC
 
@@ -1173,25 +1168,26 @@ To build from the regular source distribution on MINIX 3 (minix_R3.3.0-588a35b) 
 
 #+BEGIN_SRC sh
 su root
-pkgin install cmake clang binutils git-base
+pkgin install clang binutils git-base
 exit
 git clone git://github.com/octaspire/dern
 cd dern
 perl -pi -e 's/https/git/' .gitmodules
-cd build
-cmake ..
+make submodules
 make
 #+END_SRC
 
-*** Other systems
+*** Other systems and building the documentation
 
 On different systems the required commands can vary. In any case, you should install
-a *C compiler*, *cmake* and *git*. Depending on the system, you might need to install
-also either *make* or *ninja*.
+a *C compiler* and *git*. Depending on the system, you might also need to install *GNU make*.
+If you want to build the documentation, you should also install *Emacs 25.x* or newer.
 
-This is all there should be to it; *octaspire core* is included as a git submodule
-and it should be updated and be build automatically, so when make finishes, everything
-should be ready.
+This is all there should be to it; *octaspire core* and *octaspire_dotfiles* are included as
+git submodules. Note that at the moment, to be able to build the documentation, you must
+have the octaspire_dotfiles in use in your system (the submodule for the dotfiles is not used
+at the moment) and Emacs 25.x or newer installed.
+
 
 ** Running Dern
 
