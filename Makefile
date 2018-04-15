@@ -47,7 +47,10 @@ $(RELDIR)octaspire-dern-repl: $(AMALGAMATION) $(PLUGINS)
         fi;
 
 submodules:
-	git submodule update --recursive --remote
+	@echo "Initializing submodules..."
+	@git submodule init
+	@git submodule update
+	@echo "Done."
 
 $(AMALGAMATION): $(ETCDIR)amalgamation_head.c                \
                  $(CORDIR)octaspire-core-amalgamated.c       \
