@@ -2,6 +2,7 @@
 #+AUTHOR: www.octaspire.com
 #+SETUPFILE: org-minimal-theme.setup
 #+LANGUAGE: en
+#+OPTIONS: toc:3
 
 ** About
 

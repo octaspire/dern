@@ -1,2 +1,2 @@
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://octaspire.io/bundle.min.css"/>
-#+HTML_HEAD: <script src="https://octaspire.io/bundle.min.js" type="text/javascript" ></script>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://octaspire.io/bundle-with-toc.min.css"/>
+#+HTML_HEAD: <script src="https://octaspire.io/bundle-with-toc.min.js" type="text/javascript" ></script>
