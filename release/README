@@ -1,12 +1,7 @@
 This is amalgamated single file source release for Octaspire Dern programming
-language version 0.344.0. File 'octaspire-dern-amalgamated.c'
-is all that is needed; it has no other dependencies than a C compiler and
-standard library supporting C99.
-
-SHA-512 checksums for this and older releases can be found from:
-https://octaspire.github.io/dern/
-If you want to check this release, download checksums for version 0.344.0 from:
-https://octaspire.github.io/dern/checksums-0.344.0
+language. File 'octaspire-dern-amalgamated.c' is all that is needed; it has
+no other dependencies than a C compiler and standard library supporting
+subset of C99.
 
 Building instructions for all supported platforms (and scripts for building
 automatically) can be found in directory 'how-to-build'. Look for a file that
@@ -24,19 +19,13 @@ be used for different purposes:
 Octaspire Dern is work in progress. The most recent version
 of this amalgamated source release can be downloaded from:
 
-    * octaspire.com/dern/release.tar.bz2
-    * https://octaspire.io/dern/release.tar.bz2
-    * https://octaspire.github.io/dern/release.tar.bz2
+    * octaspire.com
+    * https://octaspire.io
 
 Directory 'tool-support' contains files that help working with the Dern
 language using different tools; there are, for example, syntax files
 to allow Dern code to be syntax highlighted in Vim, Emacs, Pygments and
 GNU source-highlight.
 
-Directory 'documentation' contains the 'Octaspire Dern Manual'
-and directory 'examples' has some short examples.
-
-More information about Dern can be found from the homepage:
-
-octaspire.com/dern
-https://octaspire.io/dern
+Directory 'documentation' contains a manual and directory 'examples'
+has some short examples.
