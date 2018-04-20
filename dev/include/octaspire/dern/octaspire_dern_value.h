@@ -19,11 +19,11 @@ limitations under the License.
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <octaspire/core/octaspire_container_vector.h>
-#include <octaspire/core/octaspire_container_hash_map.h>
-#include <octaspire/core/octaspire_container_queue.h>
-#include <octaspire/core/octaspire_container_list.h>
-#include <octaspire/core/octaspire_container_utf8_string.h>
+#include <octaspire/core/octaspire_vector.h>
+#include <octaspire/core/octaspire_map.h>
+#include <octaspire/core/octaspire_queue.h>
+#include <octaspire/core/octaspire_list.h>
+#include <octaspire/core/octaspire_string.h>
 #include "octaspire/dern/octaspire_dern_port.h"
 #include "octaspire/dern/octaspire_dern_c_data.h"
 
@@ -70,12 +70,12 @@ typedef octaspire_dern_value_t *(*octaspire_dern_c_function)(
 
 typedef struct octaspire_dern_function_t
 {
-    octaspire_container_utf8_string_t *name;
-    octaspire_container_utf8_string_t *docstr;
+    octaspire_string_t *name;
+    octaspire_string_t *docstr;
     struct octaspire_dern_value_t     *formals;
     struct octaspire_dern_value_t     *body;
     struct octaspire_dern_value_t     *definitionEnvironment;
-    octaspire_memory_allocator_t      *allocator;
+    octaspire_allocator_t      *allocator;
     bool                               howtoAllowed;
 }
 octaspire_dern_function_t;
@@ -84,12 +84,12 @@ octaspire_dern_function_t *octaspire_dern_function_new(
     struct octaspire_dern_value_t *formals,
     struct octaspire_dern_value_t *body,
     struct octaspire_dern_value_t *definitionEnvironment,
-    octaspire_memory_allocator_t  *allocator);
+    octaspire_allocator_t  *allocator);
 
 octaspire_dern_function_t *octaspire_dern_function_new_copy(
     octaspire_dern_function_t const * const other,
     struct octaspire_dern_vm_t * const vm,
-    octaspire_memory_allocator_t  *allocator);
+    octaspire_allocator_t  *allocator);
 
 void octaspire_dern_function_release(octaspire_dern_function_t *self);
 
@@ -110,24 +110,24 @@ bool octaspire_dern_function_set_howto_data(
 size_t octaspire_dern_function_get_number_of_required_arguments(
     octaspire_dern_function_t const * const self);
 
-octaspire_container_utf8_string_t *octaspire_dern_function_are_all_formals_mentioned_in_docvec(
+octaspire_string_t *octaspire_dern_function_are_all_formals_mentioned_in_docvec(
     octaspire_dern_function_t const * const self,
     octaspire_dern_value_t const * const docvec);
 
 typedef struct octaspire_dern_special_t
 {
     octaspire_dern_c_function          cFunction;
-    octaspire_memory_allocator_t      *allocator;
-    octaspire_container_utf8_string_t *name;
+    octaspire_allocator_t      *allocator;
+    octaspire_string_t *name;
     size_t                             numRequiredActualArguments;
-    octaspire_container_utf8_string_t *docstr;
+    octaspire_string_t *docstr;
     bool                               howtoAllowed;
 }
 octaspire_dern_special_t;
 
 octaspire_dern_special_t *octaspire_dern_special_new(
     octaspire_dern_c_function const cFunction,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     char const * const name,
     size_t const numRequiredActualArguments,
     char const * const docstr,
@@ -135,7 +135,7 @@ octaspire_dern_special_t *octaspire_dern_special_new(
 
 octaspire_dern_special_t *octaspire_dern_special_new_copy(
     octaspire_dern_special_t * const other,
-    octaspire_memory_allocator_t * const allocator);
+    octaspire_allocator_t * const allocator);
 
 void octaspire_dern_special_release(octaspire_dern_special_t *self);
 
@@ -145,24 +145,24 @@ size_t octaspire_dern_special_get_number_of_required_arguments(
 bool octaspire_dern_special_is_howto_allowed(
     octaspire_dern_special_t const * const self);
 
-octaspire_container_utf8_string_t *octaspire_dern_special_to_string(
+octaspire_string_t *octaspire_dern_special_to_string(
     octaspire_dern_special_t const * const self,
-    octaspire_memory_allocator_t * const allocator);
+    octaspire_allocator_t * const allocator);
 
 typedef struct octaspire_dern_builtin_t
 {
     octaspire_dern_c_function          cFunction;
-    octaspire_memory_allocator_t      *allocator;
-    octaspire_container_utf8_string_t *name;
+    octaspire_allocator_t      *allocator;
+    octaspire_string_t *name;
     size_t                             numRequiredActualArguments;
-    octaspire_container_utf8_string_t *docstr;
+    octaspire_string_t *docstr;
     bool                               howtoAllowed;
 }
 octaspire_dern_builtin_t;
 
 octaspire_dern_builtin_t *octaspire_dern_builtin_new(
     octaspire_dern_c_function const cFunction,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     char const * const name,
     size_t const numRequiredActualArguments,
     char const * const docstr,
@@ -170,7 +170,7 @@ octaspire_dern_builtin_t *octaspire_dern_builtin_new(
 
 octaspire_dern_builtin_t *octaspire_dern_builtin_new_copy(
     octaspire_dern_builtin_t * const other,
-    octaspire_memory_allocator_t * const allocator);
+    octaspire_allocator_t * const allocator);
 
 void octaspire_dern_builtin_release(octaspire_dern_builtin_t *self);
 
@@ -180,18 +180,18 @@ size_t octaspire_dern_builtin_get_number_of_required_arguments(
 bool octaspire_dern_builtin_is_howto_allowed(
     octaspire_dern_builtin_t const * const self);
 
-octaspire_container_utf8_string_t *octaspire_dern_builtin_to_string(
+octaspire_string_t *octaspire_dern_builtin_to_string(
     octaspire_dern_builtin_t const * const self,
-    octaspire_memory_allocator_t * const allocator);
+    octaspire_allocator_t * const allocator);
 
 
 
 bool octaspire_dern_function_is_howto_allowed(
     octaspire_dern_function_t const * const self);
 
-octaspire_container_utf8_string_t *octaspire_dern_function_to_string(
+octaspire_string_t *octaspire_dern_function_to_string(
     octaspire_dern_function_t const * const self,
-    octaspire_memory_allocator_t * const allocator);
+    octaspire_allocator_t * const allocator);
 
 struct octaspire_dern_environment_t;
 
@@ -207,15 +207,15 @@ struct octaspire_dern_value_t
         bool                                boolean;
         int32_t                             integer;
         double                              real;
-        octaspire_container_utf8_string_t   *string;
-        octaspire_container_utf8_string_t   *comment;
-        octaspire_container_utf8_string_t   *character;
-        octaspire_container_utf8_string_t   *symbol;
-        octaspire_container_utf8_string_t   *error;
-        octaspire_container_vector_t        *vector;
-        octaspire_container_hash_map_t      *hashMap;
-        octaspire_container_queue_t         *queue;
-        octaspire_container_list_t          *list;
+        octaspire_string_t                  *string;
+        octaspire_string_t                  *comment;
+        octaspire_string_t                  *character;
+        octaspire_string_t                  *symbol;
+        octaspire_string_t                  *error;
+        octaspire_vector_t                  *vector;
+        octaspire_map_t                     *hashMap;
+        octaspire_queue_t                   *queue;
+        octaspire_list_t                    *list;
         struct octaspire_dern_environment_t *environment;
         octaspire_dern_function_t           *function;
         octaspire_dern_special_t            *special;
@@ -266,13 +266,13 @@ bool octaspire_dern_value_is_greater_than_or_equal(
     octaspire_dern_value_t const * const self,
     octaspire_dern_value_t const * const other);
 
-octaspire_container_utf8_string_t *octaspire_dern_value_to_string(
+octaspire_string_t *octaspire_dern_value_to_string(
     octaspire_dern_value_t const * const self,
-    octaspire_memory_allocator_t * const allocator);
+    octaspire_allocator_t * const allocator);
 
-octaspire_container_utf8_string_t *octaspire_dern_value_to_string_plain(
+octaspire_string_t *octaspire_dern_value_to_string_plain(
     octaspire_dern_value_t const * const self,
-    octaspire_memory_allocator_t * const allocator);
+    octaspire_allocator_t * const allocator);
 
 bool octaspire_dern_value_is_integer(
     octaspire_dern_value_t const * const self);
@@ -351,7 +351,7 @@ octaspire_dern_c_data_t const *octaspire_dern_value_as_c_data_get_value_const(
 
 void octaspire_dern_value_print(
     octaspire_dern_value_t const * const self,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 uintmax_t octaspire_dern_value_get_unique_id(
     octaspire_dern_value_t const * const self);
@@ -557,16 +557,16 @@ bool octaspire_dern_value_as_hash_map_put(
 size_t octaspire_dern_value_as_hash_map_get_number_of_elements(
     octaspire_dern_value_t const * const self);
 
-octaspire_container_hash_map_element_t *octaspire_dern_value_as_hash_map_get_at_index(
+octaspire_map_element_t *octaspire_dern_value_as_hash_map_get_at_index(
     octaspire_dern_value_t * const self,
     ptrdiff_t const possiblyNegativeIndex);
 
-octaspire_container_hash_map_element_t *octaspire_dern_value_as_hash_map_get(
+octaspire_map_element_t *octaspire_dern_value_as_hash_map_get(
     octaspire_dern_value_t * const self,
     uint32_t const hash,
     octaspire_dern_value_t const * const key);
 
-octaspire_container_hash_map_element_t const *octaspire_dern_value_as_hash_map_get_const(
+octaspire_map_element_t const *octaspire_dern_value_as_hash_map_get_const(
     octaspire_dern_value_t const * const self,
     uint32_t const hash,
     octaspire_dern_value_t const * const key);

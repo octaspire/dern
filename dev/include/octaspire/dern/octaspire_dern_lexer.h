@@ -19,7 +19,7 @@ limitations under the License.
 
 #include <stddef.h>
 #include <octaspire/core/octaspire_memory.h>
-#include <octaspire/core/octaspire_container_utf8_string.h>
+#include <octaspire/core/octaspire_string.h>
 #include <octaspire/core/octaspire_input.h>
 
 #ifdef __cplusplus
@@ -67,14 +67,14 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
     octaspire_dern_lexer_token_position_t const line,
     octaspire_dern_lexer_token_position_t const column,
     octaspire_dern_lexer_token_position_t const ucsIndex,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new_format(
     octaspire_dern_lexer_token_tag_t const typeTag,
     octaspire_dern_lexer_token_position_t const line,
     octaspire_dern_lexer_token_position_t const column,
     octaspire_dern_lexer_token_position_t const ucsIndex,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     void const * const format,
     ...);
 
@@ -126,7 +126,7 @@ bool octaspire_dern_lexer_token_is_equal(
     octaspire_dern_lexer_token_t const * const other);
 
 
-octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
+octaspire_string_t *octaspire_dern_lexer_token_to_string(
     octaspire_dern_lexer_token_t const * const self);
 
 void octaspire_dern_lexer_token_print(
@@ -134,7 +134,7 @@ void octaspire_dern_lexer_token_print(
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 #ifdef __cplusplus
 /* extern "C" */ }

@@ -34,7 +34,7 @@ int const OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE = 32766;
 /////////////////////////////// timer //////////////////////////////////////////
 typedef struct octaspire_sdl2_timer_t
 {
-    octaspire_memory_allocator_t *allocator;
+    octaspire_allocator_t *allocator;
     double                        seconds;
     Uint64                        countNow;
     Uint64                        countPrevious;
@@ -50,9 +50,9 @@ void octaspire_sdl2_timer_reset(
 }
 
 octaspire_sdl2_timer_t *octaspire_sdl2_timer_new(
-    octaspire_memory_allocator_t * const allocator)
+    octaspire_allocator_t * const allocator)
 {
-    octaspire_sdl2_timer_t *self = octaspire_memory_allocator_malloc(
+    octaspire_sdl2_timer_t *self = octaspire_allocator_malloc(
         allocator,
         sizeof(octaspire_sdl2_timer_t));
 
@@ -76,7 +76,7 @@ void octaspire_sdl2_timer_release(
         return;
     }
 
-    octaspire_memory_allocator_free(self->allocator, self);
+    octaspire_allocator_free(self->allocator, self);
 }
 
 void octaspire_sdl2_timer_update(
@@ -405,29 +405,29 @@ static char const *dern_sdl2_private_helper_sdl_pixelformat_to_c_string(
 
 typedef struct octaspire_sdl2_texture_t octaspire_sdl2_texture_t;
 
-static octaspire_container_hash_map_t * dern_sdl2_private_textures              = 0;
+static octaspire_map_t * dern_sdl2_private_textures              = 0;
 static size_t                           dern_sdl2_private_next_free_texture_uid = 0;
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
-static octaspire_container_hash_map_t * dern_sdl2_private_fonts                 = 0;
+static octaspire_map_t * dern_sdl2_private_fonts                 = 0;
 static size_t                           dern_sdl2_private_next_free_font_uid    = 0;
 #endif
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY
-static octaspire_container_hash_map_t * dern_sdl2_private_music                 = 0;
+static octaspire_map_t * dern_sdl2_private_music                 = 0;
 static size_t                           dern_sdl2_private_next_free_music_uid   = 0;
-static octaspire_container_hash_map_t * dern_sdl2_private_sounds                = 0;
+static octaspire_map_t * dern_sdl2_private_sounds                = 0;
 static size_t                           dern_sdl2_private_next_free_sound_uid   = 0;
 #endif
 
-static octaspire_container_vector_t   * dern_sdl2_private_controllers           = 0;
+static octaspire_vector_t * dern_sdl2_private_controllers           = 0;
 
 octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_path(
     char const * const path,
     bool const blend,
     SDL_Renderer *renderer,
     octaspire_stdio_t *stdio,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_buffer(
     void const * const buffer,
@@ -435,7 +435,7 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_buffer(
     char const * const name,
     bool const blend,
     SDL_Renderer *renderer,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
 octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_font_and_text(
@@ -444,7 +444,7 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_font_and_text(
     SDL_Color const color,
     bool const blend,
     SDL_Renderer *renderer,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 #endif
 
 octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_color_keyed_from_path(
@@ -454,7 +454,7 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_color_keyed_from_path(
     uint8_t const blue,
     SDL_Renderer *renderer,
     octaspire_stdio_t *stdio,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_color_keyed_from_buffer(
     void const * const buffer,
@@ -464,7 +464,7 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_color_keyed_from_buffer(
     uint8_t const green,
     uint8_t const blue,
     SDL_Renderer *renderer,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 void octaspire_sdl2_texture_release(octaspire_sdl2_texture_t *self);
 
@@ -488,8 +488,8 @@ void octaspire_sdl2_texture_print(
 
 struct octaspire_sdl2_texture_t
 {
-    octaspire_memory_allocator_t      *allocator;
-    octaspire_container_utf8_string_t *path;
+    octaspire_allocator_t      *allocator;
+    octaspire_string_t *path;
     SDL_Texture                       *texture;
     size_t                             width;
     size_t                             height;
@@ -500,7 +500,7 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_path(
     bool const blend,
     SDL_Renderer *renderer,
     octaspire_stdio_t *stdio,
-    octaspire_memory_allocator_t *allocator)
+    octaspire_allocator_t *allocator)
 {
     size_t bufferLength = 0;
     char *buffer = octaspire_helpers_path_to_buffer(path, &bufferLength, allocator, stdio);
@@ -525,10 +525,10 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_buffer(
     char const * const name,
     bool const blend,
     SDL_Renderer *renderer,
-    octaspire_memory_allocator_t *allocator)
+    octaspire_allocator_t *allocator)
 {
     octaspire_sdl2_texture_t *self =
-        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_sdl2_texture_t));
+        octaspire_allocator_malloc(allocator, sizeof(octaspire_sdl2_texture_t));
 
     if (!self)
     {
@@ -536,7 +536,7 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_buffer(
     }
 
     self->allocator = allocator;
-    self->path      = octaspire_container_utf8_string_new(name, allocator);
+    self->path      = octaspire_string_new(name, allocator);
 
     if (!self->path)
     {
@@ -592,10 +592,10 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_font_and_text(
     SDL_Color const color,
     bool const blend,
     SDL_Renderer *renderer,
-    octaspire_memory_allocator_t *allocator)
+    octaspire_allocator_t *allocator)
 {
     octaspire_sdl2_texture_t *self =
-        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_sdl2_texture_t));
+        octaspire_allocator_malloc(allocator, sizeof(octaspire_sdl2_texture_t));
 
     if (!self)
     {
@@ -603,7 +603,7 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_from_font_and_text(
     }
 
     self->allocator = allocator;
-    self->path      = octaspire_container_utf8_string_new("", allocator);
+    self->path      = octaspire_string_new("", allocator);
 
     if (!self->path)
     {
@@ -656,7 +656,7 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_color_keyed_from_path(
     uint8_t const blue,
     SDL_Renderer *renderer,
     octaspire_stdio_t *stdio,
-    octaspire_memory_allocator_t *allocator)
+    octaspire_allocator_t *allocator)
 {
     size_t bufferLength = 0;
     char *buffer = octaspire_helpers_path_to_buffer(path, &bufferLength, allocator, stdio);
@@ -690,10 +690,10 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_color_keyed_from_buffer(
     uint8_t const green,
     uint8_t const blue,
     SDL_Renderer *renderer,
-    octaspire_memory_allocator_t *allocator)
+    octaspire_allocator_t *allocator)
 {
     octaspire_sdl2_texture_t *self =
-        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_sdl2_texture_t));
+        octaspire_allocator_malloc(allocator, sizeof(octaspire_sdl2_texture_t));
 
     if (!self)
     {
@@ -701,7 +701,7 @@ octaspire_sdl2_texture_t *octaspire_sdl2_texture_new_color_keyed_from_buffer(
     }
 
     self->allocator = allocator;
-    self->path      = octaspire_container_utf8_string_new(name, allocator);
+    self->path      = octaspire_string_new(name, allocator);
 
     if (!self->path)
     {
@@ -752,8 +752,8 @@ void octaspire_sdl2_texture_release(octaspire_sdl2_texture_t *self)
     }
 
     SDL_DestroyTexture(self->texture);
-    octaspire_container_utf8_string_release(self->path);
-    octaspire_memory_allocator_free(self->allocator, self);
+    octaspire_string_release(self->path);
+    octaspire_allocator_free(self->allocator, self);
 }
 
 void octaspire_sdl2_texture_render_at_position_clip(
@@ -795,7 +795,7 @@ void octaspire_sdl2_texture_print(
 
     printf(
         "texture \"%s\" %zu x %zu\n",
-        octaspire_container_utf8_string_get_c_string(self->path),
+        octaspire_string_get_c_string(self->path),
         self->width,
         self->height);
 }
@@ -806,21 +806,21 @@ static char const * const DERN_SDL2_PLUGIN_NAME = "dern_sdl2";
 
 void dern_sdl2_clean_up_resources()
 {
-    octaspire_container_hash_map_clear(dern_sdl2_private_textures);
+    octaspire_map_clear(dern_sdl2_private_textures);
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
-    octaspire_container_hash_map_clear(dern_sdl2_private_fonts);
+    octaspire_map_clear(dern_sdl2_private_fonts);
 #endif
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY
-    octaspire_container_hash_map_clear(dern_sdl2_private_music);
-    octaspire_container_hash_map_clear(dern_sdl2_private_sounds);
+    octaspire_map_clear(dern_sdl2_private_music);
+    octaspire_map_clear(dern_sdl2_private_sounds);
 #endif
 
     octaspire_sdl2_timer_release(dern_sdl2_private_timer);
     dern_sdl2_private_timer = 0;
 
-    octaspire_container_vector_clear(dern_sdl2_private_controllers);
+    octaspire_vector_clear(dern_sdl2_private_controllers);
 }
 
 void dern_sdl2_window_clean_up_callback(void *payload)
@@ -843,17 +843,17 @@ static octaspire_sdl2_texture_t * dern_sdl2_private_helper_uid_to_texture(
     void const * const payload)
 {
     size_t const key = (size_t)payload;
-    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+    uint32_t const hash = octaspire_map_helper_size_t_get_hash(key);
 
-    octaspire_container_hash_map_element_t * elem =
-        octaspire_container_hash_map_get(dern_sdl2_private_textures, hash, &key);
+    octaspire_map_element_t * elem =
+        octaspire_map_get(dern_sdl2_private_textures, hash, &key);
 
     if (!elem)
     {
         return 0;
     }
 
-    return (octaspire_sdl2_texture_t*)octaspire_container_hash_map_element_get_value(elem);
+    return (octaspire_sdl2_texture_t*)octaspire_map_element_get_value(elem);
 }
 
 void dern_sdl2_release_texture_with_uid(void * element)
@@ -872,17 +872,17 @@ static TTF_Font * dern_sdl2_private_helper_uid_to_font(
     void const * const payload)
 {
     size_t const key = (size_t)payload;
-    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+    uint32_t const hash = octaspire_map_helper_size_t_get_hash(key);
 
-    octaspire_container_hash_map_element_t * elem =
-        octaspire_container_hash_map_get(dern_sdl2_private_fonts, hash, &key);
+    octaspire_map_element_t * elem =
+        octaspire_map_get(dern_sdl2_private_fonts, hash, &key);
 
     if (!elem)
     {
         return 0;
     }
 
-    return (TTF_Font*)octaspire_container_hash_map_element_get_value(elem);
+    return (TTF_Font*)octaspire_map_element_get_value(elem);
 }
 #endif
 
@@ -891,17 +891,17 @@ static Mix_Music * dern_sdl2_private_helper_uid_to_music(
     void const * const payload)
 {
     size_t const key = (size_t)payload;
-    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+    uint32_t const hash = octaspire_map_helper_size_t_get_hash(key);
 
-    octaspire_container_hash_map_element_t * elem =
-        octaspire_container_hash_map_get(dern_sdl2_private_music, hash, &key);
+    octaspire_map_element_t * elem =
+        octaspire_map_get(dern_sdl2_private_music, hash, &key);
 
     if (!elem)
     {
         return 0;
     }
 
-    return (Mix_Music*)octaspire_container_hash_map_element_get_value(elem);
+    return (Mix_Music*)octaspire_map_element_get_value(elem);
 }
 #endif
 
@@ -910,17 +910,17 @@ static Mix_Chunk * dern_sdl2_private_helper_uid_to_sound(
     void const * const payload)
 {
     size_t const key = (size_t)payload;
-    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+    uint32_t const hash = octaspire_map_helper_size_t_get_hash(key);
 
-    octaspire_container_hash_map_element_t * elem =
-        octaspire_container_hash_map_get(dern_sdl2_private_sounds, hash, &key);
+    octaspire_map_element_t * elem =
+        octaspire_map_get(dern_sdl2_private_sounds, hash, &key);
 
     if (!elem)
     {
         return 0;
     }
 
-    return (Mix_Chunk*)octaspire_container_hash_map_element_get_value(elem);
+    return (Mix_Chunk*)octaspire_map_element_get_value(elem);
 }
 #endif
 
@@ -929,7 +929,7 @@ void dern_sdl2_texture_clean_up_callback(void *payload)
     octaspire_helpers_verify_not_null(payload);
 
     size_t const key = (size_t const)payload;
-    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+    uint32_t const hash = octaspire_map_helper_size_t_get_hash(key);
 
     octaspire_sdl2_texture_t * texture = dern_sdl2_private_helper_uid_to_texture(payload);
 
@@ -938,7 +938,7 @@ void dern_sdl2_texture_clean_up_callback(void *payload)
         return;
     }
 
-    octaspire_helpers_verify_true(octaspire_container_hash_map_remove(
+    octaspire_helpers_verify_true(octaspire_map_remove(
         dern_sdl2_private_textures,
         hash,
         &key));
@@ -950,7 +950,7 @@ void dern_sdl2_font_clean_up_callback(void *payload)
     octaspire_helpers_verify_not_null(payload);
 
     size_t const key = (size_t const)payload;
-    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+    uint32_t const hash = octaspire_map_helper_size_t_get_hash(key);
 
     TTF_Font * font = dern_sdl2_private_helper_uid_to_font(payload);
 
@@ -962,7 +962,7 @@ void dern_sdl2_font_clean_up_callback(void *payload)
     TTF_CloseFont(font);
     font = 0;
 
-    octaspire_helpers_verify_true(octaspire_container_hash_map_remove(
+    octaspire_helpers_verify_true(octaspire_map_remove(
         dern_sdl2_private_fonts,
         hash,
         &key));
@@ -975,7 +975,7 @@ void dern_sdl2_music_clean_up_callback(void *payload)
     octaspire_helpers_verify_not_null(payload);
 
     size_t const key = (size_t const)payload;
-    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+    uint32_t const hash = octaspire_map_helper_size_t_get_hash(key);
 
     Mix_Music* music = dern_sdl2_private_helper_uid_to_music(payload);
 
@@ -984,7 +984,7 @@ void dern_sdl2_music_clean_up_callback(void *payload)
         return;
     }
 
-    octaspire_helpers_verify_true(octaspire_container_hash_map_remove(
+    octaspire_helpers_verify_true(octaspire_map_remove(
         dern_sdl2_private_music,
         hash,
         &key));
@@ -997,7 +997,7 @@ void dern_sdl2_sound_clean_up_callback(void *payload)
     octaspire_helpers_verify_not_null(payload);
 
     size_t const key = (size_t const)payload;
-    uint32_t const hash = octaspire_container_hash_map_helper_size_t_get_hash(key);
+    uint32_t const hash = octaspire_map_helper_size_t_get_hash(key);
 
     Mix_Chunk* sound = dern_sdl2_private_helper_uid_to_sound(payload);
 
@@ -1006,7 +1006,7 @@ void dern_sdl2_sound_clean_up_callback(void *payload)
         return;
     }
 
-    octaspire_helpers_verify_true(octaspire_container_hash_map_remove(
+    octaspire_helpers_verify_true(octaspire_map_remove(
         dern_sdl2_private_sounds,
         hash,
         &key));
@@ -1135,10 +1135,10 @@ octaspire_dern_value_t *dern_sdl2_Init(
     }
 #endif
 
-    dern_sdl2_private_textures = octaspire_container_hash_map_new_with_size_t_keys(
+    dern_sdl2_private_textures = octaspire_map_new_with_size_t_keys(
         sizeof(octaspire_sdl2_texture_t*),
         true,
-        (octaspire_container_hash_map_element_callback_function_t)
+        (octaspire_map_element_callback_function_t)
             dern_sdl2_release_texture_with_uid,
         octaspire_dern_vm_get_allocator(vm));
 
@@ -1151,10 +1151,10 @@ octaspire_dern_value_t *dern_sdl2_Init(
     }
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
-    dern_sdl2_private_fonts = octaspire_container_hash_map_new_with_size_t_keys(
+    dern_sdl2_private_fonts = octaspire_map_new_with_size_t_keys(
         sizeof(TTF_Font*),
         true,
-        (octaspire_container_hash_map_element_callback_function_t)0,
+        (octaspire_map_element_callback_function_t)0,
         octaspire_dern_vm_get_allocator(vm));
 
     if (!dern_sdl2_private_fonts)
@@ -1167,10 +1167,10 @@ octaspire_dern_value_t *dern_sdl2_Init(
 #endif
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY
-    dern_sdl2_private_music = octaspire_container_hash_map_new_with_size_t_keys(
+    dern_sdl2_private_music = octaspire_map_new_with_size_t_keys(
         sizeof(Mix_Music*),
         true,
-        (octaspire_container_hash_map_element_callback_function_t)Mix_FreeMusic,
+        (octaspire_map_element_callback_function_t)Mix_FreeMusic,
         octaspire_dern_vm_get_allocator(vm));
 
     if (!dern_sdl2_private_music)
@@ -1181,10 +1181,10 @@ octaspire_dern_value_t *dern_sdl2_Init(
             "Builtin 'sdl2-init' failed. Cannot allocate music map.");
     }
 
-    dern_sdl2_private_sounds = octaspire_container_hash_map_new_with_size_t_keys(
+    dern_sdl2_private_sounds = octaspire_map_new_with_size_t_keys(
         sizeof(Mix_Chunk*),
         true,
-        (octaspire_container_hash_map_element_callback_function_t)Mix_FreeChunk,
+        (octaspire_map_element_callback_function_t)Mix_FreeChunk,
         octaspire_dern_vm_get_allocator(vm));
 
     if (!dern_sdl2_private_sounds)
@@ -1201,10 +1201,10 @@ octaspire_dern_value_t *dern_sdl2_Init(
 
     octaspire_helpers_verify_not_null(dern_sdl2_private_timer);
 
-    dern_sdl2_private_controllers = octaspire_container_vector_new(
+    dern_sdl2_private_controllers = octaspire_vector_new(
         sizeof(SDL_Joystick*),
         true,
-        (octaspire_container_hash_map_element_callback_function_t)SDL_JoystickClose,
+        (octaspire_map_element_callback_function_t)SDL_JoystickClose,
         octaspire_dern_vm_get_allocator(vm));
 
     if (!dern_sdl2_private_controllers)
@@ -1234,7 +1234,7 @@ octaspire_dern_value_t *dern_sdl2_Init(
                     SDL_NumJoysticks());
             }
 
-            if (!octaspire_container_vector_push_back_element(dern_sdl2_private_controllers, &controller))
+            if (!octaspire_vector_push_back_element(dern_sdl2_private_controllers, &controller))
             {
                 octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
                 return octaspire_dern_vm_create_new_value_error_format(
@@ -1671,7 +1671,7 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
         }
         else
         {
-            octaspire_container_vector_t * vec = octaspire_helpers_base64_decode(
+            octaspire_vector_t * vec = octaspire_helpers_base64_decode(
                 octaspire_dern_value_as_string_get_c_string(thirdArg),
                 octaspire_dern_value_as_string_get_length_in_octets(thirdArg),
                 octaspire_dern_vm_get_allocator(vm));
@@ -1680,14 +1680,14 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
             octaspire_helpers_verify_not_null(vec);
 
             texture = octaspire_sdl2_texture_new_from_buffer(
-                octaspire_container_vector_get_element_at_const(vec, 0),
-                octaspire_container_vector_get_length(vec),
+                octaspire_vector_get_element_at_const(vec, 0),
+                octaspire_vector_get_length(vec),
                 "base64 encoded",
                 isBlend,
                 renderer,
                 octaspire_dern_vm_get_allocator(vm));
 
-            octaspire_container_vector_release(vec);
+            octaspire_vector_release(vec);
             vec = 0;
         }
     }
@@ -1738,7 +1738,7 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
         }
         else
         {
-            octaspire_container_vector_t * vec = octaspire_helpers_base64_decode(
+            octaspire_vector_t * vec = octaspire_helpers_base64_decode(
                 octaspire_dern_value_as_string_get_c_string(thirdArg),
                 octaspire_dern_value_as_string_get_length_in_octets(thirdArg),
                 octaspire_dern_vm_get_allocator(vm));
@@ -1747,8 +1747,8 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
             octaspire_helpers_verify_not_null(vec);
 
             texture = octaspire_sdl2_texture_new_color_keyed_from_buffer(
-                octaspire_container_vector_get_element_at_const(vec, 0),
-                octaspire_container_vector_get_length(vec),
+                octaspire_vector_get_element_at_const(vec, 0),
+                octaspire_vector_get_length(vec),
                 "base64 encoded",
                 octaspire_dern_value_as_integer_get_value(fourthArg),
                 octaspire_dern_value_as_integer_get_value(colorKeyGArg),
@@ -1756,7 +1756,7 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
                 renderer,
                 octaspire_dern_vm_get_allocator(vm));
 
-            octaspire_container_vector_release(vec);
+            octaspire_vector_release(vec);
             vec = 0;
         }
     }
@@ -1782,9 +1782,9 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
 
     ++dern_sdl2_private_next_free_texture_uid;
 
-    if (!octaspire_container_hash_map_put(
+    if (!octaspire_map_put(
             dern_sdl2_private_textures,
-            octaspire_container_hash_map_helper_size_t_get_hash(
+            octaspire_map_helper_size_t_get_hash(
                 dern_sdl2_private_next_free_texture_uid),
             &dern_sdl2_private_next_free_texture_uid,
             &texture))
@@ -2136,9 +2136,9 @@ octaspire_dern_value_t *dern_sdl2_CreateTextureFromFontAndText(
 
     ++dern_sdl2_private_next_free_texture_uid;
 
-    if (!octaspire_container_hash_map_put(
+    if (!octaspire_map_put(
             dern_sdl2_private_textures,
-            octaspire_container_hash_map_helper_size_t_get_hash(
+            octaspire_map_helper_size_t_get_hash(
                 dern_sdl2_private_next_free_texture_uid),
             &dern_sdl2_private_next_free_texture_uid,
             &texture))
@@ -2250,7 +2250,7 @@ octaspire_dern_value_t *dern_sdl2_CreateSound(
     }
     else
     {
-        octaspire_container_vector_t * vec = octaspire_helpers_base64_decode(
+        octaspire_vector_t * vec = octaspire_helpers_base64_decode(
             octaspire_dern_value_as_string_get_c_string(secondArg),
             octaspire_dern_value_as_string_get_length_in_octets(secondArg),
             octaspire_dern_vm_get_allocator(vm));
@@ -2259,11 +2259,11 @@ octaspire_dern_value_t *dern_sdl2_CreateSound(
         octaspire_helpers_verify_not_null(vec);
 
         SDL_RWops * const rw = SDL_RWFromMem(
-            octaspire_container_vector_get_element_at(vec, 0),
-            octaspire_container_vector_get_length(vec));
+            octaspire_vector_get_element_at(vec, 0),
+            octaspire_vector_get_length(vec));
         sound = Mix_LoadWAV_RW(rw, 1);
 
-        octaspire_container_vector_release(vec);
+        octaspire_vector_release(vec);
         vec = 0;
     }
 
@@ -2278,9 +2278,9 @@ octaspire_dern_value_t *dern_sdl2_CreateSound(
 
     ++dern_sdl2_private_next_free_sound_uid;
 
-    if (!octaspire_container_hash_map_put(
+    if (!octaspire_map_put(
             dern_sdl2_private_sounds,
-            octaspire_container_hash_map_helper_size_t_get_hash(
+            octaspire_map_helper_size_t_get_hash(
                 dern_sdl2_private_next_free_sound_uid),
             &dern_sdl2_private_next_free_sound_uid,
             &sound))
@@ -2392,7 +2392,7 @@ octaspire_dern_value_t *dern_sdl2_CreateMusic(
     }
     else
     {
-        octaspire_container_vector_t * vec = octaspire_helpers_base64_decode(
+        octaspire_vector_t * vec = octaspire_helpers_base64_decode(
             octaspire_dern_value_as_string_get_c_string(secondArg),
             octaspire_dern_value_as_string_get_length_in_octets(secondArg),
             octaspire_dern_vm_get_allocator(vm));
@@ -2401,11 +2401,11 @@ octaspire_dern_value_t *dern_sdl2_CreateMusic(
         octaspire_helpers_verify_not_null(vec);
 
         SDL_RWops * const rw = SDL_RWFromMem(
-            octaspire_container_vector_get_element_at(vec, 0),
-            octaspire_container_vector_get_length(vec));
+            octaspire_vector_get_element_at(vec, 0),
+            octaspire_vector_get_length(vec));
         music = Mix_LoadMUS_RW(rw, 1);
 
-        octaspire_container_vector_release(vec);
+        octaspire_vector_release(vec);
         vec = 0;
     }
 
@@ -2420,9 +2420,9 @@ octaspire_dern_value_t *dern_sdl2_CreateMusic(
 
     ++dern_sdl2_private_next_free_music_uid;
 
-    if (!octaspire_container_hash_map_put(
+    if (!octaspire_map_put(
             dern_sdl2_private_music,
-            octaspire_container_hash_map_helper_size_t_get_hash(
+            octaspire_map_helper_size_t_get_hash(
                 dern_sdl2_private_next_free_music_uid),
             &dern_sdl2_private_next_free_music_uid,
             &music))
@@ -3069,7 +3069,7 @@ octaspire_dern_value_t *dern_sdl2_CreateFont(
     }
     else
     {
-        octaspire_container_vector_t * vec = octaspire_helpers_base64_decode(
+        octaspire_vector_t * vec = octaspire_helpers_base64_decode(
             octaspire_dern_value_as_string_get_c_string(secondArg),
             octaspire_dern_value_as_string_get_length_in_octets(secondArg),
             octaspire_dern_vm_get_allocator(vm));
@@ -3079,13 +3079,13 @@ octaspire_dern_value_t *dern_sdl2_CreateFont(
 
         font = TTF_OpenFontRW(
             SDL_RWFromConstMem(
-                octaspire_container_vector_get_element_at_const(vec, 0),
-                octaspire_container_vector_get_length(vec)
+                octaspire_vector_get_element_at_const(vec, 0),
+                octaspire_vector_get_length(vec)
                 ),
             1,
             octaspire_dern_value_as_integer_get_value(thirdArg));
 
-        octaspire_container_vector_release(vec);
+        octaspire_vector_release(vec);
         vec = 0;
     }
 
@@ -3100,9 +3100,9 @@ octaspire_dern_value_t *dern_sdl2_CreateFont(
 
     ++dern_sdl2_private_next_free_font_uid;
 
-    if (!octaspire_container_hash_map_put(
+    if (!octaspire_map_put(
             dern_sdl2_private_fonts,
-            octaspire_container_hash_map_helper_size_t_get_hash(
+            octaspire_map_helper_size_t_get_hash(
                 dern_sdl2_private_next_free_font_uid),
             &dern_sdl2_private_next_free_font_uid,
             &font))
@@ -5358,16 +5358,16 @@ bool dern_sdl2_clean(
 {
     octaspire_helpers_verify_true(vm && targetEnv);
 
-    octaspire_container_hash_map_release(dern_sdl2_private_textures);
+    octaspire_map_release(dern_sdl2_private_textures);
     dern_sdl2_private_textures = 0;
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
-    octaspire_container_hash_map_release(dern_sdl2_private_fonts);
+    octaspire_map_release(dern_sdl2_private_fonts);
     dern_sdl2_private_fonts = 0;
 #endif
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY
-    octaspire_container_hash_map_release(dern_sdl2_private_music);
+    octaspire_map_release(dern_sdl2_private_music);
     dern_sdl2_private_music = 0;
 #endif
 

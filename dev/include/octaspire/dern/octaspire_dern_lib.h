@@ -19,9 +19,9 @@ limitations under the License.
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <octaspire/core/octaspire_container_vector.h>
-#include <octaspire/core/octaspire_container_hash_map.h>
-#include <octaspire/core/octaspire_container_utf8_string.h>
+#include <octaspire/core/octaspire_vector.h>
+#include <octaspire/core/octaspire_map.h>
+#include <octaspire/core/octaspire_string.h>
 #include <octaspire/core/octaspire_input.h>
 
 #ifdef __cplusplus
@@ -42,13 +42,13 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_source(
     char const * const name,
     octaspire_input_t * const input,
     struct octaspire_dern_vm_t *vm,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
     char const * const name,
     char const * const fileName,
     struct octaspire_dern_vm_t *vm,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 void octaspire_dern_lib_release(octaspire_dern_lib_t *self);
 

@@ -25,14 +25,14 @@ limitations under the License.
 
 struct octaspire_dern_c_data_t
 {
-    octaspire_container_utf8_string_t         *pluginName;
-    octaspire_container_utf8_string_t         *typeNameForPayload;
+    octaspire_string_t         *pluginName;
+    octaspire_string_t         *typeNameForPayload;
     void                                      *payload;
-    octaspire_container_utf8_string_t         *cleanUpCallbackName;
-    octaspire_container_utf8_string_t         *stdLibLenCallbackName;
-    octaspire_container_utf8_string_t         *stdLibLinkAtCallbackName;
-    octaspire_container_utf8_string_t         *stdLibCopyAtCallbackName;
-    octaspire_memory_allocator_t              *allocator;
+    octaspire_string_t         *cleanUpCallbackName;
+    octaspire_string_t         *stdLibLenCallbackName;
+    octaspire_string_t         *stdLibLinkAtCallbackName;
+    octaspire_string_t         *stdLibCopyAtCallbackName;
+    octaspire_allocator_t              *allocator;
     bool                                       copyingAllowed;
     char                                       padding[7];
 };
@@ -46,10 +46,10 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const stdLibLinkAtCallbackName,
     char const * const stdLibCopyAtCallbackName,
     bool const copyingAllowed,
-    octaspire_memory_allocator_t *allocator)
+    octaspire_allocator_t *allocator)
 {
     octaspire_dern_c_data_t *self =
-        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_c_data_t));
+        octaspire_allocator_malloc(allocator, sizeof(octaspire_dern_c_data_t));
 
     if (!self)
     {
@@ -58,29 +58,29 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
 
     self->allocator = allocator;
 
-    self->pluginName = octaspire_container_utf8_string_new(
+    self->pluginName = octaspire_string_new(
         pluginName,
         self->allocator);
 
-    self->typeNameForPayload = octaspire_container_utf8_string_new(
+    self->typeNameForPayload = octaspire_string_new(
         typeNameForPayload,
         self->allocator);
 
     self->payload = payload;
 
-    self->cleanUpCallbackName = octaspire_container_utf8_string_new(
+    self->cleanUpCallbackName = octaspire_string_new(
         cleanUpCallbackName,
         self->allocator);
 
-    self->stdLibLenCallbackName = octaspire_container_utf8_string_new(
+    self->stdLibLenCallbackName = octaspire_string_new(
         stdLibLenCallbackName,
         self->allocator);
 
-    self->stdLibLinkAtCallbackName = octaspire_container_utf8_string_new(
+    self->stdLibLinkAtCallbackName = octaspire_string_new(
         stdLibLinkAtCallbackName,
         self->allocator);
 
-    self->stdLibCopyAtCallbackName = octaspire_container_utf8_string_new(
+    self->stdLibCopyAtCallbackName = octaspire_string_new(
         stdLibCopyAtCallbackName,
         self->allocator);
 
@@ -91,16 +91,16 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
     octaspire_dern_c_data_t * const other,
-    octaspire_memory_allocator_t *allocator)
+    octaspire_allocator_t *allocator)
 {
     return octaspire_dern_c_data_new(
-        octaspire_container_utf8_string_get_c_string(other->pluginName),
-        octaspire_container_utf8_string_get_c_string(other->typeNameForPayload),
+        octaspire_string_get_c_string(other->pluginName),
+        octaspire_string_get_c_string(other->typeNameForPayload),
         other->payload,
-        octaspire_container_utf8_string_get_c_string(other->cleanUpCallbackName),
-        octaspire_container_utf8_string_get_c_string(other->stdLibLenCallbackName),
-        octaspire_container_utf8_string_get_c_string(other->stdLibLinkAtCallbackName),
-        octaspire_container_utf8_string_get_c_string(other->stdLibCopyAtCallbackName),
+        octaspire_string_get_c_string(other->cleanUpCallbackName),
+        octaspire_string_get_c_string(other->stdLibLenCallbackName),
+        octaspire_string_get_c_string(other->stdLibLinkAtCallbackName),
+        octaspire_string_get_c_string(other->stdLibCopyAtCallbackName),
         other->copyingAllowed,
         allocator);
 }
@@ -112,42 +112,42 @@ void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
         return;
     }
 
-    octaspire_container_utf8_string_release(self->cleanUpCallbackName);
+    octaspire_string_release(self->cleanUpCallbackName);
     self->cleanUpCallbackName = 0;
 
-    octaspire_container_utf8_string_release(self->stdLibLenCallbackName);
+    octaspire_string_release(self->stdLibLenCallbackName);
     self->stdLibLenCallbackName = 0;
 
-    octaspire_container_utf8_string_release(self->stdLibLinkAtCallbackName);
+    octaspire_string_release(self->stdLibLinkAtCallbackName);
     self->stdLibLinkAtCallbackName = 0;
 
-    octaspire_container_utf8_string_release(self->stdLibCopyAtCallbackName);
+    octaspire_string_release(self->stdLibCopyAtCallbackName);
     self->stdLibCopyAtCallbackName = 0;
 
-    octaspire_container_utf8_string_release(self->pluginName);
+    octaspire_string_release(self->pluginName);
     self->pluginName = 0;
 
-    octaspire_container_utf8_string_release(self->typeNameForPayload);
+    octaspire_string_release(self->typeNameForPayload);
     self->typeNameForPayload = 0;
 
-    octaspire_memory_allocator_free(self->allocator, self);
+    octaspire_allocator_free(self->allocator, self);
 }
 
-octaspire_container_utf8_string_t *octaspire_dern_c_data_to_string(
+octaspire_string_t *octaspire_dern_c_data_to_string(
     octaspire_dern_c_data_t const * const self,
-    octaspire_memory_allocator_t * const allocator)
+    octaspire_allocator_t * const allocator)
 {
-    return octaspire_container_utf8_string_new_format(
+    return octaspire_string_new_format(
         allocator,
         "C data (%s : %s) payload=%p cleanUpCallbackName=%s stdLibLenCallbackName=%s "
         "stdLibLinkAtCallbackName=%s stdLibCopyAtCallbackName=%s",
-        octaspire_container_utf8_string_get_c_string(self->pluginName),
-        octaspire_container_utf8_string_get_c_string(self->typeNameForPayload),
+        octaspire_string_get_c_string(self->pluginName),
+        octaspire_string_get_c_string(self->typeNameForPayload),
         (void*)self->payload,
-        octaspire_container_utf8_string_get_c_string(self->cleanUpCallbackName),
-        octaspire_container_utf8_string_get_c_string(self->stdLibLenCallbackName),
-        octaspire_container_utf8_string_get_c_string(self->stdLibLinkAtCallbackName),
-        octaspire_container_utf8_string_get_c_string(self->stdLibCopyAtCallbackName));
+        octaspire_string_get_c_string(self->cleanUpCallbackName),
+        octaspire_string_get_c_string(self->stdLibLenCallbackName),
+        octaspire_string_get_c_string(self->stdLibLinkAtCallbackName),
+        octaspire_string_get_c_string(self->stdLibCopyAtCallbackName));
 }
 
 bool octaspire_dern_c_data_is_equal(
@@ -159,12 +159,12 @@ bool octaspire_dern_c_data_is_equal(
         return false;
     }
 
-    if (octaspire_container_utf8_string_is_equal(self->pluginName, other->pluginName))
+    if (octaspire_string_is_equal(self->pluginName, other->pluginName))
     {
         return false;
     }
 
-    if (octaspire_container_utf8_string_is_equal(
+    if (octaspire_string_is_equal(
         self->typeNameForPayload,
         other->typeNameForPayload))
     {
@@ -178,14 +178,14 @@ int octaspire_dern_c_data_compare(
     octaspire_dern_c_data_t const * const self,
     octaspire_dern_c_data_t const * const other)
 {
-    int tmp = octaspire_container_utf8_string_compare(self->pluginName, other->pluginName);
+    int tmp = octaspire_string_compare(self->pluginName, other->pluginName);
 
     if (tmp != 0)
     {
         return tmp;
     }
 
-    tmp = octaspire_container_utf8_string_compare(
+    tmp = octaspire_string_compare(
         self->typeNameForPayload,
         other->typeNameForPayload);
 
@@ -214,12 +214,12 @@ bool octaspire_dern_c_data_is_plugin_and_payload_type_name(
     char const * const pluginName,
     char const * const typeNameForPayload)
 {
-    if (!octaspire_container_utf8_string_is_equal_to_c_string(self->pluginName, pluginName))
+    if (!octaspire_string_is_equal_to_c_string(self->pluginName, pluginName))
     {
         return false;
     }
 
-    if (!octaspire_container_utf8_string_is_equal_to_c_string(
+    if (!octaspire_string_is_equal_to_c_string(
             self->typeNameForPayload,
             typeNameForPayload))
     {
@@ -232,13 +232,13 @@ bool octaspire_dern_c_data_is_plugin_and_payload_type_name(
 char const *octaspire_dern_c_data_get_plugin_name(
     octaspire_dern_c_data_t const * const self)
 {
-    return octaspire_container_utf8_string_get_c_string(self->pluginName);
+    return octaspire_string_get_c_string(self->pluginName);
 }
 
 char const *octaspire_dern_c_data_get_payload_typename(
     octaspire_dern_c_data_t const * const self)
 {
-    return octaspire_container_utf8_string_get_c_string(self->typeNameForPayload);
+    return octaspire_string_get_c_string(self->typeNameForPayload);
 }
 
 void *octaspire_dern_c_data_get_payload(

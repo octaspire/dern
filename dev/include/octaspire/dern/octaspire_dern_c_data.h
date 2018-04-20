@@ -19,7 +19,7 @@ limitations under the License.
 
 #include <stdint.h>
 #include <octaspire/core/octaspire_memory.h>
-#include <octaspire/core/octaspire_container_utf8_string.h>
+#include <octaspire/core/octaspire_string.h>
 
 #ifdef __cplusplus
 extern "C"       {
@@ -36,17 +36,17 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const stdLibLinkAtCallbackName,
     char const * const stdLibCopyAtCallbackName,
     bool const copyingAllowed,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
     octaspire_dern_c_data_t * const other,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self);
 
-octaspire_container_utf8_string_t *octaspire_dern_c_data_to_string(
+octaspire_string_t *octaspire_dern_c_data_to_string(
     octaspire_dern_c_data_t const * const self,
-    octaspire_memory_allocator_t * const allocator);
+    octaspire_allocator_t * const allocator);
 
 bool octaspire_dern_c_data_is_equal(
     octaspire_dern_c_data_t const * const self,

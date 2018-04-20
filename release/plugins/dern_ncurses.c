@@ -300,7 +300,7 @@ octaspire_dern_value_t *dern_ncurses_getstr(
         timeout(delay);
     }
 
-    octaspire_container_utf8_string_t *resultStr = octaspire_container_utf8_string_new(
+    octaspire_string_t *resultStr = octaspire_string_new(
         "",
         octaspire_dern_vm_get_allocator(vm));
 
@@ -334,15 +334,15 @@ octaspire_dern_value_t *dern_ncurses_getstr(
                 timeout(delay);
             }
 
-            if (octaspire_container_utf8_string_pop_back_ucs_character(resultStr))
+            if (octaspire_string_pop_back_ucs_character(resultStr))
             {
                 mvwaddstr(
                     stdscr,
                     y,
                     x,
-                    octaspire_container_utf8_string_get_c_string(resultStr));
+                    octaspire_string_get_c_string(resultStr));
 
-                mvdelch(y, x + octaspire_container_utf8_string_get_length_in_ucs_characters(resultStr));
+                mvdelch(y, x + octaspire_string_get_length_in_ucs_characters(resultStr));
             }
         }
         else if (iswprint(wint))
@@ -353,15 +353,15 @@ octaspire_dern_value_t *dern_ncurses_getstr(
                 timeout(delay);
             }
 
-            octaspire_container_utf8_string_push_back_ucs_character(resultStr, (uint32_t)wint);
+            octaspire_string_push_back_ucs_character(resultStr, (uint32_t)wint);
 
             mvwaddstr(
                 stdscr,
                 y,
                 x,
-                octaspire_container_utf8_string_get_c_string(resultStr));
+                octaspire_string_get_c_string(resultStr));
 
-            //move(y, x + octaspire_container_utf8_string_get_length_in_ucs_characters(resultStr));
+            //move(y, x + octaspire_string_get_length_in_ucs_characters(resultStr));
         }
     }
 
@@ -1214,12 +1214,12 @@ octaspire_dern_value_t *dern_ncurses_print(
 #endif
 
             for (size_t i = 0;
-                 i < octaspire_container_utf8_string_get_length_in_ucs_characters(
+                 i < octaspire_string_get_length_in_ucs_characters(
                         fourthArg->value.string);
                  ++i)
             {
                 uint32_t const ch =
-                    octaspire_container_utf8_string_get_ucs_character_at_index(fourthArg->value.string, i);
+                    octaspire_string_get_ucs_character_at_index(fourthArg->value.string, i);
 
                 int tmpRes = mvwaddch(
                     payload,
@@ -1238,7 +1238,7 @@ octaspire_dern_value_t *dern_ncurses_print(
                 payload,
                 (int)secondArg->value.integer,
                 (int)thirdArg->value.integer,
-                octaspire_container_utf8_string_get_c_string(fourthArg->value.string));
+                octaspire_string_get_c_string(fourthArg->value.string));
         }
 
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
@@ -1431,49 +1431,49 @@ octaspire_dern_value_t *dern_ncurses_attron(
 
         if (octaspire_dern_value_is_symbol(arg))
         {
-            octaspire_container_utf8_string_t * const symAsStr = arg->value.symbol;
+            octaspire_string_t * const symAsStr = arg->value.symbol;
 
-            if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "NORMAL"))
+            if (octaspire_string_is_equal_to_c_string(symAsStr, "NORMAL"))
             {
                 attr = A_NORMAL;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "STANDOUT"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "STANDOUT"))
             {
                 attr = A_STANDOUT;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "UNDERLINE"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "UNDERLINE"))
             {
                 attr = A_UNDERLINE;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "REVERSE"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "REVERSE"))
             {
                 attr = A_REVERSE;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "BLINK"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "BLINK"))
             {
                 attr = A_BLINK;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "DIM"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "DIM"))
             {
                 attr = A_DIM;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "BOLD"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "BOLD"))
             {
                 attr = A_BOLD;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "PROTECT"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "PROTECT"))
             {
                 attr = A_PROTECT;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "INVISIBLE"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "INVISIBLE"))
             {
                 attr = A_INVIS;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "ALTCHARSET"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "ALTCHARSET"))
             {
                 attr = A_ALTCHARSET;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "CHARTEXT"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "CHARTEXT"))
             {
                 attr = A_CHARTEXT;
             }
@@ -1484,7 +1484,7 @@ octaspire_dern_value_t *dern_ncurses_attron(
                     vm,
                     "Builtin 'ncurses-attron': %zu. argument '%s' is not known attribute.",
                     i,
-                    octaspire_container_utf8_string_get_c_string(symAsStr));
+                    octaspire_string_get_c_string(symAsStr));
             }
         }
         else
@@ -1549,49 +1549,49 @@ octaspire_dern_value_t *dern_ncurses_attroff(
 
         if (octaspire_dern_value_is_symbol(arg))
         {
-            octaspire_container_utf8_string_t * const symAsStr = arg->value.symbol;
+            octaspire_string_t * const symAsStr = arg->value.symbol;
 
-            if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "NORMAL"))
+            if (octaspire_string_is_equal_to_c_string(symAsStr, "NORMAL"))
             {
                 attr = A_NORMAL;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "STANDOUT"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "STANDOUT"))
             {
                 attr = A_STANDOUT;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "UNDERLINE"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "UNDERLINE"))
             {
                 attr = A_UNDERLINE;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "REVERSE"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "REVERSE"))
             {
                 attr = A_REVERSE;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "BLINK"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "BLINK"))
             {
                 attr = A_BLINK;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "DIM"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "DIM"))
             {
                 attr = A_DIM;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "BOLD"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "BOLD"))
             {
                 attr = A_BOLD;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "PROTECT"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "PROTECT"))
             {
                 attr = A_PROTECT;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "INVISIBLE"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "INVISIBLE"))
             {
                 attr = A_INVIS;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "ALTCHARSET"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "ALTCHARSET"))
             {
                 attr = A_ALTCHARSET;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symAsStr, "CHARTEXT"))
+            else if (octaspire_string_is_equal_to_c_string(symAsStr, "CHARTEXT"))
             {
                 attr = A_CHARTEXT;
             }
@@ -1602,7 +1602,7 @@ octaspire_dern_value_t *dern_ncurses_attroff(
                     vm,
                     "Builtin 'ncurses-attroff': %zu. argument '%s' is not known attribute.",
                     i,
-                    octaspire_container_utf8_string_get_c_string(symAsStr));
+                    octaspire_string_get_c_string(symAsStr));
             }
         }
         else
@@ -1774,37 +1774,37 @@ octaspire_dern_value_t *dern_ncurses_init_pair(
         }
         else
         {
-            octaspire_container_utf8_string_t const * const symStr = arg->value.symbol;
+            octaspire_string_t const * const symStr = arg->value.symbol;
 
-            if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "BLACK"))
+            if (octaspire_string_is_equal_to_c_string(symStr, "BLACK"))
             {
                 colorNums[i-1] = COLOR_BLACK;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "RED"))
+            else if (octaspire_string_is_equal_to_c_string(symStr, "RED"))
             {
                 colorNums[i-1] = COLOR_RED;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "GREEN"))
+            else if (octaspire_string_is_equal_to_c_string(symStr, "GREEN"))
             {
                 colorNums[i-1] = COLOR_GREEN;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "YELLOW"))
+            else if (octaspire_string_is_equal_to_c_string(symStr, "YELLOW"))
             {
                 colorNums[i-1] = COLOR_YELLOW;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "BLUE"))
+            else if (octaspire_string_is_equal_to_c_string(symStr, "BLUE"))
             {
                 colorNums[i-1] = COLOR_BLUE;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "MAGENTA"))
+            else if (octaspire_string_is_equal_to_c_string(symStr, "MAGENTA"))
             {
                 colorNums[i-1] = COLOR_MAGENTA;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "CYAN"))
+            else if (octaspire_string_is_equal_to_c_string(symStr, "CYAN"))
             {
                 colorNums[i-1] = COLOR_CYAN;
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(symStr, "WHITE"))
+            else if (octaspire_string_is_equal_to_c_string(symStr, "WHITE"))
             {
                 colorNums[i-1] = COLOR_WHITE;
             }
@@ -1816,7 +1816,7 @@ octaspire_dern_value_t *dern_ncurses_init_pair(
                     "Builtin 'ncurses-init-pair' expects color name (a symbol) as %zu. argument. "
                     "Now symbol '%s' was given.",
                     i + 1,
-                    octaspire_container_utf8_string_get_c_string(symStr));
+                    octaspire_string_get_c_string(symStr));
             }
         }
     }

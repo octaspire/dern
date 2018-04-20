@@ -599,7 +599,7 @@ octaspire_dern_value_t *dern_socket_receive(
 #ifdef _WIN32
     SOCKET const s = (SOCKET const)octaspire_dern_c_data_get_payload(cData);
 
-    octaspire_container_utf8_string_t *str = 0;
+    octaspire_string_t *str = 0;
 
     //while (true)
     {
@@ -643,7 +643,7 @@ octaspire_dern_value_t *dern_socket_receive(
         }
         else
         {
-            str = octaspire_container_utf8_string_new_from_buffer(
+            str = octaspire_string_new_from_buffer(
                 buffer,
                 recvStatus,
                 octaspire_dern_vm_get_allocator(vm));
@@ -657,7 +657,7 @@ octaspire_dern_value_t *dern_socket_receive(
     intptr_t const socketFileDescriptor =
         (intptr_t)octaspire_dern_c_data_get_payload(cData);
 
-    octaspire_container_utf8_string_t *str = 0;
+    octaspire_string_t *str = 0;
 
     //while (true)
     {
@@ -690,7 +690,7 @@ octaspire_dern_value_t *dern_socket_receive(
         }
         else
         {
-            str = octaspire_container_utf8_string_new_from_buffer(
+            str = octaspire_string_new_from_buffer(
                 buffer,
                 recvStatus,
                 octaspire_dern_vm_get_allocator(vm));

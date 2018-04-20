@@ -19,7 +19,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include "octaspire/dern/octaspire_dern_config.h"
 
-static octaspire_memory_allocator_t *octaspireDernVmTestAllocator = 0;
+static octaspire_allocator_t *octaspireDernVmTestAllocator = 0;
 static octaspire_stdio_t            *octaspireDernVmTestStdio     = 0;
 
 TEST octaspire_dern_vm_new_test(void)
@@ -284,7 +284,7 @@ TEST octaspire_dern_vm_special_if_called_with_one_argument_failure_test(void)
     ASSERT_STR_EQ(
         "Special 'if' expects two or three arguments. 1 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(if true)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -308,7 +308,7 @@ TEST octaspire_dern_vm_special_if_called_with_integer_as_the_first_argument_fail
         "First argument to special 'if' must evaluate into boolean value. Now it evaluated "
         "into type integer.\n"
         "\tAt form: >>>>>>>>>>(if 10 true)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -327,7 +327,7 @@ TEST octaspire_dern_vm_special_select_one_true_selector_to_string_a_test(void)
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -364,7 +364,7 @@ TEST octaspire_dern_vm_special_select_one_default_selector_to_string_a_test(void
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -383,7 +383,7 @@ TEST octaspire_dern_vm_special_select_one_false_and_one_default_selectors_to_str
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -402,7 +402,7 @@ TEST octaspire_dern_vm_special_select_one_false_and_one_true_and_one_default_sel
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -421,7 +421,7 @@ TEST octaspire_dern_vm_special_select_one_false_and_one_true_selectors_to_string
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -458,7 +458,7 @@ TEST octaspire_dern_vm_special_select_function_selectors_evaluating_into_false_a
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -499,7 +499,7 @@ TEST octaspire_dern_vm_special_select_function_selectors_failure_on_unknown_symb
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'f2')\n"
         "\tAt form: >>>>>>>>>>(select (f1) [p] (f2) [a])<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -523,7 +523,7 @@ TEST octaspire_dern_vm_special_select_called_with_zero_arguments_failure_test(vo
         "Special 'select' expects at least two arguments and the number of arguments must be "
         "multiple of two. Now 0 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(select)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -547,7 +547,7 @@ TEST octaspire_dern_vm_special_select_called_with_one_argument_failure_test(void
         "Special 'select' expects at least two arguments and the number of arguments must be "
         "multiple of two. Now 1 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(select true)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -571,7 +571,7 @@ TEST octaspire_dern_vm_special_select_called_with_three_arguments_failure_test(v
         "Special 'select' expects at least two arguments and the number of arguments must be "
         "multiple of two. Now 3 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(select true [a] default)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -594,7 +594,7 @@ TEST octaspire_dern_vm_special_select_called_non_boolean_selector_failure_test(v
     ASSERT_STR_EQ(
         "Selectors of special 'select' must evaluate into booleans. Type 'integer' was given.\n"
         "\tAt form: >>>>>>>>>>(select 1 [a] 2 [b])<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -617,7 +617,7 @@ TEST octaspire_dern_vm_special_select_called_with_default_as_first_selector_fail
     ASSERT_STR_EQ(
         "'default' must be the last selector in special 'select'.\n"
         "\tAt form: >>>>>>>>>>(select default [a] 2 [b])<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -685,7 +685,7 @@ TEST octaspire_dern_vm_special_define_integer_value_with_explicit_target_global_
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("test", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("test", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -717,7 +717,7 @@ TEST octaspire_dern_vm_special_define_my_inc_function_test(void)
         "my own inc-function\n"
         "Arguments are:\n"
         "value -> the value to increase",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -758,7 +758,7 @@ TEST octaspire_dern_vm_special_define_factorial_function_with_integers_test(void
         "factorial function\n"
         "Arguments are:\n"
         "n -> calculate n!",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     int32_t const expected[] = {1, 1, 2, 6, 24, 120, 720, 5040};
 
@@ -814,7 +814,7 @@ TEST octaspire_dern_vm_special_define_factorial_function_with_reals_test(void)
         "factorial function\n"
         "Arguments are:\n"
         "n -> calculate n!",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     double const expected[] = {1, 1, 2, 6, 24, 120, 720, 5040};
 
@@ -862,7 +862,7 @@ TEST octaspire_dern_vm_special_define_called_with_three_arguments_failure_test(v
         "Special 'define' expects four, six or eight arguments. "
         "3 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(define x as 10)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -903,7 +903,7 @@ TEST octaspire_dern_vm_special_define_called_with_eight_arguments_test(void)
 
     ASSERT_STR_EQ(
         "Unbound symbol 'f'",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     // Make sure f IS defined in myEnv-environment
     evaluatedValue =
@@ -945,7 +945,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_first_being_val
         "The first argument of special 'define' is a vector but doesn't evaluate into "
         "a symbol. It evaluates into '10'.\n"
         "\tAt form: >>>>>>>>>>(define 10 as x [x])<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -978,7 +978,7 @@ TEST octaspire_dern_vm_special_define_called_with_eight_arguments_first_being_in
         "The first argument of special 'define' is a vector but doesn't evaluate into "
         "a symbol. It evaluates into '10'.\n"
         "\tAt form: >>>>>>>>>>(define 10 as (fn () 128) [f] (quote ()) in myEnv howto-ok)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1001,7 +1001,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_error_at_first_
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'noSuchFuNcTion')\n"
         "\tAt form: >>>>>>>>>>(define x as (noSuchFuNcTion) [x])<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1025,7 +1025,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_with_docstring_
         "Special 'define' expects documentation string as the fourth argument "
         "in this context. Value '20' was given.\n"
         "\tAt form: >>>>>>>>>>(define x as 10 20)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1049,7 +1049,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_name_evaluates_
         "The first argument of special 'define' is a vector but doesn't evaluate into "
         "a symbol. It evaluates into '20'.\n"
         "\tAt form: >>>>>>>>>>(define 20 as (fn () 10) [x])<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1073,7 +1073,7 @@ TEST octaspire_dern_vm_special_define_called_with_six_arguments_docstring_is_int
         "Special 'define' expects documentation string as the fourth argument in this "
         "context. Value '20' was given.\n"
         "\tAt form: >>>>>>>>>>(define f as (fn () (quote x)) 20 (quote ()) howto-ok)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1098,7 +1098,7 @@ TEST octaspire_dern_vm_special_define_called_with_eight_arguments_error_in_envir
         "context. Value '<error>: Cannot evaluate operator of type 'error' (<error>: "
         "Unbound symbol 'noSuchFuNcTion')' was given.\n"
         "\tAt form: >>>>>>>>>>(define f as (fn () (quote x)) [f] (quote ()) in (noSuchFuNcTion) howto-ok)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1122,7 +1122,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_docs
         "Special 'define' expects documentation string as the fourth argument "
         "in this context. Value '10' was given.\n"
         "\tAt form: >>>>>>>>>>(define x as 20 10)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1145,7 +1145,7 @@ TEST octaspire_dern_vm_special_quote_called_without_arguments_failure_test(void)
     ASSERT_STR_EQ(
         "Special 'quote' expects one argument. 0 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(quote)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1210,7 +1210,7 @@ TEST octaspire_dern_vm_builtin_doc_for_integer_value_test(void)
 
     ASSERT_STR_EQ(
         "x-coordinate",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1373,7 +1373,7 @@ TEST octaspire_dern_vm_builtin_slash_failure_test(void)
     ASSERT_STR_EQ(
         "Builtin '/' expects at least one numeric argument (integer or real).\n"
         "\tAt form: >>>>>>>>>>(/)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1397,7 +1397,7 @@ TEST octaspire_dern_vm_builtin_slash_0_failure_test(void)
     ASSERT_STR_EQ(
         "First argument to builtin '/' cannot be zero. It would cause division by zero.\n"
         "\tAt form: >>>>>>>>>>(/ 0)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1421,7 +1421,7 @@ TEST octaspire_dern_vm_builtin_slash_10_2_0_failure_test(void)
     ASSERT_STR_EQ(
         "Argument number 3 to builtin '/' cannot be zero. It would cause division by zero.\n"
         "\tAt form: >>>>>>>>>>(/ 10 2 0)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1445,7 +1445,7 @@ TEST octaspire_dern_vm_builtin_slash_10_2_character_a_failure_test(void)
     ASSERT_STR_EQ(
         "Builtin '/' expects numeric arguments (integer or real). 3th argument has type character.\n"
         "\tAt form: >>>>>>>>>>(/ 10 2 |a|)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1550,7 +1550,7 @@ TEST octaspire_dern_vm_builtin_mod_4_mod_0_failure_test(void)
         "The second argument to builtin 'mod' cannot be zero. "
         "It would cause division by zero.\n"
         "\tAt form: >>>>>>>>>>(mod 4 0)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1613,7 +1613,7 @@ TEST octaspire_dern_vm_builtin_plus_string_cat_dog_and_string_space_and_string_z
 
     ASSERT_STR_EQ(
         "cat, dog and zebra",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1636,7 +1636,7 @@ TEST octaspire_dern_vm_builtin_plus_string_ca_and_character_t_test(void)
 
     ASSERT_STR_EQ(
         "cat",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1659,7 +1659,7 @@ TEST octaspire_dern_vm_builtin_plus_empty_string_and_characters_k_i_t_t_e_n_test
 
     ASSERT_STR_EQ(
         "kitten",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1680,15 +1680,15 @@ TEST octaspire_dern_vm_builtin_plus_vector_1_2_3_and_4_test(void)
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "(1 2 3 4)",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -1710,15 +1710,15 @@ TEST octaspire_dern_vm_builtin_plus_vector_1_2_3_and_4_and_a_test(void)
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "(1 2 3 4 |a|)",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -1740,15 +1740,15 @@ TEST octaspire_dern_vm_builtin_plus_empty_vector_and_1_test(void)
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "(1)",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -1770,15 +1770,15 @@ TEST octaspire_dern_vm_builtin_plus_empty_vector_and_empty_vector_test(void)
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "(())",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -1800,15 +1800,15 @@ TEST octaspire_dern_vm_builtin_plus_empty_vector_and_empty_vector_and_empty_vect
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "(() ())",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -1830,15 +1830,15 @@ TEST octaspire_dern_vm_builtin_plus_empty_hash_map_and_1_and_a_test(void)
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "(hash-map 1 |a|)",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -1860,15 +1860,15 @@ TEST octaspire_dern_vm_builtin_plus_hash_map_1_a_and_2_and_b_test(void)
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "(hash-map 2 |b|\n          1 |a|)",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -1890,15 +1890,15 @@ TEST octaspire_dern_vm_builtin_plus_hash_map_1_a_and_2_and_b_and_3_and_c_test(vo
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "(hash-map 2 |b|\n          3 |c|\n          1 |a|)",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -1919,7 +1919,7 @@ TEST octaspire_dern_vm_builtin_minus_string_cat_dog_cat_and_string_cat_test(void
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ(" dog ", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ(" dog ", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1939,7 +1939,7 @@ TEST octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_test(void)
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("bcbcbc", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("bcbcbc", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1959,7 +1959,7 @@ TEST octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_and_charac
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("ccc", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("ccc", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1979,7 +1979,7 @@ TEST octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_and_charac
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2039,7 +2039,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_abcdeaaba_character_a_test(void)
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(4, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(4, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     int32_t const expected[] = {0, 5, 6, 8};
 
@@ -2074,7 +2074,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_abcdeaaba_character_y_test(void)
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(0, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(0, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2094,7 +2094,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_cat_dog_cat_zebra_cat_string_cat
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(3, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(3, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     int32_t const expected[] = {0, 8, 18};
 
@@ -2129,7 +2129,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_cat_dog_cat_zebra_cat_string_par
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(0, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(0, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2149,7 +2149,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_cat_dog_cat_zebra_cat_quoted_sym
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(3, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(3, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     int32_t const expected[] = {0, 8, 18};
 
@@ -2184,7 +2184,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_cat_dog_cat_zebra_cat_quoted_sym
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(0, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(0, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2204,7 +2204,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_123_124_abc_123_99_123_integer_1
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(3, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(3, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     int32_t const expected[] = {0, 12, 19};
 
@@ -2239,7 +2239,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_123_124_abc_123_99_123_integer_7
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(0, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(0, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2259,7 +2259,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_3dot14_abc_3dot13_3dot14_3dot146
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(4, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(4, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     int32_t const expected[] = {0, 14, 19, 25};
 
@@ -2294,7 +2294,7 @@ TEST octaspire_dern_vm_builtin_find_from_string_3dot14_abc_3dot13_3dot14_3dot146
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(0, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(0, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2314,7 +2314,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_abc_def_aaxa_char_a_test(void)
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(4, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(4, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     int32_t const expected[] = {0, 8, 9, 11};
 
@@ -2349,7 +2349,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_abc_def_aaxa_char_y_test(void)
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(0, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(0, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2369,7 +2369,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_dog_cat_cat_zebra_cat_string
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(4, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(4, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     int32_t const expected[] = {0, 8, 12, 22};
 
@@ -2404,7 +2404,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_dog_cat_cat_zebra_cat_string
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(0, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(0, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2424,7 +2424,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_dog_cat_cat_zebra_cat_symbol
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(4, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(4, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     int32_t const expected[] = {0, 8, 12, 22};
 
@@ -2459,7 +2459,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_dog_cat_cat_zebra_cat_symbol
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(0, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(0, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2479,7 +2479,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_123_dog_cat_123_123_cat_zebr
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(4, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(4, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     int32_t const expected[] = {4, 16, 20, 34};
 
@@ -2514,7 +2514,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_321_dog_cat_321_321_cat_zebr
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(0, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(0, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2534,7 +2534,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_3dot14_dog_cat_3dot14_3dot14
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(4, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(4, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     int32_t const expected[] = {4, 17, 22, 37};
 
@@ -2569,7 +2569,7 @@ TEST octaspire_dern_vm_builtin_find_from_symbol_cat_3dot14_dog_cat_3dot14_3dot14
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(0, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(0, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2589,7 +2589,7 @@ TEST octaspire_dern_vm_builtin_find_from_vector_of_chars_a_b_c_a_a_g_u_a_char_a_
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(4, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(4, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     int32_t const expected[] = {0, 3, 4, 7};
 
@@ -2624,7 +2624,7 @@ TEST octaspire_dern_vm_builtin_find_from_vector_of_chars_a_b_c_a_a_g_u_a_char_x_
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(0, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(0, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2644,7 +2644,7 @@ TEST octaspire_dern_vm_builtin_find_from_vector_of_strings_cat_dog_cat_zebra_par
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(3, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(3, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     int32_t const expected[] = {0, 2, 5};
 
@@ -2679,7 +2679,7 @@ TEST octaspire_dern_vm_builtin_find_from_vector_of_strings_cat_dog_cat_zebra_par
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(0, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(0, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2699,7 +2699,7 @@ TEST octaspire_dern_vm_builtin_find_from_vector_of_symbols_cat_dog_cat_zebra_par
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(3, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(3, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     int32_t const expected[] = {0, 2, 5};
 
@@ -2734,7 +2734,7 @@ TEST octaspire_dern_vm_builtin_find_from_vector_of_symbols_cat_dog_cat_zebra_par
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
-    ASSERT_EQ(0, octaspire_container_vector_get_length(evaluatedValue->value.vector));
+    ASSERT_EQ(0, octaspire_vector_get_length(evaluatedValue->value.vector));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2813,7 +2813,7 @@ TEST octaspire_dern_vm_builtin_find_from_hash_map_of_strings_cat_dog_zebra_kitte
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("c", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.character));
+    ASSERT_STR_EQ("c", octaspire_string_get_c_string(evaluatedValue->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -2852,7 +2852,7 @@ TEST octaspire_dern_vm_builtin_find_from_hash_map_of_integers_1_2_3_4_integer_2_
     ASSERT(evaluatedValue);
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("dog", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("dog", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3107,7 +3107,7 @@ TEST octaspire_dern_vm_special_while_called_with_one_argument_failure_test(void)
     ASSERT_STR_EQ(
         "Special 'while' expects at least two arguments. 1 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(while true)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3140,7 +3140,7 @@ TEST octaspire_dern_vm_special_while_called_with_integer_as_first_argument_failu
         "First argument to special 'while' must evaluate into boolean value. Now it evaluated "
         "into type integer.\n"
         "\tAt form: >>>>>>>>>>(while 1 (++ x))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3180,17 +3180,17 @@ TEST octaspire_dern_vm_builtin_hash_map_one_element_symbol_one_1_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
     ASSERT_EQ(1, octaspire_dern_value_as_hash_map_get_number_of_elements(evaluatedValue));
 
-    octaspire_container_hash_map_element_t *element =
+    octaspire_map_element_t *element =
         octaspire_dern_value_as_hash_map_get_at_index(evaluatedValue, 0);
 
     ASSERT(element);
 
-    evaluatedValue = octaspire_container_hash_map_element_get_key(element);
+    evaluatedValue = octaspire_map_element_get_key(element);
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("one", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+    ASSERT_STR_EQ("one", octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
-    evaluatedValue = octaspire_container_hash_map_element_get_value(element);
+    evaluatedValue = octaspire_map_element_get_value(element);
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(1, evaluatedValue->value.integer);
@@ -3214,20 +3214,20 @@ TEST octaspire_dern_vm_builtin_hash_map_one_element_1_symbol_one_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
     ASSERT_EQ(1, octaspire_dern_value_as_hash_map_get_number_of_elements(evaluatedValue));
 
-    octaspire_container_hash_map_element_t *element =
+    octaspire_map_element_t *element =
         octaspire_dern_value_as_hash_map_get_at_index(evaluatedValue, 0);
 
     ASSERT(element);
 
-    evaluatedValue = octaspire_container_hash_map_element_get_key(element);
+    evaluatedValue = octaspire_map_element_get_key(element);
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(1, evaluatedValue->value.integer);
 
-    evaluatedValue = octaspire_container_hash_map_element_get_value(element);
+    evaluatedValue = octaspire_map_element_get_value(element);
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("one", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+    ASSERT_STR_EQ("one", octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3272,17 +3272,17 @@ TEST octaspire_dern_vm_builtin_hash_map_two_elements_strings_dog_barks_and_sun_s
 
         ASSERT(keyValue);
 
-        octaspire_container_hash_map_element_t *element = octaspire_dern_value_as_hash_map_get(
+        octaspire_map_element_t *element = octaspire_dern_value_as_hash_map_get(
             evaluatedValue,
             octaspire_dern_value_get_hash(keyValue),
             keyValue);
 
         ASSERT(element);
 
-        octaspire_dern_value_t *valueValue = octaspire_container_hash_map_element_get_value(element);
+        octaspire_dern_value_t *valueValue = octaspire_map_element_get_value(element);
         ASSERT(valueValue);
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, valueValue->typeTag);
-        ASSERT_STR_EQ(expected[i], octaspire_container_utf8_string_get_c_string(valueValue->value.string));
+        ASSERT_STR_EQ(expected[i], octaspire_string_get_c_string(valueValue->value.string));
     }
 
     ASSERT(octaspire_dern_vm_pop_value(vm, evaluatedValue));
@@ -3307,7 +3307,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_characters_t_bar_newline_tab
 
     ASSERT_STR_EQ(
         "cat|dog and parrot \n\t 123",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3329,7 +3329,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_characters_c_a_t__a_n_d__d_o
 
     ASSERT_STR_EQ(
         "cat and dog",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3351,7 +3351,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_newline_failure_on
 
     ASSERT_STR_EQ(
         "Problem with a character embedded in string: (character is not complete)",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3373,7 +3373,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_yy_failure_on_unkn
 
     ASSERT_STR_EQ(
         "Problem with a character embedded in string: (Unknown character constant |yy|)",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3395,7 +3395,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_in_hex_A9_test(voi
 
     ASSERT_STR_EQ(
         "©",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3417,7 +3417,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_in_hex_a9_test(voi
 
     ASSERT_STR_EQ(
         "©",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3439,7 +3439,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_a_test(void)
 
     ASSERT_STR_EQ(
         "a",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3461,7 +3461,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_in_hex_0x10000_tes
 
     ASSERT_STR_EQ(
         "𐀀",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3483,7 +3483,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_in_hex_failure_on_
 
     ASSERT_STR_EQ(
         "Problem with a character embedded in string: (Number of hex digits (9) in character definition may not be larger than eight)",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3543,7 +3543,7 @@ TEST octaspire_dern_vm_builtin_equals_with_empty_vector_of_strings_and_integer_1
 
             ASSERT_STR_EQ(
                 "cat",
-                octaspire_container_utf8_string_get_c_string(element->value.string));
+                octaspire_string_get_c_string(element->value.string));
         }
     }
 
@@ -3654,21 +3654,21 @@ TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_same_key_inserted_multip
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
 
-    octaspire_container_hash_map_t * hashMap = evaluatedValue->value.hashMap;
+    octaspire_map_t * hashMap = evaluatedValue->value.hashMap;
 
-    ASSERT_EQ(1, octaspire_container_hash_map_get_number_of_elements(hashMap));
+    ASSERT_EQ(1, octaspire_map_get_number_of_elements(hashMap));
 
-    octaspire_container_hash_map_element_t *element =
-        octaspire_container_hash_map_get_at_index(hashMap, 0);
+    octaspire_map_element_t *element =
+        octaspire_map_get_at_index(hashMap, 0);
 
     ASSERT(element);
 
-    octaspire_dern_value_t *key = octaspire_container_hash_map_element_get_key(element);
+    octaspire_dern_value_t *key = octaspire_map_element_get_key(element);
     ASSERT(key);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, key->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(key->value.string));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(key->value.string));
 
-    octaspire_dern_value_t *value = octaspire_container_hash_map_element_get_value(element);
+    octaspire_dern_value_t *value = octaspire_map_element_get_value(element);
     ASSERT(value);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, value->typeTag);
     ASSERT_EQ(2,                                 value->value.integer);
@@ -3694,19 +3694,19 @@ TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_same_key_inserted_multip
 
     hashMap = evaluatedValue->value.hashMap;
 
-    ASSERT_EQ(1, octaspire_container_hash_map_get_number_of_elements(hashMap));
+    ASSERT_EQ(1, octaspire_map_get_number_of_elements(hashMap));
 
     element =
-        octaspire_container_hash_map_get_at_index(hashMap, 0);
+        octaspire_map_get_at_index(hashMap, 0);
 
     ASSERT(element);
 
-    key = octaspire_container_hash_map_element_get_key(element);
+    key = octaspire_map_element_get_key(element);
     ASSERT(key);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, key->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(key->value.string));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(key->value.string));
 
-    value = octaspire_container_hash_map_element_get_value(element);
+    value = octaspire_map_element_get_value(element);
     ASSERT(value);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, value->typeTag);
     ASSERT_EQ(3,                                 value->value.integer);
@@ -3755,39 +3755,39 @@ TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_hash_map_with_elements_t
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
 
-    octaspire_container_hash_map_t * const hashMap = evaluatedValue->value.hashMap;
+    octaspire_map_t * const hashMap = evaluatedValue->value.hashMap;
 
-    ASSERT_EQ(2, octaspire_container_hash_map_get_number_of_elements(hashMap));
+    ASSERT_EQ(2, octaspire_map_get_number_of_elements(hashMap));
 
-    octaspire_container_hash_map_element_t *element =
-        octaspire_container_hash_map_get_at_index(hashMap, 1);
+    octaspire_map_element_t *element =
+        octaspire_map_get_at_index(hashMap, 1);
 
     ASSERT(element);
 
-    octaspire_dern_value_t *key = octaspire_container_hash_map_element_get_key(element);
+    octaspire_dern_value_t *key = octaspire_map_element_get_key(element);
     ASSERT(key);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, key->typeTag);
     ASSERT_EQ(1,                                key->value.integer);
 
-    octaspire_dern_value_t *value = octaspire_container_hash_map_element_get_value(element);
+    octaspire_dern_value_t *value = octaspire_map_element_get_value(element);
     ASSERT(value);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, value->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(value->value.character));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(value->value.character));
 
     element =
-        octaspire_container_hash_map_get_at_index(hashMap, 0);
+        octaspire_map_get_at_index(hashMap, 0);
 
     ASSERT(element);
 
-    key = octaspire_container_hash_map_element_get_key(element);
+    key = octaspire_map_element_get_key(element);
     ASSERT(key);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, key->typeTag);
     ASSERT_EQ(2,                                key->value.integer);
 
-    value = octaspire_container_hash_map_element_get_value(element);
+    value = octaspire_map_element_get_value(element);
     ASSERT(value);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, value->typeTag);
-    ASSERT_STR_EQ("b", octaspire_container_utf8_string_get_c_string(value->value.character));
+    ASSERT_STR_EQ("b", octaspire_string_get_c_string(value->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3833,9 +3833,9 @@ TEST octaspire_dern_vm_builtin_equals_with_hash_map_and_empty_hash_map_test(void
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
 
-    octaspire_container_hash_map_t * const hashMap = evaluatedValue->value.hashMap;
+    octaspire_map_t * const hashMap = evaluatedValue->value.hashMap;
 
-    ASSERT_EQ(0, octaspire_container_hash_map_get_number_of_elements(hashMap));
+    ASSERT_EQ(0, octaspire_map_get_number_of_elements(hashMap));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3895,7 +3895,7 @@ TEST octaspire_dern_vm_builtin_equals_with_vector_and_vector_with_elements_test(
 
     ASSERT(value);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, value->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(value->value.character));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(value->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -4007,7 +4007,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_character_x_and_integer_2_test(
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("v", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("v", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -4035,7 +4035,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_character_x_and_character_excla
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("W", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("W", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -4152,7 +4152,7 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_string_abcd_and_characters_a_an
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("cd", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("cd", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -4182,20 +4182,20 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_hash_map_1_a_2_b_3_c_and_value_
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
     ASSERT_EQ(1, octaspire_dern_value_as_hash_map_get_number_of_elements(evaluatedValue));
 
-    octaspire_container_hash_map_element_t const * const element =
+    octaspire_map_element_t const * const element =
         octaspire_dern_value_as_hash_map_get_at_index(evaluatedValue, 0);
 
     ASSERT(element);
 
-    octaspire_dern_value_t const * const key = octaspire_container_hash_map_element_get_key(element);
+    octaspire_dern_value_t const * const key = octaspire_map_element_get_key(element);
     ASSERT(key);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER,  key->typeTag);
     ASSERT_EQ(1,                                 key->value.integer);
 
-    octaspire_dern_value_t const * const value = octaspire_container_hash_map_element_get_value(element);
+    octaspire_dern_value_t const * const value = octaspire_map_element_get_value(element);
     ASSERT(value);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, value->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(value->value.character));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(value->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -4226,15 +4226,15 @@ TEST octaspire_dern_vm_builtin_minus_equals_with_vector_1_2_3_3_and_ln_at_v_minu
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "(1 2)",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -4266,15 +4266,15 @@ TEST octaspire_dern_vm_builtin_minus_equals_equals_with_vector_1_2_3_3_and_ln_at
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "(1 2 3)",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -4319,15 +4319,15 @@ TEST octaspire_dern_vm_builtin_pop_front_with_vector_1_2_3_test(void)
         ASSERT(evaluatedValue);
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
             evaluatedValue,
             octaspire_dern_vm_get_allocator(vm));
 
         ASSERT_STR_EQ(
             expected[i],
-            octaspire_container_utf8_string_get_c_string(tmpStr));
+            octaspire_string_get_c_string(tmpStr));
 
-        octaspire_container_utf8_string_release(tmpStr);
+        octaspire_string_release(tmpStr);
         tmpStr = 0;
     }
 
@@ -4380,15 +4380,15 @@ TEST octaspire_dern_vm_builtin_pop_front_with_string_abc_test(void)
         ASSERT(evaluatedValue);
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
 
-        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
             evaluatedValue,
             octaspire_dern_vm_get_allocator(vm));
 
         ASSERT_STR_EQ(
             expected[i],
-            octaspire_container_utf8_string_get_c_string(tmpStr));
+            octaspire_string_get_c_string(tmpStr));
 
-        octaspire_container_utf8_string_release(tmpStr);
+        octaspire_string_release(tmpStr);
         tmpStr = 0;
     }
 
@@ -4441,15 +4441,15 @@ TEST octaspire_dern_vm_builtin_pop_front_with_symbol_abc_test(void)
         ASSERT(evaluatedValue);
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
 
-        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
             evaluatedValue,
             octaspire_dern_vm_get_allocator(vm));
 
         ASSERT_STR_EQ(
             expected[i],
-            octaspire_container_utf8_string_get_c_string(tmpStr));
+            octaspire_string_get_c_string(tmpStr));
 
-        octaspire_container_utf8_string_release(tmpStr);
+        octaspire_string_release(tmpStr);
         tmpStr = 0;
     }
 
@@ -4502,15 +4502,15 @@ TEST octaspire_dern_vm_builtin_pop_front_with_list_1_2_3_test(void)
         ASSERT(evaluatedValue);
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_LIST, evaluatedValue->typeTag);
 
-        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
             evaluatedValue,
             octaspire_dern_vm_get_allocator(vm));
 
         ASSERT_STR_EQ(
             expected[i],
-            octaspire_container_utf8_string_get_c_string(tmpStr));
+            octaspire_string_get_c_string(tmpStr));
 
-        octaspire_container_utf8_string_release(tmpStr);
+        octaspire_string_release(tmpStr);
         tmpStr = 0;
     }
 
@@ -4546,7 +4546,7 @@ TEST octaspire_dern_vm_builtin_pop_front_with_integer_10_failure_test(void)
     ASSERT_STR_EQ(
         "First argument to builtin 'pop-front' cannot be of type 'integer'.\n"
         "\tAt form: >>>>>>>>>>(pop-front 10)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -4591,15 +4591,15 @@ TEST octaspire_dern_vm_builtin_pop_back_with_vector_1_2_3_test(void)
         ASSERT(evaluatedValue);
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
             evaluatedValue,
             octaspire_dern_vm_get_allocator(vm));
 
         ASSERT_STR_EQ(
             expected[i],
-            octaspire_container_utf8_string_get_c_string(tmpStr));
+            octaspire_string_get_c_string(tmpStr));
 
-        octaspire_container_utf8_string_release(tmpStr);
+        octaspire_string_release(tmpStr);
         tmpStr = 0;
     }
 
@@ -4652,15 +4652,15 @@ TEST octaspire_dern_vm_builtin_pop_back_with_string_abc_test(void)
         ASSERT(evaluatedValue);
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
 
-        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
             evaluatedValue,
             octaspire_dern_vm_get_allocator(vm));
 
         ASSERT_STR_EQ(
             expected[i],
-            octaspire_container_utf8_string_get_c_string(tmpStr));
+            octaspire_string_get_c_string(tmpStr));
 
-        octaspire_container_utf8_string_release(tmpStr);
+        octaspire_string_release(tmpStr);
         tmpStr = 0;
     }
 
@@ -4713,15 +4713,15 @@ TEST octaspire_dern_vm_builtin_pop_back_with_symbol_abc_test(void)
         ASSERT(evaluatedValue);
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SYMBOL, evaluatedValue->typeTag);
 
-        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
             evaluatedValue,
             octaspire_dern_vm_get_allocator(vm));
 
         ASSERT_STR_EQ(
             expected[i],
-            octaspire_container_utf8_string_get_c_string(tmpStr));
+            octaspire_string_get_c_string(tmpStr));
 
-        octaspire_container_utf8_string_release(tmpStr);
+        octaspire_string_release(tmpStr);
         tmpStr = 0;
     }
 
@@ -4774,15 +4774,15 @@ TEST octaspire_dern_vm_builtin_pop_back_with_list_1_2_3_test(void)
         ASSERT(evaluatedValue);
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_LIST, evaluatedValue->typeTag);
 
-        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
             evaluatedValue,
             octaspire_dern_vm_get_allocator(vm));
 
         ASSERT_STR_EQ(
             expected[i],
-            octaspire_container_utf8_string_get_c_string(tmpStr));
+            octaspire_string_get_c_string(tmpStr));
 
-        octaspire_container_utf8_string_release(tmpStr);
+        octaspire_string_release(tmpStr);
         tmpStr = 0;
     }
 
@@ -4835,15 +4835,15 @@ TEST octaspire_dern_vm_builtin_pop_back_with_queue_1_2_3_test(void)
         ASSERT(evaluatedValue);
         ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_QUEUE, evaluatedValue->typeTag);
 
-        octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+        octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
             evaluatedValue,
             octaspire_dern_vm_get_allocator(vm));
 
         ASSERT_STR_EQ(
             expected[i],
-            octaspire_container_utf8_string_get_c_string(tmpStr));
+            octaspire_string_get_c_string(tmpStr));
 
-        octaspire_container_utf8_string_release(tmpStr);
+        octaspire_string_release(tmpStr);
         tmpStr = 0;
     }
 
@@ -4879,7 +4879,7 @@ TEST octaspire_dern_vm_builtin_pop_back_with_integer_10_failure_test(void)
     ASSERT_STR_EQ(
         "First argument to builtin 'pop-back' cannot be of type 'integer'.\n"
         "\tAt form: >>>>>>>>>>(pop-back 10)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -4909,20 +4909,20 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_hash_map_1_a_test(v
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
     ASSERT_EQ(1, octaspire_dern_value_as_hash_map_get_number_of_elements(evaluatedValue));
 
-    octaspire_container_hash_map_element_t const * const element =
+    octaspire_map_element_t const * const element =
         octaspire_dern_value_as_hash_map_get_at_index(evaluatedValue, 0);
 
     ASSERT(element);
 
-    octaspire_dern_value_t const * const key = octaspire_container_hash_map_element_get_key(element);
+    octaspire_dern_value_t const * const key = octaspire_map_element_get_key(element);
     ASSERT(key);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER,  key->typeTag);
     ASSERT_EQ(1,                                 key->value.integer);
 
-    octaspire_dern_value_t const * const value = octaspire_container_hash_map_element_get_value(element);
+    octaspire_dern_value_t const * const value = octaspire_map_element_get_value(element);
     ASSERT(value);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, value->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(value->value.character));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(value->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -4952,20 +4952,20 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_1_a_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
     ASSERT_EQ(1, octaspire_dern_value_as_hash_map_get_number_of_elements(evaluatedValue));
 
-    octaspire_container_hash_map_element_t const * const element =
+    octaspire_map_element_t const * const element =
         octaspire_dern_value_as_hash_map_get_at_index(evaluatedValue, 0);
 
     ASSERT(element);
 
-    octaspire_dern_value_t const * const key = octaspire_container_hash_map_element_get_key(element);
+    octaspire_dern_value_t const * const key = octaspire_map_element_get_key(element);
     ASSERT(key);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER,  key->typeTag);
     ASSERT_EQ(1,                                 key->value.integer);
 
-    octaspire_dern_value_t const * const value = octaspire_container_hash_map_element_get_value(element);
+    octaspire_dern_value_t const * const value = octaspire_map_element_get_value(element);
     ASSERT(value);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, value->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(value->value.character));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(value->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -4995,35 +4995,35 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_hash_map_and_list_1_a_2_b_test(v
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_HASH_MAP, evaluatedValue->typeTag);
     ASSERT_EQ(2, octaspire_dern_value_as_hash_map_get_number_of_elements(evaluatedValue));
 
-    octaspire_container_hash_map_element_t const * element =
+    octaspire_map_element_t const * element =
         octaspire_dern_value_as_hash_map_get_at_index(evaluatedValue, 1);
 
     ASSERT(element);
 
-    octaspire_dern_value_t const * key = octaspire_container_hash_map_element_get_key(element);
+    octaspire_dern_value_t const * key = octaspire_map_element_get_key(element);
     ASSERT(key);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER,  key->typeTag);
     ASSERT_EQ(1,                                 key->value.integer);
 
-    octaspire_dern_value_t const * value = octaspire_container_hash_map_element_get_value(element);
+    octaspire_dern_value_t const * value = octaspire_map_element_get_value(element);
     ASSERT(value);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, value->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(value->value.character));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(value->value.character));
 
     element =
         octaspire_dern_value_as_hash_map_get_at_index(evaluatedValue, 0);
 
     ASSERT(element);
 
-    key = octaspire_container_hash_map_element_get_key(element);
+    key = octaspire_map_element_get_key(element);
     ASSERT(key);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER,  key->typeTag);
     ASSERT_EQ(2,                                 key->value.integer);
 
-    value = octaspire_container_hash_map_element_get_value(element);
+    value = octaspire_map_element_get_value(element);
     ASSERT(value);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, value->typeTag);
-    ASSERT_STR_EQ("b", octaspire_container_utf8_string_get_c_string(value->value.character));
+    ASSERT_STR_EQ("b", octaspire_string_get_c_string(value->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5096,7 +5096,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_string_def_test(v
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5108,7 +5108,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_string_def_test(v
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5141,7 +5141,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_symbol_def_test(v
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5153,7 +5153,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_symbol_def_test(v
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5186,7 +5186,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_character_d_test(
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5198,7 +5198,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_character_d_test(
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5231,7 +5231,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_vector_of_strings
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5243,7 +5243,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_vector_of_strings
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5276,7 +5276,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_nil_test(void)
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5288,7 +5288,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_nil_test(void)
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5321,7 +5321,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_booleans_true_and
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5333,7 +5333,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_booleans_true_and
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5366,7 +5366,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_integer_128_test(
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5378,7 +5378,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_integer_128_test(
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5411,7 +5411,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_real_3dot14_test(
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5423,7 +5423,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_string_abc_and_real_3dot14_test(
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5460,7 +5460,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_string_def_test(v
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5472,7 +5472,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_string_def_test(v
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5505,7 +5505,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_symbol_def_test(v
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5517,7 +5517,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_symbol_def_test(v
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5550,7 +5550,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_character_d_test(
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5562,7 +5562,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_character_d_test(
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5595,7 +5595,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_vector_of_strings
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5607,7 +5607,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_vector_of_strings
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5640,7 +5640,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_nil_test(void)
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5652,7 +5652,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_nil_test(void)
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5685,7 +5685,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_booleans_true_and
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5697,7 +5697,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_booleans_true_and
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5730,7 +5730,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_integer_128_test(
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5742,7 +5742,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_integer_128_test(
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5775,7 +5775,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_real_3dot14_test(
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -5787,7 +5787,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_symbol_abc_and_real_3dot14_test(
 
     ASSERT_STR_EQ(
         expected,
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.symbol));
+        octaspire_string_get_c_string(evaluatedValue->value.symbol));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5819,7 +5819,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_bad_input_test(void)
 
     ASSERT_STR_EQ(
         "Unknown character constant |) (hash-map 2 |",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5968,7 +5968,7 @@ TEST octaspire_dern_vm_special_for_from_0_to_10_with_step_minus_2_failure_test(v
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
         "\tAt form: >>>>>>>>>>(for i from 0 to 10 step -2 (+= v i))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6098,7 +6098,7 @@ TEST octaspire_dern_vm_special_for_from_10_to_0_with_step_minus_2_failure_test(v
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
         "\tAt form: >>>>>>>>>>(for i from 10 to 0 step -2 (+= v i))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6148,7 +6148,7 @@ TEST octaspire_dern_vm_special_for_in_with_string_test(void)
 
     ASSERT_STR_EQ(
         "abc",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6197,7 +6197,7 @@ TEST octaspire_dern_vm_special_for_in_with_string_step_2_test(void)
 
     ASSERT_STR_EQ(
         "ac",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6238,7 +6238,7 @@ TEST octaspire_dern_vm_special_for_in_with_string_step_minus_2_failure_test(void
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
         "\tAt form: >>>>>>>>>>(for i in n step -2 (+= s i))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6287,7 +6287,7 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_test(void)
 
     ASSERT_STR_EQ(
         "John Mike Ellie ",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6336,7 +6336,7 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_step_2_test(void)
 
     ASSERT_STR_EQ(
         "John Ellie ",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6376,7 +6376,7 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_step_minus_2_failur
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
         "\tAt form: >>>>>>>>>>(for i in n step -2 (+= s i [ ]))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6463,7 +6463,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_test(void)
         "b -> 2\n"
         "c -> 3\n"
         "---------------------------------\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6536,7 +6536,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_2_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(2,                                evaluatedValue->value.integer);
 
-    // octaspire_container_hash_map_t is not ordered map, so we cannot know for sure which
+    // octaspire_map_t is not ordered map, so we cannot know for sure which
     // two values are the first ones in the map.
 
     octaspire_dern_vm_release(vm);
@@ -6611,7 +6611,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_minus_2_failure_test
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
         "\tAt form: >>>>>>>>>>(for i in e step -2 (define (ln@ i 0) as (ln@ i 1) [-] in e2))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6664,7 +6664,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_test(void)
         "b -> 2\n"
         "c -> 3\n"
         "---------------------------------\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6703,7 +6703,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_2_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(2,                                evaluatedValue->value.integer);
 
-    // octaspire_container_hash_map_t is not ordered map, so we cannot know for sure which
+    // octaspire_map_t is not ordered map, so we cannot know for sure which
     // two values are the first ones in the map.
 
     octaspire_dern_vm_release(vm);
@@ -6745,7 +6745,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_minus_2_failure_test(vo
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
         "\tAt form: >>>>>>>>>>(for i in h step -2 (define (ln@ i 0) as (ln@ i 1) [-] in e))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6769,7 +6769,7 @@ TEST octaspire_dern_vm_special_for_called_without_arguments_failure_test(void)
         "Special 'for' expects at least four (for iterating container or port) or five (for "
         "iterating numeric range) arguments. 0 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(for)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6793,7 +6793,7 @@ TEST octaspire_dern_vm_special_for_called_with_one_argument_failure_test(void)
         "Special 'for' expects at least four (for iterating container or port) or five (for "
         "iterating numeric range) arguments. 1 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(for i)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6816,7 +6816,7 @@ TEST octaspire_dern_vm_special_for_second_argument_not_symbol_failure_test(void)
     ASSERT_STR_EQ(
         "Second argument to special 'for' must be symbol 'in' or 'from'. Now it has type integer.\n"
         "\tAt form: >>>>>>>>>>(for i 10 0 to 20 true)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6839,7 +6839,7 @@ TEST octaspire_dern_vm_special_for_called_with_integer_as_first_argument_failure
     ASSERT_STR_EQ(
         "First argument to special 'for' must be symbol value. Now it has type integer.\n"
         "\tAt form: >>>>>>>>>>(for 1 from 0 to 10 true)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6871,7 +6871,7 @@ TEST octaspire_dern_vm_error_in_function_body_is_reported_test(void)
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
         "\tAt form: >>>>>>>>>>(f 1)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6893,7 +6893,7 @@ TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_0_and_string_abc_test(void
 
     ASSERT_STR_EQ(
         "a",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.character));
+        octaspire_string_get_c_string(evaluatedValue->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6915,7 +6915,7 @@ TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_1_and_string_abc_test(void
 
     ASSERT_STR_EQ(
         "b",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.character));
+        octaspire_string_get_c_string(evaluatedValue->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6937,7 +6937,7 @@ TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_string_abc_test(void
 
     ASSERT_STR_EQ(
         "c",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.character));
+        octaspire_string_get_c_string(evaluatedValue->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6961,7 +6961,7 @@ TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_string_abc_failure_t
         "Index to builtin 'cp@' is not valid for the given string. "
         "Index '3' was given.\n"
         "\tAt form: >>>>>>>>>>(cp@ [abc] 3)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -7042,7 +7042,7 @@ TEST octaspire_dern_vm_builtin_ln_at_sign_called_with_3_and_vector_1_2_3_failure
         "Index to builtin 'ln@' is not valid for the given vector. "
         "Index '3' was given.\n"
         "\tAt form: >>>>>>>>>>(ln@ (quote (1 2 3)) 3)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -7064,7 +7064,7 @@ TEST octaspire_dern_vm_builtin_ln_at_sign_called_with_0_and_index_and_hash_map_1
 
     ASSERT_STR_EQ(
         "b",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.character));
+        octaspire_string_get_c_string(evaluatedValue->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -7086,7 +7086,7 @@ TEST octaspire_dern_vm_builtin_ln_at_sign_called_with_1_and_index_and_hash_map_1
 
     ASSERT_STR_EQ(
         "c",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.character));
+        octaspire_string_get_c_string(evaluatedValue->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -7108,7 +7108,7 @@ TEST octaspire_dern_vm_builtin_ln_at_sign_called_with_2_and_index_and_hash_map_1
 
     ASSERT_STR_EQ(
         "a",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.character));
+        octaspire_string_get_c_string(evaluatedValue->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -7131,7 +7131,7 @@ TEST octaspire_dern_vm_builtin_ln_at_sign_called_with_3_and_index_and_hash_map_1
     ASSERT_STR_EQ(
         "Builtin 'ln@' could not find the requested element from hash map.\n"
         "\tAt form: >>>>>>>>>>(ln@ (hash-map 1 |a| 2 |b| 3 |c|) 3 (quote index))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -7153,7 +7153,7 @@ TEST octaspire_dern_vm_builtin_ln_at_sign_called_with_2_and_hash_and_hash_map_1a
 
     ASSERT_STR_EQ(
         "b",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.character));
+        octaspire_string_get_c_string(evaluatedValue->value.character));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -7287,7 +7287,7 @@ TEST octaspire_dern_vm_special_do_error_stops_evaluation_and_is_reported_test(vo
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
         "\tAt form: >>>>>>>>>>(NoSuchFunction)<<<<<<<<<<\n\n"
         "\tAt form: >>>>>>>>>>(do (++ counter) (NoSuchFunction) (++ counter))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7773,7 +7773,7 @@ TEST octaspire_dern_vm_builtin_return_called_with_two_arguments_failure_test(voi
         "\tAt form: >>>>>>>>>>(while (< counter 100) (++ counter) (return 1 2))<<<<<<<<<<\n"
         "\n"
         "\tAt form: >>>>>>>>>>(f)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7817,7 +7817,7 @@ TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_four_
 
     ASSERT_STR_EQ(
         "1(2 3 4)",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -7852,7 +7852,7 @@ TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_one_a
 
     ASSERT_STR_EQ(
         "1()",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -7887,7 +7887,7 @@ TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_zero_
 
     ASSERT_STR_EQ(
         "Function expects 1 arguments. Now 0 arguments were given.",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -8034,7 +8034,7 @@ TEST octaspire_dern_vm_builtin_not_called_without_arguments_failure_test(void)
     ASSERT_STR_EQ(
         "Builtin 'not' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(not)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -8220,7 +8220,7 @@ TEST octaspire_dern_vm_builtin_not_called_with_one_integer_argument_failure_test
     ASSERT_STR_EQ(
         "Builtin 'not' expects boolean argument.\n"
         "\tAt form: >>>>>>>>>>(not x)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -8259,7 +8259,7 @@ TEST octaspire_dern_vm_builtin_not_called_with_two_boolean_arguments_failure_tes
     ASSERT_STR_EQ(
         "Builtin 'not' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(not x y)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -8296,7 +8296,7 @@ TEST octaspire_dern_vm_special_and_called_with_three_arguments_test(void)
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("c", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("c", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8305,7 +8305,7 @@ TEST octaspire_dern_vm_special_and_called_with_three_arguments_test(void)
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("abc", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("abc", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -8342,7 +8342,7 @@ TEST octaspire_dern_vm_special_or_called_with_three_arguments_test(void)
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("c", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("c", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -8351,7 +8351,7 @@ TEST octaspire_dern_vm_special_or_called_with_three_arguments_test(void)
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("abc", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("abc", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -8397,7 +8397,7 @@ TEST octaspire_dern_vm_special_and_called_with_three_arguments_with_false_as_sec
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -8443,7 +8443,7 @@ TEST octaspire_dern_vm_special_or_called_with_three_arguments_with_true_as_secon
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
-    ASSERT_STR_EQ("a", octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+    ASSERT_STR_EQ("a", octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -10792,7 +10792,7 @@ TEST octaspire_dern_vm_error_during_user_function_call_test(void)
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
         "\tAt form: >>>>>>>>>>(f)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -10813,7 +10813,7 @@ TEST octaspire_dern_vm_error_during_builtin_call_test(void)
     ASSERT_STR_EQ(
         "Builtin '++' expects at least one argument.\n"
         "\tAt form: >>>>>>>>>>(++)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -10834,7 +10834,7 @@ TEST octaspire_dern_vm_error_during_special_call_test(void)
     ASSERT_STR_EQ(
         "Special '<' expects at least two arguments.\n"
         "\tAt form: >>>>>>>>>>(<)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -10866,7 +10866,7 @@ TEST octaspire_dern_vm_error_during_special_call_during_user_function_call_test(
         "\tAt form: >>>>>>>>>>(<)<<<<<<<<<<\n"
         "\n"
         "\tAt form: >>>>>>>>>>(f)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -10993,7 +10993,7 @@ TEST octaspire_dern_vm_special_eval_failure_on_integer_on_second_argument_test(v
         "Second argument to special 'eval' must evaluate into environment value.\n"
         "Now it evaluated into type integer.\n"
         "\tAt form: >>>>>>>>>>(eval (+ 1 1) 10)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11016,7 +11016,7 @@ TEST octaspire_dern_vm_special_eval_failure_on_unbound_symbol_on_second_argument
     ASSERT_STR_EQ(
         "Unbound symbol 'pi'\n"
         "\tAt form: >>>>>>>>>>(eval (+ 1 1) pi)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11039,7 +11039,7 @@ TEST octaspire_dern_vm_special_eval_called_with_three_arguments_failure_test(voi
     ASSERT_STR_EQ(
         "Special 'eval' expects one or two arguments. 3 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(eval (+ 1 1) (env-global) 10)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11114,7 +11114,7 @@ TEST octaspire_dern_vm_multiline_comment_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "/bin/octaspire-dern-repl\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.comment));
+        octaspire_string_get_c_string(evaluatedValue->value.comment));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11354,7 +11354,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_integer_fai
     ASSERT_STR_EQ(
         "Builtin 'port-supports-input?' expects port argument.\n"
         "\tAt form: >>>>>>>>>>(port-supports-input? f)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11378,7 +11378,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_without_argument
     ASSERT_STR_EQ(
         "Builtin 'port-supports-input?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(port-supports-input?)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11494,7 +11494,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_integer_fa
     ASSERT_STR_EQ(
         "Builtin 'port-supports-output?' expects port argument.\n"
         "\tAt form: >>>>>>>>>>(port-supports-output? f)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11518,7 +11518,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_without_argumen
     ASSERT_STR_EQ(
         "Builtin 'port-supports-output?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(port-supports-output?)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11559,7 +11559,7 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
 
     ASSERT_STR_EQ(
         "<input-output-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt (7 octets)>",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     // Close port
     evaluatedValue =
@@ -11580,7 +11580,7 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
 
     ASSERT_STR_EQ(
         "<NOT-OPEN-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "octaspire_io_file_open_test.txt (-1 octets)>",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     // Check that reading from closed file port fails
     for (size_t i = 0; i < 3; ++i)
@@ -11593,7 +11593,7 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
         ASSERT_STR_EQ(
             "Builtin 'port-read' failed to read the requested one octet.\n"
             "\tAt form: >>>>>>>>>>(port-read f)<<<<<<<<<<\n",
-            octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+            octaspire_string_get_c_string(evaluatedValue->value.string));
     }
 
     // Check that closing again fails
@@ -11813,7 +11813,7 @@ TEST octaspire_dern_vm_input_file_open_with_file_system_access_allowed_failure_o
 
     ASSERT_STR_EQ(
         "<NOT-OPEN-port:" OCTASPIRE_DERN_CONFIG_TEST_RES_PATH "no-such-file.nono (-1 octets)>",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11874,7 +11874,7 @@ TEST octaspire_dern_vm_port_write_failure_on_input_file_test(void)
     ASSERT_STR_EQ(
         "The first argument to builtin 'port-write' must be a port supporting writing.\n"
         "\tAt form: >>>>>>>>>>(port-write f 70)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     // Make sure that the file has still the same size as before the write attempt
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -12013,7 +12013,7 @@ TEST octaspire_dern_vm_integer_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'integer?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(integer?)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12024,7 +12024,7 @@ TEST octaspire_dern_vm_integer_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'integer?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(integer? 1 2)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12110,7 +12110,7 @@ TEST octaspire_dern_vm_real_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'real?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(real?)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12121,7 +12121,7 @@ TEST octaspire_dern_vm_real_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'real?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(real? 1.1 1.2)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12207,7 +12207,7 @@ TEST octaspire_dern_vm_number_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'number?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(number?)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12218,7 +12218,7 @@ TEST octaspire_dern_vm_number_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'number?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(number? 1.1 1.2)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12304,7 +12304,7 @@ TEST octaspire_dern_vm_nil_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'nil?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(nil?)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12315,7 +12315,7 @@ TEST octaspire_dern_vm_nil_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'nil?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(nil? 1.1 1.2)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12401,7 +12401,7 @@ TEST octaspire_dern_vm_boolean_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'boolean?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(boolean?)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12412,7 +12412,7 @@ TEST octaspire_dern_vm_boolean_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'boolean?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(boolean? true true)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12498,7 +12498,7 @@ TEST octaspire_dern_vm_character_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'character?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(character?)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12509,7 +12509,7 @@ TEST octaspire_dern_vm_character_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'character?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(character? |a| |b|)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12595,7 +12595,7 @@ TEST octaspire_dern_vm_string_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'string?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(string?)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12606,7 +12606,7 @@ TEST octaspire_dern_vm_string_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'string?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(string? [a] [b])<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12692,7 +12692,7 @@ TEST octaspire_dern_vm_symbol_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'symbol?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(symbol?)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12703,7 +12703,7 @@ TEST octaspire_dern_vm_symbol_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'symbol?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(symbol? (quote a) (quote b))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12789,7 +12789,7 @@ TEST octaspire_dern_vm_vector_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'vector?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(vector?)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12800,7 +12800,7 @@ TEST octaspire_dern_vm_vector_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'vector?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(vector? (quote ()) (quote ()))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12886,7 +12886,7 @@ TEST octaspire_dern_vm_hash_map_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'hash-map?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(hash-map?)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12897,7 +12897,7 @@ TEST octaspire_dern_vm_hash_map_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'hash-map?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(hash-map? (hash-map) (hash-map))<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12941,7 +12941,7 @@ TEST octaspire_dern_vm_queue_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "(queue [line 1])",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
 
 
@@ -12959,7 +12959,7 @@ TEST octaspire_dern_vm_queue_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "(queue [line 1] [line 2])",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
 
 
@@ -12977,7 +12977,7 @@ TEST octaspire_dern_vm_queue_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "(queue [line 1] [line 2] [line 3])",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
 
 
@@ -12995,7 +12995,7 @@ TEST octaspire_dern_vm_queue_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "(queue [line 1] [line 2] [line 3] [line 4])",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -13039,7 +13039,7 @@ TEST octaspire_dern_vm_queue_with_max_length_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "(queue [line 1])",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
 
 
@@ -13057,7 +13057,7 @@ TEST octaspire_dern_vm_queue_with_max_length_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "(queue [line 1] [line 2])",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
 
 
@@ -13075,7 +13075,7 @@ TEST octaspire_dern_vm_queue_with_max_length_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "(queue [line 1] [line 2] [line 3])",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
 
 
@@ -13093,7 +13093,7 @@ TEST octaspire_dern_vm_queue_with_max_length_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "(queue [line 2] [line 3] [line 4])",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -13137,7 +13137,7 @@ TEST octaspire_dern_vm_list_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "(list [line 1])",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
 
 
@@ -13155,7 +13155,7 @@ TEST octaspire_dern_vm_list_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "(list [line 1] [line 2])",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
 
 
@@ -13173,7 +13173,7 @@ TEST octaspire_dern_vm_list_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "(list [line 1] [line 2] [line 3])",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
 
 
@@ -13191,7 +13191,7 @@ TEST octaspire_dern_vm_list_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "(list [line 1] [line 2] [line 3] [line 4])",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -13319,7 +13319,7 @@ TEST octaspire_dern_vm_cp_at_sign_with_vector_test(void)
 
     ASSERT_STR_EQ(
         "(1 2 3)",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -13350,7 +13350,7 @@ TEST octaspire_dern_vm_cp_at_sign_with_string_test(void)
 
         ASSERT_STR_EQ(
             "d",
-            octaspire_container_utf8_string_get_c_string(
+            octaspire_string_get_c_string(
                 evaluatedValue->value.character));
     }
 
@@ -13362,7 +13362,7 @@ TEST octaspire_dern_vm_cp_at_sign_with_string_test(void)
 
     ASSERT_STR_EQ(
         "abc",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -13411,7 +13411,7 @@ TEST octaspire_dern_vm_cp_at_sign_with_hash_map_of_size_one_test(void)
 
     ASSERT_STR_EQ(
         "(hash-map [a] 2)",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -13505,7 +13505,7 @@ TEST octaspire_dern_vm_ln_at_sign_with_vector_test(void)
 
     ASSERT_STR_EQ(
         "(1 12 3)",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -13536,7 +13536,7 @@ TEST octaspire_dern_vm_ln_at_sign_with_string_test(void)
     ASSERT_STR_EQ(
         "Builtin 'ln@' cannot be used with strings. Use 'cp@' instead.\n"
         "\tAt form: >>>>>>>>>>(ln@ [abc] 1)<<<<<<<<<<\n",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -13585,7 +13585,7 @@ TEST octaspire_dern_vm_ln_at_sign_with_hash_map_of_size_one_test(void)
 
     ASSERT_STR_EQ(
         "(hash-map [a] 12)",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.string));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -13891,7 +13891,7 @@ TEST octaspire_dern_vm_copy_user_data_test(void)
 
 octaspire_input_t *octaspire_test_dern_vm_custom_require_file_loader(
     char const * const name,
-    octaspire_memory_allocator_t * const allocator)
+    octaspire_allocator_t * const allocator)
 {
     if (strcmp("test1.dern", name) == 0)
     {
@@ -13985,15 +13985,15 @@ TEST octaspire_dern_vm_special_howto_1_2_3_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "((+ 1 2) (+ 2 1))",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -14014,15 +14014,15 @@ TEST octaspire_dern_vm_special_howto_strings_a_b_ab_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "((+ [a] [b]))",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -14043,15 +14043,15 @@ TEST octaspire_dern_vm_special_howto_chars_a_b_string_ab_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "((+ |a| |b|))",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -14072,15 +14072,15 @@ TEST octaspire_dern_vm_special_howto_symbols_a_b_ab_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "((+ (quote a) (quote b)))",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -14101,15 +14101,15 @@ TEST octaspire_dern_vm_special_howto_hash_map_1_a_and_2_b_and_hash_map_1_a_2_b_t
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
 
-    octaspire_container_utf8_string_t *tmpStr = octaspire_dern_value_to_string(
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
 
     ASSERT_STR_EQ(
         "((+ (hash-map 1 |a|) 2 |b|))",
-        octaspire_container_utf8_string_get_c_string(tmpStr));
+        octaspire_string_get_c_string(tmpStr));
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     octaspire_dern_vm_release(vm);
@@ -15274,7 +15274,7 @@ TEST octaspire_dern_vm_eval_empty_vector_test(void)
 
     ASSERT_STR_EQ(
         "Cannot evaluate empty vector '()'",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -15298,7 +15298,7 @@ TEST octaspire_dern_vm_eval_vector_containing_empty_vector_test(void)
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Cannot evaluate "
         "empty vector '()')",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -15321,7 +15321,7 @@ TEST octaspire_dern_vm_eval_right_parenthesis_test(void)
 
     ASSERT_STR_EQ(
         "unexpected token: line=1,1 column=1,1 ucsIndex=0,0 type=OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN value=right parenthesis",
-        octaspire_container_utf8_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -15331,7 +15331,7 @@ TEST octaspire_dern_vm_eval_right_parenthesis_test(void)
 
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
-    octaspireDernVmTestAllocator = octaspire_memory_allocator_new(0);
+    octaspireDernVmTestAllocator = octaspire_allocator_new(0);
     octaspireDernVmTestStdio     = octaspire_stdio_new(octaspireDernVmTestAllocator);
 
     assert(octaspireDernVmTestAllocator);
@@ -15785,7 +15785,7 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;
 
-    octaspire_memory_allocator_release(octaspireDernVmTestAllocator);
+    octaspire_allocator_release(octaspireDernVmTestAllocator);
     octaspireDernVmTestAllocator = 0;
 }
 

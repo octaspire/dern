@@ -56,7 +56,7 @@ even runs faster.
 
 Dern is portable and is tested and known to run in Linux, FreeBSD, OpenBSD, NetBSD,
 OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Windows, ReactOS, macOS, Termux,
-Plan9, Syllable Desktop, AROS and Amiga.
+Plan9, AROS and Amiga.
 The *how-to-build*-directory of the amalgamated source release contains a build script
 for all tested platforms.
 
@@ -75,7 +75,7 @@ The amalgamated source release is the recommended way of using Dern, if you don'
 modify Dern itself. To use the amalgamated release, you will need only a C compiler and
 C standard library supporting a subset of C99.
 
-*** Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, Syllable Desktop, macOS, Termux, AROS
+*** Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, macOS, Termux, AROS
 
 #+BEGIN_SRC sh
 curl -O octaspire.com/dern.tar.bz2
@@ -88,7 +88,7 @@ sh how-to-build/YOUR_PLATFORM_NAME_HERE.XX
 
 replace *YOUR_PLATFORM_NAME_HERE.XX* with *FreeBSD.sh*, *NetBSD.sh*, *OpenBSD.sh*,
 *OpenIndiana.sh*, *DragonFlyBSD.sh*, *MidnightBSD*, *linux.sh*, *minix3.sh*,
-*haiku.sh*, *SyllableDesktop.sh*, *macOS.sh*, *termux.sh* or *AROS.sh*.
+*haiku.sh*, *macOS.sh*, *termux.sh* or *AROS.sh*.
 More scripts for different platforms will be added later.
 
 *** Plan9

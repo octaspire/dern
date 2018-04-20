@@ -19,7 +19,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_lexer.h"
 #include "octaspire/dern/octaspire_dern_config.h"
 
-static octaspire_memory_allocator_t *octaspireDernLexerTestAllocator = 0;
+static octaspire_allocator_t *octaspireDernLexerTestAllocator = 0;
 
 TEST octaspire_dern_lexer_token_new_test(void)
 {
@@ -59,8 +59,8 @@ TEST octaspire_dern_lexer_token_new_allocation_failure_on_first_allocation_test(
     octaspire_dern_lexer_token_position_t  const expectedColumn   = {123, 123};
     octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {300, 300};
 
-    octaspire_memory_allocator_set_number_and_type_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator, 1, 0);
-    ASSERT_EQ(1, octaspire_memory_allocator_get_number_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator));
+    octaspire_allocator_set_number_and_type_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator, 1, 0);
+    ASSERT_EQ(1, octaspire_allocator_get_number_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator));
 
     octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_token_new(
         expectedTypeTag,
@@ -72,7 +72,7 @@ TEST octaspire_dern_lexer_token_new_allocation_failure_on_first_allocation_test(
 
     ASSERT_FALSE(token);
 
-    ASSERT_EQ(0, octaspire_memory_allocator_get_number_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator));
+    ASSERT_EQ(0, octaspire_allocator_get_number_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator));
 
     octaspire_dern_lexer_token_release(token);
     token = 0;
@@ -87,8 +87,8 @@ TEST octaspire_dern_lexer_token_new_allocation_failure_on_second_allocation_when
     octaspire_dern_lexer_token_position_t  const expectedColumn   = {123, 123};
     octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {300, 300};
 
-    octaspire_memory_allocator_set_number_and_type_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator, 2, 0x01);
-    ASSERT_EQ(2, octaspire_memory_allocator_get_number_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator));
+    octaspire_allocator_set_number_and_type_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator, 2, 0x01);
+    ASSERT_EQ(2, octaspire_allocator_get_number_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator));
 
     octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_token_new(
         expectedTypeTag,
@@ -100,7 +100,7 @@ TEST octaspire_dern_lexer_token_new_allocation_failure_on_second_allocation_when
 
     ASSERT_FALSE(token);
 
-    ASSERT_EQ(0, octaspire_memory_allocator_get_number_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator));
+    ASSERT_EQ(0, octaspire_allocator_get_number_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator));
 
     octaspire_dern_lexer_token_release(token);
     token = 0;
@@ -115,8 +115,8 @@ TEST octaspire_dern_lexer_token_new_allocation_failure_on_second_allocation_when
     octaspire_dern_lexer_token_position_t const expectedColumn   = {123, 123};
     octaspire_dern_lexer_token_position_t const expectedUcsIndex = {300, 300};
 
-    octaspire_memory_allocator_set_number_and_type_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator, 2, 0x01);
-    ASSERT_EQ(2, octaspire_memory_allocator_get_number_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator));
+    octaspire_allocator_set_number_and_type_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator, 2, 0x01);
+    ASSERT_EQ(2, octaspire_allocator_get_number_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator));
 
     octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_token_new(
         expectedTypeTag,
@@ -128,7 +128,7 @@ TEST octaspire_dern_lexer_token_new_allocation_failure_on_second_allocation_when
 
     ASSERT_FALSE(token);
 
-    ASSERT_EQ(0, octaspire_memory_allocator_get_number_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator));
+    ASSERT_EQ(0, octaspire_allocator_get_number_of_future_allocations_to_be_rigged(octaspireDernLexerTestAllocator));
 
     octaspire_dern_lexer_token_release(token);
     token = 0;
@@ -260,7 +260,7 @@ TEST octaspire_dern_lexer_token_to_string_with_lparen_token_test(void)
 
     ASSERT(token);
 
-    octaspire_container_utf8_string_t *str = octaspire_dern_lexer_token_to_string(token);
+    octaspire_string_t *str = octaspire_dern_lexer_token_to_string(token);
 
     ASSERT(str);
 
@@ -268,9 +268,9 @@ TEST octaspire_dern_lexer_token_to_string_with_lparen_token_test(void)
         "token: line=987,987 column=123,123 ucsIndex=300,300 "
         "type=OCTASPIRE_DERN_LEXER_TOKEN_TAG_LPAREN value=left parenthesis";
 
-    ASSERT_STR_EQ(expected, octaspire_container_utf8_string_get_c_string(str));
+    ASSERT_STR_EQ(expected, octaspire_string_get_c_string(str));
 
-    octaspire_container_utf8_string_release(str);
+    octaspire_string_release(str);
     str = 0;
 
     octaspire_dern_lexer_token_release(token);
@@ -291,7 +291,7 @@ TEST octaspire_dern_lexer_token_to_string_with_rparen_token_test(void)
 
     ASSERT(token);
 
-    octaspire_container_utf8_string_t *str = octaspire_dern_lexer_token_to_string(token);
+    octaspire_string_t *str = octaspire_dern_lexer_token_to_string(token);
 
     ASSERT(str);
 
@@ -299,9 +299,9 @@ TEST octaspire_dern_lexer_token_to_string_with_rparen_token_test(void)
         "token: line=987,987 column=123,123 ucsIndex=300,300 "
         "type=OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN value=right parenthesis";
 
-    ASSERT_STR_EQ(expected, octaspire_container_utf8_string_get_c_string(str));
+    ASSERT_STR_EQ(expected, octaspire_string_get_c_string(str));
 
-    octaspire_container_utf8_string_release(str);
+    octaspire_string_release(str);
     str = 0;
 
     octaspire_dern_lexer_token_release(token);
@@ -324,16 +324,16 @@ TEST octaspire_dern_lexer_token_to_string_with_integer_token_test(void)
 
     ASSERT(token);
 
-    octaspire_container_utf8_string_t *str = octaspire_dern_lexer_token_to_string(token);
+    octaspire_string_t *str = octaspire_dern_lexer_token_to_string(token);
 
     ASSERT(str);
 
     ASSERT_STR_EQ(
         "token: line=987,987 column=123,123 ucsIndex=300,300 "
         "type=OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER value=integer 16987",
-        octaspire_container_utf8_string_get_c_string(str));
+        octaspire_string_get_c_string(str));
 
-    octaspire_container_utf8_string_release(str);
+    octaspire_string_release(str);
     str = 0;
 
     octaspire_dern_lexer_token_release(token);
@@ -1006,7 +1006,7 @@ TEST octaspire_dern_lexer_pop_next_token_multiline_comment_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT, token->typeTag);
     ASSERT_STR_EQ(
         " here is comment\n 1024",
-        octaspire_container_utf8_string_get_c_string(token->value.comment));
+        octaspire_string_get_c_string(token->value.comment));
 
     octaspire_dern_lexer_token_release(token);
     token = 0;
@@ -1041,7 +1041,7 @@ TEST octaspire_dern_lexer_pop_next_token_multiline_comment_more_input_required_t
     ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED, token->typeTag);
     ASSERT_STR_EQ(
         "Multiline comment that is not closed with !#",
-        octaspire_container_utf8_string_get_c_string(token->value.moreInputRequired));
+        octaspire_string_get_c_string(token->value.moreInputRequired));
 
     octaspire_dern_lexer_token_release(token);
     token = 0;
@@ -1076,7 +1076,7 @@ TEST octaspire_dern_lexer_pop_next_token_multiline_comment_more_input_required_o
     ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED, token->typeTag);
     ASSERT_STR_EQ(
         "Number sign '#' expected after '!' to close multiline comment",
-        octaspire_container_utf8_string_get_c_string(token->value.moreInputRequired));
+        octaspire_string_get_c_string(token->value.moreInputRequired));
 
     octaspire_dern_lexer_token_release(token);
     token = 0;
@@ -2233,7 +2233,7 @@ TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(vo
 
 GREATEST_SUITE(octaspire_dern_lexer_suite)
 {
-    octaspireDernLexerTestAllocator = octaspire_memory_allocator_new(0);
+    octaspireDernLexerTestAllocator = octaspire_allocator_new(0);
     assert(octaspireDernLexerTestAllocator);
 
     RUN_TEST(octaspire_dern_lexer_token_new_test);
@@ -2303,7 +2303,7 @@ GREATEST_SUITE(octaspire_dern_lexer_suite)
     RUN_TEST(octaspire_dern_lexer_pop_next_token_illegal_character_empty_character_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test);
 
-    octaspire_memory_allocator_release(octaspireDernLexerTestAllocator);
+    octaspire_allocator_release(octaspireDernLexerTestAllocator);
     octaspireDernLexerTestAllocator = 0;
 }
 

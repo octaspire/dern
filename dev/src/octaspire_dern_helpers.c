@@ -20,29 +20,29 @@ limitations under the License.
 #include "octaspire/core/octaspire_helpers.h"
 
 int octaspire_dern_helpers_compare_value_hash_maps(
-    octaspire_container_hash_map_t const * const firstValueHashMap,
-    octaspire_container_hash_map_t const * const otherValueHashMap)
+    octaspire_map_t const * const firstValueHashMap,
+    octaspire_map_t const * const otherValueHashMap)
 {
-    if (octaspire_container_hash_map_get_number_of_elements(firstValueHashMap) !=
-        octaspire_container_hash_map_get_number_of_elements(otherValueHashMap))
+    if (octaspire_map_get_number_of_elements(firstValueHashMap) !=
+        octaspire_map_get_number_of_elements(otherValueHashMap))
     {
-        return octaspire_container_hash_map_get_number_of_elements(firstValueHashMap) -
-            octaspire_container_hash_map_get_number_of_elements(otherValueHashMap);
+        return octaspire_map_get_number_of_elements(firstValueHashMap) -
+            octaspire_map_get_number_of_elements(otherValueHashMap);
     }
 
-    octaspire_container_hash_map_element_const_iterator_t iter =
-        octaspire_container_hash_map_element_const_iterator_init(firstValueHashMap);
+    octaspire_map_element_const_iterator_t iter =
+        octaspire_map_element_const_iterator_init(firstValueHashMap);
 
     while (iter.element)
     {
         octaspire_dern_value_t const * const myKey =
-            octaspire_container_hash_map_element_get_key_const(iter.element);
+            octaspire_map_element_get_key_const(iter.element);
 
         octaspire_dern_value_t const * const myVal =
-            octaspire_container_hash_map_element_get_value_const(iter.element);
+            octaspire_map_element_get_value_const(iter.element);
 
-        octaspire_container_hash_map_element_t const * const otherElem =
-            octaspire_container_hash_map_get_const(
+        octaspire_map_element_t const * const otherElem =
+            octaspire_map_get_const(
                 otherValueHashMap,
                 octaspire_dern_value_get_hash(myKey),
                 &myKey);
@@ -53,7 +53,7 @@ int octaspire_dern_helpers_compare_value_hash_maps(
         }
 
         octaspire_dern_value_t const * const otherVal =
-            octaspire_container_hash_map_element_get_value(otherElem);
+            octaspire_map_element_get_value(otherElem);
 
         int const cmp = octaspire_dern_value_compare(myVal, otherVal);
 
@@ -62,7 +62,7 @@ int octaspire_dern_helpers_compare_value_hash_maps(
             return cmp;
         }
 
-        octaspire_container_hash_map_element_const_iterator_next(&iter);
+        octaspire_map_element_const_iterator_next(&iter);
     }
 
     return 0;
@@ -70,7 +70,7 @@ int octaspire_dern_helpers_compare_value_hash_maps(
 
 double octaspire_dern_helpers_atof(
     char const * const str,
-    octaspire_memory_allocator_t * const allocator)
+    octaspire_allocator_t * const allocator)
 {
     octaspire_input_t * input = octaspire_input_new_from_c_string(str, allocator);
     octaspire_helpers_verify_not_null(input);

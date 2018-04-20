@@ -5,12 +5,9 @@
 
 int main(void)
 {
-    octaspire_memory_allocator_t *allocator =
-        octaspire_memory_allocator_new(0);
-
-    octaspire_stdio_t *stdio = octaspire_stdio_new(allocator);
-
-    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(allocator, stdio);
+    octaspire_allocator_t *allocator = octaspire_allocator_new(0);
+    octaspire_stdio_t     *stdio     = octaspire_stdio_new(allocator);
+    octaspire_dern_vm_t   *vm        = octaspire_dern_vm_new(allocator, stdio);
 
     octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -18,7 +15,7 @@ int main(void)
 
     octaspire_stdio_release(stdio);
     octaspire_dern_vm_release(vm);
-    octaspire_memory_allocator_release(allocator);
+    octaspire_allocator_release(allocator);
     return 0;
 }
 

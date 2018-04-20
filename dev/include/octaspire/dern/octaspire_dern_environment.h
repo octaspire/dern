@@ -17,7 +17,7 @@ limitations under the License.
 #ifndef OCTASPIRE_DERN_ENVIRONMENT_H
 #define OCTASPIRE_DERN_ENVIRONMENT_H
 
-#include <octaspire/core/octaspire_container_hash_map.h>
+#include <octaspire/core/octaspire_map.h>
 #include "octaspire/dern/octaspire_dern_value.h"
 
 #ifdef __cplusplus
@@ -28,10 +28,10 @@ struct octaspire_dern_vm_t;
 
 typedef struct octaspire_dern_environment_t
 {
-    octaspire_container_hash_map_t      *bindings;
+    octaspire_map_t      *bindings;
     struct octaspire_dern_value_t       *enclosing;
     struct octaspire_dern_vm_t          *vm;
-    octaspire_memory_allocator_t        *allocator;
+    octaspire_allocator_t        *allocator;
 }
 octaspire_dern_environment_t;
 
@@ -40,12 +40,12 @@ struct octaspire_dern_vm_t;
 octaspire_dern_environment_t *octaspire_dern_environment_new(
     octaspire_dern_value_t *enclosing,
     struct octaspire_dern_vm_t *vm,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 octaspire_dern_environment_t *octaspire_dern_environment_new_copy(
     octaspire_dern_environment_t * const other,
     struct octaspire_dern_vm_t * const vm,
-    octaspire_memory_allocator_t * const allocator);
+    octaspire_allocator_t * const allocator);
 
 void octaspire_dern_environment_release(octaspire_dern_environment_t *self);
 
@@ -64,7 +64,7 @@ bool octaspire_dern_environment_set(
     octaspire_dern_value_t const * const key,
     octaspire_dern_value_t *value);
 
-octaspire_container_utf8_string_t *octaspire_dern_environment_to_string(
+octaspire_string_t *octaspire_dern_environment_to_string(
     octaspire_dern_environment_t const * const self);
 
 bool octaspire_dern_environment_print(
@@ -73,7 +73,7 @@ bool octaspire_dern_environment_print(
 size_t octaspire_dern_environment_get_length(
     octaspire_dern_environment_t const * const self);
 
-octaspire_container_hash_map_element_t *octaspire_dern_environment_get_at_index(
+octaspire_map_element_t *octaspire_dern_environment_get_at_index(
     octaspire_dern_environment_t * const self,
     ptrdiff_t const index);
 

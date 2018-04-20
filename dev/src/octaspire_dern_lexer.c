@@ -22,24 +22,24 @@ limitations under the License.
 #include <stddef.h>
 #include <stdlib.h>
 #include <math.h>
-#include <octaspire/core/octaspire_container_utf8_string.h>
+#include <octaspire/core/octaspire_string.h>
 #include <octaspire/core/octaspire_helpers.h>
 
 struct octaspire_dern_lexer_token_t
 {
-    octaspire_memory_allocator_t          *allocator;
+    octaspire_allocator_t          *allocator;
     octaspire_dern_lexer_token_position_t *line;
     octaspire_dern_lexer_token_position_t *column;
     octaspire_dern_lexer_token_position_t *ucsIndex;
 
     union
     {
-        octaspire_container_utf8_string_t *string;
-        octaspire_container_utf8_string_t *character;
-        octaspire_container_utf8_string_t *comment;
-        octaspire_container_utf8_string_t *symbol;
-        octaspire_container_utf8_string_t *error;
-        octaspire_container_utf8_string_t *moreInputRequired;
+        octaspire_string_t *string;
+        octaspire_string_t *character;
+        octaspire_string_t *comment;
+        octaspire_string_t *symbol;
+        octaspire_string_t *error;
+        octaspire_string_t *moreInputRequired;
         int32_t                            integer;
         double                             real;
     }
@@ -75,56 +75,56 @@ void octaspire_dern_lexer_private_pop_rest_of_line(
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_multiline_comment(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput);
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_left_parenthesis(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput);
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_right_parenthesis(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput);
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_quote(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput);
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_number(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput);
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput);
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput);
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_nil_or_symbol(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput);
@@ -156,9 +156,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
     octaspire_dern_lexer_token_position_t const line,
     octaspire_dern_lexer_token_position_t const column,
     octaspire_dern_lexer_token_position_t const ucsIndex,
-    octaspire_memory_allocator_t *allocator)
+    octaspire_allocator_t *allocator)
 {
-    octaspire_dern_lexer_token_t *self = octaspire_memory_allocator_malloc(
+    octaspire_dern_lexer_token_t *self = octaspire_allocator_malloc(
         allocator,
         sizeof(octaspire_dern_lexer_token_t));
 
@@ -170,13 +170,13 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
     self->allocator = allocator;
 
     self->line =
-        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_lexer_token_position_t));
+        octaspire_allocator_malloc(allocator, sizeof(octaspire_dern_lexer_token_position_t));
 
     self->column =
-        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_lexer_token_position_t));
+        octaspire_allocator_malloc(allocator, sizeof(octaspire_dern_lexer_token_position_t));
 
     self->ucsIndex =
-        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_lexer_token_position_t));
+        octaspire_allocator_malloc(allocator, sizeof(octaspire_dern_lexer_token_position_t));
 
     if (!self->line || !self->column || !self->ucsIndex)
     {
@@ -222,7 +222,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_STRING:
         {
-            self->value.string = octaspire_container_utf8_string_new(
+            self->value.string = octaspire_string_new(
                 (char const * const)value,
                 allocator);
 
@@ -234,14 +234,14 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
             }
 
             octaspire_helpers_verify_true(
-                octaspire_container_utf8_string_get_error_status(self->value.string) ==
-                OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
+                octaspire_string_get_error_status(self->value.string) ==
+                OCTASPIRE_STRING_ERROR_STATUS_OK);
         }
         break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT:
         {
-            self->value.comment = octaspire_container_utf8_string_new(
+            self->value.comment = octaspire_string_new(
                 (char const * const)value,
                 allocator);
 
@@ -253,14 +253,14 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
             }
 
             octaspire_helpers_verify_true(
-                octaspire_container_utf8_string_get_error_status(self->value.comment) ==
-                OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
+                octaspire_string_get_error_status(self->value.comment) ==
+                OCTASPIRE_STRING_ERROR_STATUS_OK);
         }
         break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED:
         {
-            self->value.moreInputRequired = octaspire_container_utf8_string_new(
+            self->value.moreInputRequired = octaspire_string_new(
                 (char const * const)value,
                 allocator);
 
@@ -272,14 +272,14 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
             }
 
             octaspire_helpers_verify_true(
-                octaspire_container_utf8_string_get_error_status(self->value.moreInputRequired) ==
-                OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
+                octaspire_string_get_error_status(self->value.moreInputRequired) ==
+                OCTASPIRE_STRING_ERROR_STATUS_OK);
         }
         break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER:
         {
-            self->value.character = octaspire_container_utf8_string_new(
+            self->value.character = octaspire_string_new(
                 (char const * const)value,
                 allocator);
 
@@ -291,14 +291,14 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
             }
 
             octaspire_helpers_verify_true(
-                octaspire_container_utf8_string_get_error_status(self->value.character) ==
-                OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
+                octaspire_string_get_error_status(self->value.character) ==
+                OCTASPIRE_STRING_ERROR_STATUS_OK);
         }
         break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SYMBOL:
         {
-            self->value.symbol = octaspire_container_utf8_string_new(
+            self->value.symbol = octaspire_string_new(
                 (char const * const)value,
                 allocator);
 
@@ -310,14 +310,14 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
             }
 
             octaspire_helpers_verify_true(
-                octaspire_container_utf8_string_get_error_status(self->value.symbol) ==
-                OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
+                octaspire_string_get_error_status(self->value.symbol) ==
+                OCTASPIRE_STRING_ERROR_STATUS_OK);
         }
         break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR:
         {
-            self->value.error = octaspire_container_utf8_string_new(
+            self->value.error = octaspire_string_new(
                 (char const * const)value,
                 allocator);
 
@@ -329,8 +329,8 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
             }
 
             octaspire_helpers_verify_true(
-                octaspire_container_utf8_string_get_error_status(self->value.error) ==
-                OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK);
+                octaspire_string_get_error_status(self->value.error) ==
+                OCTASPIRE_STRING_ERROR_STATUS_OK);
         }
         break;
     }
@@ -343,13 +343,13 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new_format(
     octaspire_dern_lexer_token_position_t const line,
     octaspire_dern_lexer_token_position_t const column,
     octaspire_dern_lexer_token_position_t const ucsIndex,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     void const * const format,
     ...)
 {
     va_list arguments;
     va_start(arguments, format);
-    octaspire_container_utf8_string_t *str = octaspire_container_utf8_string_new_vformat(
+    octaspire_string_t *str = octaspire_string_new_vformat(
         allocator,
         format,
         arguments);
@@ -361,13 +361,13 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new_format(
 
     octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new(
         typeTag,
-        octaspire_container_utf8_string_get_c_string(str),
+        octaspire_string_get_c_string(str),
         line,
         column,
         ucsIndex,
         allocator);
 
-    octaspire_container_utf8_string_release(str);
+    octaspire_string_release(str);
     str = 0;
 
     return result;
@@ -386,37 +386,37 @@ void octaspire_dern_lexer_token_release(
     {
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_STRING:
         {
-            octaspire_container_utf8_string_release(self->value.string);
+            octaspire_string_release(self->value.string);
         }
         break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER:
         {
-            octaspire_container_utf8_string_release(self->value.character);
+            octaspire_string_release(self->value.character);
         }
         break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SYMBOL:
         {
-            octaspire_container_utf8_string_release(self->value.symbol);
+            octaspire_string_release(self->value.symbol);
         }
         break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR:
         {
-            octaspire_container_utf8_string_release(self->value.error);
+            octaspire_string_release(self->value.error);
         }
         break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED:
         {
-            octaspire_container_utf8_string_release(self->value.moreInputRequired);
+            octaspire_string_release(self->value.moreInputRequired);
         }
         break;
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT:
         {
-            octaspire_container_utf8_string_release(self->value.comment);
+            octaspire_string_release(self->value.comment);
         }
         break;
 
@@ -434,16 +434,16 @@ void octaspire_dern_lexer_token_release(
         break;
     }
 
-    octaspire_memory_allocator_free(self->allocator, self->line);
+    octaspire_allocator_free(self->allocator, self->line);
     self->line = 0;
 
-    octaspire_memory_allocator_free(self->allocator, self->column);
+    octaspire_allocator_free(self->allocator, self->column);
     self->column = 0;
 
-    octaspire_memory_allocator_free(self->allocator, self->ucsIndex);
+    octaspire_allocator_free(self->allocator, self->ucsIndex);
     self->ucsIndex = 0;
 
-    octaspire_memory_allocator_free(self->allocator, self);
+    octaspire_allocator_free(self->allocator, self);
 }
 
 octaspire_dern_lexer_token_tag_t octaspire_dern_lexer_token_get_type_tag(
@@ -469,19 +469,19 @@ char const *octaspire_dern_lexer_token_get_type_tag_as_c_string(
 char const *octaspire_dern_lexer_token_get_string_value_as_c_string(
     octaspire_dern_lexer_token_t const * const self)
 {
-    return octaspire_container_utf8_string_get_c_string(self->value.string);
+    return octaspire_string_get_c_string(self->value.string);
 }
 
 char const *octaspire_dern_lexer_token_get_character_value_as_c_string(
     octaspire_dern_lexer_token_t const * const self)
 {
-    return octaspire_container_utf8_string_get_c_string(self->value.character);
+    return octaspire_string_get_c_string(self->value.character);
 }
 
 char const *octaspire_dern_lexer_token_get_symbol_value_as_c_string(
     octaspire_dern_lexer_token_t const * const self)
 {
-    return octaspire_container_utf8_string_get_c_string(self->value.symbol);
+    return octaspire_string_get_c_string(self->value.symbol);
 }
 
 int32_t octaspire_dern_lexer_token_get_integer_value(
@@ -499,13 +499,13 @@ double octaspire_dern_lexer_token_get_real_value(
 char const *octaspire_dern_lexer_token_get_error_value_as_c_string(
     octaspire_dern_lexer_token_t const * const self)
 {
-    return octaspire_container_utf8_string_get_c_string(self->value.error);
+    return octaspire_string_get_c_string(self->value.error);
 }
 
 char const *octaspire_dern_lexer_token_get_multiline_comment_value_as_c_string(
     octaspire_dern_lexer_token_t const * const self)
 {
-    return octaspire_container_utf8_string_get_c_string(self->value.comment);
+    return octaspire_string_get_c_string(self->value.comment);
 }
 
 octaspire_dern_lexer_token_position_t *octaspire_dern_lexer_token_get_position_line(
@@ -559,33 +559,33 @@ bool octaspire_dern_lexer_token_is_equal(
     {
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_STRING:
         {
-            return octaspire_container_utf8_string_is_equal(
+            return octaspire_string_is_equal(
                 self->value.string,
                 other->value.string);
         }
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER:
         {
-            return octaspire_container_utf8_string_is_equal(
+            return octaspire_string_is_equal(
                 self->value.character,
                 other->value.character);
         }
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SYMBOL:
         {
-            return octaspire_container_utf8_string_is_equal(
+            return octaspire_string_is_equal(
                 self->value.symbol,
                 other->value.symbol);
         }
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR:
         {
-            return octaspire_container_utf8_string_is_equal(self->value.error, other->value.error);
+            return octaspire_string_is_equal(self->value.error, other->value.error);
         }
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED:
         {
-            return octaspire_container_utf8_string_is_equal(
+            return octaspire_string_is_equal(
                 self->value.moreInputRequired,
                 other->value.moreInputRequired);
         }
@@ -605,7 +605,7 @@ bool octaspire_dern_lexer_token_is_equal(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT:
         {
-            return octaspire_container_utf8_string_is_equal(
+            return octaspire_string_is_equal(
                 self->value.comment,
                 other->value.comment);
         }
@@ -625,12 +625,12 @@ bool octaspire_dern_lexer_token_is_equal(
     return false;
 }
 
-octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
+octaspire_string_t *octaspire_dern_lexer_token_to_string(
     octaspire_dern_lexer_token_t const * const self)
 {
     assert(self);
 
-    octaspire_container_utf8_string_t *result = octaspire_container_utf8_string_new_format(
+    octaspire_string_t *result = octaspire_string_new_format(
         (void*)self->allocator,
         "token: line=%zu,%zu column=%zu,%zu ucsIndex=%zu,%zu type=%s value=",
         self->line->start, self->line->end,
@@ -642,7 +642,7 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
     {
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_LPAREN:
         {
-            if (!octaspire_container_utf8_string_concatenate_c_string(result, "left parenthesis"))
+            if (!octaspire_string_concatenate_c_string(result, "left parenthesis"))
             {
                 return 0;
             }
@@ -652,7 +652,7 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN:
         {
-            if (!octaspire_container_utf8_string_concatenate_c_string(result, "right parenthesis"))
+            if (!octaspire_string_concatenate_c_string(result, "right parenthesis"))
             {
                 return 0;
             }
@@ -662,7 +662,7 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_QUOTE:
         {
-            if (!octaspire_container_utf8_string_concatenate_c_string(result, "quote"))
+            if (!octaspire_string_concatenate_c_string(result, "quote"))
             {
                 return 0;
             }
@@ -672,7 +672,7 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_TRUE:
         {
-            if (!octaspire_container_utf8_string_concatenate_c_string(result, "true"))
+            if (!octaspire_string_concatenate_c_string(result, "true"))
             {
                 return 0;
             }
@@ -682,7 +682,7 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_FALSE:
         {
-            if (!octaspire_container_utf8_string_concatenate_c_string(result, "false"))
+            if (!octaspire_string_concatenate_c_string(result, "false"))
             {
                 return 0;
             }
@@ -692,7 +692,7 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_NIL:
         {
-            if (!octaspire_container_utf8_string_concatenate_c_string(result, "nil"))
+            if (!octaspire_string_concatenate_c_string(result, "nil"))
             {
                 return 0;
             }
@@ -702,7 +702,7 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER:
         {
-            if (!octaspire_container_utf8_string_concatenate_format(
+            if (!octaspire_string_concatenate_format(
                 result,
                 "integer %" PRId32 "",
                 self->value.integer))
@@ -715,7 +715,7 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_REAL:
         {
-            if (!octaspire_container_utf8_string_concatenate_format(
+            if (!octaspire_string_concatenate_format(
                 result,
                 "real %g",
                 self->value.real))
@@ -728,10 +728,10 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_STRING:
         {
-            if (!octaspire_container_utf8_string_concatenate_format(
+            if (!octaspire_string_concatenate_format(
                 result,
                 "[%s]",
-                octaspire_container_utf8_string_get_c_string(self->value.string)))
+                octaspire_string_get_c_string(self->value.string)))
             {
                 return 0;
             }
@@ -741,55 +741,55 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER:
         {
-            if (octaspire_container_utf8_string_is_equal_to_c_string(self->value.character, "|"))
+            if (octaspire_string_is_equal_to_c_string(self->value.character, "|"))
             {
-                if (!octaspire_container_utf8_string_concatenate_c_string(result, "|bar|"))
+                if (!octaspire_string_concatenate_c_string(result, "|bar|"))
                 {
                     return 0;
                 }
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(
+            else if (octaspire_string_is_equal_to_c_string(
                 self->value.character,
                 "\n"))
             {
-                if (!octaspire_container_utf8_string_concatenate_c_string(result, "|newline|"))
+                if (!octaspire_string_concatenate_c_string(result, "|newline|"))
                 {
                     return 0;
                 }
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(
+            else if (octaspire_string_is_equal_to_c_string(
                 self->value.character,
                 "\t"))
             {
-                if (!octaspire_container_utf8_string_concatenate_c_string(result, "|tab|"))
+                if (!octaspire_string_concatenate_c_string(result, "|tab|"))
                 {
                     return 0;
                 }
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(
+            else if (octaspire_string_is_equal_to_c_string(
                 self->value.character,
                 "["))
             {
-                if (!octaspire_container_utf8_string_concatenate_c_string(result, "|string-start|"))
+                if (!octaspire_string_concatenate_c_string(result, "|string-start|"))
                 {
                     return 0;
                 }
             }
-            else if (octaspire_container_utf8_string_is_equal_to_c_string(
+            else if (octaspire_string_is_equal_to_c_string(
                 self->value.character,
                 "]"))
             {
-                if (!octaspire_container_utf8_string_concatenate_c_string(result, "|string-end|"))
+                if (!octaspire_string_concatenate_c_string(result, "|string-end|"))
                 {
                     return 0;
                 }
             }
             else
             {
-                if (!octaspire_container_utf8_string_concatenate_format(
+                if (!octaspire_string_concatenate_format(
                             result,
                             "|%s|",
-                            octaspire_container_utf8_string_get_c_string(self->value.character)))
+                            octaspire_string_get_c_string(self->value.character)))
                 {
                     return 0;
                 }
@@ -800,10 +800,10 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SYMBOL:
         {
-            if (!octaspire_container_utf8_string_concatenate_format(
+            if (!octaspire_string_concatenate_format(
                 result,
                 "%s",
-                octaspire_container_utf8_string_get_c_string(self->value.symbol)))
+                octaspire_string_get_c_string(self->value.symbol)))
             {
                 return 0;
             }
@@ -813,10 +813,10 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR:
         {
-            if (!octaspire_container_utf8_string_concatenate_format(
+            if (!octaspire_string_concatenate_format(
                 result,
                 "error: %s",
-                octaspire_container_utf8_string_get_c_string(self->value.error)))
+                octaspire_string_get_c_string(self->value.error)))
             {
                 return 0;
             }
@@ -826,10 +826,10 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT:
         {
-            if (!octaspire_container_utf8_string_concatenate_format(
+            if (!octaspire_string_concatenate_format(
                 result,
                 "%s",
-                octaspire_container_utf8_string_get_c_string(self->value.comment)))
+                octaspire_string_get_c_string(self->value.comment)))
             {
                 return 0;
             }
@@ -839,10 +839,10 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED:
         {
-            if (!octaspire_container_utf8_string_concatenate_format(
+            if (!octaspire_string_concatenate_format(
                 result,
                 "more input required: %s",
-                octaspire_container_utf8_string_get_c_string(self->value.moreInputRequired)))
+                octaspire_string_get_c_string(self->value.moreInputRequired)))
             {
                 return 0;
             }
@@ -851,7 +851,7 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
         }
     }
 
-    if (!octaspire_container_utf8_string_concatenate_format(
+    if (!octaspire_string_concatenate_format(
         result,
         "unknown token type %i",
         (int)self->typeTag))
@@ -865,9 +865,9 @@ octaspire_container_utf8_string_t *octaspire_dern_lexer_token_to_string(
 void octaspire_dern_lexer_token_print(
     octaspire_dern_lexer_token_t const * const self)
 {
-    octaspire_container_utf8_string_t *str = octaspire_dern_lexer_token_to_string(self);
-    printf("%s\n", octaspire_container_utf8_string_get_c_string(str));
-    octaspire_container_utf8_string_release(str);
+    octaspire_string_t *str = octaspire_dern_lexer_token_to_string(self);
+    printf("%s\n", octaspire_string_get_c_string(str));
+    octaspire_string_release(str);
     str = 0;
 }
 
@@ -914,7 +914,7 @@ void octaspire_dern_lexer_private_pop_rest_of_line(
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_multiline_comment(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput)
@@ -965,8 +965,8 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_multiline_comment
         abort();
     }
 
-    octaspire_container_utf8_string_t *commentStr =
-        octaspire_container_utf8_string_new("", allocator);
+    octaspire_string_t *commentStr =
+        octaspire_string_new("", allocator);
 
     while (octaspire_input_is_good(input))
     {
@@ -981,7 +981,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_multiline_comment
         {
             if (!octaspire_input_is_good(input))
             {
-                octaspire_container_utf8_string_release(commentStr);
+                octaspire_string_release(commentStr);
                 commentStr = 0;
 
                 size_t const endIndexInInput  = octaspire_input_get_ucs_character_index(input) - 1;
@@ -1007,7 +1007,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_multiline_comment
                 size_t const endIndexInInput  = octaspire_input_get_ucs_character_index(input);
                 octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT,
-                    octaspire_container_utf8_string_get_c_string(commentStr),
+                    octaspire_string_get_c_string(commentStr),
                     octaspire_dern_lexer_token_position_init(
                         startLine,
                         octaspire_input_get_line_number(input)),
@@ -1025,23 +1025,23 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_multiline_comment
                     abort();
                 }
 
-                octaspire_container_utf8_string_release(commentStr);
+                octaspire_string_release(commentStr);
                 commentStr = 0;
 
                 return result;
             }
             else
             {
-                octaspire_container_utf8_string_push_back_ucs_character(commentStr, currentChar);
+                octaspire_string_push_back_ucs_character(commentStr, currentChar);
             }
         }
         else
         {
-            octaspire_container_utf8_string_push_back_ucs_character(commentStr, currentChar);
+            octaspire_string_push_back_ucs_character(commentStr, currentChar);
         }
     }
 
-    octaspire_container_utf8_string_release(commentStr);
+    octaspire_string_release(commentStr);
     commentStr = 0;
 
     size_t const endIndexInInput  = octaspire_input_get_ucs_character_index(input) - 1;
@@ -1076,7 +1076,7 @@ bool octaspire_dern_lexer_private_is_delimeter(uint32_t const c)
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_left_parenthesis(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput)
@@ -1148,7 +1148,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_left_parenthesis(
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_right_parenthesis(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput)
@@ -1220,7 +1220,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_right_parenthesis
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_quote(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput)
@@ -1292,7 +1292,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_quote(
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_number(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput)
@@ -1520,7 +1520,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput)
@@ -1531,8 +1531,8 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
 
     size_t   endIndexInInput = startIndexInInput;
 
-    octaspire_container_utf8_string_t *tmpStr =
-        octaspire_container_utf8_string_new("", allocator);
+    octaspire_string_t *tmpStr =
+        octaspire_string_new("", allocator);
 
     if (!tmpStr)
     {
@@ -1564,7 +1564,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
             }
             else
             {
-                octaspire_container_utf8_string_release(tmpStr);
+                octaspire_string_release(tmpStr);
                 tmpStr = 0;
 
                 return octaspire_dern_lexer_token_new(
@@ -1588,7 +1588,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
             }
             else
             {
-                octaspire_container_utf8_string_release(tmpStr);
+                octaspire_string_release(tmpStr);
                 tmpStr = 0;
 
                 return octaspire_dern_lexer_token_new(
@@ -1622,7 +1622,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
 
                 if (!charToken)
                 {
-                    octaspire_container_utf8_string_release(tmpStr);
+                    octaspire_string_release(tmpStr);
                     tmpStr = 0;
 
                     return octaspire_dern_lexer_token_new(
@@ -1642,7 +1642,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
                 if (octaspire_dern_lexer_token_get_type_tag(charToken) ==
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR)
                 {
-                    octaspire_container_utf8_string_release(tmpStr);
+                    octaspire_string_release(tmpStr);
                     tmpStr = 0;
 
                     octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new_format(
@@ -1667,13 +1667,13 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
                 }
 
                 // TODO check that char available
-                c = octaspire_container_utf8_string_get_ucs_character_at_index(
+                c = octaspire_string_get_ucs_character_at_index(
                     charToken->value.character,
                     0);
 
-                if (!octaspire_container_utf8_string_push_back_ucs_character(tmpStr, c))
+                if (!octaspire_string_push_back_ucs_character(tmpStr, c))
                 {
-                    octaspire_container_utf8_string_release(tmpStr);
+                    octaspire_string_release(tmpStr);
                     tmpStr = 0;
 
                     octaspire_dern_lexer_token_release(charToken);
@@ -1702,9 +1702,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(
             }
             else
             {
-                if (!octaspire_container_utf8_string_push_back_ucs_character(tmpStr, c))
+                if (!octaspire_string_push_back_ucs_character(tmpStr, c))
                 {
-                    octaspire_container_utf8_string_release(tmpStr);
+                    octaspire_string_release(tmpStr);
                     tmpStr = 0;
 
                     return octaspire_dern_lexer_token_new(
@@ -1735,7 +1735,7 @@ loopEnd:
 
     if (!lastDelimiterRead)
     {
-        octaspire_container_utf8_string_release(tmpStr);
+        octaspire_string_release(tmpStr);
         tmpStr = 0;
 
         if (!octaspire_input_is_good(input))
@@ -1758,7 +1758,7 @@ loopEnd:
 
     octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_STRING,
-        octaspire_container_utf8_string_get_c_string(tmpStr),
+        octaspire_string_get_c_string(tmpStr),
         octaspire_dern_lexer_token_position_init(
             startLine,
             octaspire_input_get_line_number(input)),
@@ -1770,7 +1770,7 @@ loopEnd:
             endIndexInInput),
         allocator);
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     return result;
@@ -1778,7 +1778,7 @@ loopEnd:
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput)
@@ -1789,8 +1789,8 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
 
     size_t   endIndexInInput = startIndexInInput;
 
-    octaspire_container_utf8_string_t *tmpStr =
-        octaspire_container_utf8_string_new("", allocator);
+    octaspire_string_t *tmpStr =
+        octaspire_string_new("", allocator);
 
     if (!tmpStr)
     {
@@ -1834,7 +1834,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
             }
             else
             {
-                octaspire_container_utf8_string_release(tmpStr);
+                octaspire_string_release(tmpStr);
                 tmpStr = 0;
 
                 return octaspire_dern_lexer_token_new(
@@ -1858,9 +1858,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
             }
             else
             {
-                if (!octaspire_container_utf8_string_push_back_ucs_character(tmpStr, c))
+                if (!octaspire_string_push_back_ucs_character(tmpStr, c))
                 {
-                    octaspire_container_utf8_string_release(tmpStr);
+                    octaspire_string_release(tmpStr);
                     tmpStr = 0;
 
                     return octaspire_dern_lexer_token_new(
@@ -1890,7 +1890,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
 
     if (!lastDelimiterRead)
     {
-        octaspire_container_utf8_string_release(tmpStr);
+        octaspire_string_release(tmpStr);
         tmpStr = 0;
 
         if (!octaspire_input_is_good(input))
@@ -1911,11 +1911,11 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
             allocator);
     }
 
-    if (octaspire_container_utf8_string_get_length_in_ucs_characters(tmpStr) > 1)
+    if (octaspire_string_get_length_in_ucs_characters(tmpStr) > 1)
     {
-        if (octaspire_container_utf8_string_is_equal_to_c_string(tmpStr, "bar"))
+        if (octaspire_string_is_equal_to_c_string(tmpStr, "bar"))
         {
-            octaspire_container_utf8_string_release(tmpStr);
+            octaspire_string_release(tmpStr);
             tmpStr = 0;
 
             return octaspire_dern_lexer_token_new(
@@ -1932,9 +1932,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
                     endIndexInInput),
                 allocator);
         }
-        else if (octaspire_container_utf8_string_is_equal_to_c_string(tmpStr, "newline"))
+        else if (octaspire_string_is_equal_to_c_string(tmpStr, "newline"))
         {
-            octaspire_container_utf8_string_release(tmpStr);
+            octaspire_string_release(tmpStr);
             tmpStr = 0;
 
             return octaspire_dern_lexer_token_new(
@@ -1951,9 +1951,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
                     endIndexInInput),
                 allocator);
         }
-        else if (octaspire_container_utf8_string_is_equal_to_c_string(tmpStr, "tab"))
+        else if (octaspire_string_is_equal_to_c_string(tmpStr, "tab"))
         {
-            octaspire_container_utf8_string_release(tmpStr);
+            octaspire_string_release(tmpStr);
             tmpStr = 0;
 
             return octaspire_dern_lexer_token_new(
@@ -1970,9 +1970,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
                     endIndexInInput),
                 allocator);
         }
-        else if (octaspire_container_utf8_string_is_equal_to_c_string(tmpStr, "string-start"))
+        else if (octaspire_string_is_equal_to_c_string(tmpStr, "string-start"))
         {
-            octaspire_container_utf8_string_release(tmpStr);
+            octaspire_string_release(tmpStr);
             tmpStr = 0;
 
             return octaspire_dern_lexer_token_new(
@@ -1989,9 +1989,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
                     endIndexInInput),
                 allocator);
         }
-        else if (octaspire_container_utf8_string_is_equal_to_c_string(tmpStr, "string-end"))
+        else if (octaspire_string_is_equal_to_c_string(tmpStr, "string-end"))
         {
-            octaspire_container_utf8_string_release(tmpStr);
+            octaspire_string_release(tmpStr);
             tmpStr = 0;
 
             return octaspire_dern_lexer_token_new(
@@ -2010,11 +2010,11 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
         }
         else if (
             strspn(
-                octaspire_container_utf8_string_get_c_string(tmpStr),
+                octaspire_string_get_c_string(tmpStr),
                 "0123456789abcdefABCDEF") ==
-                    octaspire_container_utf8_string_get_length_in_ucs_characters(tmpStr))
+                    octaspire_string_get_length_in_ucs_characters(tmpStr))
         {
-            if (octaspire_container_utf8_string_get_length_in_ucs_characters(tmpStr) > 8)
+            if (octaspire_string_get_length_in_ucs_characters(tmpStr) > 8)
             {
                 octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new_format(
                     OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
@@ -2028,29 +2028,29 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
                     allocator,
                     "Number of hex digits (%zu) in character definition may not be larger "
                     "than eight",
-                    octaspire_container_utf8_string_get_length_in_ucs_characters(tmpStr));
+                    octaspire_string_get_length_in_ucs_characters(tmpStr));
 
-                octaspire_container_utf8_string_release(tmpStr);
+                octaspire_string_release(tmpStr);
                 tmpStr = 0;
 
                 return result;
             }
 
-            octaspire_container_utf8_string_t *unicodeChar =
-                octaspire_container_utf8_string_new("", allocator);
+            octaspire_string_t *unicodeChar =
+                octaspire_string_new("", allocator);
 
-            if (!octaspire_container_utf8_string_push_back_ucs_character(
+            if (!octaspire_string_push_back_ucs_character(
                 unicodeChar,
                 (uint32_t)strtol(
-                    octaspire_container_utf8_string_get_c_string(tmpStr),
+                    octaspire_string_get_c_string(tmpStr),
                     0,
                     16)))
             {
                 abort();
             }
 
-            if (octaspire_container_utf8_string_get_error_status(unicodeChar) !=
-                OCTASPIRE_CONTAINER_UTF8_STRING_ERROR_STATUS_OK)
+            if (octaspire_string_get_error_status(unicodeChar) !=
+                OCTASPIRE_STRING_ERROR_STATUS_OK)
             {
                 abort();
             }
@@ -2059,7 +2059,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
 
             octaspire_dern_lexer_token_t * result = octaspire_dern_lexer_token_new(
                 OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER,
-                octaspire_container_utf8_string_get_c_string(unicodeChar),
+                octaspire_string_get_c_string(unicodeChar),
                 octaspire_dern_lexer_token_position_init(
                     startLine,
                     octaspire_input_get_line_number(input)),
@@ -2071,10 +2071,10 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
                     endIndexInInput),
                 allocator);
 
-            octaspire_container_utf8_string_release(unicodeChar);
+            octaspire_string_release(unicodeChar);
             unicodeChar = 0;
 
-            octaspire_container_utf8_string_release(tmpStr);
+            octaspire_string_release(tmpStr);
             tmpStr = 0;
 
             return result;
@@ -2092,16 +2092,16 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
                 octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
                 allocator,
                 "Unknown character constant |%s|",
-                octaspire_container_utf8_string_get_c_string(tmpStr));
+                octaspire_string_get_c_string(tmpStr));
 
-            octaspire_container_utf8_string_release(tmpStr);
+            octaspire_string_release(tmpStr);
             tmpStr = 0;
 
             return result;
         }
     }
 
-    if (octaspire_container_utf8_string_is_empty(tmpStr))
+    if (octaspire_string_is_empty(tmpStr))
     {
         octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
@@ -2115,7 +2115,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
             octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
             allocator);
 
-        octaspire_container_utf8_string_release(tmpStr);
+        octaspire_string_release(tmpStr);
         tmpStr = 0;
 
         return result;
@@ -2123,7 +2123,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
 
     octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_CHARACTER,
-        octaspire_container_utf8_string_get_c_string(tmpStr),
+        octaspire_string_get_c_string(tmpStr),
         octaspire_dern_lexer_token_position_init(
             startLine,
             octaspire_input_get_line_number(input)),
@@ -2135,7 +2135,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
             endIndexInInput),
         allocator);
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     return result;
@@ -2143,7 +2143,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_character(
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_nil_or_symbol(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator,
+    octaspire_allocator_t *allocator,
     size_t const startLine,
     size_t const startColumn,
     size_t const startIndexInInput)
@@ -2153,8 +2153,8 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_
 
     size_t   endIndexInInput = startIndexInInput;
 
-    octaspire_container_utf8_string_t *tmpStr =
-        octaspire_container_utf8_string_new("", allocator);
+    octaspire_string_t *tmpStr =
+        octaspire_string_new("", allocator);
 
     if (!tmpStr)
     {
@@ -2183,9 +2183,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_
             break;
         }
 
-        if (!octaspire_container_utf8_string_push_back_ucs_character(tmpStr, c))
+        if (!octaspire_string_push_back_ucs_character(tmpStr, c))
         {
-            octaspire_container_utf8_string_release(tmpStr);
+            octaspire_string_release(tmpStr);
             tmpStr = 0;
 
             return octaspire_dern_lexer_token_new(
@@ -2209,9 +2209,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_
         ++charsRead;
     }
 
-    if (octaspire_container_utf8_string_is_empty(tmpStr))
+    if (octaspire_string_is_empty(tmpStr))
     {
-            octaspire_container_utf8_string_release(tmpStr);
+            octaspire_string_release(tmpStr);
             tmpStr = 0;
 
             return octaspire_dern_lexer_token_new(
@@ -2229,7 +2229,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_
 
     octaspire_dern_lexer_token_t *result = 0;
 
-    if (octaspire_container_utf8_string_is_equal_to_c_string(tmpStr, "true"))
+    if (octaspire_string_is_equal_to_c_string(tmpStr, "true"))
     {
         result = octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_TRUE,
@@ -2245,7 +2245,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_
                 endIndexInInput),
             allocator);
     }
-    else if (octaspire_container_utf8_string_is_equal_to_c_string(tmpStr, "false"))
+    else if (octaspire_string_is_equal_to_c_string(tmpStr, "false"))
     {
         result = octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_FALSE,
@@ -2261,7 +2261,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_
                 endIndexInInput),
             allocator);
     }
-    else if (octaspire_container_utf8_string_is_equal_to_c_string(tmpStr, "nil"))
+    else if (octaspire_string_is_equal_to_c_string(tmpStr, "nil"))
     {
         result = octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_NIL,
@@ -2281,7 +2281,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_
     {
         result = octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_SYMBOL,
-            octaspire_container_utf8_string_get_c_string(tmpStr),
+            octaspire_string_get_c_string(tmpStr),
             octaspire_dern_lexer_token_position_init(
                 startLine,
                 octaspire_input_get_line_number(input)),
@@ -2294,7 +2294,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_
             allocator);
     }
 
-    octaspire_container_utf8_string_release(tmpStr);
+    octaspire_string_release(tmpStr);
     tmpStr = 0;
 
     return result;
@@ -2303,7 +2303,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_true_or_false_or_
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
     octaspire_input_t *input,
-    octaspire_memory_allocator_t *allocator)
+    octaspire_allocator_t *allocator)
 {
     while (octaspire_input_is_good(input))
     {

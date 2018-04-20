@@ -605,12 +605,12 @@ typedef struct octaspire_dern_ease_t
     double                              a;
     double                              p;
     octaspire_dern_value_t *            targetValue;
-    octaspire_container_utf8_string_t * evalOnDone;
+    octaspire_string_t * evalOnDone;
     bool                                isDone;
 }
 octaspire_dern_ease_t;
 
-static octaspire_container_vector_t * dern_easing_private_easings = 0;
+static octaspire_vector_t * dern_easing_private_easings = 0;
 
 
 
@@ -756,7 +756,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -797,7 +797,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -838,7 +838,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -879,7 +879,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -920,7 +920,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -961,7 +961,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1002,7 +1002,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1043,7 +1043,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1084,7 +1084,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1125,7 +1125,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1166,7 +1166,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1207,7 +1207,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1248,7 +1248,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1289,7 +1289,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1330,7 +1330,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1371,7 +1371,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1413,7 +1413,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1454,7 +1454,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1495,7 +1495,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1536,7 +1536,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1577,7 +1577,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1618,7 +1618,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1659,7 +1659,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1736,7 +1736,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1813,7 +1813,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1890,7 +1890,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -1948,7 +1948,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -2006,7 +2006,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -2064,7 +2064,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -2105,7 +2105,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -2146,7 +2146,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -2187,7 +2187,7 @@ octaspire_dern_value_t *dern_easing_add(
                     numArgs);
             }
 
-            ease.evalOnDone = octaspire_container_utf8_string_new(
+            ease.evalOnDone = octaspire_string_new(
                 octaspire_dern_value_as_text_get_c_string(evalOnDoneVal),
                 octaspire_dern_vm_get_allocator(vm));
 
@@ -2203,7 +2203,7 @@ octaspire_dern_value_t *dern_easing_add(
             octaspire_dern_value_as_symbol_get_c_string(typeNameArg));
     }
 
-    if (!octaspire_container_vector_push_back_element(dern_easing_private_easings, &ease))
+    if (!octaspire_vector_push_back_element(dern_easing_private_easings, &ease))
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_from_c_string(
@@ -2259,10 +2259,10 @@ octaspire_dern_value_t *dern_easing_update(
     dt = octaspire_dern_value_as_number_get_value(firstArg);
 
     size_t i = 0;
-    while (i < octaspire_container_vector_get_length(dern_easing_private_easings))
+    while (i < octaspire_vector_get_length(dern_easing_private_easings))
     {
         octaspire_dern_ease_t * const ease =
-            (octaspire_dern_ease_t*)octaspire_container_vector_get_element_at(
+            (octaspire_dern_ease_t*)octaspire_vector_get_element_at(
                 dern_easing_private_easings,
                 i);
 
@@ -2281,7 +2281,7 @@ octaspire_dern_value_t *dern_easing_update(
                 octaspire_dern_value_t const * const result =
                     octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
                         vm,
-                        octaspire_container_utf8_string_get_c_string(ease->evalOnDone));
+                        octaspire_string_get_c_string(ease->evalOnDone));
 
                 if (result && octaspire_dern_value_is_error(result))
                 {
@@ -2507,10 +2507,10 @@ octaspire_dern_value_t *dern_easing_update(
     }
 
     i = 0;
-    while (i < octaspire_container_vector_get_length(dern_easing_private_easings))
+    while (i < octaspire_vector_get_length(dern_easing_private_easings))
     {
         octaspire_dern_ease_t * const ease =
-            (octaspire_dern_ease_t*)octaspire_container_vector_get_element_at(
+            (octaspire_dern_ease_t*)octaspire_vector_get_element_at(
                 dern_easing_private_easings,
                 i);
 
@@ -2518,10 +2518,10 @@ octaspire_dern_value_t *dern_easing_update(
 
         if (ease->isDone)
         {
-            octaspire_container_utf8_string_release(ease->evalOnDone);
+            octaspire_string_release(ease->evalOnDone);
             ease->evalOnDone = 0;
 
-            octaspire_container_vector_remove_element_at(dern_easing_private_easings, i);
+            octaspire_vector_remove_element_at(dern_easing_private_easings, i);
         }
         else
         {
@@ -2558,7 +2558,7 @@ octaspire_dern_value_t *dern_easing_has_any(
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(
         vm,
-        !octaspire_container_vector_is_empty(dern_easing_private_easings));
+        !octaspire_vector_is_empty(dern_easing_private_easings));
 }
 
 bool dern_easing_init(
@@ -2567,7 +2567,7 @@ bool dern_easing_init(
 {
     octaspire_helpers_verify_true(vm && targetEnv);
 
-    dern_easing_private_easings = octaspire_container_vector_new(
+    dern_easing_private_easings = octaspire_vector_new(
         sizeof(octaspire_dern_ease_t),
         false,
         0,
@@ -2623,10 +2623,10 @@ bool dern_easing_mark_all(
 {
     octaspire_helpers_verify_true(vm && targetEnv);
 
-    for (size_t i = 0; i < octaspire_container_vector_get_length(dern_easing_private_easings); ++i)
+    for (size_t i = 0; i < octaspire_vector_get_length(dern_easing_private_easings); ++i)
     {
         octaspire_dern_ease_t * const ease =
-            (octaspire_dern_ease_t*)octaspire_container_vector_get_element_at(dern_easing_private_easings, i);
+            (octaspire_dern_ease_t*)octaspire_vector_get_element_at(dern_easing_private_easings, i);
 
         octaspire_helpers_verify_not_null(ease);
         octaspire_helpers_verify_not_null(ease->targetValue);
@@ -2646,7 +2646,7 @@ bool dern_easing_clean(
 {
     octaspire_helpers_verify_true(vm && targetEnv);
 
-    octaspire_container_vector_release(dern_easing_private_easings);
+    octaspire_vector_release(dern_easing_private_easings);
     dern_easing_private_easings = 0;
 
     return true;

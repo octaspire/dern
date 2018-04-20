@@ -16,7 +16,7 @@ EXAMPLE_SUCCESS_RUN=""
 echoAndRun() {
     printf "%bBuilding %b$EXAMPLE_NAME...%b" "$BLUE" "$BOLD" "$NOCOLOR"
 
-    if ! "$@" > /dev/null 2>&1; then
+    if ! "$@" > /dev/null; then
         printf "\n%bFAIL. POTENTIAL FIX: %b$EXAMPLE_ERROR_HINT\n"  "$RED" "$BOLD"
     else
         printf "%b\n" "$BLUE"

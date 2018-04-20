@@ -19,7 +19,7 @@ limitations under the License.
 
 #include <stdint.h>
 #include <octaspire/core/octaspire_memory.h>
-#include <octaspire/core/octaspire_container_utf8_string.h>
+#include <octaspire/core/octaspire_string.h>
 
 #ifdef __cplusplus
 extern "C"       {
@@ -38,19 +38,19 @@ typedef struct octaspire_dern_port_t octaspire_dern_port_t;
 
 octaspire_dern_port_t *octaspire_dern_port_new_copy(
     octaspire_dern_port_t * const other,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 octaspire_dern_port_t *octaspire_dern_port_new_input_file(
     char const * const path,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 octaspire_dern_port_t *octaspire_dern_port_new_output_file(
     char const * const path,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 octaspire_dern_port_t *octaspire_dern_port_new_io_file(
     char const * const path,
-    octaspire_memory_allocator_t *allocator);
+    octaspire_allocator_t *allocator);
 
 void octaspire_dern_port_release(octaspire_dern_port_t *self);
 
@@ -69,9 +69,9 @@ bool octaspire_dern_port_close(
 
 ptrdiff_t octaspire_dern_port_get_length_in_octets(octaspire_dern_port_t const * const self);
 
-octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
+octaspire_string_t *octaspire_dern_port_to_string(
     octaspire_dern_port_t const * const self,
-    octaspire_memory_allocator_t * const allocator);
+    octaspire_allocator_t * const allocator);
 
 bool octaspire_dern_port_seek(
     octaspire_dern_port_t * const self,

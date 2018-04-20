@@ -20,8 +20,8 @@ limitations under the License.
 
 struct octaspire_dern_port_t
 {
-    octaspire_memory_allocator_t      *allocator;
-    octaspire_container_utf8_string_t *name;
+    octaspire_allocator_t      *allocator;
+    octaspire_string_t *name;
     ptrdiff_t                          lengthInOctets;
 
     union
@@ -36,10 +36,10 @@ struct octaspire_dern_port_t
 
 octaspire_dern_port_t *octaspire_dern_port_new_copy(
     octaspire_dern_port_t * const other,
-    octaspire_memory_allocator_t *allocator)
+    octaspire_allocator_t *allocator)
 {
     octaspire_dern_port_t *self =
-        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_port_t));
+        octaspire_allocator_malloc(allocator, sizeof(octaspire_dern_port_t));
 
     if (!self)
     {
@@ -47,7 +47,7 @@ octaspire_dern_port_t *octaspire_dern_port_new_copy(
     }
 
     self->allocator      = allocator;
-    self->name           = octaspire_container_utf8_string_new_copy(other->name, self->allocator);
+    self->name           = octaspire_string_new_copy(other->name, self->allocator);
     self->typeTag        = other->typeTag;
     self->lengthInOctets = other->lengthInOctets;
 
@@ -56,7 +56,7 @@ octaspire_dern_port_t *octaspire_dern_port_new_copy(
         case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         {
             self->value.file =
-                fopen(octaspire_container_utf8_string_get_c_string(self->name), "a+b");
+                fopen(octaspire_string_get_c_string(self->name), "a+b");
 
             if (self->value.file == 0)
             {
@@ -72,7 +72,7 @@ octaspire_dern_port_t *octaspire_dern_port_new_copy(
         case OCTASPIRE_DERN_PORT_TAG_INPUT_FILE:
         {
             self->value.file =
-                fopen(octaspire_container_utf8_string_get_c_string(self->name), "rb");
+                fopen(octaspire_string_get_c_string(self->name), "rb");
 
             if (self->value.file == 0)
             {
@@ -88,7 +88,7 @@ octaspire_dern_port_t *octaspire_dern_port_new_copy(
         case OCTASPIRE_DERN_PORT_TAG_OUTPUT_FILE:
         {
             self->value.file =
-                fopen(octaspire_container_utf8_string_get_c_string(self->name), "a");
+                fopen(octaspire_string_get_c_string(self->name), "a");
 
             if (self->value.file == 0)
             {
@@ -113,10 +113,10 @@ octaspire_dern_port_t *octaspire_dern_port_new_copy(
 
 octaspire_dern_port_t *octaspire_dern_port_new_input_file(
     char const * const path,
-    octaspire_memory_allocator_t *allocator)
+    octaspire_allocator_t *allocator)
 {
     octaspire_dern_port_t *self =
-        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_port_t));
+        octaspire_allocator_malloc(allocator, sizeof(octaspire_dern_port_t));
 
     if (!self)
     {
@@ -124,7 +124,7 @@ octaspire_dern_port_t *octaspire_dern_port_new_input_file(
     }
 
     self->allocator  = allocator;
-    self->name       = octaspire_container_utf8_string_new(path, self->allocator);
+    self->name       = octaspire_string_new(path, self->allocator);
     self->typeTag    = OCTASPIRE_DERN_PORT_TAG_INPUT_FILE;
     self->lengthInOctets = -1;
     self->value.file = fopen(path, "rb");
@@ -144,10 +144,10 @@ octaspire_dern_port_t *octaspire_dern_port_new_input_file(
 
 octaspire_dern_port_t *octaspire_dern_port_new_output_file(
     char const * const path,
-    octaspire_memory_allocator_t *allocator)
+    octaspire_allocator_t *allocator)
 {
     octaspire_dern_port_t *self =
-        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_port_t));
+        octaspire_allocator_malloc(allocator, sizeof(octaspire_dern_port_t));
 
     if (!self)
     {
@@ -155,7 +155,7 @@ octaspire_dern_port_t *octaspire_dern_port_new_output_file(
     }
 
     self->allocator  = allocator;
-    self->name       = octaspire_container_utf8_string_new(path, self->allocator);
+    self->name       = octaspire_string_new(path, self->allocator);
     self->typeTag    = OCTASPIRE_DERN_PORT_TAG_OUTPUT_FILE;
     self->lengthInOctets = -1;
     self->value.file = fopen(path, "a");
@@ -175,10 +175,10 @@ octaspire_dern_port_t *octaspire_dern_port_new_output_file(
 
 octaspire_dern_port_t *octaspire_dern_port_new_io_file(
     char const * const path,
-    octaspire_memory_allocator_t *allocator)
+    octaspire_allocator_t *allocator)
 {
     octaspire_dern_port_t *self =
-        octaspire_memory_allocator_malloc(allocator, sizeof(octaspire_dern_port_t));
+        octaspire_allocator_malloc(allocator, sizeof(octaspire_dern_port_t));
 
     if (!self)
     {
@@ -186,7 +186,7 @@ octaspire_dern_port_t *octaspire_dern_port_new_io_file(
     }
 
     self->allocator  = allocator;
-    self->name       = octaspire_container_utf8_string_new(path, self->allocator);
+    self->name       = octaspire_string_new(path, self->allocator);
     self->typeTag    = OCTASPIRE_DERN_PORT_TAG_IO_FILE;
     self->lengthInOctets = -1;
     self->value.file = fopen(path, "a+b");
@@ -221,10 +221,10 @@ void octaspire_dern_port_release(octaspire_dern_port_t *self)
         octaspire_helpers_verify_true(res == 0);
     }
 
-    octaspire_container_utf8_string_release(self->name);
+    octaspire_string_release(self->name);
     self->name = 0;
 
-    octaspire_memory_allocator_free(self->allocator, self);
+    octaspire_allocator_free(self->allocator, self);
 }
 
 ptrdiff_t octaspire_dern_port_write(
@@ -301,61 +301,61 @@ ptrdiff_t octaspire_dern_port_get_length_in_octets(octaspire_dern_port_t const *
     return self->lengthInOctets;
 }
 
-octaspire_container_utf8_string_t *octaspire_dern_port_to_string(
+octaspire_string_t *octaspire_dern_port_to_string(
     octaspire_dern_port_t const * const self,
-    octaspire_memory_allocator_t * const allocator)
+    octaspire_allocator_t * const allocator)
 {
     switch (self->typeTag)
     {
         case OCTASPIRE_DERN_PORT_TAG_INPUT_FILE:
         {
-            return octaspire_container_utf8_string_new_format(
+            return octaspire_string_new_format(
                 allocator,
 #ifdef __AROS__
                 "<input-port:%s (%ld octets)>",
 #else
                 "<input-port:%s (%td octets)>",
 #endif
-                octaspire_container_utf8_string_get_c_string(self->name),
+                octaspire_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
 
         case OCTASPIRE_DERN_PORT_TAG_OUTPUT_FILE:
         {
-            return octaspire_container_utf8_string_new_format(
+            return octaspire_string_new_format(
                 allocator,
 #ifdef __AROS__
                 "<output-port:%s (%ld octets)>",
 #else
                 "<output-port:%s (%td octets)>",
 #endif
-                octaspire_container_utf8_string_get_c_string(self->name),
+                octaspire_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
 
         case OCTASPIRE_DERN_PORT_TAG_IO_FILE:
         {
-            return octaspire_container_utf8_string_new_format(
+            return octaspire_string_new_format(
                 allocator,
 #ifdef __AROS__
                 "<input-output-port:%s (%ld octets)>",
 #else
                 "<input-output-port:%s (%td octets)>",
 #endif
-                octaspire_container_utf8_string_get_c_string(self->name),
+                octaspire_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
 
         case OCTASPIRE_DERN_PORT_TAG_NOT_OPEN:
         {
-            return octaspire_container_utf8_string_new_format(
+            return octaspire_string_new_format(
                 allocator,
 #ifdef __AROS__
                 "<NOT-OPEN-port:%s (%ld octets)>",
 #else
                 "<NOT-OPEN-port:%s (%td octets)>",
 #endif
-                octaspire_container_utf8_string_get_c_string(self->name),
+                octaspire_string_get_c_string(self->name),
                 self->lengthInOctets);
         }
     }

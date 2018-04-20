@@ -76,13 +76,13 @@ octaspire_dern_value_t *dern_dir_get_listing(
 #ifdef _WIN32
     WIN32_FIND_DATA info;
 
-    octaspire_container_utf8_string_t *modifiedPath = octaspire_container_utf8_string_new_format(
+    octaspire_string_t *modifiedPath = octaspire_string_new_format(
         octaspire_dern_vm_get_allocator(vm),
         "%s\\*.*",
         path);
 
     HANDLE const h =
-        FindFirstFile(octaspire_container_utf8_string_get_c_string(modifiedPath), &info);
+        FindFirstFile(octaspire_string_get_c_string(modifiedPath), &info);
     do
     {
         if (strcmp(info.cFileName, ".") != 0 && strcmp(info.cFileName, "..") != 0)
@@ -95,8 +95,8 @@ octaspire_dern_value_t *dern_dir_get_listing(
             octaspire_helpers_verify_true(
                 octaspire_dern_value_as_vector_push_back_element(result, &subVec));
 
-            octaspire_container_utf8_string_t * const str =
-                octaspire_container_utf8_string_new_format(
+            octaspire_string_t * const str =
+                octaspire_string_new_format(
                     octaspire_dern_vm_get_allocator(vm),
                     "%s/%s",
                     path,
@@ -138,7 +138,7 @@ octaspire_dern_value_t *dern_dir_get_listing(
 
     FindClose(h);
 
-    octaspire_container_utf8_string_release(modifiedPath);
+    octaspire_string_release(modifiedPath);
     modifiedPath = 0;
 #else
     struct dirent *entry = 0;
@@ -170,8 +170,8 @@ octaspire_dern_value_t *dern_dir_get_listing(
             octaspire_helpers_verify_true(
                 octaspire_dern_value_as_vector_push_back_element(result, &subVec));
 
-            octaspire_container_utf8_string_t * const str =
-                octaspire_container_utf8_string_new_format(
+            octaspire_string_t * const str =
+                octaspire_string_new_format(
                     octaspire_dern_vm_get_allocator(vm),
                     "%s/%s",
                     path,

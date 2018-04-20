@@ -47,7 +47,7 @@ static void octaspire_dern_repl_print_message_c_str(
     bool const useColors);
 
 static void octaspire_dern_repl_print_message(
-    octaspire_container_utf8_string_t const * const message,
+    octaspire_string_t const * const message,
     octaspire_dern_repl_message_t const messageType,
     bool const useColors);
 
@@ -105,12 +105,12 @@ static void octaspire_dern_repl_print_message_c_str(
 }
 
 void octaspire_dern_repl_print_message(
-    octaspire_container_utf8_string_t const * const message,
+    octaspire_string_t const * const message,
     octaspire_dern_repl_message_t const messageType,
     bool const useColors)
 {
     octaspire_dern_repl_print_message_c_str(
-        octaspire_container_utf8_string_get_c_string(message),
+        octaspire_string_get_c_string(message),
         messageType,
         useColors);
 }
@@ -176,20 +176,20 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
 
 
 // Globals for the REPL. ////////////////////////////
-static octaspire_container_vector_t      *stringsToBeEvaluated = 0;
-static octaspire_memory_allocator_t      *allocatorBootOnly    = 0;
-static octaspire_container_utf8_string_t *line                 = 0;
+static octaspire_vector_t      *stringsToBeEvaluated = 0;
+static octaspire_allocator_t      *allocatorBootOnly    = 0;
+static octaspire_string_t *line                 = 0;
 static octaspire_stdio_t                 *stdio                = 0;
 static octaspire_input_t                 *input                = 0;
 static octaspire_dern_vm_t               *vm                   = 0;
-static octaspire_memory_allocator_t      *allocator            = 0;
+static octaspire_allocator_t      *allocator            = 0;
 
 static void octaspire_dern_repl_private_cleanup(void)
 {
-    octaspire_container_vector_release(stringsToBeEvaluated);
+    octaspire_vector_release(stringsToBeEvaluated);
     stringsToBeEvaluated = 0;
 
-    octaspire_memory_allocator_release(allocatorBootOnly);
+    octaspire_allocator_release(allocatorBootOnly);
     allocatorBootOnly = 0;
 
     octaspire_dern_vm_release(vm);
@@ -201,7 +201,7 @@ static void octaspire_dern_repl_private_cleanup(void)
     octaspire_stdio_release(stdio);
     stdio = 0;
 
-    octaspire_memory_allocator_release(allocator);
+    octaspire_allocator_release(allocator);
     allocator = 0;
 }
 
@@ -241,7 +241,7 @@ void main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    allocatorBootOnly = octaspire_memory_allocator_new(0);
+    allocatorBootOnly = octaspire_allocator_new(0);
 
     if (!allocatorBootOnly)
     {
@@ -253,10 +253,10 @@ void main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    stringsToBeEvaluated = octaspire_container_vector_new(
-        sizeof(octaspire_container_utf8_string_t*),
+    stringsToBeEvaluated = octaspire_vector_new(
+        sizeof(octaspire_string_t*),
         true,
-        (octaspire_container_vector_element_callback_t)octaspire_container_utf8_string_release,
+        (octaspire_vector_element_callback_t)octaspire_string_release,
         allocatorBootOnly);
 
     if (!stringsToBeEvaluated)
@@ -277,7 +277,7 @@ void main(int argc, char *argv[])
             {
                 evaluate = false;
 
-                octaspire_container_utf8_string_t *tmp = octaspire_container_utf8_string_new(
+                octaspire_string_t *tmp = octaspire_string_new(
                     argv[i],
                     allocatorBootOnly);
 
@@ -291,7 +291,7 @@ void main(int argc, char *argv[])
                     exit(EXIT_FAILURE);
                 }
 
-                octaspire_container_vector_push_back_element(stringsToBeEvaluated, &tmp);
+                octaspire_vector_push_back_element(stringsToBeEvaluated, &tmp);
             }
             else if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--color-diagnostics") == 0)
             {
@@ -343,7 +343,7 @@ void main(int argc, char *argv[])
         }
     }
 
-    allocator = octaspire_memory_allocator_new(0);
+    allocator = octaspire_allocator_new(0);
 
     if (!allocator)
     {
@@ -374,30 +374,30 @@ void main(int argc, char *argv[])
 #endif
 
     // Eval all files given as cmdline args
-    for (size_t i = 0; i < octaspire_container_vector_get_length(stringsToBeEvaluated); ++i)
+    for (size_t i = 0; i < octaspire_vector_get_length(stringsToBeEvaluated); ++i)
     {
-        octaspire_container_utf8_string_t const * const str =
-            octaspire_container_vector_get_element_at_const(
+        octaspire_string_t const * const str =
+            octaspire_vector_get_element_at_const(
                 stringsToBeEvaluated,
                 (ptrdiff_t)i);
 
         octaspire_dern_value_t *value =
             octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
                 vm,
-                octaspire_container_utf8_string_get_c_string(str));
+                octaspire_string_get_c_string(str));
 
         octaspire_helpers_verify_not_null(value);
 
         if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
         {
-            octaspire_container_utf8_string_t *tmpStr =
+            octaspire_string_t *tmpStr =
                 octaspire_dern_value_to_string(value, allocator);
 
             octaspire_dern_repl_print_message(tmpStr, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
 
             printf("\n");
 
-            octaspire_container_utf8_string_release(tmpStr);
+            octaspire_string_release(tmpStr);
             tmpStr = 0;
 
             exit(EXIT_FAILURE);
@@ -420,21 +420,21 @@ void main(int argc, char *argv[])
 
         if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
         {
-            octaspire_container_utf8_string_t *str =
+            octaspire_string_t *str =
                 octaspire_dern_value_to_string(value, allocator);
 
             octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
 
             printf("\n");
 
-            octaspire_container_utf8_string_release(str);
+            octaspire_string_release(str);
             str = 0;
 
             exit(EXIT_FAILURE);
         }
     }
 
-    if (octaspire_container_vector_get_length(stringsToBeEvaluated) > 0 || userFilesStartIdx >= 0)
+    if (octaspire_vector_get_length(stringsToBeEvaluated) > 0 || userFilesStartIdx >= 0)
     {
         if (!enterReplAlways)
         {
@@ -462,7 +462,7 @@ moreInput:
             break;
         }
 
-        if (line && octaspire_container_utf8_string_get_length_in_ucs_characters(line) > 0)
+        if (line && octaspire_string_get_length_in_ucs_characters(line) > 0)
         {
             octaspire_input_push_back_from_string(input, line);
 
@@ -482,7 +482,7 @@ moreInput:
                 }
                 else if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                 {
-                    octaspire_container_utf8_string_t *str =
+                    octaspire_string_t *str =
                         octaspire_dern_value_to_string(value, allocator);
 
                     octaspire_dern_repl_print_message(
@@ -492,7 +492,7 @@ moreInput:
 
                     printf("\n");
 
-                    octaspire_container_utf8_string_release(str);
+                    octaspire_string_release(str);
                     str = 0;
 
                     octaspire_input_clear(input);
@@ -521,7 +521,7 @@ moreInput:
                     else if (evaluatedValue->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                     {
                         printf("--------------------\n");
-                        
+
                         octaspire_dern_value_print(
                             evaluatedValue,
                             octaspire_dern_vm_get_allocator(vm));
@@ -532,7 +532,7 @@ moreInput:
 
                     octaspire_dern_vm_push_value(vm, evaluatedValue);
 
-                    octaspire_container_utf8_string_t *str =
+                    octaspire_string_t *str =
                         octaspire_dern_value_to_string(evaluatedValue, allocator);
 
                     octaspire_helpers_verify_not_null(str);
@@ -556,7 +556,7 @@ moreInput:
 
                     printf("\n");
 
-                    octaspire_container_utf8_string_release(str);
+                    octaspire_string_release(str);
                     str = 0;
 
                     octaspire_dern_vm_pop_value(vm, evaluatedValue); // evaluatedValue
@@ -570,7 +570,7 @@ moreInput:
             while (value && !octaspire_dern_vm_is_quit(vm));
         }
 
-        octaspire_container_utf8_string_release(line);
+        octaspire_string_release(line);
         line = 0;
     }
     while (!octaspire_dern_vm_is_quit(vm));
