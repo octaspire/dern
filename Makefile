@@ -25,26 +25,7 @@ EMACSFLAGS=
 .PHONY: submodules clean codestyle cppcheck valgrind test coverage
 
 $(RELDIR)octaspire-dern-repl: $(AMALGAMATION) $(PLUGINS)
-	@echo "Building for $(UNAME)..."
-	@if [ "$(UNAME)" = "Linux" ]; then\
-            cd release && sh how-to-build/linux.sh   > /dev/null      && echo "Done.";\
-        elif [ "$(UNAME)" = "Darwin" ]; then\
-            cd release && sh how-to-build/macOS.sh   > /dev/null      && echo "Done.";\
-        elif [ "$(UNAME)" = "OpenBSD" ]; then\
-            cd release && sh how-to-build/OpenBSD.sh > /dev/null      && echo "Done.";\
-        elif [ "$(UNAME)" = "FreeBSD" ]; then\
-            cd release && sh how-to-build/FreeBSD.sh > /dev/null      && echo "Done.";\
-        elif [ "$(UNAME)" = "NetBSD" ]; then\
-            cd release && sh how-to-build/NetBSD.sh  > /dev/null      && echo "Done.";\
-        elif [ "$(UNAME)" = "Minix" ]; then\
-            cd release && sh how-to-build/minix3.sh  > /dev/null      && echo "Done.";\
-        elif [ "$(UNAME)" = "DragonFly" ]; then\
-            cd release && sh how-to-build/DragonFlyBSD.sh > /dev/null && echo "Done.";\
-        elif [ "$(UNAME)" = "Haiku" ]; then\
-            cd release && sh how-to-build/haiku.sh   > /dev/null      && echo "Done.";\
-        else\
-            echo "This platform is not handled by Makefile at the moment. Please build using a script from 'release/how-to-build'.";\
-        fi;
+	@sh $(ETCDIR)build_amalgamation.sh
 
 submodules:
 	@echo "Initializing submodules..."
@@ -150,26 +131,7 @@ test: $(RELDIR)octaspire-dern-repl
 	@$(RELDIR)octaspire-dern-unit-test-runner --write-test-files
 
 coverage: $(AMALGAMATION)
-	@echo "Building for $(UNAME) with coverage enabled..."
-	@if [ "$(UNAME)" = "Linux" ]; then\
-            cd release && sh how-to-build/linux.sh gcc --coverage   > /dev/null      && echo "Done.";\
-        elif [ "$(UNAME)" = "Darwin" ]; then\
-            cd release && sh how-to-build/macOS.sh gcc --coverage   > /dev/null      && echo "Done.";\
-        elif [ "$(UNAME)" = "OpenBSD" ]; then\
-            cd release && sh how-to-build/OpenBSD.sh gcc --coverage > /dev/null      && echo "Done.";\
-        elif [ "$(UNAME)" = "FreeBSD" ]; then\
-            cd release && sh how-to-build/FreeBSD.sh gcc --coverage > /dev/null      && echo "Done.";\
-        elif [ "$(UNAME)" = "NetBSD" ]; then\
-            cd release && sh how-to-build/NetBSD.sh gcc --coverage  > /dev/null      && echo "Done.";\
-        elif [ "$(UNAME)" = "Minix" ]; then\
-            cd release && sh how-to-build/minix3.sh gcc --coverage  > /dev/null      && echo "Done.";\
-        elif [ "$(UNAME)" = "DragonFly" ]; then\
-            cd release && sh how-to-build/DragonFlyBSD.sh gcc --coverage > /dev/null && echo "Done.";\
-        elif [ "$(UNAME)" = "Haiku" ]; then\
-            cd release && sh how-to-build/haiku.sh gcc --coverage   > /dev/null      && echo "Done.";\
-        else\
-            echo "This platform is not handled by Makefile at the moment. Please build using a script from 'release/how-to-build'.";\
-        fi;
+	@sh $(ETCDIR)build_amalgamation.sh "gcc --coverage"
 	@$(RELDIR)/octaspire-dern-unit-test-runner --write-test-files
 	@lcov --no-external --capture --directory release --output-file $(RELDIR)coverage.info
 	@genhtml $(RELDIR)coverage.info --output-directory coverage
