@@ -1125,7 +1125,7 @@ in the Makefile:
 #+BEGIN_SRC sh
 git clone https://github.com/octaspire/dern.git
 cd dern
-make submodules
+make submodules-init
 make
 make test
 make codestyle
@@ -1153,7 +1153,7 @@ To build Dern from the regular source distribution in Raspberry Pi (Raspbian), D
 sudo apt-get install git
 git clone https://github.com/octaspire/dern.git
 cd dern
-make submodules
+make submodules-init
 make
 #+END_SRC
 
@@ -1165,7 +1165,7 @@ To build on Arch Linux (Arch Linux ARM) system:
 sudo pacman -S git gcc make
 git clone https://github.com/octaspire/dern.git
 cd dern
-make submodules
+make submodules-init
 make
 #+END_SRC
 
@@ -1177,7 +1177,7 @@ To build on Haiku (Version Walter (Revision hrev51127) x86_gcc2):
 pkgman install gcc_x86
 git clone https://github.com/octaspire/dern.git
 cd dern
-make submodules
+make submodules-init
 CC=gcc-x86 make
 #+END_SRC
 
@@ -1189,7 +1189,7 @@ To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:
 sudo pkg install git
 git clone https://github.com/octaspire/dern.git
 cd dern
-make submodules
+make submodules-init
 make
 #+END_SRC
 
@@ -1202,7 +1202,7 @@ sudo pkgin install git
 git clone git://github.com/octaspire/dern
 cd dern
 perl -pi -e 's/https/git/' .gitmodules
-make submodules
+make submodules-init
 make
 #+END_SRC
 
@@ -1217,7 +1217,7 @@ exit
 git clone git://github.com/octaspire/dern
 cd dern
 perl -pi -e 's/https/git/' .gitmodules
-make submodules
+make submodules-init
 make
 #+END_SRC
 
