@@ -27,6 +27,8 @@ elif [ "$UNAME" = "Haiku" ]; then
     else
         cd release && sh how-to-build/haiku.sh        $1  > /dev/null && echo "Done.";
     fi
+elif [ "$UNAME" = "AROS" ]; then
+    cd release && sh how-to-build/AROS.sh             $1  > /dev/null && echo "Done.";
 else
     echo "This platform is not handled by Makefile at the moment.";
     echo "Please build using a script from 'release/how-to-build'.";
