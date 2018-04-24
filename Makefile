@@ -24,8 +24,11 @@ EMACSFLAGS=
 
 .PHONY: submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage
 
-$(RELDIR)octaspire-dern-repl: $(AMALGAMATION) $(PLUGINS)
+$(RELDIR)octaspire-dern-repl: $(CORDIR)LICENSE $(AMALGAMATION) $(PLUGINS)
 	@sh $(ETCDIR)build_amalgamation.sh
+
+$(CORDIR)LICENSE:
+	@make submodules-init --silent
 
 submodules-init:
 	@echo "Initializing submodules..."
