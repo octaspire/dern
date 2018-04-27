@@ -29,7 +29,7 @@ So, where in scheme ='(1 2 3)= is a list, in Dern it is a vector.
 
 Every variable and function definition in Dern must be documented by a
 *documentation string*. Dern also makes sure that every formal function
-parameter is documented in the documentation of function definition.
+parameter is documented in the documentation of a function definition.
 The documentation can be accessed with =doc=-function. =howto= is
 another useful function. You can give it examples of function arguments
 and expected result and it will tell you what functions you can call to
@@ -41,14 +41,14 @@ are not, so specials can be used to implement special forms like =if=, etc. When
 defining your own builtins and specials, you can tell Dern whether the function
 can be tested by =howto= or not.
 
-Dern has also library system, that allows one to load libraries using builtin =require=.
+Dern has also a library system, that allows one to load libraries using builtin =require=.
 On most systems Dern also supports loading of binary libraries (.so, .dll or .dylib  files).
 For the end user, it doesn't matter whether the library she loaded was binary or written in
 Dern; it can be used exactly the same way.
 
 By using the amalgamated version of Dern, you need only one file. This same single source
 file, *octaspire-dern-amalgamated.c*, can be compiled into (1) stand-alone unit test runner,
-(2) interactive Dern-REPL and (3) used as single header file library in programs that want
+(2) interactive Dern-REPL and (3) used as a single header file library in programs that want
 to embed the Dern-language. The file contains also the source for the Octaspire Core library.
 The amalgamated source release is the recommended way of using Dern; there is only one file
 to keep track of, it is easy to use with any build system, and the resulting machine code
@@ -148,10 +148,10 @@ Extract the archive and move the contents into the *version-x.y.z* directory.
 *** AmigaOS 4.x
 
 Download and install
-[[http://www.hyperion-entertainment.biz/index.php/downloads?view=download&layout=form&file=82][AmigaOS SDK]]
+[[http://www.hyperion-entertainment.biz/index.php/downloads?view=download&layout=form&file=82][AmigaOS SDK]].
 Download and extract
 [[http://aminet.net/util/arc/bzip2.lha][bzip2]] to get `bzip2_68k` executable.
-Download the 
+Download the
 [[http://octaspire.com/dern.tar.bz2][amalgamated Dern source release]].
 
 Open Shell window and run the following commands:
@@ -818,7 +818,6 @@ You can use =port-write= and ~+=~ to write to a port octets with values =integer
 
 TODO
 
-
 ** Searching and indexing
 
 
@@ -1100,7 +1099,6 @@ TODO
 *etc*-directory of the source distribution contains syntax files for *vim*, *emacs*,
 *pygments* and *GNU source-highlight*.
 
-
 ** Using the development repository
 The amalgamated source release can be used without Make or other build tools;
 only a compiler is needed. It is the recommended way of using Dern and is
@@ -1114,10 +1112,12 @@ On different systems the required installation commands can vary. In any case, y
 a *C compiler* and *git*. Depending on the system, you might also need to install *GNU make*.
 If you want to build the documentation, you should also install *Emacs 25.x* or newer.
 
-This is all there should be to it; *octaspire core* and *octaspire_dotfiles* are included as
+That's it; *octaspire_core* and *octaspire_dotfiles* are included as
 git submodules. Note that at the moment, to be able to build the documentation, you must
-have the octaspire_dotfiles in use in your system (the submodule for the dotfiles is not used
-at the moment) and Emacs 25.x or newer installed.
+have the Emacs dotfiles from octaspire_dotfiles in use in your system (the submodule for
+the dotfiles is not used at the moment, but it should be later). The Emacs
+dotfiles are used to set the correct settings and styling when building the documentation
+(documentation is written using Emacs Org mode).
 
 Example of using the development repository and the different targets available
 in the Makefile:
@@ -1144,6 +1144,26 @@ rm release/documentation/dern-manual.html
 make release/documentation/dern-manual.html
 #+END_SRC
 
+Running =make= should run =make submodules-init= automatically if needed
+(=make submodules-init= clones and initializes submodules), but it can be
+run also manually when cloning the repository for the first time. There is
+no need to run it again later.
+
+If you want to update the submodules into the latest commits, you can
+run =make submodules-pull=. It does a git pull on all the submodules.
+
+Running =make= generates first the amalgamation (only, if the source files
+are changed). Then it detects the system and runs the correct build script.
+This creates the Dern REPL and unit test runner binaries and also the binary
+plugins on some systems.
+
+=make test= runs the unit tests, =make codestyle= runs the C coding style
+checks, =make cppcheck= runs the cppcheck static analysis on the code,
+=make valgrind= runs the unit tests through Valgrind (dynamic analysis
+and memory leak detection) and =make coverage= generates a unit test
+coverage report that can be used for finding code that is not covered
+yet by unit tests. =make release/documentation/dern-manual.html= builds
+the documentation.
 
 *** Raspberry Pi, Debian and Ubuntu
 
