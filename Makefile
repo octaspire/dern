@@ -6,6 +6,7 @@ SRCDIR=dev/src/
 TESTDR=dev/test/
 EXTDIR=dev/external/
 DEVDOCDIR=dev/doc/
+DEVGAMEDIR=$(ETCDIR)games/
 CORDIR=$(EXTDIR)octaspire_core/release/
 RELDIR=release/
 PLUGINDIR=$(RELDIR)plugins/
@@ -24,8 +25,16 @@ EMACSFLAGS=
 
 .PHONY: submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage
 
+all: $(RELDIR)octaspire-dern-repl $(RELDIR)games/octaspire-lightboard.dern $(RELDIR)games/octaspire-maze.dern
+
 $(RELDIR)octaspire-dern-repl: $(CORDIR)LICENSE $(AMALGAMATION) $(PLUGINS)
 	@sh $(ETCDIR)build_amalgamation.sh
+
+$(RELDIR)games/octaspire-lightboard.dern: $(DEVGAMEDIR)lightboard/entities.png
+	 @$(ETCDIR)base64_replace_image.sh $< $@
+
+$(RELDIR)games/octaspire-maze.dern: $(DEVGAMEDIR)maze/entities.png
+	 @$(ETCDIR)base64_replace_image.sh $< $@
 
 $(CORDIR)LICENSE:
 	@make submodules-init --silent
