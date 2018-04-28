@@ -24,6 +24,15 @@
 (define level-length         as (* level-width level-width) [number of slots])
 (define level-current-number as nil                         [current level number])
 
+(define origoX                     as 320                              [X-coordinate of center for drawing])
+(define origoY                     as 240                              [Y-coordinate of center for drawing])
+(define shakeStepsLeft             as 0                                [Times to shake the level])
+(define shakeX                     as 0                                [Shake x-coordinate])
+
+(define shake as (fn ()
+    (= shakeStepsLeft 20))
+  [shake the level] '() howto-no)
+
 (define coordinates-to-index as (fn (x y)
     (+ x (* y level-width)))
   [kkk] '(x [x] y [y]) howto-ok)
@@ -36,9 +45,67 @@
     (/ index level-width))
   [kkk] '(index [index]) howto-ok)
 
+
+
+(define texture-index-to-x as (fn (index)
+        (return (mod (* index 32) 256))) [index-to-x] '(index [index]) howto-ok)
+
+(define texture-index-to-y as (fn (index)
+        (return (to-integer (/ (* index 32) 256)))) [index-to-x] '(index [index]) howto-ok)
+
+(define texture-index-to-vec as (fn (index)
+        (define result as (vector) [result])
+        (+= result (index-to-x index))
+        (+= result (index-to-y index))
+        (+= result 32)
+        (+= result 32)
+        (+= result 0)
+        (+= result 0)
+        (+= result 32)
+        (+= result 32)
+        (+= result 0.2)
+        (return result)
+        )
+        [Index to texture coordinates] '(index [index]) howto-ok)
+
+(define create-new-anim as (fn (name x y slot index ...)
+        (define f as (vector 'animation-add
+                              name
+                              '(ln@ slot 'sx 'hash)
+                              '(ln@ slot 'sy 'hash)
+                              '(ln@ slot 'sw 'hash)
+                              '(ln@ slot 'sh 'hash)
+                              '(ln@ slot 'tx 'hash)
+                              '(ln@ slot 'ty 'hash)
+                              '(ln@ slot 'tw 'hash)
+                              '(ln@ slot 'th 'hash)
+                              []
+                              0
+                              ) [to be evaluated])
+
+        (for i in index
+             (+= f (texture-index-to-vec i)))
+
+        (eval f))
+        [create new animation from frame indices] '(name [id] x [x] y [y] slot [slot] index [index] ... [varargs]) howto-no)
+
+
 (define new-anim as (fn (name type x y)
-    (animation-entity-new name type '((- (* 32 x) 80) (- (* 32 y) 80) 0)))
-  [new animation] '(name [name] type [type] x [x] y [y]) howto-no)
+    (animation-remove name)
+    (define slot as (level-get-slot x y) [slot at x y])
+
+    (select
+        (== type [lock-full-opened]) (create-new-anim name x y slot  16  15 14 13 12 11 10  9  8)
+        (== type [lock-half-closed]) (create-new-anim name x y slot   8   9 10 11 12 13 14 15 16)
+        (== type [lock-full-closed]) (create-new-anim name x y slot  16  17 18 19 20 21 22 23 24)
+        (== type [lock-half-opened]) (create-new-anim name x y slot  24  23 22 21 20 19 18 17 16)
+        (== type [slot-covered-on])  (create-new-anim name x y slot  32  33 34 35 36 37 38 39)
+        (== type [slot-covered-off]) (create-new-anim name x y slot  39  38 37 36 35 34 33 32)
+        (== type [slot-missing])     (create-new-anim name x y slot  40  41 42 43 44 45 46 47)
+        (== type [slot-off])         (create-new-anim name x y slot  7    6  5  4  3  2  1  0)
+        (== type [slot-on])          (create-new-anim name x y slot  0    1  2  3  4  5  6  7)
+                                                    ))
+    [new animation] '(name [name] type [type] x [x] y [y]) howto-no)
 
 (define make-slot as (fn (index type)
     (define x    as (index-to-x index)              [x])
@@ -51,7 +118,15 @@
          'id   name
          'x    x
          'y    y
-         'type type))
+         'type type
+         'sx   0
+         'sy   0
+         'sw   0
+         'sh   0
+         'tx   0
+         'ty   0
+         'tw   0
+         'th   0))
   [make slot of the given type] '(index [index] type [type]) howto-no)
 
 (define slot-toggle-at as (fn (x y)
@@ -379,6 +454,70 @@
 
 ; Game starts here
 (level-1)
+
+
+
+(define state-render as (fn (dt)
+    (sdl2-RenderClear renderer)
+    (select
+        (== [ingame-tween-in]  current-state) (ingame-state-tween-in-render  dt)
+        (== [ingame]           current-state) (ingame-state-render           dt)
+        (== [ingame-tween-out] current-state) (ingame-state-tween-out-render dt)
+        (== [ingame-shake]     current-state) (ingame-state-shake-render     dt))
+    (sdl2-RenderPresent renderer))
+  [state-render]
+  '(dt [delta time]) howto-no)
+
+
+
+
+(define running             as true                [running])
+(define targetFPS           as 20                  [target FPS])
+(define targetFrameDuration as (/ 1.0 targetFPS)   [time for a frame to last])
+
+(define dt as targetFrameDuration [delta time])
+
+(while running
+       (sdl2-TimerReset)
+
+       (define event as (sdl2-PollEvent) [event from sdl2])
+       (define type  as nil              [type of event])
+       (if (and (!= event nil) (> (len event) 0)) (= type (ln@ event 0)))
+       (define input as [] [input event]) ; TODO
+
+       (select (== type 'QUIT)          (= running false)
+               (== type 'JOYBUTTONDOWN) (println [Joystick button {} pressed] (ln@ event 1))
+               (== type 'JOYAXIS)       (println [Joystick axis   {}]         (ln@ event 1))
+               (== type 'KEYDOWN)       (do
+                                          (if (== (ln@ event 1) [UP])    (= input [up]))
+                                          (if (== (ln@ event 1) [DOWN])  (= input [down]))
+                                          (if (== (ln@ event 1) [LEFT])  (= input [left]))
+                                          (if (== (ln@ event 1) [RIGHT]) (= input [right]))
+                                          (if (== (ln@ event 1) [j])     (= input [down]))
+                                          (if (== (ln@ event 1) [k])     (= input [up]))
+                                          (if (== (ln@ event 1) [h])     (= input [left]))
+                                          (if (== (ln@ event 1) [l])     (= input [right]))
+                                          ))
+       (easing-update    dt)
+       (state-update     dt input)
+       (animation-update dt)
+       (state-render     dt)
+
+       (if (> targetFrameDuration dt)
+         (do
+           (define delayInSeconds as (- targetFrameDuration dt) [time to sleep])
+           (if (> delayInSeconds 0)
+             (sdl2-Delay delayInSeconds))))
+
+       (sdl2-TimerUpdate)
+       (= dt (sdl2-TimerGetSeconds)))
+
+(sdl2-Quit)
+
+
+
+
+
 
 
 
