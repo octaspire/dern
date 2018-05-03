@@ -17,9 +17,15 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_stdlib.h"
 #include <assert.h>
 #include <inttypes.h>
-#include <octaspire/core/octaspire_helpers.h>
-#include <octaspire/core/octaspire_list.h>
-#include <octaspire/core/octaspire_queue.h>
+
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include <octaspire/core/octaspire_helpers.h>
+    #include <octaspire/core/octaspire_list.h>
+    #include <octaspire/core/octaspire_queue.h>
+#endif
+
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include "octaspire/dern/octaspire_dern_config.h"
 
@@ -4485,7 +4491,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_do(
                 octaspire_dern_value_to_string(arg, octaspire_dern_vm_get_allocator(vm));
 
             octaspire_string_concatenate_format(
-                result->value.string,
+                result->value.error->message,
                 "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
                 octaspire_string_get_c_string(tmpStr));
 

@@ -18,7 +18,13 @@ limitations under the License.
 #include <assert.h>
 #include <inttypes.h>
 #include <string.h>
-#include <octaspire/core/octaspire_helpers.h>
+
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include <octaspire/core/octaspire_helpers.h>
+#endif
+
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include "octaspire/dern/octaspire_dern_value.h"
 #include "octaspire/dern/octaspire_dern_helpers.h"

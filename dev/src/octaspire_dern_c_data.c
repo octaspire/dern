@@ -15,9 +15,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ******************************************************************************/
 #include "octaspire/dern/octaspire_dern_c_data.h"
-#include <octaspire/core/octaspire_helpers.h>
-#include "octaspire/dern/octaspire_dern_config.h"
-#include "octaspire/dern/octaspire_dern_lib.h"
+
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include <octaspire/core/octaspire_helpers.h>
+    #include "octaspire/dern/octaspire_dern_config.h"
+    #include "octaspire/dern/octaspire_dern_lib.h"
+#endif
 
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #include <dlfcn.h>

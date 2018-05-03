@@ -23,6 +23,7 @@
 (define m                    as (- level-width 1)           [max coordinate] )
 (define level-length         as (* level-width level-width) [number of slots])
 (define level-current-number as nil                         [current level number])
+(define level-restart-pending      as -1                               [Negative: not pending])
 
 (define origoX                     as 320                              [X-coordinate of center for drawing])
 (define origoY                     as 240                              [Y-coordinate of center for drawing])
@@ -112,8 +113,6 @@
     (define y    as (to-integer (index-to-y index)) [y])
     (define name as (string-format [{}{}] x y)      [name])
 
-    (new-anim name type x y)
-
     (hash-map
          'id   name
          'x    x
@@ -126,7 +125,10 @@
          'tx   0
          'ty   0
          'tw   0
-         'th   0))
+         'th   0)
+
+         ;(new-anim name type x y))
+         )
   [make slot of the given type] '(index [index] type [type]) howto-no)
 
 (define slot-toggle-at as (fn (x y)
@@ -177,21 +179,21 @@
     (if (== type [lock-half-closed])
         (do
             (= slot 'type [lock-full-closed])
-            (animation-entity-remove id)
+            (animation-remove id)
             (new-anim id [lock-full-closed] x y)
             (return nil)))
 
     (if (== type [lock-half-opened])
         (do
             (= slot 'type [lock-full-opened])
-            (animation-entity-remove id)
+            (animation-remove id)
             (new-anim id [lock-full-opened] x y)
             (return nil)))
 
     (if (== type [lock-full-closed])
         (do
             (= slot 'type [lock-half-opened])
-            (animation-entity-remove id)
+            (animation-remove id)
             (new-anim id [lock-half-opened] x y)
             (return nil))))
   [-] '(slot [slot]) howto-no)
@@ -300,7 +302,7 @@
   [slot on mouse] '(slot [slot] x [x] y [y] ox [ox] oy [oy]) howto-no)
 
 (define level-reset-to as (fn (input)
-    (animation-entity-remove-all)
+    (animation-remove)
     (= level '())
     (> (len input) level-length (abort [level input is too long!]))
     (if (< (len input) level-length) (for i from (len input) to (- level-length 1) (+= input [slot-off])))
@@ -452,8 +454,107 @@
     (= current-state [game]))
   [---] '() howto-no)
 
-; Game starts here
-(level-1)
+
+
+;---------------------------------------------------------------------------------------------------
+;======================================== INGAME STATES ============================================
+;--------------------------------------------tween in-----------------------------------------------
+(define ingame-state-tween-in-render as (fn (dt)
+    ;(= origoX (-  256 origoX))
+    (for entity in level
+         (entity-render entity dt)))
+  [ingame-state-tween-in-render]
+  '(dt [delta time]) howto-no)
+
+(define ingame-state-tween-in-update as (fn (dt input)
+    (= origoX (- 480 origoX)))
+  [ingame-state-tween-in-update]
+  '(dt [delta time] input [string telling the input, if any: u, d, l, r]) howto-no)
+;---------------------------------------------------------------------------------------------------
+;----------------------------------------------ingame-----------------------------------------------
+(define ingame-state-render as (fn (dt)
+    (for entity in level
+         (entity-render entity dt)))
+  [ingame-state-render]
+  '(dt [delta time]) howto-no)
+
+(define ingame-state-update as (fn (dt input)
+    (select
+        (== input [restart])   (do (= input []) (level-restart))
+        (== input [prevLevel]) (do (= input []) (level-prev))
+        (== input [nextLevel]) (do (= input []) (level-next))
+        (== input [action 1])  (do (= input []) (= printlevel (not printlevel))))
+
+    (if (!= input []) (+= pending-input input))
+
+    (if (== nil player-x)     (return nil))
+    (if (== nil player-y)     (return nil))
+    (if (== nil (get-player)) (return nil))
+
+    (if (== (find (get-player) 'dir) nil)
+        (do
+            (= input (pop-input))
+            (select
+                (== input [up])       (= (get-player) 'dir [u])
+                (== input [down])     (= (get-player) 'dir [d])
+                (== input [left])     (= (get-player) 'dir [l])
+                (== input [right])    (= (get-player) 'dir [r]))))
+
+    (define player-dir as (find (get-player) 'dir) [player-dir])
+
+    (select
+        (== player-dir [u]) (move-player-to player-x       (- player-y 1))
+        (== player-dir [d]) (move-player-to player-x       (+ player-y 1))
+        (== player-dir [l]) (move-player-to (- player-x 1) player-y)
+        (== player-dir [r]) (move-player-to (+ player-x 1) player-y))
+
+    (if pass-or-fail-level-pending (do (pass-or-fail-level) (return true)))
+
+    (define tmpPassCounters as nil [prevent problems of modifying during iteration])
+    (= tmpPassCounters pass-counters)
+    (for i in tmpPassCounters
+        (pass-counter-update (ln@ i 1) dt))
+
+    (define tmpLUI as nil [prevent problems of modifying during iteration])
+    (= tmpLUI level-updatable-indices)
+    (for i in tmpLUI
+        (define zeroth as (ln@ i 0) [zeroth])
+        (select
+            (starts-with? zeroth [bomb])          (bomb-update             (ln@ i 1) dt)
+            (starts-with? zeroth [stopper])       (stopper-update          (ln@ i 1) dt)
+            (starts-with? zeroth [pullable-])     (pullable-anytype-update (ln@ i 1) dt)))
+
+    true)
+  [ingame-state-update]
+  '(dt [delta time] input [string telling the input, if any: u, d, l, r]) howto-no)
+;---------------------------------------------------------------------------------------------------
+;--------------------------------------------tween in-----------------------------------------------
+(define ingame-state-tween-out-render as (fn (dt)
+    (for entity in level
+         (entity-render entity dt)))
+  [ingame-state-tween-out-render]
+  '(dt [delta time]) howto-no)
+
+(define ingame-state-tween-out-update as (fn (dt input)
+    (= origoX (-  256 origoX)))
+  [ingame-state-tween-out-update]
+  '(dt [delta time] input [string telling the input, if any: u, d, l, r]) howto-no)
+;---------------------------------------------------------------------------------------------------
+;------------------------------------------------shake----------------------------------------------
+(define ingame-state-shake-render as (fn (dt)
+    (for entity in level
+         (entity-render entity dt)))
+  [ingame-state-tween-shake-render]
+  '(dt [delta time]) howto-no)
+
+(define ingame-state-shake-update as (fn (dt input)
+    (= origoX (-  256 origoX)))
+  [ingame-state-tween-shake-update]
+  '(dt [delta time] input [string telling the input, if any: u, d, l, r]) howto-no)
+;---------------------------------------------------------------------------------------------------
+
+
+
 
 
 
@@ -469,6 +570,51 @@
   '(dt [delta time]) howto-no)
 
 
+
+(define state-update as (fn (dt input)
+
+    (if (> level-restart-pending 0)
+      (do
+        (-- level-restart-pending)
+        (if (== level-restart-pending 0)
+          (do
+            (= level-restart-pending -1)
+            (level-restart)
+            (return true))
+          (return true))))
+
+    (if (> shakeStepsLeft 0)
+      (do
+        (= shakeX (* (mod shakeStepsLeft 2) 10))
+        (if (== 0 (mod shakeStepsLeft 2)) (= shakeX (- shakeX)))
+        (-- shakeStepsLeft)))
+
+    (define tmpState as current-state [tmpState])
+
+    (select
+        (== [intro-tween-in]   tmpState) (intro-state-tween-in-update   dt input)
+        (== [intro]            tmpState) (intro-state-update            dt input)
+        (== [intro-tween-out]  tmpState) (intro-state-tween-out-update  dt input)
+
+        (== [ingame-tween-in]  tmpState) (ingame-state-tween-in-update  dt input)
+        (== [ingame]           tmpState) (ingame-state-update           dt input)
+        (== [ingame-tween-out] tmpState) (ingame-state-tween-out-update dt input)
+        (== [ingame-shake]     tmpState) (ingame-state-shake-update     dt input))
+
+    (if printlevel (level-print))
+
+    true)
+  [state-update]
+  '(dt [delta time] input [string telling the input, if any: u, d, l, r]) howto-no)
+
+
+(for i from 0 to (- level-length 1)
+     (+= level (make-slot i [slot-off])))
+
+(println [;;;;;;;;;;;;;;;;;;;;;;;])
+;(level-print)
+; Game starts here
+(level-1)
 
 
 (define running             as true                [running])

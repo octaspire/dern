@@ -15,7 +15,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ******************************************************************************/
 #include "octaspire/dern/octaspire_dern_lib.h"
-#include <octaspire/core/octaspire_helpers.h>
+
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include <octaspire/core/octaspire_helpers.h>
+#endif
+
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include "octaspire/dern/octaspire_dern_config.h"
 
@@ -81,7 +87,8 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_source(
     if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
     {
         self->errorMessage =
-            octaspire_string_new_copy(value->value.error, self->allocator);
+            octaspire_string_new_copy(value->value.error->message,
+                                      self->allocator);
 
         octaspire_helpers_verify_not_null(self->errorMessage);
     }

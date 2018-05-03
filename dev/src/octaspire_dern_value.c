@@ -18,9 +18,15 @@ limitations under the License.
 #include <assert.h>
 #include <string.h>
 #include <inttypes.h>
-#include <octaspire/core/octaspire_string.h>
-#include <octaspire/core/octaspire_vector.h>
-#include <octaspire/core/octaspire_helpers.h>
+
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include <octaspire/core/octaspire_string.h>
+    #include <octaspire/core/octaspire_vector.h>
+    #include <octaspire/core/octaspire_helpers.h>
+#endif
+
 #include "octaspire/dern/octaspire_dern_environment.h"
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include "octaspire/dern/octaspire_dern_port.h"
@@ -515,6 +521,81 @@ octaspire_string_t *octaspire_dern_special_to_string(
         octaspire_string_get_c_string(self->name));
 }
 
+
+
+octaspire_dern_error_message_t *octaspire_dern_error_message_new(
+    octaspire_allocator_t *allocator,
+    char const * const message,
+    size_t const lineNumber)
+{
+    octaspire_dern_error_message_t *self =
+        octaspire_allocator_malloc(allocator,
+                                   sizeof(octaspire_dern_error_message_t));
+
+    if (!self)
+    {
+        return 0;
+    }
+
+    self->allocator  = allocator;
+    self->message    = octaspire_string_new(message, allocator);
+    self->lineNumber = lineNumber;
+
+    return self;
+}
+
+octaspire_dern_error_message_t *octaspire_dern_error_message_new_copy(
+    octaspire_dern_error_message_t * const other,
+    octaspire_allocator_t * const allocator)
+{
+    octaspire_dern_error_message_t *self =
+        octaspire_allocator_malloc(allocator,
+                                   sizeof(octaspire_dern_error_message_t));
+
+    if (!self)
+    {
+        return 0;
+    }
+
+    self->allocator                  = allocator;
+
+    self->message    = octaspire_string_new_copy(other->message, allocator);
+    self->lineNumber = other->lineNumber;
+
+    return self;
+}
+
+void octaspire_dern_error_message_release(octaspire_dern_error_message_t *self)
+{
+    if (!self)
+    {
+        return;
+    }
+
+    octaspire_string_release(self->message);
+    self->message = 0;
+
+    octaspire_allocator_free(self->allocator, self);
+}
+
+int octaspire_dern_error_message_compare(
+    octaspire_dern_error_message_t const * const self,
+    octaspire_dern_error_message_t const * const other)
+{
+    int const result = octaspire_string_compare(self->message, other->message);
+
+    if (result != 0)
+    {
+        return result;
+    }
+
+    return self->lineNumber - other->lineNumber;
+}
+
+
+
+
+
 octaspire_dern_builtin_t *octaspire_dern_builtin_new(
     octaspire_dern_c_function const cFunction,
     octaspire_allocator_t *allocator,
@@ -748,7 +829,7 @@ bool octaspire_dern_value_set(
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         {
             self->value.error =
-                octaspire_string_new_copy(
+                octaspire_dern_error_message_new_copy(
                     value->value.error,
                     octaspire_dern_vm_get_allocator(self->vm));
         }
@@ -1118,7 +1199,7 @@ uint32_t octaspire_dern_value_get_hash(
             return octaspire_string_get_hash(self->value.symbol);
 
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
-            return octaspire_string_get_hash(self->value.error);
+            return octaspire_string_get_hash(self->value.error->message);
 
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
             return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.vector);
@@ -1299,7 +1380,7 @@ octaspire_string_t *octaspire_dern_private_value_to_string(
             case OCTASPIRE_DERN_VALUE_TAG_ERROR:
             {
                 return octaspire_string_new_format(allocator, "<error>: %s",
-                    octaspire_string_get_c_string(self->value.error));
+                    octaspire_string_get_c_string(self->value.error->message));
             }
 
             case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
@@ -1674,6 +1755,14 @@ bool octaspire_dern_value_is_error(
     octaspire_dern_value_t const * const self)
 {
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR;
+}
+
+void octaspire_dern_value_as_error_set_line_number(
+    octaspire_dern_value_t const * const self,
+    size_t const lineNumber)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR);
+    self->value.error->lineNumber = lineNumber;
 }
 
 octaspire_dern_environment_t *octaspire_dern_value_as_environment_get_value(
@@ -3350,7 +3439,7 @@ size_t octaspire_dern_value_get_length(
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         {
             return octaspire_string_get_length_in_ucs_characters(
-                self->value.error);
+                self->value.error->message);
         }
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         {
@@ -3646,7 +3735,7 @@ int octaspire_dern_value_compare(
         }
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         {
-            return octaspire_string_compare(
+            return octaspire_dern_error_message_compare(
                 self->value.error,
                 other->value.error);
         }

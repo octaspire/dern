@@ -19,11 +19,17 @@ limitations under the License.
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <octaspire/core/octaspire_vector.h>
-#include <octaspire/core/octaspire_map.h>
-#include <octaspire/core/octaspire_queue.h>
-#include <octaspire/core/octaspire_list.h>
-#include <octaspire/core/octaspire_string.h>
+
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include <octaspire/core/octaspire_vector.h>
+    #include <octaspire/core/octaspire_map.h>
+    #include <octaspire/core/octaspire_queue.h>
+    #include <octaspire/core/octaspire_list.h>
+    #include <octaspire/core/octaspire_string.h>
+#endif
+
 #include "octaspire/dern/octaspire_dern_port.h"
 #include "octaspire/dern/octaspire_dern_c_data.h"
 
@@ -70,13 +76,13 @@ typedef octaspire_dern_value_t *(*octaspire_dern_c_function)(
 
 typedef struct octaspire_dern_function_t
 {
-    octaspire_string_t *name;
-    octaspire_string_t *docstr;
-    struct octaspire_dern_value_t     *formals;
-    struct octaspire_dern_value_t     *body;
-    struct octaspire_dern_value_t     *definitionEnvironment;
-    octaspire_allocator_t      *allocator;
-    bool                               howtoAllowed;
+    octaspire_string_t            *name;
+    octaspire_string_t            *docstr;
+    struct octaspire_dern_value_t *formals;
+    struct octaspire_dern_value_t *body;
+    struct octaspire_dern_value_t *definitionEnvironment;
+    octaspire_allocator_t         *allocator;
+    bool                           howtoAllowed;
 }
 octaspire_dern_function_t;
 
@@ -195,6 +201,30 @@ octaspire_string_t *octaspire_dern_function_to_string(
 
 struct octaspire_dern_environment_t;
 
+typedef struct octaspire_dern_error_message_t
+{
+    octaspire_allocator_t *allocator;
+    octaspire_string_t    *message;
+    size_t                 lineNumber;
+}
+octaspire_dern_error_message_t;
+
+octaspire_dern_error_message_t *octaspire_dern_error_message_new(
+    octaspire_allocator_t *allocator,
+    char const * const message,
+    size_t const lineNumber);
+
+octaspire_dern_error_message_t *octaspire_dern_error_message_new_copy(
+    octaspire_dern_error_message_t * const other,
+    octaspire_allocator_t * const allocator);
+
+void octaspire_dern_error_message_release(octaspire_dern_error_message_t *self);
+
+int octaspire_dern_error_message_compare(
+    octaspire_dern_error_message_t const * const self,
+    octaspire_dern_error_message_t const * const other);
+
+
 struct octaspire_dern_value_t
 {
     octaspire_dern_value_t      *docstr;
@@ -211,7 +241,7 @@ struct octaspire_dern_value_t
         octaspire_string_t                  *comment;
         octaspire_string_t                  *character;
         octaspire_string_t                  *symbol;
-        octaspire_string_t                  *error;
+        octaspire_dern_error_message_t      *error;
         octaspire_vector_t                  *vector;
         octaspire_map_t                     *hashMap;
         octaspire_queue_t                   *queue;
@@ -321,6 +351,10 @@ bool octaspire_dern_value_is_environment(
 
 bool octaspire_dern_value_is_error(
     octaspire_dern_value_t const * const self);
+
+void octaspire_dern_value_as_error_set_line_number(
+    octaspire_dern_value_t const * const self,
+    size_t const lineNumber);
 
 struct octaspire_dern_environment_t *octaspire_dern_value_as_environment_get_value(
     octaspire_dern_value_t * const self);

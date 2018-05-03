@@ -18,11 +18,17 @@ limitations under the License.
 #include <assert.h>
 #include <inttypes.h>
 #include <string.h>
-#include <octaspire/core/octaspire_helpers.h>
-#include <octaspire/core/octaspire_input.h>
-#include <octaspire/core/octaspire_vector.h>
-#include <octaspire/core/octaspire_map.h>
-#include <octaspire/core/octaspire_helpers.h>
+
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include <octaspire/core/octaspire_helpers.h>
+    #include <octaspire/core/octaspire_input.h>
+    #include <octaspire/core/octaspire_vector.h>
+    #include <octaspire/core/octaspire_map.h>
+    #include <octaspire/core/octaspire_helpers.h>
+#endif
+
 #include "octaspire/dern/octaspire_dern_value.h"
 #include "octaspire/dern/octaspire_dern_environment.h"
 #include "octaspire/dern/octaspire_dern_lexer.h"
@@ -1651,7 +1657,7 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
 
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         {
-            result->value.error = octaspire_string_new_copy(
+            result->value.error = octaspire_dern_error_message_new_copy(
                 valueToBeCopied->value.error,
                 self->allocator);
         }
@@ -2093,13 +2099,23 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol_from_c_
 
 octaspire_dern_value_t *octaspire_dern_vm_create_new_value_error(
     octaspire_dern_vm_t *self,
-    octaspire_string_t * const value)
+    octaspire_string_t * value)
 {
     octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(
         self,
         OCTASPIRE_DERN_VALUE_TAG_ERROR);
 
-    result->value.error = value;
+    octaspire_dern_error_message_t * const message =
+        octaspire_dern_error_message_new(
+            octaspire_dern_vm_get_allocator(self),
+            octaspire_string_get_c_string(value),
+            0);
+
+    result->value.error = message;
+
+    octaspire_string_release(value);
+    value = 0;
+
     return result;
 }
 
@@ -2466,7 +2482,7 @@ void octaspire_dern_vm_clear_value_to_nil(
 
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         {
-            octaspire_string_release(value->value.error);
+            octaspire_dern_error_message_release(value->value.error);
             value->value.error = 0;
         }
         break;
@@ -3186,7 +3202,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                                 octaspire_dern_value_to_string(value, self->allocator);
 
                             octaspire_string_concatenate_format(
-                                result->value.string,
+                                result->value.error->message,
                                 "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
                                 octaspire_string_get_c_string(tmpStr));
 
@@ -3238,7 +3254,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                                 octaspire_dern_value_to_string(value, self->allocator);
 
                             octaspire_string_concatenate_format(
-                                result->value.string,
+                                result->value.error->message,
                                 "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
                                 octaspire_string_get_c_string(tmpStr));
 
@@ -3267,7 +3283,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                                 octaspire_dern_value_to_string(value, self->allocator);
 
                             octaspire_string_concatenate_format(
-                                result->value.string,
+                                result->value.error->message,
                                 "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
                                 octaspire_string_get_c_string(tmpStr));
 
@@ -3324,7 +3340,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                                 octaspire_dern_value_to_string(value, self->allocator);
 
                             octaspire_string_concatenate_format(
-                                result->value.string,
+                                result->value.error->message,
                                 "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
                                 octaspire_string_get_c_string(tmpStr));
 
@@ -3415,7 +3431,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                                         octaspire_dern_value_to_string(value, self->allocator);
 
                                     octaspire_string_concatenate_format(
-                                        result->value.string,
+                                        result->value.error->message,
                                         "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
                                         octaspire_string_get_c_string(tmpStr));
 
@@ -3543,6 +3559,10 @@ octaspire_dern_value_t *octaspire_dern_vm_read_from_octaspire_input_and_eval_in_
 
         if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
         {
+            octaspire_dern_value_as_error_set_line_number(
+                result,
+                octaspire_input_get_line_number(input));
+
             break;
         }
     }

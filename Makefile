@@ -14,6 +14,19 @@ RELDOCDIR=$(RELDIR)documentation/
 AMALGAMATION=$(RELDIR)octaspire-dern-amalgamated.c
 PLUGINS := $(wildcard $(PLUGINDIR)*.c)
 UNAME=$(shell uname -s)
+CFLAGS=-Wall -Wextra -pedantic -g -O0
+
+TESTOBJS := $(SRCDIR)octaspire_dern_c_data.o      \
+            $(SRCDIR)octaspire_dern_environment.o \
+            $(SRCDIR)octaspire_dern_helpers.o     \
+            $(SRCDIR)octaspire_dern_lib.o         \
+            $(SRCDIR)octaspire_dern_port.o        \
+            $(SRCDIR)octaspire_dern_stdlib.o      \
+            $(SRCDIR)octaspire_dern_value.o       \
+
+DEVOBJS := $(TESTOBJS)                           \
+           $(SRCDIR)octaspire_dern_lexer.o       \
+           $(SRCDIR)octaspire_dern_vm.o
 
 # In batch mode Emacs doesn't load the usual initialization file. To get the correct
 # settings and styles in the batch mode, the initialization file must be loaded manually.
@@ -23,9 +36,41 @@ UNAME=$(shell uname -s)
 #EMACSFLAGS=--load dev/external/octaspire_dotfiles/emacs/.emacs.d/init.el --batch
 EMACSFLAGS=
 
-.PHONY: submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage
+.PHONY: development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage
 
-all: $(RELDIR)octaspire-dern-repl $(RELDIR)games/octaspire-lightboard.dern $(RELDIR)games/octaspire-maze.dern
+all: development
+
+development: octaspire-dern-repl octaspire-dern-unit-test-runner
+
+octaspire-dern-repl: $(SRCDIR)octaspire_dern_repl.o $(DEVOBJS)
+	$(info LD  $@)
+	@$(CC) $(CFLAGS) $(SRCDIR)octaspire_dern_repl.o $(DEVOBJS) -lm -o $@
+
+$(SRCDIR)octaspire_dern_repl.o: $(SRCDIR)octaspire_dern_repl.c
+	$(info CC  $<)
+	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev -DOCTASPIRE_CORE_AMALGAMATED_IMPLEMENTATION $< -o $@
+
+octaspire-dern-unit-test-runner: $(TESTDR)test.o $(TESTDR)test_dern_lexer.o $(TESTDR)test_dern_vm.o $(DEVOBJS)
+	$(info LD  $@)
+	@$(CC) $(CFLAGS) $(TESTDR)test.o $(TESTDR)test_dern_lexer.o $(TESTDR)test_dern_vm.o $(TESTOBJS) -lm -o $@
+
+$(TESTDR)test.o: $(TESTDR)test.c
+	$(info CC  $<)
+	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev -DOCTASPIRE_CORE_AMALGAMATED_IMPLEMENTATION $< -o $@
+
+$(TESTDR)test_dern_lexer.o: $(TESTDR)test_dern_lexer.c
+	$(info CC  $<)
+	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev $< -o $@
+
+$(TESTDR)test_dern_vm.o: $(TESTDR)test_dern_vm.c
+	$(info CC  $<)
+	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev $< -o $@
+
+%.o: %.c
+	$(info CC  $<)
+	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev $*.c -o $*.o
+
+amalgamation: $(RELDIR)octaspire-dern-repl $(RELDIR)games/octaspire-lightboard.dern $(RELDIR)games/octaspire-maze.dern
 
 $(RELDIR)octaspire-dern-repl: $(CORDIR)LICENSE $(AMALGAMATION) $(PLUGINS)
 	@sh $(ETCDIR)build_amalgamation.sh
@@ -131,7 +176,11 @@ clean:
                 $(RELDIR)coverage.info                                                \
                 $(RELDIR)octaspire-dern-amalgamated.gcda                              \
                 $(RELDIR)octaspire-dern-amalgamated.gcno                              \
-                coverage
+                coverage                                                              \
+                $(SRCDIR)*.o                                                          \
+                $(TESTDR)*.o                                                          \
+                octaspire-dern-repl                                                   \
+                octaspire-dern-unit-test-runner
 
 codestyle:
 	@vera++ --root dev/external/vera --profile octaspire-plugin --error $(wildcard $(SRCDIR)*.[ch])

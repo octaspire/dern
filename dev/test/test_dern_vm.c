@@ -284,7 +284,7 @@ TEST octaspire_dern_vm_special_if_called_with_one_argument_failure_test(void)
     ASSERT_STR_EQ(
         "Special 'if' expects two or three arguments. 1 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(if true)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -308,7 +308,7 @@ TEST octaspire_dern_vm_special_if_called_with_integer_as_the_first_argument_fail
         "First argument to special 'if' must evaluate into boolean value. Now it evaluated "
         "into type integer.\n"
         "\tAt form: >>>>>>>>>>(if 10 true)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -499,7 +499,7 @@ TEST octaspire_dern_vm_special_select_function_selectors_failure_on_unknown_symb
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'f2')\n"
         "\tAt form: >>>>>>>>>>(select (f1) [p] (f2) [a])<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -523,7 +523,7 @@ TEST octaspire_dern_vm_special_select_called_with_zero_arguments_failure_test(vo
         "Special 'select' expects at least two arguments and the number of arguments must be "
         "multiple of two. Now 0 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(select)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -547,7 +547,7 @@ TEST octaspire_dern_vm_special_select_called_with_one_argument_failure_test(void
         "Special 'select' expects at least two arguments and the number of arguments must be "
         "multiple of two. Now 1 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(select true)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -571,7 +571,7 @@ TEST octaspire_dern_vm_special_select_called_with_three_arguments_failure_test(v
         "Special 'select' expects at least two arguments and the number of arguments must be "
         "multiple of two. Now 3 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(select true [a] default)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -594,7 +594,7 @@ TEST octaspire_dern_vm_special_select_called_non_boolean_selector_failure_test(v
     ASSERT_STR_EQ(
         "Selectors of special 'select' must evaluate into booleans. Type 'integer' was given.\n"
         "\tAt form: >>>>>>>>>>(select 1 [a] 2 [b])<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -617,7 +617,7 @@ TEST octaspire_dern_vm_special_select_called_with_default_as_first_selector_fail
     ASSERT_STR_EQ(
         "'default' must be the last selector in special 'select'.\n"
         "\tAt form: >>>>>>>>>>(select default [a] 2 [b])<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -862,7 +862,7 @@ TEST octaspire_dern_vm_special_define_called_with_three_arguments_failure_test(v
         "Special 'define' expects four, six or eight arguments. "
         "3 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(define x as 10)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -903,7 +903,7 @@ TEST octaspire_dern_vm_special_define_called_with_eight_arguments_test(void)
 
     ASSERT_STR_EQ(
         "Unbound symbol 'f'",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     // Make sure f IS defined in myEnv-environment
     evaluatedValue =
@@ -945,7 +945,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_first_being_val
         "The first argument of special 'define' is a vector but doesn't evaluate into "
         "a symbol. It evaluates into '10'.\n"
         "\tAt form: >>>>>>>>>>(define 10 as x [x])<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -978,7 +978,7 @@ TEST octaspire_dern_vm_special_define_called_with_eight_arguments_first_being_in
         "The first argument of special 'define' is a vector but doesn't evaluate into "
         "a symbol. It evaluates into '10'.\n"
         "\tAt form: >>>>>>>>>>(define 10 as (fn () 128) [f] (quote ()) in myEnv howto-ok)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1001,7 +1001,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_error_at_first_
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'noSuchFuNcTion')\n"
         "\tAt form: >>>>>>>>>>(define x as (noSuchFuNcTion) [x])<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1025,7 +1025,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_with_docstring_
         "Special 'define' expects documentation string as the fourth argument "
         "in this context. Value '20' was given.\n"
         "\tAt form: >>>>>>>>>>(define x as 10 20)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1049,7 +1049,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_name_evaluates_
         "The first argument of special 'define' is a vector but doesn't evaluate into "
         "a symbol. It evaluates into '20'.\n"
         "\tAt form: >>>>>>>>>>(define 20 as (fn () 10) [x])<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1073,7 +1073,7 @@ TEST octaspire_dern_vm_special_define_called_with_six_arguments_docstring_is_int
         "Special 'define' expects documentation string as the fourth argument in this "
         "context. Value '20' was given.\n"
         "\tAt form: >>>>>>>>>>(define f as (fn () (quote x)) 20 (quote ()) howto-ok)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1098,7 +1098,7 @@ TEST octaspire_dern_vm_special_define_called_with_eight_arguments_error_in_envir
         "context. Value '<error>: Cannot evaluate operator of type 'error' (<error>: "
         "Unbound symbol 'noSuchFuNcTion')' was given.\n"
         "\tAt form: >>>>>>>>>>(define f as (fn () (quote x)) [f] (quote ()) in (noSuchFuNcTion) howto-ok)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1122,7 +1122,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_docs
         "Special 'define' expects documentation string as the fourth argument "
         "in this context. Value '10' was given.\n"
         "\tAt form: >>>>>>>>>>(define x as 20 10)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1145,7 +1145,7 @@ TEST octaspire_dern_vm_special_quote_called_without_arguments_failure_test(void)
     ASSERT_STR_EQ(
         "Special 'quote' expects one argument. 0 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(quote)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1373,7 +1373,7 @@ TEST octaspire_dern_vm_builtin_slash_failure_test(void)
     ASSERT_STR_EQ(
         "Builtin '/' expects at least one numeric argument (integer or real).\n"
         "\tAt form: >>>>>>>>>>(/)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1397,7 +1397,7 @@ TEST octaspire_dern_vm_builtin_slash_0_failure_test(void)
     ASSERT_STR_EQ(
         "First argument to builtin '/' cannot be zero. It would cause division by zero.\n"
         "\tAt form: >>>>>>>>>>(/ 0)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1421,7 +1421,7 @@ TEST octaspire_dern_vm_builtin_slash_10_2_0_failure_test(void)
     ASSERT_STR_EQ(
         "Argument number 3 to builtin '/' cannot be zero. It would cause division by zero.\n"
         "\tAt form: >>>>>>>>>>(/ 10 2 0)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1445,7 +1445,7 @@ TEST octaspire_dern_vm_builtin_slash_10_2_character_a_failure_test(void)
     ASSERT_STR_EQ(
         "Builtin '/' expects numeric arguments (integer or real). 3th argument has type character.\n"
         "\tAt form: >>>>>>>>>>(/ 10 2 |a|)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -1550,7 +1550,7 @@ TEST octaspire_dern_vm_builtin_mod_4_mod_0_failure_test(void)
         "The second argument to builtin 'mod' cannot be zero. "
         "It would cause division by zero.\n"
         "\tAt form: >>>>>>>>>>(mod 4 0)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3107,7 +3107,7 @@ TEST octaspire_dern_vm_special_while_called_with_one_argument_failure_test(void)
     ASSERT_STR_EQ(
         "Special 'while' expects at least two arguments. 1 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(while true)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error->message)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3140,7 +3140,7 @@ TEST octaspire_dern_vm_special_while_called_with_integer_as_first_argument_failu
         "First argument to special 'while' must evaluate into boolean value. Now it evaluated "
         "into type integer.\n"
         "\tAt form: >>>>>>>>>>(while 1 (++ x))<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error->message)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3351,7 +3351,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_newline_failure_on
 
     ASSERT_STR_EQ(
         "Problem with a character embedded in string: (character is not complete)",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3373,7 +3373,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_yy_failure_on_unkn
 
     ASSERT_STR_EQ(
         "Problem with a character embedded in string: (Unknown character constant |yy|)",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -3483,7 +3483,7 @@ TEST octaspire_dern_vm_string_literal_with_embedded_character_in_hex_failure_on_
 
     ASSERT_STR_EQ(
         "Problem with a character embedded in string: (Number of hex digits (9) in character definition may not be larger than eight)",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -4546,7 +4546,7 @@ TEST octaspire_dern_vm_builtin_pop_front_with_integer_10_failure_test(void)
     ASSERT_STR_EQ(
         "First argument to builtin 'pop-front' cannot be of type 'integer'.\n"
         "\tAt form: >>>>>>>>>>(pop-front 10)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -4879,7 +4879,7 @@ TEST octaspire_dern_vm_builtin_pop_back_with_integer_10_failure_test(void)
     ASSERT_STR_EQ(
         "First argument to builtin 'pop-back' cannot be of type 'integer'.\n"
         "\tAt form: >>>>>>>>>>(pop-back 10)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5819,7 +5819,7 @@ TEST octaspire_dern_vm_builtin_plus_equals_with_bad_input_test(void)
 
     ASSERT_STR_EQ(
         "Unknown character constant |) (hash-map 2 |",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -5968,7 +5968,7 @@ TEST octaspire_dern_vm_special_for_from_0_to_10_with_step_minus_2_failure_test(v
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
         "\tAt form: >>>>>>>>>>(for i from 0 to 10 step -2 (+= v i))<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6098,7 +6098,7 @@ TEST octaspire_dern_vm_special_for_from_10_to_0_with_step_minus_2_failure_test(v
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
         "\tAt form: >>>>>>>>>>(for i from 10 to 0 step -2 (+= v i))<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6238,7 +6238,7 @@ TEST octaspire_dern_vm_special_for_in_with_string_step_minus_2_failure_test(void
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
         "\tAt form: >>>>>>>>>>(for i in n step -2 (+= s i))<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6376,7 +6376,7 @@ TEST octaspire_dern_vm_special_for_in_with_vector_of_strings_step_minus_2_failur
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
         "\tAt form: >>>>>>>>>>(for i in n step -2 (+= s i [ ]))<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6611,7 +6611,7 @@ TEST octaspire_dern_vm_special_for_in_with_environment_step_minus_2_failure_test
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
         "\tAt form: >>>>>>>>>>(for i in e step -2 (define (ln@ i 0) as (ln@ i 1) [-] in e2))<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6745,7 +6745,7 @@ TEST octaspire_dern_vm_special_for_in_with_hash_map_step_minus_2_failure_test(vo
     ASSERT_STR_EQ(
         "The 'step' of special 'for' must be larger than zero. Now it is -2.\n"
         "\tAt form: >>>>>>>>>>(for i in h step -2 (define (ln@ i 0) as (ln@ i 1) [-] in e))<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6769,7 +6769,7 @@ TEST octaspire_dern_vm_special_for_called_without_arguments_failure_test(void)
         "Special 'for' expects at least four (for iterating container or port) or five (for "
         "iterating numeric range) arguments. 0 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(for)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error->message)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6793,7 +6793,7 @@ TEST octaspire_dern_vm_special_for_called_with_one_argument_failure_test(void)
         "Special 'for' expects at least four (for iterating container or port) or five (for "
         "iterating numeric range) arguments. 1 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(for i)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error->message)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6816,7 +6816,7 @@ TEST octaspire_dern_vm_special_for_second_argument_not_symbol_failure_test(void)
     ASSERT_STR_EQ(
         "Second argument to special 'for' must be symbol 'in' or 'from'. Now it has type integer.\n"
         "\tAt form: >>>>>>>>>>(for i 10 0 to 20 true)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error->message)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6839,7 +6839,7 @@ TEST octaspire_dern_vm_special_for_called_with_integer_as_first_argument_failure
     ASSERT_STR_EQ(
         "First argument to special 'for' must be symbol value. Now it has type integer.\n"
         "\tAt form: >>>>>>>>>>(for 1 from 0 to 10 true)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error->message)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6871,7 +6871,7 @@ TEST octaspire_dern_vm_error_in_function_body_is_reported_test(void)
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
         "\tAt form: >>>>>>>>>>(f 1)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -6961,7 +6961,7 @@ TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_string_abc_failure_t
         "Index to builtin 'cp@' is not valid for the given string. "
         "Index '3' was given.\n"
         "\tAt form: >>>>>>>>>>(cp@ [abc] 3)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -7042,7 +7042,7 @@ TEST octaspire_dern_vm_builtin_ln_at_sign_called_with_3_and_vector_1_2_3_failure
         "Index to builtin 'ln@' is not valid for the given vector. "
         "Index '3' was given.\n"
         "\tAt form: >>>>>>>>>>(ln@ (quote (1 2 3)) 3)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -7131,7 +7131,7 @@ TEST octaspire_dern_vm_builtin_ln_at_sign_called_with_3_and_index_and_hash_map_1
     ASSERT_STR_EQ(
         "Builtin 'ln@' could not find the requested element from hash map.\n"
         "\tAt form: >>>>>>>>>>(ln@ (hash-map 1 |a| 2 |b| 3 |c|) 3 (quote index))<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -7287,7 +7287,7 @@ TEST octaspire_dern_vm_special_do_error_stops_evaluation_and_is_reported_test(vo
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
         "\tAt form: >>>>>>>>>>(NoSuchFunction)<<<<<<<<<<\n\n"
         "\tAt form: >>>>>>>>>>(do (++ counter) (NoSuchFunction) (++ counter))<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7773,7 +7773,7 @@ TEST octaspire_dern_vm_builtin_return_called_with_two_arguments_failure_test(voi
         "\tAt form: >>>>>>>>>>(while (< counter 100) (++ counter) (return 1 2))<<<<<<<<<<\n"
         "\n"
         "\tAt form: >>>>>>>>>>(f)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -7887,7 +7887,7 @@ TEST octaspire_dern_vm_function_taking_one_regular_and_varargs_called_with_zero_
 
     ASSERT_STR_EQ(
         "Function expects 1 arguments. Now 0 arguments were given.",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -8034,7 +8034,7 @@ TEST octaspire_dern_vm_builtin_not_called_without_arguments_failure_test(void)
     ASSERT_STR_EQ(
         "Builtin 'not' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(not)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -8220,7 +8220,7 @@ TEST octaspire_dern_vm_builtin_not_called_with_one_integer_argument_failure_test
     ASSERT_STR_EQ(
         "Builtin 'not' expects boolean argument.\n"
         "\tAt form: >>>>>>>>>>(not x)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -8259,7 +8259,7 @@ TEST octaspire_dern_vm_builtin_not_called_with_two_boolean_arguments_failure_tes
     ASSERT_STR_EQ(
         "Builtin 'not' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(not x y)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -10792,7 +10792,7 @@ TEST octaspire_dern_vm_error_during_user_function_call_test(void)
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
         "\tAt form: >>>>>>>>>>(f)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -10813,7 +10813,7 @@ TEST octaspire_dern_vm_error_during_builtin_call_test(void)
     ASSERT_STR_EQ(
         "Builtin '++' expects at least one argument.\n"
         "\tAt form: >>>>>>>>>>(++)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -10834,7 +10834,7 @@ TEST octaspire_dern_vm_error_during_special_call_test(void)
     ASSERT_STR_EQ(
         "Special '<' expects at least two arguments.\n"
         "\tAt form: >>>>>>>>>>(<)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -10866,7 +10866,7 @@ TEST octaspire_dern_vm_error_during_special_call_during_user_function_call_test(
         "\tAt form: >>>>>>>>>>(<)<<<<<<<<<<\n"
         "\n"
         "\tAt form: >>>>>>>>>>(f)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -10993,7 +10993,7 @@ TEST octaspire_dern_vm_special_eval_failure_on_integer_on_second_argument_test(v
         "Second argument to special 'eval' must evaluate into environment value.\n"
         "Now it evaluated into type integer.\n"
         "\tAt form: >>>>>>>>>>(eval (+ 1 1) 10)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11016,7 +11016,7 @@ TEST octaspire_dern_vm_special_eval_failure_on_unbound_symbol_on_second_argument
     ASSERT_STR_EQ(
         "Unbound symbol 'pi'\n"
         "\tAt form: >>>>>>>>>>(eval (+ 1 1) pi)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11039,7 +11039,7 @@ TEST octaspire_dern_vm_special_eval_called_with_three_arguments_failure_test(voi
     ASSERT_STR_EQ(
         "Special 'eval' expects one or two arguments. 3 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(eval (+ 1 1) (env-global) 10)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11354,7 +11354,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_with_integer_fai
     ASSERT_STR_EQ(
         "Builtin 'port-supports-input?' expects port argument.\n"
         "\tAt form: >>>>>>>>>>(port-supports-input? f)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11378,7 +11378,7 @@ TEST octaspire_dern_vm_port_supports_input_question_mark_called_without_argument
     ASSERT_STR_EQ(
         "Builtin 'port-supports-input?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(port-supports-input?)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11494,7 +11494,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_with_integer_fa
     ASSERT_STR_EQ(
         "Builtin 'port-supports-output?' expects port argument.\n"
         "\tAt form: >>>>>>>>>>(port-supports-output? f)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11518,7 +11518,7 @@ TEST octaspire_dern_vm_port_supports_output_question_mark_called_without_argumen
     ASSERT_STR_EQ(
         "Builtin 'port-supports-output?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(port-supports-output?)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.string));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -11593,7 +11593,7 @@ TEST octaspire_dern_vm_port_close_called_with_io_file_port_test(void)
         ASSERT_STR_EQ(
             "Builtin 'port-read' failed to read the requested one octet.\n"
             "\tAt form: >>>>>>>>>>(port-read f)<<<<<<<<<<\n",
-            octaspire_string_get_c_string(evaluatedValue->value.string));
+            octaspire_string_get_c_string(evaluatedValue->value.error->message));
     }
 
     // Check that closing again fails
@@ -11874,7 +11874,7 @@ TEST octaspire_dern_vm_port_write_failure_on_input_file_test(void)
     ASSERT_STR_EQ(
         "The first argument to builtin 'port-write' must be a port supporting writing.\n"
         "\tAt form: >>>>>>>>>>(port-write f 70)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     // Make sure that the file has still the same size as before the write attempt
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -12013,7 +12013,7 @@ TEST octaspire_dern_vm_integer_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'integer?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(integer?)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12024,7 +12024,7 @@ TEST octaspire_dern_vm_integer_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'integer?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(integer? 1 2)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12110,7 +12110,7 @@ TEST octaspire_dern_vm_real_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'real?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(real?)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12121,7 +12121,7 @@ TEST octaspire_dern_vm_real_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'real?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(real? 1.1 1.2)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12207,7 +12207,7 @@ TEST octaspire_dern_vm_number_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'number?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(number?)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12218,7 +12218,7 @@ TEST octaspire_dern_vm_number_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'number?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(number? 1.1 1.2)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12304,7 +12304,7 @@ TEST octaspire_dern_vm_nil_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'nil?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(nil?)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12315,7 +12315,7 @@ TEST octaspire_dern_vm_nil_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'nil?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(nil? 1.1 1.2)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12401,7 +12401,7 @@ TEST octaspire_dern_vm_boolean_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'boolean?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(boolean?)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12412,7 +12412,7 @@ TEST octaspire_dern_vm_boolean_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'boolean?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(boolean? true true)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12498,7 +12498,7 @@ TEST octaspire_dern_vm_character_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'character?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(character?)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12509,7 +12509,7 @@ TEST octaspire_dern_vm_character_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'character?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(character? |a| |b|)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12595,7 +12595,7 @@ TEST octaspire_dern_vm_string_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'string?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(string?)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12606,7 +12606,7 @@ TEST octaspire_dern_vm_string_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'string?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(string? [a] [b])<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12692,7 +12692,7 @@ TEST octaspire_dern_vm_symbol_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'symbol?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(symbol?)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12703,7 +12703,7 @@ TEST octaspire_dern_vm_symbol_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'symbol?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(symbol? (quote a) (quote b))<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12789,7 +12789,7 @@ TEST octaspire_dern_vm_vector_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'vector?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(vector?)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12800,7 +12800,7 @@ TEST octaspire_dern_vm_vector_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'vector?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(vector? (quote ()) (quote ()))<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -12886,7 +12886,7 @@ TEST octaspire_dern_vm_hash_map_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'hash-map?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(hash-map?)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     evaluatedValue = octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
         vm,
@@ -12897,7 +12897,7 @@ TEST octaspire_dern_vm_hash_map_question_mark_test(void)
     ASSERT_STR_EQ(
         "Builtin 'hash-map?' expects one argument.\n"
         "\tAt form: >>>>>>>>>>(hash-map? (hash-map) (hash-map))<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -13536,7 +13536,7 @@ TEST octaspire_dern_vm_ln_at_sign_with_string_test(void)
     ASSERT_STR_EQ(
         "Builtin 'ln@' cannot be used with strings. Use 'cp@' instead.\n"
         "\tAt form: >>>>>>>>>>(ln@ [abc] 1)<<<<<<<<<<\n",
-        octaspire_string_get_c_string(evaluatedValue->value.error)); 
+        octaspire_string_get_c_string(evaluatedValue->value.error->message)); 
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -15274,7 +15274,7 @@ TEST octaspire_dern_vm_eval_empty_vector_test(void)
 
     ASSERT_STR_EQ(
         "Cannot evaluate empty vector '()'",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -15298,7 +15298,7 @@ TEST octaspire_dern_vm_eval_vector_containing_empty_vector_test(void)
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Cannot evaluate "
         "empty vector '()')",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -15321,7 +15321,7 @@ TEST octaspire_dern_vm_eval_right_parenthesis_test(void)
 
     ASSERT_STR_EQ(
         "unexpected token: line=1,1 column=1,1 ucsIndex=0,0 type=OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN value=right parenthesis",
-        octaspire_string_get_c_string(evaluatedValue->value.error));
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
     vm = 0;

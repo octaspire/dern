@@ -16,7 +16,12 @@ limitations under the License.
 ******************************************************************************/
 #include "octaspire/dern/octaspire_dern_port.h"
 #include <stdio.h>
-#include "octaspire/core/octaspire_helpers.h"
+
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include "octaspire/core/octaspire_helpers.h"
+#endif
 
 struct octaspire_dern_port_t
 {

@@ -22,8 +22,13 @@ limitations under the License.
 #include <stddef.h>
 #include <stdlib.h>
 #include <math.h>
-#include <octaspire/core/octaspire_string.h>
-#include <octaspire/core/octaspire_helpers.h>
+
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include <octaspire/core/octaspire_string.h>
+    #include <octaspire/core/octaspire_helpers.h>
+#endif
 
 struct octaspire_dern_lexer_token_t
 {

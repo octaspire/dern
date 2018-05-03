@@ -19,10 +19,15 @@ limitations under the License.
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <octaspire/core/octaspire_vector.h>
-#include <octaspire/core/octaspire_map.h>
-#include <octaspire/core/octaspire_string.h>
-#include <octaspire/core/octaspire_input.h>
+
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include <octaspire/core/octaspire_vector.h>
+    #include <octaspire/core/octaspire_map.h>
+    #include <octaspire/core/octaspire_string.h>
+    #include <octaspire/core/octaspire_input.h>
+#endif
 
 #ifdef __cplusplus
 extern "C"       {

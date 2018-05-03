@@ -17,8 +17,13 @@ limitations under the License.
 #ifndef OCTASPIRE_DERN_HELPERS_H
 #define OCTASPIRE_DERN_HELPERS_H
 
-#include <octaspire/core/octaspire_map.h>
-#include <octaspire/core/octaspire_memory.h>
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include <octaspire/core/octaspire_map.h>
+    #include <octaspire/core/octaspire_memory.h>
+#endif
+
 #include "octaspire/dern/octaspire_dern_value.h"
 
 #ifdef __cplusplus

@@ -18,9 +18,14 @@ limitations under the License.
 #define OCTASPIRE_DERN_LEXER_H
 
 #include <stddef.h>
-#include <octaspire/core/octaspire_memory.h>
-#include <octaspire/core/octaspire_string.h>
-#include <octaspire/core/octaspire_input.h>
+
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include <octaspire/core/octaspire_memory.h>
+    #include <octaspire/core/octaspire_string.h>
+    #include <octaspire/core/octaspire_input.h>
+#endif
 
 #ifdef __cplusplus
 extern "C"       {

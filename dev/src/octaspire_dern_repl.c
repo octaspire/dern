@@ -20,8 +20,14 @@ limitations under the License.
 #include <string.h>
 #include <unistd.h>
 #include <locale.h>
-#include <octaspire/core/octaspire_input.h>
-#include <octaspire/core/octaspire_helpers.h>
+
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include <octaspire/core/octaspire_input.h>
+    #include <octaspire/core/octaspire_helpers.h>
+#endif
+
 #include <octaspire/dern/octaspire_dern_config.h>
 #include "external/octaspire_dern_banner_color.h"
 #include "external/octaspire_dern_banner_white.h"

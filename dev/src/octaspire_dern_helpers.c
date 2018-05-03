@@ -16,8 +16,13 @@ limitations under the License.
 ******************************************************************************/
 #include "octaspire/dern/octaspire_dern_helpers.h"
 #include "octaspire/dern/octaspire_dern_lexer.h"
-#include "octaspire/core/octaspire_input.h"
-#include "octaspire/core/octaspire_helpers.h"
+
+#ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
+    #include "octaspire-core-amalgamated.c"
+#else
+    #include "octaspire/core/octaspire_input.h"
+    #include "octaspire/core/octaspire_helpers.h"
+#endif
 
 int octaspire_dern_helpers_compare_value_hash_maps(
     octaspire_map_t const * const firstValueHashMap,
