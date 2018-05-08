@@ -40,6 +40,10 @@ EMACSFLAGS=
 
 all: development
 
+###############################################################################
+####### Development part: build using separate implementation files ###########
+###############################################################################
+
 development: octaspire-dern-repl octaspire-dern-unit-test-runner
 
 octaspire-dern-repl: $(SRCDIR)octaspire_dern_repl.o $(DEVOBJS)
@@ -69,6 +73,11 @@ $(TESTDR)test_dern_vm.o: $(TESTDR)test_dern_vm.c
 %.o: %.c
 	$(info CC  $<)
 	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev $*.c -o $*.o
+
+
+###############################################################################
+####### Release part: build using amalgamation ################################
+###############################################################################
 
 amalgamation: $(RELDIR)octaspire-dern-repl $(RELDIR)games/octaspire-lightboard.dern $(RELDIR)games/octaspire-maze.dern
 
@@ -189,16 +198,24 @@ codestyle:
 cppcheck:
 	@cppcheck --std=c99 -I dev/include dev/external/ocraspire_core/include --enable=warning,performance,portability --verbose --quiet $(wildcard $(SRCDIR)*.[ch]) $(wildcard $(PLUGINDIR)*.[ch])
 
-valgrind: $(RELDIR)octaspire-dern-repl
+# Test both amalgamation and development version with valgrind.
+valgrind: $(RELDIR)octaspire-dern-repl octaspire-dern-unit-test-runner
 	@valgrind --leak-check=full --track-origins=yes --error-exitcode=1 $(RELDIR)octaspire-dern-unit-test-runner --write-test-files
+	@valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./octaspire-dern-unit-test-runner --write-test-files
 	@valgrind --leak-check=full --track-origins=yes --error-exitcode=1 $(RELDIR)octaspire-dern-repl -e "(+ 1 2 3)(exit)"
 
-test: $(RELDIR)octaspire-dern-repl
+# Test both amalgamation and development version.
+test: $(RELDIR)octaspire-dern-repl octaspire-dern-unit-test-runner
 	@$(RELDIR)octaspire-dern-unit-test-runner --write-test-files
+	@./octaspire-dern-unit-test-runner --write-test-files
+	@$(RELDIR)octaspire-dern-repl -e "(+ 1 2 3)(exit)"
 
 coverage: $(AMALGAMATION)
 	@sh $(ETCDIR)build_amalgamation.sh "gcc --coverage"
 	@$(RELDIR)/octaspire-dern-unit-test-runner --write-test-files
 	@lcov --no-external --capture --directory release --output-file $(RELDIR)coverage.info
+
+
+coverage-show: coverage
 	@genhtml $(RELDIR)coverage.info --output-directory coverage
 	@xdg-open coverage/index.html &
