@@ -19,7 +19,7 @@ script:
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "gcc" ]]; then ulimit -c unlimited -S; make valgrind coverage; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" != "gcc" ]]; then ulimit -c unlimited -S; make valgrind; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make test; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "gcc" ]]; then gcov release/octaspire-dern-amalgamated.gcno; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "gcc" ]]; then cd release; gcov octaspire-dern-amalgamated.gcno; cd ..; fi
 
 after_success:
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "gcc" ]]; then bash <(curl -s https://codecov.io/bash); fi
