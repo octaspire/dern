@@ -2,4 +2,4 @@ ignore:
     - "/usr"
 
 fixes:
-    - "::release/"
+    - "release/::"
