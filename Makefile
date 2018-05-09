@@ -14,7 +14,7 @@ RELDOCDIR=$(RELDIR)documentation/
 AMALGAMATION=$(RELDIR)octaspire-dern-amalgamated.c
 PLUGINS := $(wildcard $(PLUGINDIR)*.c)
 UNAME=$(shell uname -s)
-CFLAGS=-Wall -Wextra -pedantic -g -O0
+CFLAGS=-std=c99 -Wall -Wextra -pedantic -g
 
 TESTOBJS := $(SRCDIR)octaspire_dern_c_data.o      \
             $(SRCDIR)octaspire_dern_environment.o \
