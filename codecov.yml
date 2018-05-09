@@ -1,3 +1,5 @@
 ignore:
     - "/usr"
 
+fixes:
+    - "release/octaspire-dern-amalgamated.c::octaspire-dern-amalgamated.c"
