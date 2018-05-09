@@ -9,7 +9,7 @@ compiler:
     - gcc
 
 before_install:
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -q; sudo apt-get install gdb libegl1-mesa-dev libgles2-mesa-dev; sudo apt-get install valgrind libncursesw5-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev -y; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -q; sudo apt-get install gdb lcov libegl1-mesa-dev libgles2-mesa-dev; sudo apt-get install valgrind libncursesw5-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev -y; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install valgrind ncurses sdl2 sdl2_image sdl2_mixer sdl2_ttf; fi
 
 before_script:
@@ -18,7 +18,7 @@ before_script:
 script:
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "gcc" ]]; then ulimit -c unlimited -S; make valgrind coverage; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" != "gcc" ]]; then ulimit -c unlimited -S; make valgrind; fi
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make valgrind; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make test; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "gcc" ]]; then gcov release/octaspire-dern-amalgamated.gcno; fi
 
 after_success:
