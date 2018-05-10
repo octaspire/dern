@@ -40,7 +40,7 @@ UNAME := $(shell uname)
 
 # TODO Detect more platforms and show message about using the amalgamation on other platforms
 ifeq ($(UNAME), Darwin)
-    LDFLAGS            := -lm -Wl,-export-dynamic -ldl
+    LDFLAGS            := -lm
     DLSUFFIX           := .dylib
     DLFLAGS            := -dynamiclib
     CURSESLDFLAGS      := -lncurses
@@ -58,7 +58,7 @@ else
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 endif
 
-.PHONY: development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage
+.PHONY: development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux
 
 all: development
 
@@ -116,6 +116,18 @@ libdern_sdl2$(DLSUFFIX): $(PLUGINDIR)dern_sdl2.c $(AMALGAMATION)
 	$(info PC  $<)
 	@$(CC) -I release $(SDL2CONFIG_CFLAGS) $(SDL2FLAGS) $(DLFLAGS) -o $@ $< $(SDL2CONFIG_LDFLAGS) $(LDFLAGS)
 
+perf-linux: octaspire-dern-unit-test-runner
+	@echo "+---------------------------------------------------------------------+"
+	@echo "| Going to measure perf. This works only in GNU/Linux. If permissions |"
+	@echo "| are not OK, you might to need to run:                               |"
+	@echo "|                                                                     |"
+	@echo "| sudo sh -c 'echo 1 > /proc/sys/kernel/perf_event_paranoid'          |"
+	@echo "| sudo sh -c 'echo 0 > /proc/sys/kernel/kptr_restrict'                |"
+	@echo "|                                                                     |"
+	@echo "| to set less paranoid settings. Then run make $@ again.      |"
+	@echo "+---------------------------------------------------------------------+"
+	@perf record ./octaspire-dern-unit-test-runner --write-test-files
+	@perf report
 %.o: %.c
 	$(info CC  $<)
 	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev $*.c -o $*.o $(LDFLAGS)
@@ -235,7 +247,9 @@ clean:
                 $(SRCDIR)*.o                                                          \
                 $(TESTDR)*.o                                                          \
                 octaspire-dern-repl                                                   \
-                octaspire-dern-unit-test-runner
+                octaspire-dern-unit-test-runner                                       \
+                perf.data perf.data.old                                               \
+                *.so *.dylib
 
 codestyle:
 	@vera++ --root dev/external/vera --profile octaspire-plugin --error $(wildcard $(SRCDIR)*.[ch])
