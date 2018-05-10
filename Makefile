@@ -189,10 +189,7 @@ clean:
                 $(SRCDIR)*.o                                                          \
                 $(TESTDR)*.o                                                          \
                 octaspire-dern-repl                                                   \
-                octaspire-dern-unit-test-runner                                       \
-                octaspire-dern-amalgamated.gcda                                       \
-                octaspire-dern-amalgamated.gcno                                       \
-                coverage.info
+                octaspire-dern-unit-test-runner
 
 codestyle:
 	@vera++ --root dev/external/vera --profile octaspire-plugin --error $(wildcard $(SRCDIR)*.[ch])
@@ -216,11 +213,9 @@ test: $(RELDIR)octaspire-dern-repl octaspire-dern-unit-test-runner
 coverage: $(AMALGAMATION)
 	@sh $(ETCDIR)build_amalgamation.sh "gcc --coverage"
 	@$(RELDIR)/octaspire-dern-unit-test-runner --write-test-files
-	@cp $(RELDIR)/*.gcda .
-	@cp $(RELDIR)/*.gcno .
-	@lcov --no-external --capture --directory release --output-file coverage.info
+	@lcov --no-external --capture --directory release --output-file $(RELDIR)coverage.info
 
 
 coverage-show: coverage
-	@genhtml coverage.info --output-directory coverage
+	@genhtml $(RELDIR)coverage.info --output-directory coverage
 	@xdg-open coverage/index.html &
