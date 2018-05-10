@@ -14,7 +14,7 @@ RELDOCDIR=$(RELDIR)documentation/
 AMALGAMATION=$(RELDIR)octaspire-dern-amalgamated.c
 PLUGINS := $(wildcard $(PLUGINDIR)*.c)
 UNAME=$(shell uname -s)
-CFLAGS=-std=c99 -Wall -Wextra -pedantic -g
+CFLAGS=-std=c99 -Wall -Wextra -g -O2 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 
 TESTOBJS := $(SRCDIR)octaspire_dern_c_data.o      \
             $(SRCDIR)octaspire_dern_environment.o \
@@ -36,6 +36,28 @@ DEVOBJS := $(TESTOBJS)                           \
 #EMACSFLAGS=--load dev/external/octaspire_dotfiles/emacs/.emacs.d/init.el --batch
 EMACSFLAGS=
 
+UNAME := $(shell uname)
+
+# TODO Detect more platforms and show message about using the amalgamation on other platforms
+ifeq ($(UNAME), Darwin)
+    LDFLAGS            := -lm -Wl,-export-dynamic -ldl
+    DLSUFFIX           := .dylib
+    DLFLAGS            := -dynamiclib
+    CURSESLDFLAGS      := -lncurses
+    SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+    SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
+    SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+else
+    # GNU/Linux
+    LDFLAGS            := -lm -Wl,-export-dynamic -ldl
+    DLSUFFIX           := .so
+    DLFLAGS            := -fPIC -shared
+    CURSESLDFLAGS      := -lncursesw
+    SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+    SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
+    SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+endif
+
 .PHONY: development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage
 
 all: development
@@ -44,35 +66,59 @@ all: development
 ####### Development part: build using separate implementation files ###########
 ###############################################################################
 
-development: octaspire-dern-repl octaspire-dern-unit-test-runner
+development: octaspire-dern-repl octaspire-dern-unit-test-runner libdern_socket$(DLSUFFIX) libdern_dir$(DLSUFFIX) libdern_easing$(DLSUFFIX) libdern_animation$(DLSUFFIX) libdern_ncurses$(DLSUFFIX) libdern_sdl2$(DLSUFFIX)
 
 octaspire-dern-repl: $(SRCDIR)octaspire_dern_repl.o $(DEVOBJS)
 	$(info LD  $@)
-	@$(CC) $(CFLAGS) $(SRCDIR)octaspire_dern_repl.o $(DEVOBJS) -lm -o $@
+	@$(CC) $(CFLAGS) $(SRCDIR)octaspire_dern_repl.o $(DEVOBJS) -o $@ $(LDFLAGS)
 
 $(SRCDIR)octaspire_dern_repl.o: $(SRCDIR)octaspire_dern_repl.c
 	$(info CC  $<)
-	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev -DOCTASPIRE_CORE_AMALGAMATED_IMPLEMENTATION $< -o $@
+	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev -DOCTASPIRE_CORE_AMALGAMATED_IMPLEMENTATION $< -o $@ $(LDFLAGS)
 
 octaspire-dern-unit-test-runner: $(TESTDR)test.o $(TESTDR)test_dern_lexer.o $(TESTDR)test_dern_vm.o $(DEVOBJS)
 	$(info LD  $@)
-	@$(CC) $(CFLAGS) $(TESTDR)test.o $(TESTDR)test_dern_lexer.o $(TESTDR)test_dern_vm.o $(TESTOBJS) -lm -o $@
+	@$(CC) $(CFLAGS) $(TESTDR)test.o $(TESTDR)test_dern_lexer.o $(TESTDR)test_dern_vm.o $(TESTOBJS) -o $@ $(LDFLAGS)
 
 $(TESTDR)test.o: $(TESTDR)test.c
 	$(info CC  $<)
-	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev -DOCTASPIRE_CORE_AMALGAMATED_IMPLEMENTATION $< -o $@
+	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev -DOCTASPIRE_CORE_AMALGAMATED_IMPLEMENTATION $< -o $@ $(LDFLAGS)
 
 $(TESTDR)test_dern_lexer.o: $(TESTDR)test_dern_lexer.c
 	$(info CC  $<)
-	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev $< -o $@
+	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev $< -o $@ $(LDFLAGS)
 
 $(TESTDR)test_dern_vm.o: $(TESTDR)test_dern_vm.c
 	$(info CC  $<)
-	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev $< -o $@
+	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev $< -o $@ $(LDFLAGS)
+
+libdern_socket$(DLSUFFIX): $(PLUGINDIR)dern_socket.c $(AMALGAMATION)
+	$(info PC  $<)
+	@$(CC) $(DLFLAGS) -I release -o $@ $< $(LDFLAGS)
+
+libdern_dir$(DLSUFFIX): $(PLUGINDIR)dern_dir.c $(AMALGAMATION)
+	$(info PC  $<)
+	@$(CC) $(DLFLAGS) -I release -o $@ $< $(LDFLAGS)
+
+libdern_easing$(DLSUFFIX): $(PLUGINDIR)dern_easing.c $(AMALGAMATION)
+	$(info PC  $<)
+	@$(CC) $(DLFLAGS) -I release -o $@ $< $(LDFLAGS)
+
+libdern_animation$(DLSUFFIX): $(PLUGINDIR)dern_animation.c $(AMALGAMATION)
+	$(info PC  $<)
+	@$(CC) $(DLFLAGS) -I release -o $@ $< $(LDFLAGS)
+
+libdern_ncurses$(DLSUFFIX): $(PLUGINDIR)dern_ncurses.c $(AMALGAMATION)
+	$(info PC  $<)
+	@$(CC) $(DLFLAGS) -I release -o $@ $< $(CURSESLDFLAGS) $(LDFLAGS)
+
+libdern_sdl2$(DLSUFFIX): $(PLUGINDIR)dern_sdl2.c $(AMALGAMATION)
+	$(info PC  $<)
+	@$(CC) -I release $(SDL2CONFIG_CFLAGS) $(SDL2FLAGS) $(DLFLAGS) -o $@ $< $(SDL2CONFIG_LDFLAGS) $(LDFLAGS)
 
 %.o: %.c
 	$(info CC  $<)
-	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev $*.c -o $*.o
+	@$(CC) $(CFLAGS) -c -I dev/include -I $(CORDIR) -I dev $*.c -o $*.o $(LDFLAGS)
 
 
 ###############################################################################
@@ -94,15 +140,15 @@ $(CORDIR)LICENSE:
 	@make submodules-init --silent
 
 submodules-init:
-	@echo "Initializing submodules..."
-	@git submodule init
-	@git submodule update
-	@echo "Done."
+	@echo "--  Initializing submodules..."
+	@git submodule init --quiet
+	@git submodule update --quiet
+	@echo "OK  Done."
 
 submodules-pull:
-	@echo "Pulling submodules..."
-	@git submodule update --recursive --remote
-	@echo "Done."
+	@echo "--  Pulling submodules..."
+	@git submodule update --recursive --remote --quiet
+	@echo "OK  Done."
 
 $(AMALGAMATION): $(ETCDIR)amalgamation_head.c                \
                  $(CORDIR)octaspire-core-amalgamated.c       \
@@ -135,7 +181,7 @@ $(AMALGAMATION): $(ETCDIR)amalgamation_head.c                \
                  $(TESTDR)test_dern_lexer.c                  \
                  $(TESTDR)test_dern_vm.c                     \
                  $(ETCDIR)amalgamation_impl_unit_test_tail.c
-	@echo "Creating amalgamation..."
+	@echo "++  Creating amalgamation..."
 	@rm -rf $(AMALGAMATION)
 	@$(AMALGL) $(ETCDIR)amalgamation_head.c                $(AMALGAMATION)
 	@$(AMALGA) $(CORDIR)octaspire-core-amalgamated.c       $(AMALGAMATION)
