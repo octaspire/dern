@@ -40,7 +40,7 @@ UNAME := $(shell uname)
 
 # TODO Detect more platforms and show message about using the amalgamation on other platforms
 ifeq ($(UNAME), Darwin)
-    LDFLAGS            := -lm
+    LDFLAGS            :=
     DLSUFFIX           := .dylib
     DLFLAGS            := -dynamiclib
     CURSESLDFLAGS      := -lncurses
@@ -94,27 +94,27 @@ $(TESTDR)test_dern_vm.o: $(TESTDR)test_dern_vm.c
 
 libdern_socket$(DLSUFFIX): $(PLUGINDIR)dern_socket.c $(AMALGAMATION)
 	$(info PC  $<)
-	@$(CC) $(DLFLAGS) -I release -o $@ $< $(LDFLAGS)
+	@$(CC) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -I release -o $@ $< $(LDFLAGS)
 
 libdern_dir$(DLSUFFIX): $(PLUGINDIR)dern_dir.c $(AMALGAMATION)
 	$(info PC  $<)
-	@$(CC) $(DLFLAGS) -I release -o $@ $< $(LDFLAGS)
+	@$(CC) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -I release -o $@ $< $(LDFLAGS)
 
 libdern_easing$(DLSUFFIX): $(PLUGINDIR)dern_easing.c $(AMALGAMATION)
 	$(info PC  $<)
-	@$(CC) $(DLFLAGS) -I release -o $@ $< $(LDFLAGS)
+	@$(CC) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -I release -o $@ $< $(LDFLAGS)
 
 libdern_animation$(DLSUFFIX): $(PLUGINDIR)dern_animation.c $(AMALGAMATION)
 	$(info PC  $<)
-	@$(CC) $(DLFLAGS) -I release -o $@ $< $(LDFLAGS)
+	@$(CC) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -I release -o $@ $< $(LDFLAGS)
 
 libdern_ncurses$(DLSUFFIX): $(PLUGINDIR)dern_ncurses.c $(AMALGAMATION)
 	$(info PC  $<)
-	@$(CC) $(DLFLAGS) -I release -o $@ $< $(CURSESLDFLAGS) $(LDFLAGS)
+	@$(CC) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -I release -o $@ $< $(CURSESLDFLAGS) $(LDFLAGS)
 
 libdern_sdl2$(DLSUFFIX): $(PLUGINDIR)dern_sdl2.c $(AMALGAMATION)
 	$(info PC  $<)
-	@$(CC) -I release $(SDL2CONFIG_CFLAGS) $(SDL2FLAGS) $(DLFLAGS) -o $@ $< $(SDL2CONFIG_LDFLAGS) $(LDFLAGS)
+	@$(CC) -I release $(SDL2CONFIG_CFLAGS) $(SDL2FLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(SDL2CONFIG_LDFLAGS) $(LDFLAGS)
 
 perf-linux: octaspire-dern-unit-test-runner
 	@echo "+---------------------------------------------------------------------+"
