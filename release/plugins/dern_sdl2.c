@@ -387,18 +387,11 @@ static char const *dern_sdl2_private_helper_sdl_pixelformat_to_c_string(
         case SDL_PIXELFORMAT_BGR888:         return "BGR888";
         case SDL_PIXELFORMAT_BGRX8888:       return "BGRX8888";
         case SDL_PIXELFORMAT_ARGB2101010:    return "ARGB2101010";
-        case SDL_PIXELFORMAT_RGBA32:         return "RGBA32";
-        case SDL_PIXELFORMAT_ARGB32:         return "ARGB32";
-        case SDL_PIXELFORMAT_BGRA32:         return "BGRA32";
-        case SDL_PIXELFORMAT_ABGR32:         return "ABGR32";
         case SDL_PIXELFORMAT_YV12:           return "YV12";
         case SDL_PIXELFORMAT_IYUV:           return "IYUV";
         case SDL_PIXELFORMAT_YUY2:           return "YUY2";
         case SDL_PIXELFORMAT_UYVY:           return "UYVY";
         case SDL_PIXELFORMAT_YVYU:           return "YVYU";
-        case SDL_PIXELFORMAT_NV12:           return "NV12";
-        case SDL_PIXELFORMAT_NV21:           return "NV21";
-
         default: return "unsupported";
     }
 }
