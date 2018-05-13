@@ -275,7 +275,7 @@ octaspire_utf8_character_t;
 
 octaspire_utf8_encode_status_t octaspire_utf8_encode_character(
     uint32_t const character,
-    octaspire_utf8_character_t *result);
+    octaspire_utf8_character_t * const result);
 
 octaspire_utf8_decode_status_t octaspire_utf8_decode_character(
     char const * const text,
@@ -2465,7 +2465,7 @@ octaspire_utf8_decode_status_t octaspire_utf8_private_decode_helper(
     char const * const buffer,
     size_t const numOctetsNeeded,
     size_t const numOctetsAvailable,
-    uint32_t *result);
+    uint32_t * const result);
 
 static uint32_t const octaspire_utf8_private_range1_end   = ((uint32_t)0x007F);
 
@@ -2556,7 +2556,7 @@ static bool octaspire_utf8_private_get_bit_of_uint8(char const bitset, size_t co
 
 octaspire_utf8_encode_status_t octaspire_utf8_encode_character(
     uint32_t const character,
-    octaspire_utf8_character_t *result)
+    octaspire_utf8_character_t * const result)
 {
     memset(result->octets, 0, 4);
     result->numoctets = 0;
@@ -2576,10 +2576,8 @@ octaspire_utf8_encode_status_t octaspire_utf8_encode_character(
     {
         case OCTASPIRE_UTF8_CHARACTER_RANGE_FIRST:
         {
-            for (size_t i = 0; i < 7; ++i)
-            {
-                octaspire_utf8_private_set_bit(&bitset, i, octaspire_utf8_private_get_bit(character, i));
-            }
+            uint32_t const mask = 0x7F;       // Least significant 7 bits on
+            bitset |= ((bitset & ~mask) | (character & mask));
 
             result->numoctets = 1;
         }
@@ -2587,15 +2585,12 @@ octaspire_utf8_encode_status_t octaspire_utf8_encode_character(
 
         case OCTASPIRE_UTF8_CHARACTER_RANGE_SECOND:
         {
-            for (size_t i = 0; i < 6; ++i)
-            {
-                octaspire_utf8_private_set_bit(&bitset, i, octaspire_utf8_private_get_bit(character, i));
-            }
+            uint32_t const mask = 0x3F;     // Least significant 6 bits on
+            bitset |= ((bitset & ~mask) | (character & mask));
 
-            for (size_t i = 0; i < 5; ++i)
-            {
-                octaspire_utf8_private_set_bit(&bitset, 8+i, octaspire_utf8_private_get_bit(character, 6+i));
-            }
+            uint32_t const bitsetMask = 0x1F00; // Least significant bits 8,9,10,11,12 on
+            uint32_t const charMask   = 0x7C0;  // Least significant bits 6,7, 8, 9,10 on
+            bitset |= ((bitset & ~bitsetMask) | (((character & charMask) << 2) & bitsetMask));
 
             result->numoctets = 2;
         }
@@ -2603,23 +2598,16 @@ octaspire_utf8_encode_status_t octaspire_utf8_encode_character(
 
         case OCTASPIRE_UTF8_CHARACTER_RANGE_THIRD:
         {
-            for (size_t i = 0; i < 6; ++i)
-            {
-                octaspire_utf8_private_set_bit(&bitset, i, octaspire_utf8_private_get_bit(character, i));
-            }
+            uint32_t mask = 0x3F;       // Least significant 6 bits on
+            bitset |= ((bitset & ~mask) | (character & mask));
 
-            for (size_t i = 0; i < 6; ++i)
-            {
-                octaspire_utf8_private_set_bit(&bitset, 8+i, octaspire_utf8_private_get_bit(character, 6+i));
-            }
+            uint32_t bitsetMask = 0x3F00; // Least significant bits 8,9,10,11,12,13 on
+            uint32_t charMask   = 0xFC0;  // Least significant bits 6,7, 8, 9,10,11 on
+            bitset |= ((bitset & ~bitsetMask) | (((character & charMask) << 2) & bitsetMask));
 
-            for (size_t i = 0; i < 4; ++i)
-            {
-                octaspire_utf8_private_set_bit(
-                    &bitset,
-                    16+i,
-                    octaspire_utf8_private_get_bit(character, 12+i));
-            }
+            bitsetMask = 0xF0000; // Least significant bits 16,17,18,19 on
+            charMask   = 0xF000;  // Least significant bits 12,13,14,15 on
+            bitset |= ((bitset & ~bitsetMask) | (((character & charMask) << 4) & bitsetMask));
 
             result->numoctets = 3;
         }
@@ -2627,31 +2615,20 @@ octaspire_utf8_encode_status_t octaspire_utf8_encode_character(
 
         case OCTASPIRE_UTF8_CHARACTER_RANGE_FOURTH:
         {
-            for (size_t i = 0; i < 6; ++i)
-            {
-                octaspire_utf8_private_set_bit(&bitset, i, octaspire_utf8_private_get_bit(character, i));
-            }
+            uint32_t mask = 0x3F;       // Least significant 6 bits on
+            bitset |= ((bitset & ~mask) | (character & mask));
 
-            for (size_t i = 0; i < 6; ++i)
-            {
-                octaspire_utf8_private_set_bit(&bitset, 8+i, octaspire_utf8_private_get_bit(character, 6+i));
-            }
+            uint32_t bitsetMask = 0x3F00; // Least significant bits 8,9,10,11,12,13 on
+            uint32_t charMask   = 0xFC0;  // Least significant bits 6,7, 8, 9,10,11 on
+            bitset |= ((bitset & ~bitsetMask) | (((character & charMask) << 2) & bitsetMask));
 
-            for (size_t i = 0; i < 6; ++i)
-            {
-                octaspire_utf8_private_set_bit(
-                    &bitset,
-                    16+i,
-                    octaspire_utf8_private_get_bit(character, 12+i));
-            }
+            bitsetMask = 0x3F0000; // Least significant bits 16,17,18,19,20,21 on
+            charMask   = 0x3F000; // Least significant bits 12,13,14,15,16,17 on
+            bitset |= ((bitset & ~bitsetMask) | (((character & charMask) << 4) & bitsetMask));
 
-            for (size_t i = 0; i < 3; ++i)
-            {
-                octaspire_utf8_private_set_bit(
-                    &bitset,
-                    24+i,
-                    octaspire_utf8_private_get_bit(character, 18+i));
-            }
+            bitsetMask = 0x7000000; // Least significant bits 24,25,26 on
+            charMask   = 0x1C0000;  // Most significant bits 18,19,20 on
+            bitset |= ((bitset & ~bitsetMask) | (((character & charMask) << 6) & bitsetMask));
 
             result->numoctets = 4;
         }
@@ -2663,37 +2640,18 @@ octaspire_utf8_encode_status_t octaspire_utf8_encode_character(
         }
     }
 
-    for (size_t i = 0; i < 8; ++i)
-    {
-        octaspire_utf8_private_set_bit_of_char(
-            &(result->octets[3]),
-            i,
-            octaspire_utf8_private_get_bit(bitset, i));
-    }
+    uint8_t const resultMask = 0xFF; // First 8 bits on
+    uint32_t      inputMask  = 0xFF; // Least significant 8 bits on
+    result->octets[3] = ((result->octets[3] & ~resultMask) | (bitset & inputMask));
 
-    for (size_t i = 0; i < 8; ++i)
-    {
-        octaspire_utf8_private_set_bit_of_char(
-            &(result->octets[2]),
-            i,
-            octaspire_utf8_private_get_bit(bitset, 8+i));
-    }
+    inputMask  = 0x0000FF00; // Lest significant 8 bits off then 8 bits on
+    result->octets[2] = ((result->octets[2] & ~resultMask) | ((bitset & inputMask) >> 8));
 
-    for (size_t i = 0; i < 8; ++i)
-    {
-        octaspire_utf8_private_set_bit_of_char(
-            &(result->octets[1]),
-            i,
-            octaspire_utf8_private_get_bit(bitset, 16+i));
-    }
+    inputMask  = 0x00FF0000; // Least significant 16 bits off then 8 bits on
+    result->octets[1] = ((result->octets[1] & ~resultMask) | ((bitset & inputMask) >> 16));
 
-    for (size_t i = 0; i < 8; ++i)
-    {
-        octaspire_utf8_private_set_bit_of_char(
-            &(result->octets[0]),
-            i,
-            octaspire_utf8_private_get_bit(bitset, 24+i));
-    }
+    inputMask  = 0xFF000000; // Least significant 24 bits off then 8 bits on
+    result->octets[0] = ((result->octets[0] & ~resultMask) | ((bitset & inputMask) >> 24));
 
     return OCTASPIRE_UTF8_ENCODE_STATUS_OK;
 }
@@ -2807,7 +2765,7 @@ octaspire_utf8_decode_status_t octaspire_utf8_private_decode_helper(
     char const * const buffer,
     size_t const numOctetsNeeded,
     size_t const numOctetsAvailable,
-    uint32_t *result)
+    uint32_t * const result)
 {
     assert(numOctetsNeeded <= 4);
 
@@ -2822,14 +2780,10 @@ octaspire_utf8_decode_status_t octaspire_utf8_private_decode_helper(
         {
             // 0xxxxxxx
 
-            for (size_t i = 0; i < 7; ++i)
-            {
-                // INVALID_READ_OF_1
-                octaspire_utf8_private_set_bit(
-                    result,
-                    i,
-                    octaspire_utf8_private_get_bit_of_uint8(buffer[0], i));
-            }
+            uint32_t const resultMask = 0x7F; // 7 least significant bits on
+            uint8_t  const inputMask  = 0x7F; // 7 least significant bits on
+            *result = 0;
+            *result |= ((*result & ~resultMask) | (buffer[0] & inputMask));
         }
         break;
 
@@ -2837,21 +2791,14 @@ octaspire_utf8_decode_status_t octaspire_utf8_private_decode_helper(
         {
             // 110xxxxx 10xxxxxx
 
-            for (size_t i = 0; i < 5; ++i)
-            {
-                octaspire_utf8_private_set_bit(
-                    result,
-                    i+6,
-                    octaspire_utf8_private_get_bit_of_uint8(buffer[0], i));
-            }
+            uint32_t resultMask = 0x7C0; // 6 least significant bits off, then 5 on
+            uint8_t  inputMask  = 0x1F;  // 5 least significant bits on
+            *result = 0;
+            *result |= ((*result & ~resultMask) | ((buffer[0] & inputMask) << 6));
 
-            for (size_t i = 0; i < 6; ++i)
-            {
-                octaspire_utf8_private_set_bit(
-                    result,
-                    i,
-                    octaspire_utf8_private_get_bit_of_uint8(buffer[1], i));
-            }
+            resultMask = 0x3F; // 6 least significant bits on
+            inputMask  = 0x3F; // 6 least significant bits on
+            *result |= ((*result & ~resultMask) | (buffer[1] & inputMask));
 
             if (*result <= 0x7F)
             {
@@ -2864,29 +2811,18 @@ octaspire_utf8_decode_status_t octaspire_utf8_private_decode_helper(
         {
             // 1110xxxx 10xxxxxx 10xxxxxx
 
-            for (size_t i = 0; i < 4; ++i)
-            {
-                octaspire_utf8_private_set_bit(
-                    result,
-                    i+12,
-                    octaspire_utf8_private_get_bit_of_uint8(buffer[0], i));
-            }
+            uint32_t resultMask = 0xF000; // 12 least significant bits off, then 4 on
+            uint8_t  inputMask  = 0xF;    // 4 least significant bits on
+            *result = 0;
+            *result |= ((*result & ~resultMask) | ((buffer[0] & inputMask) << 12));
 
-            for (size_t i = 0; i < 6; ++i)
-            {
-                octaspire_utf8_private_set_bit(
-                    result,
-                    i+6,
-                    octaspire_utf8_private_get_bit_of_uint8(buffer[1], i));
-            }
+            resultMask = 0xFC0; // 6 least significant bits off, then 6 on
+            inputMask  = 0x3F;  // 6 least significant bits on
+            *result |= ((*result & ~resultMask) | ((buffer[1] & inputMask) << 6));
 
-            for (size_t i = 0; i < 6; ++i)
-            {
-                octaspire_utf8_private_set_bit(
-                    result,
-                    i,
-                    octaspire_utf8_private_get_bit_of_uint8(buffer[2], i));
-            }
+            resultMask = 0x3F; // 6 least significant bits on
+            inputMask  = 0x3F; // 6 least significant bits on
+            *result |= ((*result & ~resultMask) | (buffer[2] & inputMask));
 
             if (*result <= 2047)
             {
@@ -2899,37 +2835,22 @@ octaspire_utf8_decode_status_t octaspire_utf8_private_decode_helper(
         {
             // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
 
-            for (size_t i = 0; i < 3; ++i)
-            {
-                octaspire_utf8_private_set_bit(
-                    result,
-                    i+18,
-                    octaspire_utf8_private_get_bit_of_uint8(buffer[0], i));
-            }
+            uint32_t resultMask = 0x1C0000; // 18 least significant bits off, then 3 on
+            uint8_t  inputMask  = 0x7;      // 3 least significant bits on
+            *result = 0;
+            *result |= ((*result & ~resultMask) | ((buffer[0] & inputMask) << 18));
 
-            for (size_t i = 0; i < 6; ++i)
-            {
-                octaspire_utf8_private_set_bit(
-                    result,
-                    i+12,
-                    octaspire_utf8_private_get_bit_of_uint8(buffer[1], i));
-            }
+            resultMask = 0x3F000; // 12 least significant bits off, then 6 on
+            inputMask  = 0x3F;    // 6 least significant bits on
+            *result |= ((*result & ~resultMask) | ((buffer[1] & inputMask) << 12));
 
-            for (size_t i = 0; i < 6; ++i)
-            {
-                octaspire_utf8_private_set_bit(
-                    result,
-                    i+6,
-                    octaspire_utf8_private_get_bit_of_uint8(buffer[2], i));
-            }
+            resultMask = 0xFC0; // 6 least significant bits off, then 6 on
+            inputMask  = 0x3F;  // 6 least significant bits on
+            *result |= ((*result & ~resultMask) | ((buffer[2] & inputMask) << 6));
 
-            for (size_t i = 0; i < 6; ++i)
-            {
-                octaspire_utf8_private_set_bit(
-                    result,
-                    i,
-                    octaspire_utf8_private_get_bit_of_uint8(buffer[3], i));
-            }
+            resultMask = 0x3F; // 6 least significant bits on
+            inputMask  = 0x3F; // 6 least significant bits on
+            *result |= ((*result & ~resultMask) | (buffer[3] & inputMask));
 
             if (*result <= 65535)
             {
