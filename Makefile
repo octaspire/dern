@@ -275,7 +275,9 @@ coverage: $(AMALGAMATION)
 	@$(RELDIR)/octaspire-dern-unit-test-runner --write-test-files
 	@lcov --no-external --capture --directory release --output-file $(RELDIR)coverage.info
 
-
 coverage-show: coverage
 	@genhtml $(RELDIR)coverage.info --output-directory coverage
 	@xdg-open coverage/index.html &
+
+dev/TAGS: $(SRCDIR)*.c $(INCDIR)*.h $(CORDIR)octaspire-core-amalgamated.c
+	@etags -o $@ $^
