@@ -58,7 +58,7 @@ else
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 endif
 
-.PHONY: development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux
+.PHONY: development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux major minor patch
 
 all: development
 
@@ -281,3 +281,13 @@ coverage-show: coverage
 
 dev/TAGS: $(SRCDIR)*.c $(INCDIR)*.h $(CORDIR)octaspire-core-amalgamated.c
 	@etags -o $@ $^
+
+major:
+	@sh dev/etc/bump-version.sh major
+
+minor:
+	@sh dev/etc/bump-version.sh minor
+
+patch:
+	@sh dev/etc/bump-version.sh patch
+
