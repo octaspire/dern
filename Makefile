@@ -58,7 +58,7 @@ else
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 endif
 
-.PHONY: development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux major minor patch
+.PHONY: development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push
 
 all: development
 
@@ -291,3 +291,7 @@ minor:
 patch:
 	@sh dev/etc/bump-version.sh patch
 
+push:
+	@git push origin-gitlab
+	@git push origin-github
+	@git push origin-bitbucket
