@@ -293,5 +293,5 @@ patch:
 
 push:
 	@git push origin-gitlab
-	@git push origin-github
 	@git push origin-bitbucket
+	@git push origin-github

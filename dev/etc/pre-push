@@ -1,0 +1,32 @@
+#!/bin/sh
+# This script is based on a script from:
+# https://amp.reddit.com/r/git/comments/3o1tut/precommit_hook_to_make_sure_you_update_the
+#
+# This script must be copied or linked into .git/hooks/pre-push
+# For example:
+# cd .git/hooks
+# ln -s ../../dev/etc/pre-push pre-push
+
+REPO_ROOT=$(git rev-parse --show-toplevel)/
+CONFIG_FILE=dev/include/octaspire/dern/octaspire_dern_config.h
+BRANCHES=master..origin-github/master
+
+MAJOR_DIFF=$(git diff ${BRANCHES} -G OCTASPIRE_DERN_CONFIG_VERSION_MAJOR -- ${REPO_ROOT}${CONFIG_FILE} | wc -l)
+MINOR_DIFF=$(git diff ${BRANCHES} -G OCTASPIRE_DERN_CONFIG_VERSION_MINOR -- ${REPO_ROOT}${CONFIG_FILE} | wc -l)
+PATCH_DIFF=$(git diff ${BRANCHES} -G OCTASPIRE_DERN_CONFIG_VERSION_PATCH -- ${REPO_ROOT}${CONFIG_FILE} | wc -l)
+
+ColReset='\033[0m'
+ColGreen='\033[0;32m';   ColBGreen='\033[1;32m';
+ColRed='\033[0;31m';     ColBRed='\033[1;31m';
+ColYelow='\033[0;33m';   ColBYellow='\033[1;33m';
+
+if [ "$MAJOR_DIFF" -gt "0" ] || [ "$MINOR_DIFF" -gt "0" ] || [ "$PATCH_DIFF" -gt "0" ] ; then
+    echo "${ColGreen}Version number is updated${ColReset}"
+else
+    echo ""
+    echo "${ColBYellow}======================================================================="
+    echo "= ${ColBRed}Version number is not updated! Push aborted. Update version number! ${ColBYellow}="
+    echo "=======================================================================${ColReset}"
+    echo ""
+    exit 1
+fi
