@@ -4885,7 +4885,7 @@ octaspire_string_t *octaspire_string_new_from_buffer(
         while (index < lengthInOctets)
         {
             // TODO XXX is (lengthInOctets - index) correct?
-            octaspire_utf8_decode_status_t status = octaspire_utf8_decode_character(
+            octaspire_utf8_decode_status_t const status = octaspire_utf8_decode_character(
                 buffer + index,
                 (lengthInOctets - index),
                 &ucsChar,
@@ -21724,7 +21724,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "348"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "349"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
