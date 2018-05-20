@@ -206,7 +206,7 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "97"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "98"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_STR "Octaspire Core version " \
@@ -2834,23 +2834,7 @@ octaspire_utf8_decode_status_t octaspire_utf8_decode_character(
         return OCTASPIRE_UTF8_DECODE_STATUS_ILLEGAL_NUMBER_OF_OCTETS;
     }
 
-    size_t numOctetsAvailable = 0;
-
-    size_t const iLim = octaspire_helpers_min_size_t(4, textLengthInOctets);
-
-    for (size_t i = 0; i < iLim; ++i)
-    {
-        if (text[i] == '\0')
-        {
-            break;
-        }
-        else
-        {
-            ++numOctetsAvailable;
-        }
-    }
-
-    return octaspire_utf8_private_decode_helper(text, numoctetsRef, numOctetsAvailable, result);
+    return octaspire_utf8_private_decode_helper(text, numoctetsRef, numoctetsRef, result);
 }
 
 octaspire_utf8_decode_status_t octaspire_utf8_decode_character_from_buffer(
@@ -3181,12 +3165,13 @@ static octaspire_vector_private_index_t octaspire_vector_private_is_index_valid(
 {
     octaspire_vector_private_index_t result = {.isValid=false, .index=0};
 
+    size_t const selfLen = octaspire_vector_get_length(self);
+
     if (possiblyNegativeIndex < 0)
     {
-        ptrdiff_t tmpIndex =
-            (ptrdiff_t)octaspire_vector_get_length(self) + possiblyNegativeIndex;
+        ptrdiff_t tmpIndex = (ptrdiff_t)selfLen + possiblyNegativeIndex;
 
-        if (tmpIndex >= 0 && (size_t)tmpIndex < octaspire_vector_get_length(self))
+        if (tmpIndex >= 0 && (size_t)tmpIndex < selfLen)
         {
             result.index   = (size_t)tmpIndex;
             result.isValid = true;
@@ -3195,7 +3180,7 @@ static octaspire_vector_private_index_t octaspire_vector_private_is_index_valid(
         }
     }
 
-    if ((size_t)possiblyNegativeIndex < octaspire_vector_get_length(self))
+    if ((size_t)possiblyNegativeIndex < selfLen)
     {
         result.index   = (size_t)possiblyNegativeIndex;
         result.isValid = true;
@@ -21739,7 +21724,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "347"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "348"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
