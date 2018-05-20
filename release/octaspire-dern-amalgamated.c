@@ -206,8 +206,8 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "95"
-#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "97"
+#define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_STR "Octaspire Core version " \
     OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "." \
@@ -3422,15 +3422,13 @@ bool octaspire_vector_insert_element_at(
         }
     }
 
-    for (size_t i = originalNumElements; i < index; ++i)
-    {
-        void *s = octaspire_vector_private_index_to_pointer(self, i);
+    // octaspire_vector_private_grow initializes new memory into zero,
+    // so no need do it here again.
 
-        if (s != memset(s, 0, self->elementSize))
-        {
-            abort();
-        }
-        ++(self->numElements);
+    long const numAdded = (index - originalNumElements);
+    if (numAdded > 0)
+    {
+        self->numElements += numAdded;
     }
 
     void *target = octaspire_vector_private_index_to_pointer(self, index);
@@ -21741,7 +21739,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "346"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "347"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
