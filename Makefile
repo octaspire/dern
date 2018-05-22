@@ -160,6 +160,7 @@ submodules-init:
 submodules-pull:
 	@echo "--  Pulling submodules..."
 	@git submodule update --recursive --remote --quiet
+	@make -s dev/TAGS
 	@echo "OK  Done."
 
 $(AMALGAMATION): $(ETCDIR)amalgamation_head.c                \
@@ -284,12 +285,18 @@ dev/TAGS: $(SRCDIR)*.c $(INCDIR)*.h $(CORDIR)octaspire-core-amalgamated.c
 
 major:
 	@sh dev/etc/bump-version.sh major
+	@make -s dev/TAGS
+	@echo "OK  Done."
 
 minor:
 	@sh dev/etc/bump-version.sh minor
+	@make -s dev/TAGS
+	@echo "OK  Done."
 
 patch:
 	@sh dev/etc/bump-version.sh patch
+	@make -s dev/TAGS
+	@echo "OK  Done."
 
 push:
 	@git push origin-gitlab
