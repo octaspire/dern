@@ -9,12 +9,16 @@ DEVDOCDIR=dev/doc/
 DEVGAMEDIR=$(ETCDIR)games/
 CORDIR=$(EXTDIR)octaspire_core/release/
 RELDIR=release/
+GAMESDIR=$(RELDIR)games/
 PLUGINDIR=$(RELDIR)plugins/
 RELDOCDIR=$(RELDIR)documentation/
 AMALGAMATION=$(RELDIR)octaspire-dern-amalgamated.c
 PLUGINS := $(wildcard $(PLUGINDIR)*.c)
 UNAME=$(shell uname -s)
 CFLAGS=-std=c99 -Wall -Wextra -g -O2 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+
+TAGS_C_FILES := $(SRCDIR)*.c $(INCDIR)*.h $(CORDIR)octaspire-core-amalgamated.c
+TAGS_DERN_FILES := $(GAMESDIR)octaspire-lightboard.dern $(GAMESDIR)octaspire-maze.dern
 
 TESTOBJS := $(SRCDIR)octaspire_dern_c_data.o      \
             $(SRCDIR)octaspire_dern_environment.o \
@@ -280,8 +284,12 @@ coverage-show: coverage
 	@genhtml $(RELDIR)coverage.info --output-directory coverage
 	@xdg-open coverage/index.html &
 
-dev/TAGS: $(SRCDIR)*.c $(INCDIR)*.h $(CORDIR)octaspire-core-amalgamated.c
-	@etags -o $@ $^
+# Create a TAGS file that allows the jumping between definitions and uses of
+# things (for example functions) when editing C or Dern code. Dern files are
+# indexed as scheme files; it seems to be working.
+dev/TAGS: $(TAGS_C_FILES) $(TAGS_DERN_FILES)
+	@etags -o $@ $(TAGS_C_FILES)
+	@etags -o $@ --append --language scheme $(TAGS_DERN_FILES)
 
 major:
 	@sh dev/etc/bump-version.sh major
