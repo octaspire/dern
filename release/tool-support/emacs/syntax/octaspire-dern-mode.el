@@ -54,7 +54,7 @@
     (modify-syntax-entry ?|  "\""      st)
     (modify-syntax-entry ?#  ". 14b"   st)
     (modify-syntax-entry ?!  ". 23b"   st)
-    ;(modify-syntax-entry ?`  "\\"      st)
+    (modify-syntax-entry ??  "w"       st)
     st)
   "Syntax table for octaspire-dern-mode")
 

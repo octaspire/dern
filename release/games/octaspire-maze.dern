@@ -2828,12 +2828,12 @@
   [state-update]
   '(dt [delta time] input [string telling the input, if any: u, d, l, r]) howto-no)
 
-(define entity-render as (fn (entity dt)
+(define entity-render as (fn (entity dt always)
 
     (define x  as (ln@ entity 'x  'hash) [tx])
     (define y  as (ln@ entity 'y  'hash) [ty])
 
-    (if (level-is-slot-empty? x y) (return))
+    (if (and (not always) (level-is-slot-empty? x y)) (return))
 
     (define tx as (ln@ entity 'tx 'hash) [tx])
     (define ty as (ln@ entity 'ty 'hash) [ty])
@@ -2852,7 +2852,7 @@
         (ln@ entity 'tw 'hash)
         (ln@ entity 'th 'hash))))
   [render one entity]
-  '(entity [entity] dt [delta time]) howto-no)
+  '(entity [entity] dt [delta time] always [don't check the slot]) howto-no)
 
 
 
@@ -2911,7 +2911,9 @@
 (define ingame-state-tween-in-render as (fn (dt)
     ;(= origoX (-  256 origoX))
     (for entity in level
-         (entity-render entity dt)))
+         (entity-render entity dt false))
+    (for entity in pass-counters
+         (entity-render (ln@ entity 1) dt true)))
   [ingame-state-tween-in-render]
   '(dt [delta time]) howto-no)
 
@@ -2923,7 +2925,9 @@
 ;----------------------------------------------ingame-----------------------------------------------
 (define ingame-state-render as (fn (dt)
     (for entity in level
-         (entity-render entity dt)))
+         (entity-render entity dt false))
+    (for entity in pass-counters
+         (entity-render (ln@ entity 1) dt true)))
   [ingame-state-render]
   '(dt [delta time]) howto-no)
 
@@ -2980,7 +2984,7 @@
 ;--------------------------------------------tween in-----------------------------------------------
 (define ingame-state-tween-out-render as (fn (dt)
     (for entity in level
-         (entity-render entity dt)))
+         (entity-render entity dt false)))
   [ingame-state-tween-out-render]
   '(dt [delta time]) howto-no)
 
@@ -2992,7 +2996,7 @@
 ;------------------------------------------------shake----------------------------------------------
 (define ingame-state-shake-render as (fn (dt)
     (for entity in level
-         (entity-render entity dt)))
+         (entity-render entity dt false)))
   [ingame-state-tween-shake-render]
   '(dt [delta time]) howto-no)
 
