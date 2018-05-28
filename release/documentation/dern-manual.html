@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-05-10 Thu 22:21 -->
+<!-- 2018-05-28 Mon 21:50 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Octaspire Dern Manual</title>
@@ -182,6 +182,7 @@
 </style>
 <link rel="stylesheet" type="text/css" href="https://octaspire.io/bundle-with-toc.min.css"/>
 <script src="https://octaspire.io/bundle-with-toc.min.js" type="text/javascript" ></script>
+<style>pre.src {background-color: #303030; color: #e5e5e5;}</style>
 <script type="text/javascript">
 /*
 @licstart  The following is the entire license notice for the
@@ -258,69 +259,69 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org92edfce">1. About</a></li>
-<li><a href="#org4f63c59">2. Building the amalgamated source release</a>
+<li><a href="#org77176ce">1. About</a></li>
+<li><a href="#org3a36e02">2. Building the amalgamated source release</a>
 <ul>
-<li><a href="#orgf0038d6">2.1. Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, macOS, Termux, AROS</a></li>
-<li><a href="#org2d42c77">2.2. Plan9</a></li>
-<li><a href="#org081077c">2.3. Plan9 on ARM architecture</a></li>
-<li><a href="#orgecb84c5">2.4. Windows using MinGW and Git</a></li>
-<li><a href="#org9721322">2.5. ReactOS</a></li>
-<li><a href="#org27d2ffa">2.6. AmigaOS 4.x</a></li>
+<li><a href="#orgbd53e2f">2.1. Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, macOS, Termux, AROS</a></li>
+<li><a href="#org20dffdd">2.2. Plan9</a></li>
+<li><a href="#org7064c92">2.3. Plan9 on ARM architecture</a></li>
+<li><a href="#org5ff1788">2.4. Windows using MinGW and Git</a></li>
+<li><a href="#org6c0a73b">2.5. ReactOS</a></li>
+<li><a href="#org85e856f">2.6. AmigaOS 4.x</a></li>
 </ul>
 </li>
-<li><a href="#orgfcd070a">3. Hello world</a></li>
-<li><a href="#org16c2037">4. Values</a></li>
-<li><a href="#org22e2df3">5. Single and multiline comments, making script files executable</a></li>
-<li><a href="#org2ed32fe">6. Binding names to values with <code>define</code></a>
+<li><a href="#org2b5193d">3. Hello world</a></li>
+<li><a href="#org8e19b80">4. Values</a></li>
+<li><a href="#org3f2f00b">5. Single and multiline comments, making script files executable</a></li>
+<li><a href="#org5b5b0ce">6. Binding names to values with <code>define</code></a>
 <ul>
-<li><a href="#org699486a">6.1. Binding in other environments than the current one</a></li>
+<li><a href="#orgc3ded4a">6.1. Binding in other environments than the current one</a></li>
 </ul>
 </li>
-<li><a href="#orgf627831">7. Iteration</a></li>
-<li><a href="#org90d86ea">8. Comparing and changing values, predicates</a></li>
-<li><a href="#org9ff4940">9. Removing the last value from a vector</a></li>
-<li><a href="#org9bbf630">10. Branching and selection</a></li>
-<li><a href="#org07f913f">11. Selecting values from collections</a></li>
-<li><a href="#orgf8f57ce">12. Accessing and manipulating command line arguments and environment variables</a></li>
-<li><a href="#orgf20a8dc">13. Formatted and regular printing</a></li>
-<li><a href="#org0edfbf8">14. Formatted string creation</a></li>
-<li><a href="#org996399c">15. Functions with variable number of arguments</a></li>
-<li><a href="#org4c81252">16. Environments</a></li>
-<li><a href="#orge75c94d">17. Getting help with <code>howto</code></a></li>
-<li><a href="#orgf22d2e9">18. Returning from functions early</a></li>
-<li><a href="#orgd8858a1">19. Evaluating values</a></li>
-<li><a href="#orgd9733f7">20. Input and output ports</a></li>
-<li><a href="#org2e5b8a5">21. Converting between types</a></li>
-<li><a href="#org7a8b7a2">22. Searching and indexing</a></li>
-<li><a href="#orgf34cd92">23. Loading libraries with <code>require</code></a>
+<li><a href="#org5b857ef">7. Iteration</a></li>
+<li><a href="#orga211a2b">8. Comparing and changing values, predicates</a></li>
+<li><a href="#org8786eb6">9. Removing the last value from a vector</a></li>
+<li><a href="#org8898da2">10. Branching and selection</a></li>
+<li><a href="#org6692650">11. Selecting values from collections</a></li>
+<li><a href="#org38b9752">12. Accessing and manipulating command line arguments and environment variables</a></li>
+<li><a href="#orgb5027dd">13. Formatted and regular printing</a></li>
+<li><a href="#orgdb63708">14. Formatted string creation</a></li>
+<li><a href="#org881421e">15. Functions with variable number of arguments</a></li>
+<li><a href="#orgadc4559">16. Environments</a></li>
+<li><a href="#org4c6522f">17. Getting help with <code>howto</code></a></li>
+<li><a href="#orgd08d448">18. Returning from functions early</a></li>
+<li><a href="#orgdb7e1ac">19. Evaluating values</a></li>
+<li><a href="#org37db002">20. Input and output ports</a></li>
+<li><a href="#org79e61a5">21. Converting between types</a></li>
+<li><a href="#org670245d">22. Searching and indexing</a></li>
+<li><a href="#orgc7b090f">23. Loading libraries with <code>require</code></a>
 <ul>
-<li><a href="#org4d91af2">23.1. Building and using a binary library in Haiku</a></li>
-<li><a href="#org19f4bcd">23.2. Building and using a binary library in MINIX 3</a></li>
-<li><a href="#org78345bb">23.3. Building and using a binary library in Linux</a></li>
-<li><a href="#org4be0b7d">23.4. Building and using a binary library in FreeBSD</a></li>
-<li><a href="#org50a3b50">23.5. Building and using a binary library in NetBSD</a></li>
+<li><a href="#org4575c69">23.1. Building and using a binary library in Haiku</a></li>
+<li><a href="#org2039342">23.2. Building and using a binary library in MINIX 3</a></li>
+<li><a href="#org61af71d">23.3. Building and using a binary library in Linux</a></li>
+<li><a href="#org42c9a6d">23.4. Building and using a binary library in FreeBSD</a></li>
+<li><a href="#org3b437db">23.5. Building and using a binary library in NetBSD</a></li>
 </ul>
 </li>
-<li><a href="#org2222992">24. Using custom library loader with <code>require</code></a></li>
-<li><a href="#org97d0168">25. Embedding in C programs</a></li>
-<li><a href="#org8373413">26. Tool support</a></li>
-<li><a href="#orgd954d2c">27. Using the development repository</a>
+<li><a href="#orgf2b09eb">24. Using custom library loader with <code>require</code></a></li>
+<li><a href="#org0092011">25. Embedding in C programs</a></li>
+<li><a href="#org55b97a2">26. Tool support</a></li>
+<li><a href="#org7ef1709">27. Using the development repository</a>
 <ul>
-<li><a href="#orgbbee48b">27.1. Raspberry Pi, Debian and Ubuntu</a></li>
-<li><a href="#orgb328ff1">27.2. Arch Linux</a></li>
-<li><a href="#org85b936d">27.3. Haiku</a></li>
-<li><a href="#org24afb97">27.4. FreeBSD</a></li>
-<li><a href="#orga1d760e">27.5. NetBSD</a></li>
-<li><a href="#orgf60d04c">27.6. MINIX 3</a></li>
+<li><a href="#org67867ff">27.1. Raspberry Pi, Debian and Ubuntu</a></li>
+<li><a href="#org1f370da">27.2. Arch Linux</a></li>
+<li><a href="#org1040307">27.3. Haiku</a></li>
+<li><a href="#org5af045a">27.4. FreeBSD</a></li>
+<li><a href="#org8ade613">27.5. NetBSD</a></li>
+<li><a href="#org72eaa79">27.6. MINIX 3</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org92edfce" class="outline-2">
-<h2 id="org92edfce"><span class="section-number-2">1</span> About</h2>
+<div id="outline-container-org77176ce" class="outline-2">
+<h2 id="org77176ce"><span class="section-number-2">1</span> About</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 Octaspire Dern<sup><a id="fnr.1" class="footref" href="#fn.1">1</a></sup> is a platform independent programming language in
@@ -409,8 +410,8 @@ even in backwards incompatible manner.
 </div>
 </div>
 
-<div id="outline-container-org4f63c59" class="outline-2">
-<h2 id="org4f63c59"><span class="section-number-2">2</span> Building the amalgamated source release</h2>
+<div id="outline-container-org3a36e02" class="outline-2">
+<h2 id="org3a36e02"><span class="section-number-2">2</span> Building the amalgamated source release</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 The amalgamated source release is the recommended way of using Dern, if you don&rsquo;t need to
@@ -419,15 +420,15 @@ C standard library supporting a subset of C99.
 </p>
 </div>
 
-<div id="outline-container-orgf0038d6" class="outline-3">
-<h3 id="orgf0038d6"><span class="section-number-3">2.1</span> Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, macOS, Termux, AROS</h3>
+<div id="outline-container-orgbd53e2f" class="outline-3">
+<h3 id="orgbd53e2f"><span class="section-number-3">2.1</span> Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, macOS, Termux, AROS</h3>
 <div class="outline-text-3" id="text-2-1">
 <div class="org-src-container">
 <pre class="src src-sh">curl -O octaspire.com/dern.tar.bz2
 curl -O https://octaspire.io/dern.tar.bz2.sha512
 sha512sum -c dern.tar.bz2.sha512
 tar jxf dern.tar.bz2
-<span style="color: #006FE0;">cd</span> dern
+<span style="color: #DCDCCC; font-weight: bold;">cd</span> dern
 sh how-to-build/YOUR_PLATFORM_NAME_HERE.XX
 </pre>
 </div>
@@ -441,34 +442,34 @@ More scripts for different platforms will be added later.
 </div>
 </div>
 
-<div id="outline-container-org2d42c77" class="outline-3">
-<h3 id="org2d42c77"><span class="section-number-3">2.2</span> Plan9</h3>
+<div id="outline-container-org20dffdd" class="outline-3">
+<h3 id="org20dffdd"><span class="section-number-3">2.2</span> Plan9</h3>
 <div class="outline-text-3" id="text-2-2">
 <div class="org-src-container">
 <pre class="src src-sh">hget http://octaspire.com/dern.tar.bz2 &gt; dern.tar.bz2
 tar xf dern.tar.bz2
-<span style="color: #006FE0;">cd</span> dern/*
+<span style="color: #DCDCCC; font-weight: bold;">cd</span> dern/*
 rc how-to-build/Plan9.sh
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org081077c" class="outline-3">
-<h3 id="org081077c"><span class="section-number-3">2.3</span> Plan9 on ARM architecture</h3>
+<div id="outline-container-org7064c92" class="outline-3">
+<h3 id="org7064c92"><span class="section-number-3">2.3</span> Plan9 on ARM architecture</h3>
 <div class="outline-text-3" id="text-2-3">
 <div class="org-src-container">
 <pre class="src src-sh">hget http://octaspire.com/dern.tar.bz2 &gt; dern.tar.bz2
 tar xf dern.tar.bz2
-<span style="color: #006FE0;">cd</span> dern/*
+<span style="color: #DCDCCC; font-weight: bold;">cd</span> dern/*
 rc how-to-build/Plan9-arm.sh
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgecb84c5" class="outline-3">
-<h3 id="orgecb84c5"><span class="section-number-3">2.4</span> Windows using MinGW and Git</h3>
+<div id="outline-container-org5ff1788" class="outline-3">
+<h3 id="org5ff1788"><span class="section-number-3">2.4</span> Windows using MinGW and Git</h3>
 <div class="outline-text-3" id="text-2-4">
 <p>
 Download and install <b>MinGW</b> from
@@ -488,7 +489,7 @@ Start <b>Git Bash</b> and run the following commands:
 
 <div class="org-src-container">
 <pre class="src src-sh">git clone https://github.com/octaspire/dern.git
-<span style="color: #006FE0;">cd</span> dern/release
+<span style="color: #DCDCCC; font-weight: bold;">cd</span> dern/release
 how-to-build/windows.sh
 </pre>
 </div>
@@ -501,8 +502,8 @@ above. Run examples and programs in the <b>Command Prompt</b> window
 </div>
 </div>
 
-<div id="outline-container-org9721322" class="outline-3">
-<h3 id="org9721322"><span class="section-number-3">2.5</span> ReactOS</h3>
+<div id="outline-container-org6c0a73b" class="outline-3">
+<h3 id="org6c0a73b"><span class="section-number-3">2.5</span> ReactOS</h3>
 <div class="outline-text-3" id="text-2-5">
 <p>
 Use <b>ReactOS Applications Manager</b> to install <b>CodeBlocks with GCC compiler</b> and
@@ -520,8 +521,8 @@ Extract the archive and move the contents into the <b>version-x.y.z</b> director
 </div>
 </div>
 
-<div id="outline-container-org27d2ffa" class="outline-3">
-<h3 id="org27d2ffa"><span class="section-number-3">2.6</span> AmigaOS 4.x</h3>
+<div id="outline-container-org85e856f" class="outline-3">
+<h3 id="org85e856f"><span class="section-number-3">2.6</span> AmigaOS 4.x</h3>
 <div class="outline-text-3" id="text-2-6">
 <p>
 Download and install
@@ -539,7 +540,7 @@ Open Shell window and run the following commands:
 <div class="org-src-container">
 <pre class="src src-sh">bzip2_68k -dk dern.tar.bz2
 tar xf dern.tar
-<span style="color: #006FE0;">cd</span> dern
+<span style="color: #DCDCCC; font-weight: bold;">cd</span> dern
 sh how-to-build/AmigaOS41.sh
 </pre>
 </div>
@@ -547,8 +548,8 @@ sh how-to-build/AmigaOS41.sh
 </div>
 </div>
 
-<div id="outline-container-orgfcd070a" class="outline-2">
-<h2 id="orgfcd070a"><span class="section-number-2">3</span> Hello world</h2>
+<div id="outline-container-org2b5193d" class="outline-2">
+<h2 id="org2b5193d"><span class="section-number-2">3</span> Hello world</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 Here we have a version of the classic &rsquo;Hello World&rsquo;-program in Octaspire Dern.
@@ -561,102 +562,102 @@ of it directly to the interactive REPL.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern"><span style="color: #8D8D84; font-style: italic;">#!/usr/bin/env octaspire-dern-repl</span>
-<span style="color: #8D8D84; font-style: italic;">This is a multiline comment.    !#</span>
+<pre class="src src-octaspire-dern"><span style="color: #7F9F7F;">#!/usr/bin/env octaspire-dern-repl</span>
+<span style="color: #7F9F7F;">This is a multiline comment.    !#</span>
 
-<span style="color: #8D8D84; font-style: italic;">; 1. Print once 'Hello, World!' and newline</span>
-(<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Hello, World!]</span>)
-(<span style="color: #006FE0;">println</span>)
+<span style="color: #7F9F7F;">; 1. Print once 'Hello, World!' and newline</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Hello, World!]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span><span style="color: #ff8c00;">)</span>
 
-<span style="color: #8D8D84; font-style: italic;">; 2. Print 11 times 'Hello x World!', x is 0 .. 10</span>
-(<span style="color: #006FE0;">for</span> i from 0 to 10 (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Hello {} World!]</span> i))
-(<span style="color: #006FE0;">println</span>)
+<span style="color: #7F9F7F;">; 2. Print 11 times 'Hello x World!', x is 0 .. 10</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">for</span> i from 0 to 10 <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Hello {} World!]</span> i<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span><span style="color: #ff8c00;">)</span>
 
-<span style="color: #8D8D84; font-style: italic;">; 3. Print greetings to everybody on the vector</span>
-(<span style="color: #006FE0;">define</span> names <span style="color: #006FE0;">as</span> '(John Alice Mark) <span style="color: #008000;">[Greetings list]</span>)
-(<span style="color: #006FE0;">for</span> i <span style="color: #006FE0;">in</span> names (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Happy holidays, {}!]</span> i))
-(<span style="color: #006FE0;">println</span>)
+<span style="color: #7F9F7F;">; 3. Print greetings to everybody on the vector</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> names <span style="color: #DCDCCC; font-weight: bold;">as</span> '<span style="color: #ff1493;">(</span>John Alice Mark<span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[Greetings list]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">for</span> i <span style="color: #DCDCCC; font-weight: bold;">in</span> names <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Happy holidays, {}!]</span> i<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span><span style="color: #ff8c00;">)</span>
 
-<span style="color: #8D8D84; font-style: italic;">; 4. Add new name, 'Lola', to the names to be greeted</span>
-(<span style="color: #006FE0;">+=</span> names 'Lola)
-(<span style="color: #006FE0;">for</span> i <span style="color: #006FE0;">in</span> names (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Happy holidays, {}!]</span> i))
-(<span style="color: #006FE0;">println</span>)
+<span style="color: #7F9F7F;">; 4. Add new name, 'Lola', to the names to be greeted</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+=</span> names 'Lola<span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">for</span> i <span style="color: #DCDCCC; font-weight: bold;">in</span> names <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Happy holidays, {}!]</span> i<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span><span style="color: #ff8c00;">)</span>
 
-<span style="color: #8D8D84; font-style: italic;">; 5. Remove one name, 'Mark'</span>
-(<span style="color: #006FE0;">-=</span> names 'Mark)
-(<span style="color: #006FE0;">for</span> i <span style="color: #006FE0;">in</span> names (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Happy holidays, {}!]</span> i))
-(<span style="color: #006FE0;">println</span>)
+<span style="color: #7F9F7F;">; 5. Remove one name, 'Mark'</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">-=</span> names 'Mark<span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">for</span> i <span style="color: #DCDCCC; font-weight: bold;">in</span> names <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Happy holidays, {}!]</span> i<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span><span style="color: #ff8c00;">)</span>
 
-<span style="color: #8D8D84; font-style: italic;">; 6. Define new function to greet people and use it</span>
-(<span style="color: #006FE0;">define</span> greeter <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">fn</span> (greeting name)
-    (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[{}, {}!]</span> greeting name))
-  <span style="color: #008000;">[My greeter function]</span> '(greeting <span style="color: #008000;">[the greeting]</span>
-                          name <span style="color: #008000;">[who to greet]</span>)
-                          <span style="color: #006FE0;">howto-no</span>)
+<span style="color: #7F9F7F;">; 6. Define new function to greet people and use it</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> greeter <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">fn</span> <span style="color: #7fff00;">(</span>greeting name<span style="color: #7fff00;">)</span>
+    <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[{}, {}!]</span> greeting name<span style="color: #7fff00;">)</span><span style="color: #ff1493;">)</span>
+  <span style="color: #CC9393;">[My greeter function]</span> '<span style="color: #ff1493;">(</span>greeting <span style="color: #CC9393;">[the greeting]</span>
+                          name <span style="color: #CC9393;">[who to greet]</span><span style="color: #ff1493;">)</span>
+                          <span style="color: #DCDCCC; font-weight: bold;">howto-no</span><span style="color: #ff8c00;">)</span>
 
-(greeter 'Hi 'Alice)
+<span style="color: #ff8c00;">(</span>greeter 'Hi 'Alice<span style="color: #ff8c00;">)</span>
 
-<span style="color: #8D8D84; font-style: italic;">; 7. Redefine greeter-function with early exit</span>
-<span style="color: #8D8D84; font-style: italic;">; using 'return'</span>
-(<span style="color: #006FE0;">define</span> grumpy <span style="color: #006FE0;">as</span> <span style="color: #D0372D;">true</span> <span style="color: #008000;">[is our hero grumpy, or not]</span>)
+<span style="color: #7F9F7F;">; 7. Redefine greeter-function with early exit</span>
+<span style="color: #7F9F7F;">; using 'return'</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> grumpy <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #BFEBBF;">true</span> <span style="color: #CC9393;">[is our hero grumpy, or not]</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">define</span> greeter <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">fn</span> (greeting name)
-    (<span style="color: #006FE0;">if</span> grumpy (<span style="color: #006FE0;">return</span> <span style="color: #008000;">[I'm grumpy and don't greet]</span>))
-    (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[{}, {}!]</span> greeting name)
-    (<span style="color: #006FE0;">string-format</span> <span style="color: #008000;">[I greeted "{}", as asked]</span> name))
-  <span style="color: #008000;">[My greeter function]</span> '(greeting <span style="color: #008000;">[the greeting]</span>
-                          name <span style="color: #008000;">[who to greet]</span>)
-                          <span style="color: #006FE0;">howto-no</span>)
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> greeter <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">fn</span> <span style="color: #7fff00;">(</span>greeting name<span style="color: #7fff00;">)</span>
+    <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">if</span> grumpy <span style="color: #00bfff;">(</span><span style="color: #DCDCCC; font-weight: bold;">return</span> <span style="color: #CC9393;">[I'm grumpy and don't greet]</span><span style="color: #00bfff;">)</span><span style="color: #7fff00;">)</span>
+    <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[{}, {}!]</span> greeting name<span style="color: #7fff00;">)</span>
+    <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">string-format</span> <span style="color: #CC9393;">[I greeted "{}", as asked]</span> name<span style="color: #7fff00;">)</span><span style="color: #ff1493;">)</span>
+  <span style="color: #CC9393;">[My greeter function]</span> '<span style="color: #ff1493;">(</span>greeting <span style="color: #CC9393;">[the greeting]</span>
+                          name <span style="color: #CC9393;">[who to greet]</span><span style="color: #ff1493;">)</span>
+                          <span style="color: #DCDCCC; font-weight: bold;">howto-no</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">println</span> (greeter 'Hi 'Alice))
-(<span style="color: #006FE0;">=</span> grumpy <span style="color: #D0372D;">false</span>)
-(<span style="color: #006FE0;">println</span> (greeter 'Hi 'Alice))
-(<span style="color: #006FE0;">println</span>)
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span>greeter 'Hi 'Alice<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">=</span> grumpy <span style="color: #BFEBBF;">false</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span>greeter 'Hi 'Alice<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span><span style="color: #ff8c00;">)</span>
 
-<span style="color: #8D8D84; font-style: italic;">; 8. Add names and custom greetings into a hash map</span>
-<span style="color: #8D8D84; font-style: italic;">; and use it to greet people</span>
-(<span style="color: #006FE0;">define</span> names <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">hash-map</span> 'John 'Hi
+<span style="color: #7F9F7F;">; 8. Add names and custom greetings into a hash map</span>
+<span style="color: #7F9F7F;">; and use it to greet people</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> names <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">hash-map</span> 'John 'Hi
                            'Lola 'Hello
-                           'Mike 'Bonjour)
-                        <span style="color: #008000;">[My custom greetings]</span>)
+                           'Mike 'Bonjour<span style="color: #ff1493;">)</span>
+                        <span style="color: #CC9393;">[My custom greetings]</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">for</span> i <span style="color: #006FE0;">in</span> names (greeter (ln@ i 1) (ln@ i 0)))
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">for</span> i <span style="color: #DCDCCC; font-weight: bold;">in</span> names <span style="color: #ff1493;">(</span>greeter <span style="color: #7fff00;">(</span>ln@ i 1<span style="color: #7fff00;">)</span> <span style="color: #7fff00;">(</span>ln@ i 0<span style="color: #7fff00;">)</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org16c2037" class="outline-2">
-<h2 id="org16c2037"><span class="section-number-2">4</span> Values</h2>
+<div id="outline-container-org8e19b80" class="outline-2">
+<h2 id="org8e19b80"><span class="section-number-2">4</span> Values</h2>
 <div class="outline-text-2" id="text-4">
 <div class="org-src-container">
-<pre class="src src-octaspire-dern"> 128              <span style="color: #8D8D84; font-style: italic;">; These are integers</span>
+<pre class="src src-octaspire-dern"> 128              <span style="color: #7F9F7F;">; These are integers</span>
 -100
- 3.14             <span style="color: #8D8D84; font-style: italic;">; These are real</span>
+ 3.14             <span style="color: #7F9F7F;">; These are real</span>
 -1.12
-<span style="color: #008000;">[Hello]</span>           <span style="color: #8D8D84; font-style: italic;">; These are strings (utf-8)</span>
-<span style="color: #008000;">[Hell|6F|]</span>        <span style="color: #8D8D84; font-style: italic;">; Hello</span>
-<span style="color: #008000;">[Hello|newline|]</span>  <span style="color: #8D8D84; font-style: italic;">; Hello and newline</span>
-<span style="color: #008000;">[&#31169;&#12399;&#12460;&#12521;&#12473;&#12434;&#39135;&#12409;&#12425;&#12428;&#12414;&#12377;&#12290;&#12381;&#12428;&#12399;&#31169;&#12434;&#20663;&#12388;&#12369;&#12414;&#12379;&#12435;&#12290;]</span>
-<span style="color: #008000;">|a|</span>               <span style="color: #8D8D84; font-style: italic;">; These are characters (utf-8)</span>
-<span style="color: #008000;">|newline|</span>         <span style="color: #8D8D84; font-style: italic;">; \n</span>
-<span style="color: #008000;">|tab|</span>             <span style="color: #8D8D84; font-style: italic;">; \t</span>
-<span style="color: #008000;">|bar|</span>             <span style="color: #8D8D84; font-style: italic;">; |</span>
-<span style="color: #008000;">|string-start|</span>    <span style="color: #8D8D84; font-style: italic;">; [</span>
-<span style="color: #008000;">|string-end|</span>      <span style="color: #8D8D84; font-style: italic;">; ]</span>
-<span style="color: #008000;">|61|</span>              <span style="color: #8D8D84; font-style: italic;">; a in hexadecimal notation</span>
-<span style="color: #008000;">|7A|</span>              <span style="color: #8D8D84; font-style: italic;">; z in hexadecimal notation</span>
-<span style="color: #008000;">|30DC|</span>            <span style="color: #8D8D84; font-style: italic;">; &#12508; in hexadecimal notation</span>
-<span style="color: #D0372D;">true</span>              <span style="color: #8D8D84; font-style: italic;">; These are booleans</span>
-<span style="color: #D0372D;">false</span>
-<span style="color: #D0372D;">nil</span>               <span style="color: #8D8D84; font-style: italic;">; Nil</span>
-'(1 2 <span style="color: #008000;">|a|</span> <span style="color: #008000;">[cat]</span>)               <span style="color: #8D8D84; font-style: italic;">; These are vectors</span>
-'()
-(<span style="color: #006FE0;">hash-map</span> 'John <span style="color: #008000;">[likes cats]</span>   <span style="color: #8D8D84; font-style: italic;">; This is hash map</span>
-          'Lisa <span style="color: #008000;">[likes dogs]</span>
-          'Mike '(<span style="color: #008000;">[likes numbers]</span> 1 2 3 4)
-           1    <span style="color: #008000;">|a|</span>
-           <span style="color: #008000;">[Hi]</span> 2)
+<span style="color: #CC9393;">[Hello]</span>           <span style="color: #7F9F7F;">; These are strings (utf-8)</span>
+<span style="color: #CC9393;">[Hell|6F|]</span>        <span style="color: #7F9F7F;">; Hello</span>
+<span style="color: #CC9393;">[Hello|newline|]</span>  <span style="color: #7F9F7F;">; Hello and newline</span>
+<span style="color: #CC9393;">[&#31169;&#12399;&#12460;&#12521;&#12473;&#12434;&#39135;&#12409;&#12425;&#12428;&#12414;&#12377;&#12290;&#12381;&#12428;&#12399;&#31169;&#12434;&#20663;&#12388;&#12369;&#12414;&#12379;&#12435;&#12290;]</span>
+<span style="color: #CC9393;">|a|</span>               <span style="color: #7F9F7F;">; These are characters (utf-8)</span>
+<span style="color: #CC9393;">|newline|</span>         <span style="color: #7F9F7F;">; \n</span>
+<span style="color: #CC9393;">|tab|</span>             <span style="color: #7F9F7F;">; \t</span>
+<span style="color: #CC9393;">|bar|</span>             <span style="color: #7F9F7F;">; |</span>
+<span style="color: #CC9393;">|string-start|</span>    <span style="color: #7F9F7F;">; [</span>
+<span style="color: #CC9393;">|string-end|</span>      <span style="color: #7F9F7F;">; ]</span>
+<span style="color: #CC9393;">|61|</span>              <span style="color: #7F9F7F;">; a in hexadecimal notation</span>
+<span style="color: #CC9393;">|7A|</span>              <span style="color: #7F9F7F;">; z in hexadecimal notation</span>
+<span style="color: #CC9393;">|30DC|</span>            <span style="color: #7F9F7F;">; &#12508; in hexadecimal notation</span>
+<span style="color: #BFEBBF;">true</span>              <span style="color: #7F9F7F;">; These are booleans</span>
+<span style="color: #BFEBBF;">false</span>
+<span style="color: #BFEBBF;">nil</span>               <span style="color: #7F9F7F;">; Nil</span>
+'<span style="color: #ff8c00;">(</span>1 2 <span style="color: #CC9393;">|a|</span> <span style="color: #CC9393;">[cat]</span><span style="color: #ff8c00;">)</span>               <span style="color: #7F9F7F;">; These are vectors</span>
+'<span style="color: #ff8c00;">()</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">hash-map</span> 'John <span style="color: #CC9393;">[likes cats]</span>   <span style="color: #7F9F7F;">; This is hash map</span>
+          'Lisa <span style="color: #CC9393;">[likes dogs]</span>
+          'Mike '<span style="color: #ff1493;">(</span><span style="color: #CC9393;">[likes numbers]</span> 1 2 3 4<span style="color: #ff1493;">)</span>
+           1    <span style="color: #CC9393;">|a|</span>
+           <span style="color: #CC9393;">[Hi]</span> 2<span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 
@@ -672,7 +673,7 @@ Strings can be embedded in strings like this:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern"><span style="color: #008000;">[string |string-start|with another inside|string-end|]</span>
+<pre class="src src-octaspire-dern"><span style="color: #CC9393;">[string |string-start|with another inside|string-end|]</span>
 </pre>
 </div>
 
@@ -683,19 +684,19 @@ a program and need it to have strings inside.
 </div>
 </div>
 
-<div id="outline-container-org22e2df3" class="outline-2">
-<h2 id="org22e2df3"><span class="section-number-2">5</span> Single and multiline comments, making script files executable</h2>
+<div id="outline-container-org3f2f00b" class="outline-2">
+<h2 id="org3f2f00b"><span class="section-number-2">5</span> Single and multiline comments, making script files executable</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 Below are examples of single and multiline comments:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern"><span style="color: #8D8D84; font-style: italic;">; This is single line comment.</span>
+<pre class="src src-octaspire-dern"><span style="color: #7F9F7F;">; This is single line comment.</span>
 
-<span style="color: #8D8D84; font-style: italic;">#! This is multiline comment.</span>
-<span style="color: #8D8D84; font-style: italic;">   It can contain multiple lines...</span>
-<span style="color: #8D8D84; font-style: italic;">   ... !#</span>
+<span style="color: #7F9F7F;">#! This is multiline comment.</span>
+<span style="color: #7F9F7F;">   It can contain multiple lines...</span>
+<span style="color: #7F9F7F;">   ... !#</span>
 </pre>
 </div>
 
@@ -704,23 +705,23 @@ Multiline comments can be used to make script files executable in UNIX-like syst
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern"><span style="color: #8D8D84; font-style: italic;">#!/usr/bin/env octaspire-dern-repl</span>
-<span style="color: #8D8D84; font-style: italic;">!#</span>
+<pre class="src src-octaspire-dern"><span style="color: #7F9F7F;">#!/usr/bin/env octaspire-dern-repl</span>
+<span style="color: #7F9F7F;">!#</span>
 
-(<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Hello World]</span>)
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Hello World]</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org2ed32fe" class="outline-2">
-<h2 id="org2ed32fe"><span class="section-number-2">6</span> Binding names to values with <code>define</code></h2>
+<div id="outline-container-org5b5b0ce" class="outline-2">
+<h2 id="org5b5b0ce"><span class="section-number-2">6</span> Binding names to values with <code>define</code></h2>
 <div class="outline-text-2" id="text-6">
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> pi <span style="color: #006FE0;">as</span> 3.14 <span style="color: #008000;">[value for pi]</span>)
-(<span style="color: #006FE0;">define</span> names <span style="color: #006FE0;">as</span> '(John Lisa Mark) <span style="color: #008000;">[names list]</span>)
-(<span style="color: #006FE0;">define</span> double <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">fn</span> (x) (<span style="color: #006FE0;">*</span> 2 x)) <span style="color: #008000;">[doubles numbers]</span>
-    '(x <span style="color: #008000;">[this is doubled]</span>) <span style="color: #006FE0;">howto-ok</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> pi <span style="color: #DCDCCC; font-weight: bold;">as</span> 3.14 <span style="color: #CC9393;">[value for pi]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> names <span style="color: #DCDCCC; font-weight: bold;">as</span> '<span style="color: #ff1493;">(</span>John Lisa Mark<span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[names list]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> double <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">fn</span> <span style="color: #7fff00;">(</span>x<span style="color: #7fff00;">)</span> <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">*</span> 2 x<span style="color: #7fff00;">)</span><span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[doubles numbers]</span>
+    '<span style="color: #ff1493;">(</span>x <span style="color: #CC9393;">[this is doubled]</span><span style="color: #ff1493;">)</span> <span style="color: #DCDCCC; font-weight: bold;">howto-ok</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 
@@ -732,7 +733,7 @@ Here is an example of using those names:
 <div class="org-src-container">
 <pre class="src src-octaspire-dern">pi
 names
-(double 1)
+<span style="color: #ff8c00;">(</span>double 1<span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 
@@ -741,9 +742,9 @@ And to see the documentation for these values:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">doc</span> pi)
-(<span style="color: #006FE0;">doc</span> names)
-(<span style="color: #006FE0;">doc</span> double)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">doc</span> pi<span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">doc</span> names<span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">doc</span> double<span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 
@@ -762,8 +763,8 @@ in Dern&rsquo;s standard library are not yet documented properly. This is a work
 </p>
 </div>
 
-<div id="outline-container-org699486a" class="outline-3">
-<h3 id="org699486a"><span class="section-number-3">6.1</span> Binding in other environments than the current one</h3>
+<div id="outline-container-orgc3ded4a" class="outline-3">
+<h3 id="orgc3ded4a"><span class="section-number-3">6.1</span> Binding in other environments than the current one</h3>
 <div class="outline-text-3" id="text-6-1">
 <p>
 By using an explicit environment argument as the first argument to <code>define</code>, we can bind
@@ -771,11 +772,11 @@ names to values in other environments than the current one. Example:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> myEnv <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">env-new</span>) <span style="color: #008000;">[my own environment]</span>)
-(<span style="color: #006FE0;">define</span> pi <span style="color: #006FE0;">as</span> 3.14 <span style="color: #008000;">[value for pi]</span> <span style="color: #006FE0;">in</span> myEnv)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> myEnv <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">env-new</span><span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[my own environment]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> pi <span style="color: #DCDCCC; font-weight: bold;">as</span> 3.14 <span style="color: #CC9393;">[value for pi]</span> <span style="color: #DCDCCC; font-weight: bold;">in</span> myEnv<span style="color: #ff8c00;">)</span>
 
-pi                  <span style="color: #8D8D84; font-style: italic;">; &lt;error&gt;: Unbound symbol 'pi'</span>
-(<span style="color: #006FE0;">eval</span> pi myEnv)     <span style="color: #8D8D84; font-style: italic;">; 3.14</span>
+pi                  <span style="color: #7F9F7F;">; &lt;error&gt;: Unbound symbol 'pi'</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">eval</span> pi myEnv<span style="color: #ff8c00;">)</span>     <span style="color: #7F9F7F;">; 3.14</span>
 </pre>
 </div>
 
@@ -788,8 +789,8 @@ is defined in the <code>myEnv</code>-environment. We use special <code>eval</cod
 </div>
 </div>
 
-<div id="outline-container-orgf627831" class="outline-2">
-<h2 id="orgf627831"><span class="section-number-2">7</span> Iteration</h2>
+<div id="outline-container-org5b857ef" class="outline-2">
+<h2 id="org5b857ef"><span class="section-number-2">7</span> Iteration</h2>
 <div class="outline-text-2" id="text-7">
 <p>
 Dern has two looping constructs: <code>while</code> and <code>for</code>. For can be used numerically, with a
@@ -798,8 +799,8 @@ Below is couple of examples:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> i <span style="color: #006FE0;">as</span> 0 <span style="color: #008000;">[my counter]</span>)
-(<span style="color: #006FE0;">while</span> (<span style="color: #006FE0;">&lt;=</span> i 10) (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Counting at {}]</span> i) (<span style="color: #006FE0;">++</span> i))
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> i <span style="color: #DCDCCC; font-weight: bold;">as</span> 0 <span style="color: #CC9393;">[my counter]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">while</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">&lt;=</span> i 10<span style="color: #ff1493;">)</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Counting at {}]</span> i<span style="color: #ff1493;">)</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">++</span> i<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 
@@ -808,7 +809,7 @@ Numerical for:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">for</span> i from 0 to 10 (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Hello {} World!]</span> i))
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">for</span> i from 0 to 10 <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Hello {} World!]</span> i<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 
@@ -817,8 +818,8 @@ Container for:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> names <span style="color: #006FE0;">as</span> '(John Mark Lisa) <span style="color: #008000;">[names list]</span>)
-(<span style="color: #006FE0;">for</span> i <span style="color: #006FE0;">in</span> names (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Hello {} World!]</span> i))
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> names <span style="color: #DCDCCC; font-weight: bold;">as</span> '<span style="color: #ff1493;">(</span>John Mark Lisa<span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[names list]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">for</span> i <span style="color: #DCDCCC; font-weight: bold;">in</span> names <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Hello {} World!]</span> i<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 
@@ -828,77 +829,77 @@ way the iterator is incremented:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">for</span> i from 0 to 10 step 3 (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Hello {}!]</span> i))
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">for</span> i from 0 to 10 step 3 <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Hello {}!]</span> i<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">define</span> names <span style="color: #006FE0;">as</span> '(John Mark Lisa) <span style="color: #008000;">[names list]</span>)
-(<span style="color: #006FE0;">for</span> i <span style="color: #006FE0;">in</span> names step 2 (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Hello {} World!]</span> i))
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> names <span style="color: #DCDCCC; font-weight: bold;">as</span> '<span style="color: #ff1493;">(</span>John Mark Lisa<span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[names list]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">for</span> i <span style="color: #DCDCCC; font-weight: bold;">in</span> names step 2 <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Hello {} World!]</span> i<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org90d86ea" class="outline-2">
-<h2 id="org90d86ea"><span class="section-number-2">8</span> Comparing and changing values, predicates</h2>
+<div id="outline-container-orga211a2b" class="outline-2">
+<h2 id="orga211a2b"><span class="section-number-2">8</span> Comparing and changing values, predicates</h2>
 <div class="outline-text-2" id="text-8">
 <p>
 Here are few examples:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">&lt;</span>  1 2)   <span style="color: #8D8D84; font-style: italic;">; true</span>
-(<span style="color: #006FE0;">&lt;</span>  2 2)   <span style="color: #8D8D84; font-style: italic;">; false</span>
-(<span style="color: #006FE0;">&gt;</span>  2 1)   <span style="color: #8D8D84; font-style: italic;">; true</span>
-(<span style="color: #006FE0;">&lt;=</span> 1 1)   <span style="color: #8D8D84; font-style: italic;">; true</span>
-(<span style="color: #006FE0;">&gt;=</span> 1 1)   <span style="color: #8D8D84; font-style: italic;">; true</span>
-(<span style="color: #006FE0;">==</span> 3 3)   <span style="color: #8D8D84; font-style: italic;">; true</span>
-(<span style="color: #006FE0;">==</span> 3 1)   <span style="color: #8D8D84; font-style: italic;">; false</span>
-(!<span style="color: #006FE0;">=</span> 3 1)   <span style="color: #8D8D84; font-style: italic;">; true</span>
-(<span style="color: #006FE0;">+</span> 1)      <span style="color: #8D8D84; font-style: italic;">;  1</span>
-(<span style="color: #006FE0;">+</span> 1 1)    <span style="color: #8D8D84; font-style: italic;">;  2</span>
-(<span style="color: #006FE0;">-</span> 1)      <span style="color: #8D8D84; font-style: italic;">; -1</span>
-(<span style="color: #006FE0;">-</span> 1 2 3)  <span style="color: #8D8D84; font-style: italic;">; -4</span>
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">&lt;</span>  1 2<span style="color: #ff8c00;">)</span>   <span style="color: #7F9F7F;">; true</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">&lt;</span>  2 2<span style="color: #ff8c00;">)</span>   <span style="color: #7F9F7F;">; false</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">&gt;</span>  2 1<span style="color: #ff8c00;">)</span>   <span style="color: #7F9F7F;">; true</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">&lt;=</span> 1 1<span style="color: #ff8c00;">)</span>   <span style="color: #7F9F7F;">; true</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">&gt;=</span> 1 1<span style="color: #ff8c00;">)</span>   <span style="color: #7F9F7F;">; true</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">==</span> 3 3<span style="color: #ff8c00;">)</span>   <span style="color: #7F9F7F;">; true</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">==</span> 3 1<span style="color: #ff8c00;">)</span>   <span style="color: #7F9F7F;">; false</span>
+<span style="color: #ff8c00;">(</span>!<span style="color: #DCDCCC; font-weight: bold;">=</span> 3 1<span style="color: #ff8c00;">)</span>   <span style="color: #7F9F7F;">; true</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+</span> 1<span style="color: #ff8c00;">)</span>      <span style="color: #7F9F7F;">;  1</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+</span> 1 1<span style="color: #ff8c00;">)</span>    <span style="color: #7F9F7F;">;  2</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">-</span> 1<span style="color: #ff8c00;">)</span>      <span style="color: #7F9F7F;">; -1</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">-</span> 1 2 3<span style="color: #ff8c00;">)</span>  <span style="color: #7F9F7F;">; -4</span>
 
-(<span style="color: #006FE0;">not</span> <span style="color: #D0372D;">true</span>)     <span style="color: #8D8D84; font-style: italic;">; false</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">not</span> <span style="color: #BFEBBF;">true</span><span style="color: #ff8c00;">)</span>     <span style="color: #7F9F7F;">; false</span>
 
-(<span style="color: #006FE0;">uid</span> <span style="color: #006FE0;">+</span>)        <span style="color: #8D8D84; font-style: italic;">; unique id of +</span>
-(<span style="color: #006FE0;">===</span> <span style="color: #006FE0;">+</span> <span style="color: #006FE0;">+</span>)      <span style="color: #8D8D84; font-style: italic;">; compare using unique id</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">uid</span> <span style="color: #DCDCCC; font-weight: bold;">+</span><span style="color: #ff8c00;">)</span>        <span style="color: #7F9F7F;">; unique id of +</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">===</span> <span style="color: #DCDCCC; font-weight: bold;">+</span> <span style="color: #DCDCCC; font-weight: bold;">+</span><span style="color: #ff8c00;">)</span>      <span style="color: #7F9F7F;">; compare using unique id</span>
 
-(<span style="color: #006FE0;">len</span> '(1 2 3))          <span style="color: #8D8D84; font-style: italic;">; length of vector:   3</span>
-(<span style="color: #006FE0;">len</span> <span style="color: #008000;">[abc]</span>)             <span style="color: #8D8D84; font-style: italic;">; length of string:   3</span>
-(<span style="color: #006FE0;">len</span> (<span style="color: #006FE0;">hash-map</span> 1 <span style="color: #008000;">|a|</span>))  <span style="color: #8D8D84; font-style: italic;">; length of hash-map: 1</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">len</span> '<span style="color: #ff1493;">(</span>1 2 3<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>          <span style="color: #7F9F7F;">; length of vector:   3</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">len</span> <span style="color: #CC9393;">[abc]</span><span style="color: #ff8c00;">)</span>             <span style="color: #7F9F7F;">; length of string:   3</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">len</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">hash-map</span> 1 <span style="color: #CC9393;">|a|</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>  <span style="color: #7F9F7F;">; length of hash-map: 1</span>
 
-(<span style="color: #006FE0;">define</span> number <span style="color: #006FE0;">as</span> 1 <span style="color: #008000;">[my number]</span>)
-(<span style="color: #006FE0;">++</span> number)                      <span style="color: #8D8D84; font-style: italic;">; number is 2</span>
-(<span style="color: #006FE0;">--</span> number)                      <span style="color: #8D8D84; font-style: italic;">; number is 1</span>
-(<span style="color: #006FE0;">+=</span> number 2)                    <span style="color: #8D8D84; font-style: italic;">; number is 3</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> number <span style="color: #DCDCCC; font-weight: bold;">as</span> 1 <span style="color: #CC9393;">[my number]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">++</span> number<span style="color: #ff8c00;">)</span>                      <span style="color: #7F9F7F;">; number is 2</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">--</span> number<span style="color: #ff8c00;">)</span>                      <span style="color: #7F9F7F;">; number is 1</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+=</span> number 2<span style="color: #ff8c00;">)</span>                    <span style="color: #7F9F7F;">; number is 3</span>
 
-(<span style="color: #006FE0;">+</span> <span style="color: #008000;">[Hello]</span> <span style="color: #008000;">[ ]</span> <span style="color: #008000;">[World.]</span> <span style="color: #008000;">[ Bye.]</span>) <span style="color: #8D8D84; font-style: italic;">; Hello World. Bye.</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+</span> <span style="color: #CC9393;">[Hello]</span> <span style="color: #CC9393;">[ ]</span> <span style="color: #CC9393;">[World.]</span> <span style="color: #CC9393;">[ Bye.]</span><span style="color: #ff8c00;">)</span> <span style="color: #7F9F7F;">; Hello World. Bye.</span>
 
-(<span style="color: #006FE0;">define</span> greeting <span style="color: #006FE0;">as</span> <span style="color: #008000;">[Hello]</span> <span style="color: #008000;">[my greeting]</span>)
-(<span style="color: #006FE0;">+=</span> greeting <span style="color: #008000;">[ World!]</span>)          <span style="color: #8D8D84; font-style: italic;">; Hello World!</span>
-(<span style="color: #006FE0;">+=</span> greeting <span style="color: #008000;">|!|</span>)                <span style="color: #8D8D84; font-style: italic;">; Hello World!!</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> greeting <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #CC9393;">[Hello]</span> <span style="color: #CC9393;">[my greeting]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+=</span> greeting <span style="color: #CC9393;">[ World!]</span><span style="color: #ff8c00;">)</span>          <span style="color: #7F9F7F;">; Hello World!</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+=</span> greeting <span style="color: #CC9393;">|!|</span><span style="color: #ff8c00;">)</span>                <span style="color: #7F9F7F;">; Hello World!!</span>
 
-(<span style="color: #006FE0;">+=</span> '(1 2 3) '(4 5 6))           <span style="color: #8D8D84; font-style: italic;">; (1 2 3 (4 5 6))</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+=</span> '<span style="color: #ff1493;">(</span>1 2 3<span style="color: #ff1493;">)</span> '<span style="color: #ff1493;">(</span>4 5 6<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>           <span style="color: #7F9F7F;">; (1 2 3 (4 5 6))</span>
 
-(<span style="color: #006FE0;">define</span> capitals <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">hash-map</span> <span style="color: #008000;">[United Kingdom]</span> <span style="color: #008000;">[London]</span>
-                              <span style="color: #008000;">[Spain]</span> <span style="color: #008000;">[Madrid]</span>)
-    <span style="color: #008000;">[country -&gt; capital]</span>)
-(<span style="color: #006FE0;">+=</span> capitals <span style="color: #008000;">[Nepal]</span> <span style="color: #008000;">[Kathmandu]</span>)
-(<span style="color: #006FE0;">+=</span> capitals '(<span style="color: #008000;">[Norway]</span> <span style="color: #008000;">[Oslo]</span> <span style="color: #008000;">[Poland]</span> <span style="color: #008000;">[Warsaw]</span>))
-(<span style="color: #006FE0;">+=</span> capitals (<span style="color: #006FE0;">hash-map</span> <span style="color: #008000;">[Peru]</span> <span style="color: #008000;">[Lima]</span>))
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> capitals <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">hash-map</span> <span style="color: #CC9393;">[United Kingdom]</span> <span style="color: #CC9393;">[London]</span>
+                              <span style="color: #CC9393;">[Spain]</span> <span style="color: #CC9393;">[Madrid]</span><span style="color: #ff1493;">)</span>
+    <span style="color: #CC9393;">[country -&gt; capital]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+=</span> capitals <span style="color: #CC9393;">[Nepal]</span> <span style="color: #CC9393;">[Kathmandu]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+=</span> capitals '<span style="color: #ff1493;">(</span><span style="color: #CC9393;">[Norway]</span> <span style="color: #CC9393;">[Oslo]</span> <span style="color: #CC9393;">[Poland]</span> <span style="color: #CC9393;">[Warsaw]</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+=</span> capitals <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">hash-map</span> <span style="color: #CC9393;">[Peru]</span> <span style="color: #CC9393;">[Lima]</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">-=</span> 10 1 2 3)                 <span style="color: #8D8D84; font-style: italic;">; 4</span>
-(<span style="color: #006FE0;">-=</span> <span style="color: #008000;">|x|</span> 2)                    <span style="color: #8D8D84; font-style: italic;">; |v|</span>
-(<span style="color: #006FE0;">-=</span> <span style="color: #008000;">|x|</span> <span style="color: #008000;">|!|</span>)                  <span style="color: #8D8D84; font-style: italic;">; |W|</span>
-(<span style="color: #006FE0;">-=</span> <span style="color: #008000;">[abba]</span> <span style="color: #008000;">|a|</span>)               <span style="color: #8D8D84; font-style: italic;">; [bb]</span>
-(<span style="color: #006FE0;">-=</span> (<span style="color: #006FE0;">hash-map</span> 1 <span style="color: #008000;">|a|</span> 2 <span style="color: #008000;">|b|</span>) 1) <span style="color: #8D8D84; font-style: italic;">; (hash-map 2 |b|)</span>
-(<span style="color: #006FE0;">-=</span> '(1 1 2 2 3) 1 2)         <span style="color: #8D8D84; font-style: italic;">; (3)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">-=</span> 10 1 2 3<span style="color: #ff8c00;">)</span>                 <span style="color: #7F9F7F;">; 4</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">-=</span> <span style="color: #CC9393;">|x|</span> 2<span style="color: #ff8c00;">)</span>                    <span style="color: #7F9F7F;">; |v|</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">-=</span> <span style="color: #CC9393;">|x|</span> <span style="color: #CC9393;">|!|</span><span style="color: #ff8c00;">)</span>                  <span style="color: #7F9F7F;">; |W|</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">-=</span> <span style="color: #CC9393;">[abba]</span> <span style="color: #CC9393;">|a|</span><span style="color: #ff8c00;">)</span>               <span style="color: #7F9F7F;">; [bb]</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">-=</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">hash-map</span> 1 <span style="color: #CC9393;">|a|</span> 2 <span style="color: #CC9393;">|b|</span><span style="color: #ff1493;">)</span> 1<span style="color: #ff8c00;">)</span> <span style="color: #7F9F7F;">; (hash-map 2 |b|)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">-=</span> '<span style="color: #ff1493;">(</span>1 1 2 2 3<span style="color: #ff1493;">)</span> 1 2<span style="color: #ff8c00;">)</span>         <span style="color: #7F9F7F;">; (3)</span>
 
-(<span style="color: #006FE0;">define</span> v <span style="color: #006FE0;">as</span> '(1 2 3 3) <span style="color: #008000;">[v]</span>)
-(<span style="color: #006FE0;">-=</span> v (ln@ v -1))             <span style="color: #8D8D84; font-style: italic;">; (1 2)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> v <span style="color: #DCDCCC; font-weight: bold;">as</span> '<span style="color: #ff1493;">(</span>1 2 3 3<span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[v]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">-=</span> v <span style="color: #ff1493;">(</span>ln@ v -1<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>             <span style="color: #7F9F7F;">; (1 2)</span>
 
-(<span style="color: #006FE0;">define</span> v <span style="color: #006FE0;">as</span> '(1 2 3 3) <span style="color: #008000;">[v]</span>)
-(<span style="color: #006FE0;">-==</span> v (ln@ v -1))            <span style="color: #8D8D84; font-style: italic;">; (1 2 3)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> v <span style="color: #DCDCCC; font-weight: bold;">as</span> '<span style="color: #ff1493;">(</span>1 2 3 3<span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[v]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">-==</span> v <span style="color: #ff1493;">(</span>ln@ v -1<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>            <span style="color: #7F9F7F;">; (1 2 3)</span>
 </pre>
 </div>
 
@@ -920,19 +921,19 @@ for the above operators should be implemented in the standard library eventually
 </div>
 </div>
 
-<div id="outline-container-org9ff4940" class="outline-2">
-<h2 id="org9ff4940"><span class="section-number-2">9</span> Removing the last value from a vector</h2>
+<div id="outline-container-org8786eb6" class="outline-2">
+<h2 id="org8786eb6"><span class="section-number-2">9</span> Removing the last value from a vector</h2>
 <div class="outline-text-2" id="text-9">
 <p>
 Compare these two cases:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> v <span style="color: #006FE0;">as</span> '(1 2 3 3) <span style="color: #008000;">[v]</span>)
-(<span style="color: #006FE0;">-=</span> v (ln@ v -1))             <span style="color: #8D8D84; font-style: italic;">; (1 2)</span>
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> v <span style="color: #DCDCCC; font-weight: bold;">as</span> '<span style="color: #ff1493;">(</span>1 2 3 3<span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[v]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">-=</span> v <span style="color: #ff1493;">(</span>ln@ v -1<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>             <span style="color: #7F9F7F;">; (1 2)</span>
 
-(<span style="color: #006FE0;">define</span> v <span style="color: #006FE0;">as</span> '(1 2 3 3) <span style="color: #008000;">[v]</span>)
-(<span style="color: #006FE0;">-==</span> v (ln@ v -1))            <span style="color: #8D8D84; font-style: italic;">; (1 2 3)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> v <span style="color: #DCDCCC; font-weight: bold;">as</span> '<span style="color: #ff1493;">(</span>1 2 3 3<span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[v]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">-==</span> v <span style="color: #ff1493;">(</span>ln@ v -1<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>            <span style="color: #7F9F7F;">; (1 2 3)</span>
 </pre>
 </div>
 
@@ -954,29 +955,29 @@ the builtin <code>pop-back</code>:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> v <span style="color: #006FE0;">as</span> '(1 2 3 3) <span style="color: #008000;">[v]</span>)
-(<span style="color: #006FE0;">pop-back</span> v)                  <span style="color: #8D8D84; font-style: italic;">; (1 2 3)</span>
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> v <span style="color: #DCDCCC; font-weight: bold;">as</span> '<span style="color: #ff1493;">(</span>1 2 3 3<span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[v]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">pop-back</span> v<span style="color: #ff8c00;">)</span>                  <span style="color: #7F9F7F;">; (1 2 3)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org9bbf630" class="outline-2">
-<h2 id="org9bbf630"><span class="section-number-2">10</span> Branching and selection</h2>
+<div id="outline-container-org8898da2" class="outline-2">
+<h2 id="org8898da2"><span class="section-number-2">10</span> Branching and selection</h2>
 <div class="outline-text-2" id="text-10">
 <p>
 Here are some examples using <code>if</code>:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">if</span> <span style="color: #D0372D;">true</span>  <span style="color: #008000;">[Yes]</span>)         <span style="color: #8D8D84; font-style: italic;">; Yes</span>
-(<span style="color: #006FE0;">if</span> <span style="color: #D0372D;">false</span> <span style="color: #008000;">[Yes]</span>)         <span style="color: #8D8D84; font-style: italic;">; nil</span>
-(<span style="color: #006FE0;">if</span> <span style="color: #D0372D;">false</span> <span style="color: #008000;">[Yes]</span> <span style="color: #008000;">[No]</span>)    <span style="color: #8D8D84; font-style: italic;">; No</span>
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">if</span> <span style="color: #BFEBBF;">true</span>  <span style="color: #CC9393;">[Yes]</span><span style="color: #ff8c00;">)</span>         <span style="color: #7F9F7F;">; Yes</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">if</span> <span style="color: #BFEBBF;">false</span> <span style="color: #CC9393;">[Yes]</span><span style="color: #ff8c00;">)</span>         <span style="color: #7F9F7F;">; nil</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">if</span> <span style="color: #BFEBBF;">false</span> <span style="color: #CC9393;">[Yes]</span> <span style="color: #CC9393;">[No]</span><span style="color: #ff8c00;">)</span>    <span style="color: #7F9F7F;">; No</span>
 
-(<span style="color: #006FE0;">if</span> <span style="color: #D0372D;">true</span>  (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Yes]</span>) (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[No]</span>)) <span style="color: #8D8D84; font-style: italic;">; Prints Yes</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">if</span> <span style="color: #BFEBBF;">true</span>  <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Yes]</span><span style="color: #ff1493;">)</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[No]</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span> <span style="color: #7F9F7F;">; Prints Yes</span>
 
-<span style="color: #8D8D84; font-style: italic;">; Prints Yes|newline|OK</span>
-(<span style="color: #006FE0;">if</span> <span style="color: #D0372D;">true</span>  (<span style="color: #006FE0;">do</span> (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Yes]</span>) (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[OK]</span>)))
+<span style="color: #7F9F7F;">; Prints Yes|newline|OK</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">if</span> <span style="color: #BFEBBF;">true</span>  <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">do</span> <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Yes]</span><span style="color: #7fff00;">)</span> <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[OK]</span><span style="color: #7fff00;">)</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 
@@ -985,45 +986,45 @@ Here are some examples using <code>select</code>:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">select</span> <span style="color: #D0372D;">true</span> <span style="color: #008000;">[Yes]</span>)            <span style="color: #8D8D84; font-style: italic;">; Yes</span>
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">select</span> <span style="color: #BFEBBF;">true</span> <span style="color: #CC9393;">[Yes]</span><span style="color: #ff8c00;">)</span>            <span style="color: #7F9F7F;">; Yes</span>
 
-(<span style="color: #006FE0;">select</span> <span style="color: #D0372D;">false</span> <span style="color: #008000;">[No]</span>
-        <span style="color: #D0372D;">true</span>  <span style="color: #008000;">[Yes]</span>)           <span style="color: #8D8D84; font-style: italic;">; Yes</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">select</span> <span style="color: #BFEBBF;">false</span> <span style="color: #CC9393;">[No]</span>
+        <span style="color: #BFEBBF;">true</span>  <span style="color: #CC9393;">[Yes]</span><span style="color: #ff8c00;">)</span>           <span style="color: #7F9F7F;">; Yes</span>
 
-(<span style="color: #006FE0;">select</span> default <span style="color: #008000;">[Yes]</span>)         <span style="color: #8D8D84; font-style: italic;">; Yes</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">select</span> default <span style="color: #CC9393;">[Yes]</span><span style="color: #ff8c00;">)</span>         <span style="color: #7F9F7F;">; Yes</span>
 
-(<span style="color: #006FE0;">select</span> <span style="color: #D0372D;">false</span>   <span style="color: #008000;">[No]</span>
-        default <span style="color: #008000;">[Yes]</span>)         <span style="color: #8D8D84; font-style: italic;">; Yes</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">select</span> <span style="color: #BFEBBF;">false</span>   <span style="color: #CC9393;">[No]</span>
+        default <span style="color: #CC9393;">[Yes]</span><span style="color: #ff8c00;">)</span>         <span style="color: #7F9F7F;">; Yes</span>
 
-(<span style="color: #006FE0;">select</span> <span style="color: #D0372D;">false</span>   <span style="color: #008000;">[No]</span>
-        <span style="color: #D0372D;">true</span>    <span style="color: #008000;">[Maybe]</span>
-        default <span style="color: #008000;">[Yes]</span>)         <span style="color: #8D8D84; font-style: italic;">; Maybe</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">select</span> <span style="color: #BFEBBF;">false</span>   <span style="color: #CC9393;">[No]</span>
+        <span style="color: #BFEBBF;">true</span>    <span style="color: #CC9393;">[Maybe]</span>
+        default <span style="color: #CC9393;">[Yes]</span><span style="color: #ff8c00;">)</span>         <span style="color: #7F9F7F;">; Maybe</span>
 
-(<span style="color: #006FE0;">select</span> <span style="color: #D0372D;">false</span> <span style="color: #008000;">[Yes]</span>)           <span style="color: #8D8D84; font-style: italic;">; nil</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">select</span> <span style="color: #BFEBBF;">false</span> <span style="color: #CC9393;">[Yes]</span><span style="color: #ff8c00;">)</span>           <span style="color: #7F9F7F;">; nil</span>
 
 
-(<span style="color: #006FE0;">define</span> f1 <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">fn</span> () <span style="color: #D0372D;">true</span>)  <span style="color: #008000;">[f1]</span> '() <span style="color: #006FE0;">howto-no</span>)
-(<span style="color: #006FE0;">define</span> f2 <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">fn</span> () <span style="color: #D0372D;">false</span>) <span style="color: #008000;">[f2]</span> '() <span style="color: #006FE0;">howto-no</span>)
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> f1 <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">fn</span> <span style="color: #7fff00;">()</span> <span style="color: #BFEBBF;">true</span><span style="color: #ff1493;">)</span>  <span style="color: #CC9393;">[f1]</span> '<span style="color: #ff1493;">()</span> <span style="color: #DCDCCC; font-weight: bold;">howto-no</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> f2 <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">fn</span> <span style="color: #7fff00;">()</span> <span style="color: #BFEBBF;">false</span><span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[f2]</span> '<span style="color: #ff1493;">()</span> <span style="color: #DCDCCC; font-weight: bold;">howto-no</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">select</span> (f1)  <span style="color: #008000;">[Yes]</span>
-        (f2)  <span style="color: #008000;">[No]</span>
-        <span style="color: #D0372D;">false</span> <span style="color: #008000;">[Maybe]</span>)         <span style="color: #8D8D84; font-style: italic;">; Yes</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">select</span> <span style="color: #ff1493;">(</span>f1<span style="color: #ff1493;">)</span>  <span style="color: #CC9393;">[Yes]</span>
+        <span style="color: #ff1493;">(</span>f2<span style="color: #ff1493;">)</span>  <span style="color: #CC9393;">[No]</span>
+        <span style="color: #BFEBBF;">false</span> <span style="color: #CC9393;">[Maybe]</span><span style="color: #ff8c00;">)</span>         <span style="color: #7F9F7F;">; Yes</span>
 
-<span style="color: #8D8D84; font-style: italic;">; Prints: Sun is shining</span>
-(<span style="color: #006FE0;">select</span> (f1)  (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Sun is shining]</span>)
-        (f2)  (<span style="color: #006FE0;">println</span> <span style="color: #008000;">[It rains]</span>)
-        <span style="color: #D0372D;">false</span> <span style="color: #008000;">[Maybe]</span>
-        <span style="color: #D0372D;">false</span> 2
-        <span style="color: #D0372D;">false</span> 3.14
-        <span style="color: #D0372D;">false</span> <span style="color: #008000;">|a|</span>
-        <span style="color: #D0372D;">false</span> <span style="color: #008000;">[There can be many selectors...]</span>)
+<span style="color: #7F9F7F;">; Prints: Sun is shining</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">select</span> <span style="color: #ff1493;">(</span>f1<span style="color: #ff1493;">)</span>  <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Sun is shining]</span><span style="color: #ff1493;">)</span>
+        <span style="color: #ff1493;">(</span>f2<span style="color: #ff1493;">)</span>  <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[It rains]</span><span style="color: #ff1493;">)</span>
+        <span style="color: #BFEBBF;">false</span> <span style="color: #CC9393;">[Maybe]</span>
+        <span style="color: #BFEBBF;">false</span> 2
+        <span style="color: #BFEBBF;">false</span> 3.14
+        <span style="color: #BFEBBF;">false</span> <span style="color: #CC9393;">|a|</span>
+        <span style="color: #BFEBBF;">false</span> <span style="color: #CC9393;">[There can be many selectors...]</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org07f913f" class="outline-2">
-<h2 id="org07f913f"><span class="section-number-2">11</span> Selecting values from collections</h2>
+<div id="outline-container-org6692650" class="outline-2">
+<h2 id="org6692650"><span class="section-number-2">11</span> Selecting values from collections</h2>
 <div class="outline-text-2" id="text-11">
 <p>
 Values can be selected from collections using <code>ln@</code> and copied with <code>cp@</code>.
@@ -1031,17 +1032,17 @@ Values can be selected from collections using <code>ln@</code> and copied with <
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">++</span> (ln@ '(1 2 3) 1))                  <span style="color: #8D8D84; font-style: italic;">; 3</span>
-(<span style="color: #006FE0;">+=</span> (cp@ <span style="color: #008000;">[abc]</span> 1) 2))                  <span style="color: #8D8D84; font-style: italic;">; |d|</span>
-(ln@ (<span style="color: #006FE0;">hash-map</span> <span style="color: #008000;">|a|</span> <span style="color: #008000;">[abc]</span>) <span style="color: #008000;">|a|</span> 'hash)   <span style="color: #8D8D84; font-style: italic;">; [abc]</span>
-(ln@ (<span style="color: #006FE0;">hash-map</span> <span style="color: #008000;">|a|</span> <span style="color: #008000;">[abc]</span>) 0   'index)  <span style="color: #8D8D84; font-style: italic;">; [abc]</span>
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">++</span> <span style="color: #ff1493;">(</span>ln@ '<span style="color: #7fff00;">(</span>1 2 3<span style="color: #7fff00;">)</span> 1<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>                  <span style="color: #7F9F7F;">; 3</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+=</span> <span style="color: #ff1493;">(</span>cp@ <span style="color: #CC9393;">[abc]</span> 1<span style="color: #ff1493;">)</span> 2<span style="color: #ff8c00;">)</span><span style="color: #88090B;">)</span>                  <span style="color: #7F9F7F;">; |d|</span>
+<span style="color: #88090B;">(</span>ln@ <span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">hash-map</span> <span style="color: #CC9393;">|a|</span> <span style="color: #CC9393;">[abc]</span><span style="color: #ff8c00;">)</span> <span style="color: #CC9393;">|a|</span> 'hash<span style="color: #88090B;">)</span>   <span style="color: #7F9F7F;">; [abc]</span>
+<span style="color: #88090B;">(</span>ln@ <span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">hash-map</span> <span style="color: #CC9393;">|a|</span> <span style="color: #CC9393;">[abc]</span><span style="color: #ff8c00;">)</span> 0   'index<span style="color: #88090B;">)</span>  <span style="color: #7F9F7F;">; [abc]</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgf8f57ce" class="outline-2">
-<h2 id="orgf8f57ce"><span class="section-number-2">12</span> Accessing and manipulating command line arguments and environment variables</h2>
+<div id="outline-container-org38b9752" class="outline-2">
+<h2 id="org38b9752"><span class="section-number-2">12</span> Accessing and manipulating command line arguments and environment variables</h2>
 <div class="outline-text-2" id="text-12">
 <p>
 This section is not ready yet. See the example below. More information will
@@ -1049,99 +1050,99 @@ be added later.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(host-get-command-line-arguments)
-(host-get-environment-variables)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span>host-get-command-line-arguments<span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span>host-get-environment-variables<span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgf20a8dc" class="outline-2">
-<h2 id="orgf20a8dc"><span class="section-number-2">13</span> Formatted and regular printing</h2>
+<div id="outline-container-orgb5027dd" class="outline-2">
+<h2 id="orgb5027dd"><span class="section-number-2">13</span> Formatted and regular printing</h2>
 <div class="outline-text-2" id="text-13">
 <p>
 Here are few examples:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">print</span>   <span style="color: #008000;">[Hi]</span>)   <span style="color: #8D8D84; font-style: italic;">; Prints Hi without newline</span>
-(<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Hi]</span>)   <span style="color: #8D8D84; font-style: italic;">; Prints Hi and newline</span>
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">print</span>   <span style="color: #CC9393;">[Hi]</span><span style="color: #ff8c00;">)</span>   <span style="color: #7F9F7F;">; Prints Hi without newline</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Hi]</span><span style="color: #ff8c00;">)</span>   <span style="color: #7F9F7F;">; Prints Hi and newline</span>
 
-(<span style="color: #006FE0;">define</span> name1  <span style="color: #006FE0;">as</span> 'Jim   <span style="color: #008000;">[some name 1]</span>)
-(<span style="color: #006FE0;">define</span> name2  <span style="color: #006FE0;">as</span> 'Alice <span style="color: #008000;">[some name 2]</span>)
-(<span style="color: #006FE0;">define</span> number <span style="color: #006FE0;">as</span> 30     <span style="color: #008000;">[some number]</span>)
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> name1  <span style="color: #DCDCCC; font-weight: bold;">as</span> 'Jim   <span style="color: #CC9393;">[some name 1]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> name2  <span style="color: #DCDCCC; font-weight: bold;">as</span> 'Alice <span style="color: #CC9393;">[some name 2]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> number <span style="color: #DCDCCC; font-weight: bold;">as</span> 30     <span style="color: #CC9393;">[some number]</span><span style="color: #ff8c00;">)</span>
 
-<span style="color: #8D8D84; font-style: italic;">; Prints Hi Jim and Alice! It is 30 degrees outside.</span>
-(<span style="color: #006FE0;">println</span> <span style="color: #008000;">[Hi {} and {}! It is {} degrees outside.]</span>
-    name1 name2 number)
+<span style="color: #7F9F7F;">; Prints Hi Jim and Alice! It is 30 degrees outside.</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #CC9393;">[Hi {} and {}! It is {} degrees outside.]</span>
+    name1 name2 number<span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org0edfbf8" class="outline-2">
-<h2 id="org0edfbf8"><span class="section-number-2">14</span> Formatted string creation</h2>
+<div id="outline-container-orgdb63708" class="outline-2">
+<h2 id="orgdb63708"><span class="section-number-2">14</span> Formatted string creation</h2>
 <div class="outline-text-2" id="text-14">
 <p>
 Here are few examples:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> name1  <span style="color: #006FE0;">as</span> 'Jim   <span style="color: #008000;">[some name 1]</span>)
-(<span style="color: #006FE0;">define</span> name2  <span style="color: #006FE0;">as</span> 'Alice <span style="color: #008000;">[some name 2]</span>)
-(<span style="color: #006FE0;">define</span> number <span style="color: #006FE0;">as</span> 30     <span style="color: #008000;">[some number]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> name1  <span style="color: #DCDCCC; font-weight: bold;">as</span> 'Jim   <span style="color: #CC9393;">[some name 1]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> name2  <span style="color: #DCDCCC; font-weight: bold;">as</span> 'Alice <span style="color: #CC9393;">[some name 2]</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> number <span style="color: #DCDCCC; font-weight: bold;">as</span> 30     <span style="color: #CC9393;">[some number]</span><span style="color: #ff8c00;">)</span>
 
-<span style="color: #8D8D84; font-style: italic;">; Creates a sting</span>
-<span style="color: #8D8D84; font-style: italic;">; [Hi Jim and Alice! It is 30 degrees outside]</span>
-(<span style="color: #006FE0;">string-format</span> <span style="color: #008000;">[Hi {} and {}! It is {} degrees outside]</span>
-    name1 name2 number)
+<span style="color: #7F9F7F;">; Creates a sting</span>
+<span style="color: #7F9F7F;">; [Hi Jim and Alice! It is 30 degrees outside]</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">string-format</span> <span style="color: #CC9393;">[Hi {} and {}! It is {} degrees outside]</span>
+    name1 name2 number<span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org996399c" class="outline-2">
-<h2 id="org996399c"><span class="section-number-2">15</span> Functions with variable number of arguments</h2>
+<div id="outline-container-org881421e" class="outline-2">
+<h2 id="org881421e"><span class="section-number-2">15</span> Functions with variable number of arguments</h2>
 <div class="outline-text-2" id="text-15">
 <p>
 Here are few examples:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> f <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">fn</span> (x ...) x) <span style="color: #008000;">[f]</span>
-    '(x <span style="color: #008000;">[x]</span> ... <span style="color: #008000;">[varargs]</span>) <span style="color: #006FE0;">howto-no</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> f <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">fn</span> <span style="color: #7fff00;">(</span>x ...<span style="color: #7fff00;">)</span> x<span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[f]</span>
+    '<span style="color: #ff1493;">(</span>x <span style="color: #CC9393;">[x]</span> ... <span style="color: #CC9393;">[varargs]</span><span style="color: #ff1493;">)</span> <span style="color: #DCDCCC; font-weight: bold;">howto-no</span><span style="color: #ff8c00;">)</span>
 
-(f 1 2 3)   <span style="color: #8D8D84; font-style: italic;">; (1 2 3)</span>
+<span style="color: #ff8c00;">(</span>f 1 2 3<span style="color: #ff8c00;">)</span>   <span style="color: #7F9F7F;">; (1 2 3)</span>
 
 
-(<span style="color: #006FE0;">define</span> f <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">fn</span> (x y ...) (<span style="color: #006FE0;">println</span> x) (<span style="color: #006FE0;">println</span> y))
-    <span style="color: #008000;">[f]</span> '(x <span style="color: #008000;">[x]</span> y <span style="color: #008000;">[rest of the args]</span> ... <span style="color: #008000;">[varargs]</span>)
-    <span style="color: #006FE0;">howto-no</span>)
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> f <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">fn</span> <span style="color: #7fff00;">(</span>x y ...<span style="color: #7fff00;">)</span> <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> x<span style="color: #7fff00;">)</span> <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> y<span style="color: #7fff00;">)</span><span style="color: #ff1493;">)</span>
+    <span style="color: #CC9393;">[f]</span> '<span style="color: #ff1493;">(</span>x <span style="color: #CC9393;">[x]</span> y <span style="color: #CC9393;">[rest of the args]</span> ... <span style="color: #CC9393;">[varargs]</span><span style="color: #ff1493;">)</span>
+    <span style="color: #DCDCCC; font-weight: bold;">howto-no</span><span style="color: #ff8c00;">)</span>
 
-(f 1 2 3)   <span style="color: #8D8D84; font-style: italic;">; Prints 1|newline|(2 3)</span>
+<span style="color: #ff8c00;">(</span>f 1 2 3<span style="color: #ff8c00;">)</span>   <span style="color: #7F9F7F;">; Prints 1|newline|(2 3)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org4c81252" class="outline-2">
-<h2 id="org4c81252"><span class="section-number-2">16</span> Environments</h2>
+<div id="outline-container-orgadc4559" class="outline-2">
+<h2 id="orgadc4559"><span class="section-number-2">16</span> Environments</h2>
 <div class="outline-text-2" id="text-16">
 <p>
 Here are few examples:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">env-global</span>)
-(<span style="color: #006FE0;">env-current</span>)
-(<span style="color: #006FE0;">env-new</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">env-global</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">env-current</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">env-new</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orge75c94d" class="outline-2">
-<h2 id="orge75c94d"><span class="section-number-2">17</span> Getting help with <code>howto</code></h2>
+<div id="outline-container-org4c6522f" class="outline-2">
+<h2 id="org4c6522f"><span class="section-number-2">17</span> Getting help with <code>howto</code></h2>
 <div class="outline-text-2" id="text-17">
 <p>
 Function <code>howto</code> can be used for asking howto do something. It is given first the arguments and then the expected result. It returns a vector containing
@@ -1154,35 +1155,35 @@ Here is small example:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern"><span style="color: #8D8D84; font-style: italic;">; Enter these forms into the REPL</span>
-(<span style="color: #006FE0;">howto</span> 1 2 3)              <span style="color: #8D8D84; font-style: italic;">; ((+ 1 2) (+ 2 1))</span>
-(<span style="color: #006FE0;">howto</span> <span style="color: #008000;">[a]</span> <span style="color: #008000;">[b]</span> <span style="color: #008000;">[ab]</span>)       <span style="color: #8D8D84; font-style: italic;">; ((+ [a] [b]))</span>
-(<span style="color: #006FE0;">howto</span> '(John Mike Alice Lola) 0 'John)
-<span style="color: #8D8D84; font-style: italic;">; ((ln@ (quote (John Mike Alice Lola)) 0)</span>
-<span style="color: #8D8D84; font-style: italic;">;  (cp@ (quote (John Mike Alice Lola)) 0))</span>
+<pre class="src src-octaspire-dern"><span style="color: #7F9F7F;">; Enter these forms into the REPL</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">howto</span> 1 2 3<span style="color: #ff8c00;">)</span>              <span style="color: #7F9F7F;">; ((+ 1 2) (+ 2 1))</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">howto</span> <span style="color: #CC9393;">[a]</span> <span style="color: #CC9393;">[b]</span> <span style="color: #CC9393;">[ab]</span><span style="color: #ff8c00;">)</span>       <span style="color: #7F9F7F;">; ((+ [a] [b]))</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">howto</span> '<span style="color: #ff1493;">(</span>John Mike Alice Lola<span style="color: #ff1493;">)</span> 0 'John<span style="color: #ff8c00;">)</span>
+<span style="color: #7F9F7F;">; ((ln@ (quote (John Mike Alice Lola)) 0)</span>
+<span style="color: #7F9F7F;">;  (cp@ (quote (John Mike Alice Lola)) 0))</span>
 
-(<span style="color: #006FE0;">howto</span> '(John Mike Alice Lola) 'Lola '(3))
-<span style="color: #8D8D84; font-style: italic;">; ((find (quote (John Mike Alice Lola)) (quote Lola)))</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">howto</span> '<span style="color: #ff1493;">(</span>John Mike Alice Lola<span style="color: #ff1493;">)</span> 'Lola '<span style="color: #ff1493;">(</span>3<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
+<span style="color: #7F9F7F;">; ((find (quote (John Mike Alice Lola)) (quote Lola)))</span>
 
 
-<span style="color: #8D8D84; font-style: italic;">; Or print them</span>
-(<span style="color: #006FE0;">println</span> (<span style="color: #006FE0;">howto</span> 1 2 3)) <span style="color: #8D8D84; font-style: italic;">; prints ((+ 1 2) (+ 2 1))</span>
-(<span style="color: #006FE0;">println</span> (<span style="color: #006FE0;">howto</span> <span style="color: #008000;">[a]</span> <span style="color: #008000;">[b]</span> <span style="color: #008000;">[ab]</span>)) <span style="color: #8D8D84; font-style: italic;">; prints ((+ [a] [b]))</span>
+<span style="color: #7F9F7F;">; Or print them</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">howto</span> 1 2 3<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span> <span style="color: #7F9F7F;">; prints ((+ 1 2) (+ 2 1))</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">howto</span> <span style="color: #CC9393;">[a]</span> <span style="color: #CC9393;">[b]</span> <span style="color: #CC9393;">[ab]</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span> <span style="color: #7F9F7F;">; prints ((+ [a] [b]))</span>
 
-(<span style="color: #006FE0;">println</span> (<span style="color: #006FE0;">howto</span> '(John Mike Alice Lola) 0 'John))
-<span style="color: #8D8D84; font-style: italic;">; prints ((ln@ (quote (John Mike Alice Lola)) 0)</span>
-<span style="color: #8D8D84; font-style: italic;">;         (cp@ (quote (John Mike Alice Lola)) 0))</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">howto</span> '<span style="color: #7fff00;">(</span>John Mike Alice Lola<span style="color: #7fff00;">)</span> 0 'John<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
+<span style="color: #7F9F7F;">; prints ((ln@ (quote (John Mike Alice Lola)) 0)</span>
+<span style="color: #7F9F7F;">;         (cp@ (quote (John Mike Alice Lola)) 0))</span>
 
-(<span style="color: #006FE0;">println</span> (<span style="color: #006FE0;">howto</span> '(John Mike Alice Lola) 'Lola '(3)))
-<span style="color: #8D8D84; font-style: italic;">; prints ((find (quote (John Mike Alice Lola))</span>
-<span style="color: #8D8D84; font-style: italic;">;               (quote Lola)))</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">howto</span> '<span style="color: #7fff00;">(</span>John Mike Alice Lola<span style="color: #7fff00;">)</span> 'Lola '<span style="color: #7fff00;">(</span>3<span style="color: #7fff00;">)</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
+<span style="color: #7F9F7F;">; prints ((find (quote (John Mike Alice Lola))</span>
+<span style="color: #7F9F7F;">;               (quote Lola)))</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgf22d2e9" class="outline-2">
-<h2 id="orgf22d2e9"><span class="section-number-2">18</span> Returning from functions early</h2>
+<div id="outline-container-orgd08d448" class="outline-2">
+<h2 id="orgd08d448"><span class="section-number-2">18</span> Returning from functions early</h2>
 <div class="outline-text-2" id="text-18">
 <p>
 The value of the last expression of function is usually the return value from that function.
@@ -1191,12 +1192,12 @@ Small example:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> errorCode <span style="color: #006FE0;">as</span> 1 <span style="color: #008000;">[0 means no error.]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> errorCode <span style="color: #DCDCCC; font-weight: bold;">as</span> 1 <span style="color: #CC9393;">[0 means no error.]</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">define</span> start-engine <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">fn</span> ()
-    (<span style="color: #006FE0;">if</span> (!<span style="color: #006FE0;">=</span> errorCode 0) (<span style="color: #006FE0;">return</span> <span style="color: #008000;">[Cannot start]</span>))
-    <span style="color: #8D8D84; font-style: italic;">; .... Start the engine here...</span>
-    <span style="color: #008000;">[Start engine if all OK]</span> '() <span style="color: #006FE0;">howto-no</span>))
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> start-engine <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">fn</span> <span style="color: #7fff00;">()</span>
+    <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">if</span> <span style="color: #00bfff;">(</span>!<span style="color: #DCDCCC; font-weight: bold;">=</span> errorCode 0<span style="color: #00bfff;">)</span> <span style="color: #00bfff;">(</span><span style="color: #DCDCCC; font-weight: bold;">return</span> <span style="color: #CC9393;">[Cannot start]</span><span style="color: #00bfff;">)</span><span style="color: #7fff00;">)</span>
+    <span style="color: #7F9F7F;">; .... Start the engine here...</span>
+    <span style="color: #CC9393;">[Start engine if all OK]</span> '<span style="color: #7fff00;">()</span> <span style="color: #DCDCCC; font-weight: bold;">howto-no</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 
@@ -1206,15 +1207,15 @@ will return the value <code>nil</code>. Short example:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">((<span style="color: #006FE0;">fn</span> () (<span style="color: #006FE0;">return</span> <span style="color: #D0372D;">nil</span>)))   <span style="color: #8D8D84; font-style: italic;">; Evaluates into 'nil'.</span>
-((<span style="color: #006FE0;">fn</span> () (<span style="color: #006FE0;">return</span>)))       <span style="color: #8D8D84; font-style: italic;">; Evaluates into 'nil'.</span>
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">fn</span> <span style="color: #7fff00;">()</span> <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">return</span> <span style="color: #BFEBBF;">nil</span><span style="color: #7fff00;">)</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>   <span style="color: #7F9F7F;">; Evaluates into 'nil'.</span>
+<span style="color: #ff8c00;">(</span><span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">fn</span> <span style="color: #7fff00;">()</span> <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">return</span><span style="color: #7fff00;">)</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>       <span style="color: #7F9F7F;">; Evaluates into 'nil'.</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgd8858a1" class="outline-2">
-<h2 id="orgd8858a1"><span class="section-number-2">19</span> Evaluating values</h2>
+<div id="outline-container-orgdb7e1ac" class="outline-2">
+<h2 id="orgdb7e1ac"><span class="section-number-2">19</span> Evaluating values</h2>
 <div class="outline-text-2" id="text-19">
 <p>
 Special <code>eval</code> can be used to evaluate a given value. It can be called with one or two arguments.
@@ -1228,26 +1229,26 @@ called at runtime. Small example:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> level-next <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">fn</span> ()
-    (level-reset)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> level-next <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">fn</span> <span style="color: #7fff00;">()</span>
+    <span style="color: #7fff00;">(</span>level-reset<span style="color: #7fff00;">)</span>
 
-    (<span style="color: #006FE0;">define</span> lnum <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">+</span> level-current-number 1)
-        <span style="color: #008000;">[level number]</span>)
+    <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> lnum <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #00bfff;">(</span><span style="color: #DCDCCC; font-weight: bold;">+</span> level-current-number 1<span style="color: #00bfff;">)</span>
+        <span style="color: #CC9393;">[level number]</span><span style="color: #7fff00;">)</span>
 
-    (<span style="color: #006FE0;">if</span> (<span style="color: #006FE0;">&gt;</span> lnum number-of-levels) (<span style="color: #006FE0;">=</span> lnum 1))
+    <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">if</span> <span style="color: #00bfff;">(</span><span style="color: #DCDCCC; font-weight: bold;">&gt;</span> lnum number-of-levels<span style="color: #00bfff;">)</span> <span style="color: #00bfff;">(</span><span style="color: #DCDCCC; font-weight: bold;">=</span> lnum 1<span style="color: #00bfff;">)</span><span style="color: #7fff00;">)</span>
 
-    (<span style="color: #006FE0;">define</span> name-of-fn-to-call <span style="color: #006FE0;">as</span> 'level-
-        <span style="color: #008000;">[name of the level builder function to call]</span>)
-    (<span style="color: #006FE0;">+=</span> name-of-fn-to-call lnum)
-    (<span style="color: #006FE0;">eval</span> ((<span style="color: #006FE0;">eval</span> name-of-fn-to-call)))) <span style="color: #008000;">[next level]</span>
-        '() <span style="color: #006FE0;">howto-no</span>)
+    <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> name-of-fn-to-call <span style="color: #DCDCCC; font-weight: bold;">as</span> 'level-
+        <span style="color: #CC9393;">[name of the level builder function to call]</span><span style="color: #7fff00;">)</span>
+    <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+=</span> name-of-fn-to-call lnum<span style="color: #7fff00;">)</span>
+    <span style="color: #7fff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">eval</span> <span style="color: #00bfff;">(</span><span style="color: #ffff00;">(</span><span style="color: #DCDCCC; font-weight: bold;">eval</span> name-of-fn-to-call<span style="color: #ffff00;">)</span><span style="color: #00bfff;">)</span><span style="color: #7fff00;">)</span><span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[next level]</span>
+        '<span style="color: #ff1493;">()</span> <span style="color: #DCDCCC; font-weight: bold;">howto-no</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgd9733f7" class="outline-2">
-<h2 id="orgd9733f7"><span class="section-number-2">20</span> Input and output ports</h2>
+<div id="outline-container-org37db002" class="outline-2">
+<h2 id="org37db002"><span class="section-number-2">20</span> Input and output ports</h2>
 <div class="outline-text-2" id="text-20">
 <p>
 Input and output can be done through ports. Ports can be created and attached to different
@@ -1259,13 +1260,13 @@ Here is small example:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> f <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">io-file-open</span> <span style="color: #008000;">[/path/goes/here.xy]</span>) <span style="color: #008000;">[f]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> f <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">io-file-open</span> <span style="color: #CC9393;">[/path/goes/here.xy]</span><span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[f]</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">port-read</span> f)
-(<span style="color: #006FE0;">port-read</span> f 3)
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-read</span> f<span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-read</span> f 3<span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">port-write</span> f 65)
-(<span style="color: #006FE0;">port-write</span> f '(65 66 67))
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-write</span> f 65<span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-write</span> f '<span style="color: #ff1493;">(</span>65 66 67<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 
@@ -1276,39 +1277,39 @@ garbage collector collects it. Some ports might also support <b>seeking</b>, <b>
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> f <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">io-file-open</span> <span style="color: #008000;">[/path/goes/here.xy]</span>) <span style="color: #008000;">[f]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> f <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">io-file-open</span> <span style="color: #CC9393;">[/path/goes/here.xy]</span><span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[f]</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">port-seek</span> f -1) <span style="color: #8D8D84; font-style: italic;">; Seek to the end</span>
-(<span style="color: #006FE0;">port-write</span> f 65)
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-seek</span> f -1<span style="color: #ff8c00;">)</span> <span style="color: #7F9F7F;">; Seek to the end</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-write</span> f 65<span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">port-seek</span> f 0)  <span style="color: #8D8D84; font-style: italic;">; Seek to the beginning</span>
-(<span style="color: #006FE0;">port-write</span> f 65)
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-seek</span> f 0<span style="color: #ff8c00;">)</span>  <span style="color: #7F9F7F;">; Seek to the beginning</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-write</span> f 65<span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">port-seek</span> f -2) <span style="color: #8D8D84; font-style: italic;">; Seek to one octet from the end</span>
-(<span style="color: #006FE0;">port-write</span> f 66)
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-seek</span> f -2<span style="color: #ff8c00;">)</span> <span style="color: #7F9F7F;">; Seek to one octet from the end</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-write</span> f 66<span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">port-seek</span> f 1)  <span style="color: #8D8D84; font-style: italic;">; Seek to one octet from the beginning</span>
-(<span style="color: #006FE0;">port-write</span> f 65)
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-seek</span> f 1<span style="color: #ff8c00;">)</span>  <span style="color: #7F9F7F;">; Seek to one octet from the beginning</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-write</span> f 65<span style="color: #ff8c00;">)</span>
 
-<span style="color: #8D8D84; font-style: italic;">; Seek one octet forward  from the current position</span>
-(<span style="color: #006FE0;">port-seek</span> f  1 'from-current)
+<span style="color: #7F9F7F;">; Seek one octet forward  from the current position</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-seek</span> f  1 'from-current<span style="color: #ff8c00;">)</span>
 
-<span style="color: #8D8D84; font-style: italic;">; Seek one octet backward from the current position</span>
-(<span style="color: #006FE0;">port-seek</span> f -1 'from-current)
+<span style="color: #7F9F7F;">; Seek one octet backward from the current position</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-seek</span> f -1 'from-current<span style="color: #ff8c00;">)</span>
 
-<span style="color: #8D8D84; font-style: italic;">; Tell the distance (in octets) from</span>
-<span style="color: #8D8D84; font-style: italic;">; the beginning of the port</span>
-(<span style="color: #006FE0;">port-dist</span> f)
+<span style="color: #7F9F7F;">; Tell the distance (in octets) from</span>
+<span style="color: #7F9F7F;">; the beginning of the port</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-dist</span> f<span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">port-length</span> f) <span style="color: #8D8D84; font-style: italic;">; Tell the size (in octets) of the port</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-length</span> f<span style="color: #ff8c00;">)</span> <span style="color: #7F9F7F;">; Tell the size (in octets) of the port</span>
 
-<span style="color: #8D8D84; font-style: italic;">; Buffer is flushed to disk.</span>
-<span style="color: #8D8D84; font-style: italic;">; Happens also automatically on close.</span>
-(<span style="color: #006FE0;">port-flush</span> f)
-<span style="color: #8D8D84; font-style: italic;">; Close port. This happens also automatically.</span>
-(<span style="color: #006FE0;">port-close</span> f)
+<span style="color: #7F9F7F;">; Buffer is flushed to disk.</span>
+<span style="color: #7F9F7F;">; Happens also automatically on close.</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-flush</span> f<span style="color: #ff8c00;">)</span>
+<span style="color: #7F9F7F;">; Close port. This happens also automatically.</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-close</span> f<span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">port-length</span> f) <span style="color: #8D8D84; font-style: italic;">; -1</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-length</span> f<span style="color: #ff8c00;">)</span> <span style="color: #7F9F7F;">; -1</span>
 </pre>
 </div>
 
@@ -1317,19 +1318,19 @@ Input ports can be iterated with <code>for</code> in similar way that containers
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> f <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">io-file-open</span> <span style="color: #008000;">[/path/goes/here.xy]</span>) <span style="color: #008000;">[f]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> f <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">io-file-open</span> <span style="color: #CC9393;">[/path/goes/here.xy]</span><span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[f]</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">for</span> i <span style="color: #006FE0;">in</span> f (<span style="color: #006FE0;">println</span> i))        <span style="color: #8D8D84; font-style: italic;">; Print every octet</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">for</span> i <span style="color: #DCDCCC; font-weight: bold;">in</span> f <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> i<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>        <span style="color: #7F9F7F;">; Print every octet</span>
 
-(<span style="color: #006FE0;">port-seek</span> f 0)                 <span style="color: #8D8D84; font-style: italic;">; Seek to the beginning</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-seek</span> f 0<span style="color: #ff8c00;">)</span>                 <span style="color: #7F9F7F;">; Seek to the beginning</span>
 
-<span style="color: #8D8D84; font-style: italic;">; Print every other octet</span>
-(<span style="color: #006FE0;">for</span> i <span style="color: #006FE0;">in</span> f step 2 (<span style="color: #006FE0;">println</span> i))
+<span style="color: #7F9F7F;">; Print every other octet</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">for</span> i <span style="color: #DCDCCC; font-weight: bold;">in</span> f step 2 <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> i<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">port-seek</span> f 0)                 <span style="color: #8D8D84; font-style: italic;">; Seek to the beginning</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-seek</span> f 0<span style="color: #ff8c00;">)</span>                 <span style="color: #7F9F7F;">; Seek to the beginning</span>
 
-<span style="color: #8D8D84; font-style: italic;">; Print every third octet</span>
-(<span style="color: #006FE0;">for</span> i <span style="color: #006FE0;">in</span> f step 3 (<span style="color: #006FE0;">println</span> i))
+<span style="color: #7F9F7F;">; Print every third octet</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">for</span> i <span style="color: #DCDCCC; font-weight: bold;">in</span> f step 3 <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> i<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 
@@ -1343,22 +1344,22 @@ Below is short example about querying a port for supported operations:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> f <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">io-file-open</span> <span style="color: #008000;">[/path/goes/here.xy]</span>) <span style="color: #008000;">[f]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> f <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">io-file-open</span> <span style="color: #CC9393;">[/path/goes/here.xy]</span><span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[f]</span><span style="color: #ff8c00;">)</span>
 
-(port-supports-output? f)          <span style="color: #8D8D84; font-style: italic;">; true</span>
-(port-supports-input?  f)          <span style="color: #8D8D84; font-style: italic;">; true</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-supports-output?</span> f<span style="color: #ff8c00;">)</span>          <span style="color: #7F9F7F;">; true</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-supports-input?</span>  f<span style="color: #ff8c00;">)</span>          <span style="color: #7F9F7F;">; true</span>
 
-(<span style="color: #006FE0;">define</span> f <span style="color: #006FE0;">as</span>
-    (<span style="color: #006FE0;">output-file-open</span> <span style="color: #008000;">[/path/goes/here.xy]</span>) <span style="color: #008000;">[f]</span>)
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> f <span style="color: #DCDCCC; font-weight: bold;">as</span>
+    <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">output-file-open</span> <span style="color: #CC9393;">[/path/goes/here.xy]</span><span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[f]</span><span style="color: #ff8c00;">)</span>
 
-(port-supports-output? f)          <span style="color: #8D8D84; font-style: italic;">; true</span>
-(port-supports-input?  f)          <span style="color: #8D8D84; font-style: italic;">; false</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-supports-output?</span> f<span style="color: #ff8c00;">)</span>          <span style="color: #7F9F7F;">; true</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-supports-input?</span>  f<span style="color: #ff8c00;">)</span>          <span style="color: #7F9F7F;">; false</span>
 
-(<span style="color: #006FE0;">define</span> f <span style="color: #006FE0;">as</span>
-    (<span style="color: #006FE0;">input-file-open</span> <span style="color: #008000;">[/path/goes/here.xy]</span>) <span style="color: #008000;">[f]</span>)
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> f <span style="color: #DCDCCC; font-weight: bold;">as</span>
+    <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">input-file-open</span> <span style="color: #CC9393;">[/path/goes/here.xy]</span><span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[f]</span><span style="color: #ff8c00;">)</span>
 
-(port-supports-output? f)          <span style="color: #8D8D84; font-style: italic;">; false</span>
-(port-supports-input?  f)          <span style="color: #8D8D84; font-style: italic;">; true</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-supports-output?</span> f<span style="color: #ff8c00;">)</span>          <span style="color: #7F9F7F;">; false</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-supports-input?</span>  f<span style="color: #ff8c00;">)</span>          <span style="color: #7F9F7F;">; true</span>
 </pre>
 </div>
 
@@ -1368,18 +1369,18 @@ You can use <code>port-write</code> and <code>+=</code> to write to a port octet
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> f <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">io-file-open</span> <span style="color: #008000;">[/path/goes/here.xy]</span>) <span style="color: #008000;">[f]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> f <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">io-file-open</span> <span style="color: #CC9393;">[/path/goes/here.xy]</span><span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[f]</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">+=</span> f <span style="color: #008000;">|a|</span> <span style="color: #008000;">|b|</span> <span style="color: #008000;">[ cat]</span> <span style="color: #008000;">|!|</span>)  <span style="color: #8D8D84; font-style: italic;">; ab cat!</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+=</span> f <span style="color: #CC9393;">|a|</span> <span style="color: #CC9393;">|b|</span> <span style="color: #CC9393;">[ cat]</span> <span style="color: #CC9393;">|!|</span><span style="color: #ff8c00;">)</span>  <span style="color: #7F9F7F;">; ab cat!</span>
 
-(<span style="color: #006FE0;">port-write</span> f '(65 <span style="color: #008000;">|A|</span> <span style="color: #008000;">[ Hi!]</span>)) <span style="color: #8D8D84; font-style: italic;">; AA Hi!</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">port-write</span> f '<span style="color: #ff1493;">(</span>65 <span style="color: #CC9393;">|A|</span> <span style="color: #CC9393;">[ Hi!]</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span> <span style="color: #7F9F7F;">; AA Hi!</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org2e5b8a5" class="outline-2">
-<h2 id="org2e5b8a5"><span class="section-number-2">21</span> Converting between types</h2>
+<div id="outline-container-org79e61a5" class="outline-2">
+<h2 id="org79e61a5"><span class="section-number-2">21</span> Converting between types</h2>
 <div class="outline-text-2" id="text-21">
 <p>
 TODO
@@ -1387,33 +1388,33 @@ TODO
 </div>
 </div>
 
-<div id="outline-container-org7a8b7a2" class="outline-2">
-<h2 id="org7a8b7a2"><span class="section-number-2">22</span> Searching and indexing</h2>
+<div id="outline-container-org670245d" class="outline-2">
+<h2 id="org670245d"><span class="section-number-2">22</span> Searching and indexing</h2>
 <div class="outline-text-2" id="text-22">
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">define</span> names <span style="color: #006FE0;">as</span> '(Mike John Lola Alice Lola) <span style="color: #008000;">[names]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> names <span style="color: #DCDCCC; font-weight: bold;">as</span> '<span style="color: #ff1493;">(</span>Mike John Lola Alice Lola<span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[names]</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">println</span> (<span style="color: #006FE0;">find</span> names 'Mike))  <span style="color: #8D8D84; font-style: italic;">; prints (0)</span>
-(<span style="color: #006FE0;">println</span> (<span style="color: #006FE0;">find</span> names 'John))  <span style="color: #8D8D84; font-style: italic;">; prints (1)</span>
-(<span style="color: #006FE0;">println</span> (<span style="color: #006FE0;">find</span> names 'Lola))  <span style="color: #8D8D84; font-style: italic;">; prints (2 4)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">find</span> names 'Mike<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>  <span style="color: #7F9F7F;">; prints (0)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">find</span> names 'John<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>  <span style="color: #7F9F7F;">; prints (1)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">find</span> names 'Lola<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>  <span style="color: #7F9F7F;">; prints (2 4)</span>
 
- <span style="color: #8D8D84; font-style: italic;">; prints ((0) (1) (2 4))</span>
-(<span style="color: #006FE0;">println</span> (<span style="color: #006FE0;">find</span> names 'Mike 'John 'Lola))
+ <span style="color: #7F9F7F;">; prints ((0) (1) (2 4))</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">find</span> names 'Mike 'John 'Lola<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
 
 
-(<span style="color: #006FE0;">define</span> rooms <span style="color: #006FE0;">as</span> (<span style="color: #006FE0;">hash-map</span> 'Mike 100
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> rooms <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">hash-map</span> 'Mike 100
                            'John 101
-                           'Lola '(102 103)
-                           'Alice 104) <span style="color: #008000;">[room numbers]</span>)
+                           'Lola '<span style="color: #7fff00;">(</span>102 103<span style="color: #7fff00;">)</span>
+                           'Alice 104<span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[room numbers]</span><span style="color: #ff8c00;">)</span>
 
-(<span style="color: #006FE0;">println</span> (<span style="color: #006FE0;">find</span> rooms 'Mike))    <span style="color: #8D8D84; font-style: italic;">; prints 100</span>
-(<span style="color: #006FE0;">println</span> (<span style="color: #006FE0;">find</span> rooms 'Lola))    <span style="color: #8D8D84; font-style: italic;">; prints (102 103)</span>
-(<span style="color: #006FE0;">println</span> (<span style="color: #006FE0;">find</span> rooms 'Nobody))  <span style="color: #8D8D84; font-style: italic;">; prints nil</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">find</span> rooms 'Mike<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>    <span style="color: #7F9F7F;">; prints 100</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">find</span> rooms 'Lola<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>    <span style="color: #7F9F7F;">; prints (102 103)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">find</span> rooms 'Nobody<span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>  <span style="color: #7F9F7F;">; prints nil</span>
 
 
-<span style="color: #8D8D84; font-style: italic;">; prints (7 11 15)</span>
-(<span style="color: #006FE0;">println</span> (<span style="color: #006FE0;">find</span> <span style="color: #008000;">[012345 abc abc abc]</span> <span style="color: #008000;">[abc]</span>))
-(<span style="color: #006FE0;">println</span> (<span style="color: #006FE0;">find</span> <span style="color: #008000;">[012345]</span> <span style="color: #008000;">|3|</span>))             <span style="color: #8D8D84; font-style: italic;">; prints (3)</span>
+<span style="color: #7F9F7F;">; prints (7 11 15)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">find</span> <span style="color: #CC9393;">[012345 abc abc abc]</span> <span style="color: #CC9393;">[abc]</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">println</span> <span style="color: #ff1493;">(</span><span style="color: #DCDCCC; font-weight: bold;">find</span> <span style="color: #CC9393;">[012345]</span> <span style="color: #CC9393;">|3|</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>             <span style="color: #7F9F7F;">; prints (3)</span>
 </pre>
 </div>
 
@@ -1423,8 +1424,8 @@ TODO
 </div>
 </div>
 
-<div id="outline-container-orgf34cd92" class="outline-2">
-<h2 id="orgf34cd92"><span class="section-number-2">23</span> Loading libraries with <code>require</code></h2>
+<div id="outline-container-orgc7b090f" class="outline-2">
+<h2 id="orgc7b090f"><span class="section-number-2">23</span> Loading libraries with <code>require</code></h2>
 <div class="outline-text-2" id="text-23">
 <p>
 Dern has support for loading libraries or &ldquo;plugins&rdquo; during run time with the builtin <code>require</code>.
@@ -1447,8 +1448,8 @@ Here is small example:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">require</span> 'mylib)
-(mylib-say <span style="color: #008000;">[Hello world from library]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">require</span> 'mylib<span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span>mylib-say <span style="color: #CC9393;">[Hello world from library]</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 
@@ -1463,78 +1464,78 @@ Below is a small example of a binary library for <b>Linux</b>, <b>FreeBSD</b>, <
 </p>
 
 <div class="org-src-container">
-<pre class="src src-c"><span style="color: #8D8D84;">/***</span>
-<span style="color: #8D8D84; font-style: italic;">  To build this file into a shared library in Linux:</span>
+<pre class="src src-c"><span style="color: #5F7F5F;">/***</span>
+<span style="color: #7F9F7F;">  To build this file into a shared library in Linux:</span>
 
-<span style="color: #8D8D84; font-style: italic;">  gcc -c -fPIC mylib.c     \</span>
-<span style="color: #8D8D84; font-style: italic;">      -I ../../../include  \</span>
-<span style="color: #8D8D84; font-style: italic;">      -I ../../../external/octaspire_core/include</span>
-<span style="color: #8D8D84; font-style: italic;">  gcc -shared -o libmylib.so mylib.o</span>
-<span style="color: #8D8D84; font-style: italic;">**</span><span style="color: #8D8D84;">*/</span>
-<span style="color: #808080;">#include</span> <span style="color: #008000;">&lt;stdio.h&gt;</span>
-<span style="color: #808080;">#include</span> <span style="color: #008000;">&lt;octaspire/core/octaspire_helpers.h&gt;</span>
-<span style="color: #808080;">#include</span> <span style="color: #008000;">"octaspire/dern/octaspire_dern_vm.h"</span>
-<span style="color: #808080;">#include</span> <span style="color: #008000;">"octaspire/dern/octaspire_dern_environment.h"</span>
+<span style="color: #7F9F7F;">  gcc -c -fPIC mylib.c     \</span>
+<span style="color: #7F9F7F;">      -I ../../../include  \</span>
+<span style="color: #7F9F7F;">      -I ../../../external/octaspire_core/include</span>
+<span style="color: #7F9F7F;">  gcc -shared -o libmylib.so mylib.o</span>
+<span style="color: #7F9F7F;">***/</span>
+<span style="color: #94BFF3;">#include</span> <span style="color: #ff8c00;">&lt;</span><span style="color: #CC9393;">stdio.h</span><span style="color: #ff8c00;">&gt;</span>
+<span style="color: #94BFF3;">#include</span> <span style="color: #ff8c00;">&lt;</span><span style="color: #CC9393;">octaspire/core/octaspire_helpers.h</span><span style="color: #ff8c00;">&gt;</span>
+<span style="color: #94BFF3;">#include</span> <span style="color: #CC9393;">"octaspire/dern/octaspire_dern_vm.h"</span>
+<span style="color: #94BFF3;">#include</span> <span style="color: #CC9393;">"octaspire/dern/octaspire_dern_environment.h"</span>
 
-<span style="color: #6434A3;">octaspire_dern_value_t</span> *<span style="color: #006699;">mylib_say</span>(
-    <span style="color: #6434A3;">octaspire_dern_vm_t</span> *<span style="color: #BA36A5;">vm</span>,
-    <span style="color: #6434A3;">octaspire_dern_value_t</span> *<span style="color: #BA36A5;">arguments</span>,
-    <span style="color: #6434A3;">octaspire_dern_value_t</span> *<span style="color: #BA36A5;">environment</span>)
-{
-    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+<span style="color: #7CB8BB;">octaspire_dern_value_t</span> *<span style="color: #93E0E3;">mylib_say</span><span style="color: #ff8c00;">(</span>
+    <span style="color: #7CB8BB;">octaspire_dern_vm_t</span> *<span style="color: #DFAF8F;">vm</span>,
+    <span style="color: #7CB8BB;">octaspire_dern_value_t</span> *<span style="color: #DFAF8F;">arguments</span>,
+    <span style="color: #7CB8BB;">octaspire_dern_value_t</span> *<span style="color: #DFAF8F;">environment</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">{</span>
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER<span style="color: #ff1493;">(</span>environment<span style="color: #ff1493;">)</span>;
 
-    <span style="color: #0000FF;">if</span> (octaspire_dern_value_as_vector_get_length(
-        arguments) != 1)
-    {
-        <span style="color: #0000FF;">return</span>
-octaspire_dern_vm_create_new_value_error_from_c_string(
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #ff1493;">(</span>octaspire_dern_value_as_vector_get_length<span style="color: #7fff00;">(</span>
+        arguments<span style="color: #7fff00;">)</span> != 1<span style="color: #ff1493;">)</span>
+    <span style="color: #ff1493;">{</span>
+        <span style="color: #F0DFAF; font-weight: bold;">return</span>
+octaspire_dern_vm_create_new_value_error_from_c_string<span style="color: #7fff00;">(</span>
                 vm,
-                <span style="color: #008000;">"mylib-say expects one argument"</span>);
-    }
+                <span style="color: #CC9393;">"mylib-say expects one argument"</span><span style="color: #7fff00;">)</span>;
+    <span style="color: #ff1493;">}</span>
 
-    <span style="color: #6434A3;">octaspire_dern_value_t</span> <span style="color: #0000FF;">const</span> * <span style="color: #0000FF;">const</span> <span style="color: #BA36A5;">messageVal</span> =
-   octaspire_dern_value_as_vector_get_element_at_const(
+    <span style="color: #7CB8BB;">octaspire_dern_value_t</span> <span style="color: #F0DFAF; font-weight: bold;">const</span> * <span style="color: #F0DFAF; font-weight: bold;">const</span> <span style="color: #DFAF8F;">messageVal</span> =
+   octaspire_dern_value_as_vector_get_element_at_const<span style="color: #ff1493;">(</span>
             arguments,
-            0);
+            0<span style="color: #ff1493;">)</span>;
 
-    <span style="color: #0000FF;">if</span> (messageVal-&gt;typeTag !=
-        OCTASPIRE_DERN_VALUE_TAG_STRING)
-    {
-        <span style="color: #0000FF;">return</span>
-octaspire_dern_vm_create_new_value_error_from_c_string(
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #ff1493;">(</span>messageVal-&gt;typeTag !=
+        OCTASPIRE_DERN_VALUE_TAG_STRING<span style="color: #ff1493;">)</span>
+    <span style="color: #ff1493;">{</span>
+        <span style="color: #F0DFAF; font-weight: bold;">return</span>
+octaspire_dern_vm_create_new_value_error_from_c_string<span style="color: #7fff00;">(</span>
                 vm,
-                <span style="color: #008000;">"mylib-say expects string argument"</span>);
-    }
+                <span style="color: #CC9393;">"mylib-say expects string argument"</span><span style="color: #7fff00;">)</span>;
+    <span style="color: #ff1493;">}</span>
 
-    printf(<span style="color: #008000;">"%s\n"</span>,
-           octaspire_dern_value_as_string_get_c_string(
-               messageVal));
+    printf<span style="color: #ff1493;">(</span><span style="color: #CC9393;">"%s\n"</span>,
+           octaspire_dern_value_as_string_get_c_string<span style="color: #7fff00;">(</span>
+               messageVal<span style="color: #7fff00;">)</span><span style="color: #ff1493;">)</span>;
 
-    <span style="color: #0000FF;">return</span> octaspire_dern_vm_create_new_value_boolean(
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> octaspire_dern_vm_create_new_value_boolean<span style="color: #ff1493;">(</span>
         vm,
-        <span style="color: #D0372D;">true</span>);
-}
+        <span style="color: #BFEBBF;">true</span><span style="color: #ff1493;">)</span>;
+<span style="color: #ff8c00;">}</span>
 
-<span style="color: #6434A3;">bool</span> <span style="color: #006699;">mylib_init</span>(
-    <span style="color: #6434A3;">octaspire_dern_vm_t</span> * <span style="color: #0000FF;">const</span> <span style="color: #BA36A5;">vm</span>,
-    <span style="color: #6434A3;">octaspire_dern_environment_t</span> * <span style="color: #0000FF;">const</span> <span style="color: #BA36A5;">targetEnv</span>)
-{
-    octaspire_helpers_verify(vm &amp;&amp; targetEnv);
+<span style="color: #7CB8BB;">bool</span> <span style="color: #93E0E3;">mylib_init</span><span style="color: #ff8c00;">(</span>
+    <span style="color: #7CB8BB;">octaspire_dern_vm_t</span> * <span style="color: #F0DFAF; font-weight: bold;">const</span> <span style="color: #DFAF8F;">vm</span>,
+    <span style="color: #7CB8BB;">octaspire_dern_environment_t</span> * <span style="color: #F0DFAF; font-weight: bold;">const</span> <span style="color: #DFAF8F;">targetEnv</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">{</span>
+    octaspire_helpers_verify<span style="color: #ff1493;">(</span>vm &amp;&amp; targetEnv<span style="color: #ff1493;">)</span>;
 
-    <span style="color: #0000FF;">if</span> (
-    !octaspire_dern_vm_create_and_register_new_builtin(
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #ff1493;">(</span>
+    <span style="color: #F0DFAF; font-weight: bold;">!</span>octaspire_dern_vm_create_and_register_new_builtin<span style="color: #7fff00;">(</span>
         vm,
-        <span style="color: #008000;">"mylib-say"</span>,
+        <span style="color: #CC9393;">"mylib-say"</span>,
         mylib_say,
         1,
-        <span style="color: #008000;">"mylib says something"</span>,
-        targetEnv))
-    {
-        <span style="color: #0000FF;">return</span> <span style="color: #D0372D;">false</span>;
-    }
+        <span style="color: #CC9393;">"mylib says something"</span>,
+        targetEnv<span style="color: #7fff00;">)</span><span style="color: #ff1493;">)</span>
+    <span style="color: #ff1493;">{</span>
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #BFEBBF;">false</span>;
+    <span style="color: #ff1493;">}</span>
 
-    <span style="color: #0000FF;">return</span> <span style="color: #D0372D;">true</span>;
-}
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #BFEBBF;">true</span>;
+<span style="color: #ff8c00;">}</span>
 </pre>
 </div>
 
@@ -1544,8 +1545,8 @@ for different systems.
 </p>
 </div>
 
-<div id="outline-container-org4d91af2" class="outline-3">
-<h3 id="org4d91af2"><span class="section-number-3">23.1</span> Building and using a binary library in Haiku</h3>
+<div id="outline-container-org4575c69" class="outline-3">
+<h3 id="org4575c69"><span class="section-number-3">23.1</span> Building and using a binary library in Haiku</h3>
 <div class="outline-text-3" id="text-23-1">
 <p>
 Run these commands from the <b>build</b>-directory of the source distribution:
@@ -1553,7 +1554,7 @@ Run these commands from the <b>build</b>-directory of the source distribution:
 
 <div class="org-src-container">
 <pre class="src src-sh">make -C ../doc/examples/plugin -f Makefile.Haiku
-<span style="color: #BA36A5;">LIBRARY_PATH</span>=$<span style="color: #BA36A5;">LIBRARY_PATH</span>:../doc/examples/plugin <span style="color: #008000;">\</span>
+<span style="color: #DFAF8F;">LIBRARY_PATH</span>=$<span style="color: #DFAF8F;">LIBRARY_PATH</span>:../doc/examples/plugin <span style="color: #CC9393;">\</span>
     ./octaspire-dern-repl -c
 </pre>
 </div>
@@ -1563,15 +1564,15 @@ Write into the REPL:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">require</span> 'mylib)
-(mylib-say <span style="color: #008000;">[Hello world from library]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">require</span> 'mylib<span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span>mylib-say <span style="color: #CC9393;">[Hello world from library]</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org19f4bcd" class="outline-3">
-<h3 id="org19f4bcd"><span class="section-number-3">23.2</span> Building and using a binary library in MINIX 3</h3>
+<div id="outline-container-org2039342" class="outline-3">
+<h3 id="org2039342"><span class="section-number-3">23.2</span> Building and using a binary library in MINIX 3</h3>
 <div class="outline-text-3" id="text-23-2">
 <p>
 Run these commands from the <b>build</b>-directory of the source distribution:
@@ -1579,7 +1580,7 @@ Run these commands from the <b>build</b>-directory of the source distribution:
 
 <div class="org-src-container">
 <pre class="src src-sh">make -C ../doc/examples/plugin -f Makefile.MINIX3
-<span style="color: #BA36A5;">LD_LIBRARY_PATH</span>=../doc/examples/plugin <span style="color: #008000;">\</span>
+<span style="color: #DFAF8F;">LD_LIBRARY_PATH</span>=../doc/examples/plugin <span style="color: #CC9393;">\</span>
     ./octaspire-dern-repl -c
 </pre>
 </div>
@@ -1589,15 +1590,15 @@ Write into the REPL:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">require</span> 'mylib)
-(mylib-say <span style="color: #008000;">[Hello world from library]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">require</span> 'mylib<span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span>mylib-say <span style="color: #CC9393;">[Hello world from library]</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org78345bb" class="outline-3">
-<h3 id="org78345bb"><span class="section-number-3">23.3</span> Building and using a binary library in Linux</h3>
+<div id="outline-container-org61af71d" class="outline-3">
+<h3 id="org61af71d"><span class="section-number-3">23.3</span> Building and using a binary library in Linux</h3>
 <div class="outline-text-3" id="text-23-3">
 <p>
 Run these commands from the <b>build</b>-directory of the source distribution:
@@ -1605,7 +1606,7 @@ Run these commands from the <b>build</b>-directory of the source distribution:
 
 <div class="org-src-container">
 <pre class="src src-sh">make -C ../doc/examples/plugin
-<span style="color: #BA36A5;">LD_LIBRARY_PATH</span>=../doc/examples/plugin <span style="color: #008000;">\</span>
+<span style="color: #DFAF8F;">LD_LIBRARY_PATH</span>=../doc/examples/plugin <span style="color: #CC9393;">\</span>
     ./octaspire-dern-repl -c
 </pre>
 </div>
@@ -1615,15 +1616,15 @@ Write into the REPL:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">require</span> 'mylib)
-(mylib-say <span style="color: #008000;">[Hello world from library]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">require</span> 'mylib<span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span>mylib-say <span style="color: #CC9393;">[Hello world from library]</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org4be0b7d" class="outline-3">
-<h3 id="org4be0b7d"><span class="section-number-3">23.4</span> Building and using a binary library in FreeBSD</h3>
+<div id="outline-container-org42c9a6d" class="outline-3">
+<h3 id="org42c9a6d"><span class="section-number-3">23.4</span> Building and using a binary library in FreeBSD</h3>
 <div class="outline-text-3" id="text-23-4">
 <p>
 Run these commands from the <b>build</b>-directory of the source distribution:
@@ -1631,7 +1632,7 @@ Run these commands from the <b>build</b>-directory of the source distribution:
 
 <div class="org-src-container">
 <pre class="src src-sh">make -C ../doc/examples/plugin -f Makefile.FreeBSD
-<span style="color: #BA36A5;">LD_LIBRARY_PATH</span>=../doc/examples/plugin <span style="color: #008000;">\</span>
+<span style="color: #DFAF8F;">LD_LIBRARY_PATH</span>=../doc/examples/plugin <span style="color: #CC9393;">\</span>
     ./octaspire-dern-repl -c
 </pre>
 </div>
@@ -1641,15 +1642,15 @@ Write into the REPL:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">require</span> 'mylib)
-(mylib-say <span style="color: #008000;">[Hello world from library]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">require</span> 'mylib<span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span>mylib-say <span style="color: #CC9393;">[Hello world from library]</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org50a3b50" class="outline-3">
-<h3 id="org50a3b50"><span class="section-number-3">23.5</span> Building and using a binary library in NetBSD</h3>
+<div id="outline-container-org3b437db" class="outline-3">
+<h3 id="org3b437db"><span class="section-number-3">23.5</span> Building and using a binary library in NetBSD</h3>
 <div class="outline-text-3" id="text-23-5">
 <p>
 Run these commands from the <b>build</b>-directory of the source distribution:
@@ -1657,7 +1658,7 @@ Run these commands from the <b>build</b>-directory of the source distribution:
 
 <div class="org-src-container">
 <pre class="src src-sh">make -C ../doc/examples/plugin
-<span style="color: #BA36A5;">LD_LIBRARY_PATH</span>=../doc/examples/plugin <span style="color: #008000;">\</span>
+<span style="color: #DFAF8F;">LD_LIBRARY_PATH</span>=../doc/examples/plugin <span style="color: #CC9393;">\</span>
     ./octaspire-dern-repl -c
 </pre>
 </div>
@@ -1667,16 +1668,16 @@ Write into the REPL:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-octaspire-dern">(<span style="color: #006FE0;">require</span> 'mylib)
-(mylib-say <span style="color: #008000;">[Hello world from library]</span>)
+<pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">require</span> 'mylib<span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">(</span>mylib-say <span style="color: #CC9393;">[Hello world from library]</span><span style="color: #ff8c00;">)</span>
 </pre>
 </div>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org2222992" class="outline-2">
-<h2 id="org2222992"><span class="section-number-2">24</span> Using custom library loader with <code>require</code></h2>
+<div id="outline-container-orgf2b09eb" class="outline-2">
+<h2 id="orgf2b09eb"><span class="section-number-2">24</span> Using custom library loader with <code>require</code></h2>
 <div class="outline-text-2" id="text-24">
 <p>
 Sometimes you might want to override the default library searching and loading
@@ -1687,55 +1688,55 @@ program, or maybe the library must be first downloaded through a socket.
 
 
 <div class="org-src-container">
-<pre class="src src-c"><span style="color: #8D8D84;">// </span><span style="color: #8D8D84; font-style: italic;">...</span>
+<pre class="src src-c"><span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">...</span>
 
-<span style="color: #6434A3;">octaspire_input_t</span> *<span style="color: #006699;">my_custom_loader</span>(
-    <span style="color: #6434A3;">char</span> <span style="color: #0000FF;">const</span> * <span style="color: #0000FF;">const</span> <span style="color: #BA36A5;">name</span>,
-    <span style="color: #6434A3;">octaspire_memory_allocator_t</span> * <span style="color: #0000FF;">const</span> <span style="color: #BA36A5;">allocator</span>)
-{
-    <span style="color: #0000FF;">if</span> (strcmp(<span style="color: #008000;">"test1.dern"</span>, name) == 0)
-    {
-        <span style="color: #0000FF;">return</span> octaspire_input_new_from_c_string(
-            <span style="color: #008000;">"(define f1 as (fn (a b) (+ a b)) [f1] "</span>
-            <span style="color: #008000;">"'(a [a] b [b]) howto-ok)"</span>,
-            allocator);
-    }
-    <span style="color: #0000FF;">else</span> <span style="color: #0000FF;">if</span> (strcmp(<span style="color: #008000;">"test2.dern"</span>, name) == 0)
-    {
-        <span style="color: #0000FF;">return</span> octaspire_input_new_from_c_string(
-            <span style="color: #008000;">"(define f2 as (fn (a b) (* a b)) [f2] "</span>
-            <span style="color: #008000;">"'(a [a] b [b]) howto-ok)"</span>,
-            allocator);
-    }
+<span style="color: #7CB8BB;">octaspire_input_t</span> *<span style="color: #93E0E3;">my_custom_loader</span><span style="color: #ff8c00;">(</span>
+    <span style="color: #7CB8BB;">char</span> <span style="color: #F0DFAF; font-weight: bold;">const</span> * <span style="color: #F0DFAF; font-weight: bold;">const</span> <span style="color: #DFAF8F;">name</span>,
+    <span style="color: #7CB8BB;">octaspire_memory_allocator_t</span> * <span style="color: #F0DFAF; font-weight: bold;">const</span> <span style="color: #DFAF8F;">allocator</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">{</span>
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #ff1493;">(</span>strcmp<span style="color: #7fff00;">(</span><span style="color: #CC9393;">"test1.dern"</span>, name<span style="color: #7fff00;">)</span> == 0<span style="color: #ff1493;">)</span>
+    <span style="color: #ff1493;">{</span>
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> octaspire_input_new_from_c_string<span style="color: #7fff00;">(</span>
+            <span style="color: #CC9393;">"(define f1 as (fn (a b) (+ a b)) [f1] "</span>
+            <span style="color: #CC9393;">"'(a [a] b [b]) howto-ok)"</span>,
+            allocator<span style="color: #7fff00;">)</span>;
+    <span style="color: #ff1493;">}</span>
+    <span style="color: #F0DFAF; font-weight: bold;">else</span> <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #ff1493;">(</span>strcmp<span style="color: #7fff00;">(</span><span style="color: #CC9393;">"test2.dern"</span>, name<span style="color: #7fff00;">)</span> == 0<span style="color: #ff1493;">)</span>
+    <span style="color: #ff1493;">{</span>
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> octaspire_input_new_from_c_string<span style="color: #7fff00;">(</span>
+            <span style="color: #CC9393;">"(define f2 as (fn (a b) (* a b)) [f2] "</span>
+            <span style="color: #CC9393;">"'(a [a] b [b]) howto-ok)"</span>,
+            allocator<span style="color: #7fff00;">)</span>;
+    <span style="color: #ff1493;">}</span>
 
-    <span style="color: #0000FF;">return</span> 0;
-}
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> 0;
+<span style="color: #ff8c00;">}</span>
 
-<span style="color: #6434A3;">int</span> <span style="color: #006699;">main</span>(<span style="color: #6434A3;">void</span>)
-{
-    <span style="color: #6434A3;">octaspire_dern_vm_config_t</span> <span style="color: #BA36A5;">config</span> =
-        octaspire_dern_vm_config_default();
+<span style="color: #7CB8BB;">int</span> <span style="color: #93E0E3;">main</span><span style="color: #ff8c00;">(</span><span style="color: #7CB8BB;">void</span><span style="color: #ff8c00;">)</span>
+<span style="color: #ff8c00;">{</span>
+    <span style="color: #7CB8BB;">octaspire_dern_vm_config_t</span> <span style="color: #DFAF8F;">config</span> =
+        octaspire_dern_vm_config_default<span style="color: #ff1493;">()</span>;
     config.preLoaderForRequireSrc = my_custom_loader;
 
-    <span style="color: #6434A3;">octaspire_dern_vm_t</span> *<span style="color: #BA36A5;">vm</span> =
-        octaspire_dern_vm_new_with_config(
+    <span style="color: #7CB8BB;">octaspire_dern_vm_t</span> *<span style="color: #DFAF8F;">vm</span> =
+        octaspire_dern_vm_new_with_config<span style="color: #ff1493;">(</span>
             myAllocator,
             myStdio,
-            config);
+            config<span style="color: #ff1493;">)</span>;
 
 
-    <span style="color: #8D8D84;">// </span><span style="color: #8D8D84; font-style: italic;">In Dern:</span>
-    <span style="color: #8D8D84;">// </span><span style="color: #8D8D84; font-style: italic;">(require 'test1)</span>
-    <span style="color: #8D8D84;">// </span><span style="color: #8D8D84; font-style: italic;">(require 'test2)</span>
-    <span style="color: #8D8D84;">// </span><span style="color: #8D8D84; font-style: italic;">...</span>
-}
+    <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">In Dern:</span>
+    <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">(require 'test1)</span>
+    <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">(require 'test2)</span>
+    <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">...</span>
+<span style="color: #ff8c00;">}</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org97d0168" class="outline-2">
-<h2 id="org97d0168"><span class="section-number-2">25</span> Embedding in C programs</h2>
+<div id="outline-container-org0092011" class="outline-2">
+<h2 id="org0092011"><span class="section-number-2">25</span> Embedding in C programs</h2>
 <div class="outline-text-2" id="text-25">
 <p>
 TODO
@@ -1743,8 +1744,8 @@ TODO
 </div>
 </div>
 
-<div id="outline-container-org8373413" class="outline-2">
-<h2 id="org8373413"><span class="section-number-2">26</span> Tool support</h2>
+<div id="outline-container-org55b97a2" class="outline-2">
+<h2 id="org55b97a2"><span class="section-number-2">26</span> Tool support</h2>
 <div class="outline-text-2" id="text-26">
 <p>
 <b>etc</b>-directory of the source distribution contains syntax files for <b>vim</b>, <b>emacs</b>,
@@ -1753,8 +1754,8 @@ TODO
 </div>
 </div>
 
-<div id="outline-container-orgd954d2c" class="outline-2">
-<h2 id="orgd954d2c"><span class="section-number-2">27</span> Using the development repository</h2>
+<div id="outline-container-org7ef1709" class="outline-2">
+<h2 id="org7ef1709"><span class="section-number-2">27</span> Using the development repository</h2>
 <div class="outline-text-2" id="text-27">
 <p>
 The amalgamated source release can be used without Make or other build tools;
@@ -1789,7 +1790,7 @@ in the Makefile:
 
 <div class="org-src-container">
 <pre class="src src-sh">git clone https://github.com/octaspire/dern.git
-<span style="color: #006FE0;">cd</span> dern
+<span style="color: #DCDCCC; font-weight: bold;">cd</span> dern
 make submodules-init
 make
 make test
@@ -1852,8 +1853,8 @@ builds the documentation.
 </p>
 </div>
 
-<div id="outline-container-orgbbee48b" class="outline-3">
-<h3 id="orgbbee48b"><span class="section-number-3">27.1</span> Raspberry Pi, Debian and Ubuntu</h3>
+<div id="outline-container-org67867ff" class="outline-3">
+<h3 id="org67867ff"><span class="section-number-3">27.1</span> Raspberry Pi, Debian and Ubuntu</h3>
 <div class="outline-text-3" id="text-27-1">
 <p>
 To build Dern from the regular source distribution in Raspberry Pi (Raspbian), Debian or Ubuntu (16.04 LTS) system:
@@ -1862,7 +1863,7 @@ To build Dern from the regular source distribution in Raspberry Pi (Raspbian), D
 <div class="org-src-container">
 <pre class="src src-sh">sudo apt-get install git
 git clone https://github.com/octaspire/dern.git
-<span style="color: #006FE0;">cd</span> dern
+<span style="color: #DCDCCC; font-weight: bold;">cd</span> dern
 make submodules-init
 make
 </pre>
@@ -1870,8 +1871,8 @@ make
 </div>
 </div>
 
-<div id="outline-container-orgb328ff1" class="outline-3">
-<h3 id="orgb328ff1"><span class="section-number-3">27.2</span> Arch Linux</h3>
+<div id="outline-container-org1f370da" class="outline-3">
+<h3 id="org1f370da"><span class="section-number-3">27.2</span> Arch Linux</h3>
 <div class="outline-text-3" id="text-27-2">
 <p>
 To build on Arch Linux (Arch Linux ARM) system:
@@ -1880,7 +1881,7 @@ To build on Arch Linux (Arch Linux ARM) system:
 <div class="org-src-container">
 <pre class="src src-sh">sudo pacman -S git gcc make
 git clone https://github.com/octaspire/dern.git
-<span style="color: #006FE0;">cd</span> dern
+<span style="color: #DCDCCC; font-weight: bold;">cd</span> dern
 make submodules-init
 make
 </pre>
@@ -1888,8 +1889,8 @@ make
 </div>
 </div>
 
-<div id="outline-container-org85b936d" class="outline-3">
-<h3 id="org85b936d"><span class="section-number-3">27.3</span> Haiku</h3>
+<div id="outline-container-org1040307" class="outline-3">
+<h3 id="org1040307"><span class="section-number-3">27.3</span> Haiku</h3>
 <div class="outline-text-3" id="text-27-3">
 <p>
 To build on Haiku (Version Walter (Revision hrev51127) x86<sub>gcc2</sub>):
@@ -1898,16 +1899,16 @@ To build on Haiku (Version Walter (Revision hrev51127) x86<sub>gcc2</sub>):
 <div class="org-src-container">
 <pre class="src src-sh">pkgman install gcc_x86
 git clone https://github.com/octaspire/dern.git
-<span style="color: #006FE0;">cd</span> dern
+<span style="color: #DCDCCC; font-weight: bold;">cd</span> dern
 make submodules-init
-<span style="color: #BA36A5;">CC</span>=gcc-x86 make
+<span style="color: #DFAF8F;">CC</span>=gcc-x86 make
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org24afb97" class="outline-3">
-<h3 id="org24afb97"><span class="section-number-3">27.4</span> FreeBSD</h3>
+<div id="outline-container-org5af045a" class="outline-3">
+<h3 id="org5af045a"><span class="section-number-3">27.4</span> FreeBSD</h3>
 <div class="outline-text-3" id="text-27-4">
 <p>
 To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:
@@ -1916,7 +1917,7 @@ To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:
 <div class="org-src-container">
 <pre class="src src-sh">sudo pkg install git
 git clone https://github.com/octaspire/dern.git
-<span style="color: #006FE0;">cd</span> dern
+<span style="color: #DCDCCC; font-weight: bold;">cd</span> dern
 make submodules-init
 make
 </pre>
@@ -1924,8 +1925,8 @@ make
 </div>
 </div>
 
-<div id="outline-container-orga1d760e" class="outline-3">
-<h3 id="orga1d760e"><span class="section-number-3">27.5</span> NetBSD</h3>
+<div id="outline-container-org8ade613" class="outline-3">
+<h3 id="org8ade613"><span class="section-number-3">27.5</span> NetBSD</h3>
 <div class="outline-text-3" id="text-27-5">
 <p>
 To build on NetBSD (NetBSD-7.1-i386) system:
@@ -1934,8 +1935,8 @@ To build on NetBSD (NetBSD-7.1-i386) system:
 <div class="org-src-container">
 <pre class="src src-sh">sudo pkgin install git
 git clone git://github.com/octaspire/dern
-<span style="color: #006FE0;">cd</span> dern
-perl -pi -e <span style="color: #008000;">'s/https/git/'</span> .gitmodules
+<span style="color: #DCDCCC; font-weight: bold;">cd</span> dern
+perl -pi -e <span style="color: #CC9393;">'s/https/git/'</span> .gitmodules
 make submodules-init
 make
 </pre>
@@ -1943,8 +1944,8 @@ make
 </div>
 </div>
 
-<div id="outline-container-orgf60d04c" class="outline-3">
-<h3 id="orgf60d04c"><span class="section-number-3">27.6</span> MINIX 3</h3>
+<div id="outline-container-org72eaa79" class="outline-3">
+<h3 id="org72eaa79"><span class="section-number-3">27.6</span> MINIX 3</h3>
 <div class="outline-text-3" id="text-27-6">
 <p>
 To build from the regular source distribution on MINIX 3 (minix<sub>R3.3.0</sub>-588a35b) system:
@@ -1953,10 +1954,10 @@ To build from the regular source distribution on MINIX 3 (minix<sub>R3.3.0</sub>
 <div class="org-src-container">
 <pre class="src src-sh">su root
 pkgin install clang binutils git-base
-<span style="color: #0000FF;">exit</span>
+<span style="color: #F0DFAF; font-weight: bold;">exit</span>
 git clone git://github.com/octaspire/dern
-<span style="color: #006FE0;">cd</span> dern
-perl -pi -e <span style="color: #008000;">'s/https/git/'</span> .gitmodules
+<span style="color: #DCDCCC; font-weight: bold;">cd</span> dern
+perl -pi -e <span style="color: #CC9393;">'s/https/git/'</span> .gitmodules
 make submodules-init
 make
 </pre>
@@ -1977,7 +1978,7 @@ make
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: www.octaspire.com</p>
-<p class="date">Created: 2018-05-10 Thu 22:21</p>
+<p class="date">Created: 2018-05-28 Mon 21:50</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
