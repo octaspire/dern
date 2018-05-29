@@ -765,7 +765,7 @@ bool dern_animation_init(
         octaspire_map_new_with_octaspire_string_keys(
             sizeof(octaspire_dern_animation_t*),
             true,
-            (octaspire_map_element_callback_function_t)
+            (octaspire_map_element_callback_t)
                 octaspire_dern_animation_release,
             octaspire_dern_vm_get_allocator(vm));
 

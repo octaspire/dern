@@ -1131,7 +1131,7 @@ octaspire_dern_value_t *dern_sdl2_Init(
     dern_sdl2_private_textures = octaspire_map_new_with_size_t_keys(
         sizeof(octaspire_sdl2_texture_t*),
         true,
-        (octaspire_map_element_callback_function_t)
+        (octaspire_map_element_callback_t)
             dern_sdl2_release_texture_with_uid,
         octaspire_dern_vm_get_allocator(vm));
 
@@ -1147,7 +1147,7 @@ octaspire_dern_value_t *dern_sdl2_Init(
     dern_sdl2_private_fonts = octaspire_map_new_with_size_t_keys(
         sizeof(TTF_Font*),
         true,
-        (octaspire_map_element_callback_function_t)0,
+        (octaspire_map_element_callback_t)0,
         octaspire_dern_vm_get_allocator(vm));
 
     if (!dern_sdl2_private_fonts)
@@ -1163,7 +1163,7 @@ octaspire_dern_value_t *dern_sdl2_Init(
     dern_sdl2_private_music = octaspire_map_new_with_size_t_keys(
         sizeof(Mix_Music*),
         true,
-        (octaspire_map_element_callback_function_t)Mix_FreeMusic,
+        (octaspire_map_element_callback_t)Mix_FreeMusic,
         octaspire_dern_vm_get_allocator(vm));
 
     if (!dern_sdl2_private_music)
@@ -1177,7 +1177,7 @@ octaspire_dern_value_t *dern_sdl2_Init(
     dern_sdl2_private_sounds = octaspire_map_new_with_size_t_keys(
         sizeof(Mix_Chunk*),
         true,
-        (octaspire_map_element_callback_function_t)Mix_FreeChunk,
+        (octaspire_map_element_callback_t)Mix_FreeChunk,
         octaspire_dern_vm_get_allocator(vm));
 
     if (!dern_sdl2_private_sounds)
@@ -1197,7 +1197,7 @@ octaspire_dern_value_t *dern_sdl2_Init(
     dern_sdl2_private_controllers = octaspire_vector_new(
         sizeof(SDL_Joystick*),
         true,
-        (octaspire_map_element_callback_function_t)SDL_JoystickClose,
+        (octaspire_map_element_callback_t)SDL_JoystickClose,
         octaspire_dern_vm_get_allocator(vm));
 
     if (!dern_sdl2_private_controllers)

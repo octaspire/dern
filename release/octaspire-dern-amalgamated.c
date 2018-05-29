@@ -206,7 +206,7 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "98"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "102"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_STR "Octaspire Core version " \
@@ -1387,7 +1387,7 @@ typedef bool (*octaspire_map_key_compare_function_t)(
 typedef uint32_t (*octaspire_map_key_hash_function_t)(
     void const * const key);
 
-typedef void (*octaspire_map_element_callback_function_t)(
+typedef void (*octaspire_map_element_callback_t)(
     void * element);
 
 octaspire_map_t *octaspire_map_new(
@@ -1397,20 +1397,20 @@ octaspire_map_t *octaspire_map_new(
     bool const valueIsPointer,
     octaspire_map_key_compare_function_t keyCompareFunction,
     octaspire_map_key_hash_function_t keyHashFunction,
-    octaspire_map_element_callback_function_t keyReleaseCallback,
-    octaspire_map_element_callback_function_t valueReleaseCallback,
+    octaspire_map_element_callback_t keyReleaseCallback,
+    octaspire_map_element_callback_t valueReleaseCallback,
     octaspire_allocator_t *allocator);
 
 octaspire_map_t *octaspire_map_new_with_octaspire_string_keys(
     size_t const valueSizeInOctets,
     bool const valueIsPointer,
-    octaspire_map_element_callback_function_t valueReleaseCallback,
+    octaspire_map_element_callback_t valueReleaseCallback,
     octaspire_allocator_t *allocator);
 
 octaspire_map_t *octaspire_map_new_with_size_t_keys(
     size_t const valueSizeInOctets,
     bool const valueIsPointer,
-    octaspire_map_element_callback_function_t valueReleaseCallback,
+    octaspire_map_element_callback_t valueReleaseCallback,
     octaspire_allocator_t *allocator);
 
 void octaspire_map_release(octaspire_map_t *self);
@@ -6810,8 +6810,8 @@ struct octaspire_map_t
     octaspire_vector_t                            *buckets;
     octaspire_map_key_compare_function_t      keyCompareFunction;
     octaspire_map_key_hash_function_t         keyHashFunction;
-    octaspire_map_element_callback_function_t keyReleaseCallback;
-    octaspire_map_element_callback_function_t valueReleaseCallback;
+    octaspire_map_element_callback_t     keyReleaseCallback;
+    octaspire_map_element_callback_t     valueReleaseCallback;
     size_t                                                   numBucketsInUse;
     size_t                                                   numElements;
     bool                                                     keyIsPointer;
@@ -7035,8 +7035,8 @@ octaspire_map_t *octaspire_map_new(
     bool const valueIsPointer,
     octaspire_map_key_compare_function_t keyCompareFunction,
     octaspire_map_key_hash_function_t keyHashFunction,
-    octaspire_map_element_callback_function_t keyReleaseCallback,
-    octaspire_map_element_callback_function_t valueReleaseCallback,
+    octaspire_map_element_callback_t keyReleaseCallback,
+    octaspire_map_element_callback_t valueReleaseCallback,
     octaspire_allocator_t *allocator)
 {
     octaspire_map_t *self =
@@ -7077,7 +7077,7 @@ octaspire_map_t *octaspire_map_new(
 octaspire_map_t *octaspire_map_new_with_octaspire_string_keys(
     size_t const valueSizeInOctets,
     bool const valueIsPointer,
-    octaspire_map_element_callback_function_t valueReleaseCallback,
+    octaspire_map_element_callback_t valueReleaseCallback,
     octaspire_allocator_t *allocator)
 {
     return octaspire_map_new(
@@ -7087,7 +7087,7 @@ octaspire_map_t *octaspire_map_new_with_octaspire_string_keys(
         valueIsPointer,
         (octaspire_map_key_compare_function_t)octaspire_string_is_equal,
         (octaspire_map_key_hash_function_t)octaspire_string_get_hash,
-        (octaspire_map_element_callback_function_t)octaspire_string_release,
+        (octaspire_map_element_callback_t)octaspire_string_release,
         valueReleaseCallback,
         allocator);
 }
@@ -7108,7 +7108,7 @@ uint32_t octaspire_map_helper_size_t_get_hash(
 octaspire_map_t *octaspire_map_new_with_size_t_keys(
     size_t const valueSizeInOctets,
     bool const valueIsPointer,
-    octaspire_map_element_callback_function_t valueReleaseCallback,
+    octaspire_map_element_callback_t valueReleaseCallback,
     octaspire_allocator_t *allocator)
 {
     return octaspire_map_new(
@@ -7119,7 +7119,7 @@ octaspire_map_t *octaspire_map_new_with_size_t_keys(
         (octaspire_map_key_compare_function_t)
             octaspire_map_helper_private_size_t_is_equal,
         (octaspire_map_key_hash_function_t)octaspire_map_helper_size_t_get_hash,
-        (octaspire_map_element_callback_function_t)0,
+        (octaspire_map_element_callback_t)0,
         valueReleaseCallback,
         allocator);
 }
@@ -21065,8 +21065,8 @@ TEST octaspire_map_new_keys_ostring_t_and_values_ostring_t_test(void)
         true,
         octaspire_map_new_test_key_compare_function_for_ostring_t_keys,
         octaspire_map_new_test_key_hash_function_for_ostring_t_keys,
-        (octaspire_map_element_callback_function_t)octaspire_string_release,
-        (octaspire_map_element_callback_function_t)octaspire_string_release,
+        (octaspire_map_element_callback_t)octaspire_string_release,
+        (octaspire_map_element_callback_t)octaspire_string_release,
         octaspireContainerHashMapTestAllocator);
 
     size_t const numElements = 32;
@@ -21125,7 +21125,7 @@ TEST octaspire_map_new_with_octaspire_string_keys_test(void)
         octaspire_map_new_with_octaspire_string_keys(
             sizeof(octaspire_string_t *),
             true,
-            (octaspire_map_element_callback_function_t)
+            (octaspire_map_element_callback_t)
                 octaspire_string_release,
             octaspireContainerHashMapTestAllocator);
 
@@ -21185,7 +21185,7 @@ TEST octaspire_map_new_with_size_t_keys_test(void)
         octaspire_map_new_with_size_t_keys(
             sizeof(octaspire_string_t *),
             true,
-            (octaspire_map_element_callback_function_t)
+            (octaspire_map_element_callback_t)
                 octaspire_string_release,
             octaspireContainerHashMapTestAllocator);
 
@@ -21724,7 +21724,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "349"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "354"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -42078,7 +42078,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_map_new_with_octaspire_string_keys(
             sizeof(octaspire_dern_lib_t*),
             true,
-            (octaspire_map_element_callback_function_t)
+            (octaspire_map_element_callback_t)
                 octaspire_dern_lib_release,
             self->allocator);
 
