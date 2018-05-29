@@ -160,7 +160,7 @@ submodules-init:
 submodules-pull:
 	@echo "--  Pulling submodules..."
 	@git submodule update --recursive --remote --quiet
-	@make -s dev/TAGS
+	@make -s TAGS
 	@echo "OK  Done."
 
 $(AMALGAMATION): $(ETCDIR)amalgamation_head.c                \
@@ -283,23 +283,23 @@ coverage-show: coverage
 # Create a TAGS file that allows the jumping between definitions and uses of
 # things (for example functions) when editing C or Dern code. Dern files are
 # indexed as scheme files; it seems to be working.
-dev/TAGS: $(TAGS_C_FILES) $(TAGS_DERN_FILES)
+TAGS: $(TAGS_C_FILES) $(TAGS_DERN_FILES)
 	@etags -o $@ $(TAGS_C_FILES)
 	@etags -o $@ --append --language scheme $(TAGS_DERN_FILES)
 
 major:
 	@sh dev/etc/bump-version.sh major
-	@make -s dev/TAGS
+	@make -s TAGS
 	@echo "OK  Done."
 
 minor:
 	@sh dev/etc/bump-version.sh minor
-	@make -s dev/TAGS
+	@make -s TAGS
 	@echo "OK  Done."
 
 patch:
 	@sh dev/etc/bump-version.sh patch
-	@make -s dev/TAGS
+	@make -s TAGS
 	@echo "OK  Done."
 
 push:
