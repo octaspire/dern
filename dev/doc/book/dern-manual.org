@@ -1110,14 +1110,12 @@ In this case the files to be modified are found from the *dev* directory.
 
 On different systems the required installation commands can vary. In any case, you should install
 a *C compiler* and *git*. Depending on the system, you might also need to install *GNU make*.
-If you want to build the documentation, you should also install *Emacs 25.x* or newer.
+If you want to build the documentation, you should also install *Emacs 26.1* or newer.
 For code coverage and performance measurement you might need to install additional tools.
 
 That's it; *octaspire_core* and *octaspire_dotfiles* are included as
-git submodules. Note that at the moment, to be able to build the documentation, you must
-have the Emacs dotfiles from octaspire_dotfiles in use in your system (the submodule for
-the dotfiles is not used at the moment, but it should be later). The Emacs
-dotfiles are used to set the correct settings and styling when building the documentation
+git submodules. The Emacs dotfiles are used to set the correct settings
+and styling when building the documentation
 (documentation is written using Emacs Org mode).
 
 Example of using the development repository and the different targets available
