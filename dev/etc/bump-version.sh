@@ -28,6 +28,9 @@ create_new_version() {
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
     sed -i "s/$STR_PATCH \"$PATCH\"/$STR_PATCH \"$NEW_PATCH\"/" "$CONFIG_FILE"
     RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
+
+    git tag -a "v$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH" -m "Dern version $NEW_MAJOR.$NEW_MINOR.$NEW_PATCH"
+    RETVAL=$?; if [ $RETVAL != 0 ]; then exit $RETVAL; fi
 }
 
 RELTYPE=$1
