@@ -1,5 +1,15 @@
 *.swp
 *.swo
+*.o
+*.so
+*.dylib
+*.dll
+octaspire-dern-repl
+octaspire-dern-unit-test-runner
+release/embedding-example
+octaspire_dern_vm_run_user_factorial_function_test.dern
+octaspire_io_file_open_test.txt
+octaspire_read_and_eval_path_test.dern
 TAGS
 
 
