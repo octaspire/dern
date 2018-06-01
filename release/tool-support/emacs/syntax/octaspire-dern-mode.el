@@ -13,6 +13,7 @@
 (defvar octaspire-dern-mode-map
   (let ((map (make-keymap)))
     (define-key map "\C-j" 'newline-and-indent)
+    (define-key map "tab"  'indent-for-tab-command)
     map)
   "Keymap for octaspire-dern major mode")
 
@@ -67,6 +68,7 @@
  (set (make-local-variable 'font-lock-defaults) '(octaspire-dern-font-lock-keywords))
  (setq major-mode 'octaspire-dern-mode)
  (setq mode-name "OCTASPIRE DERN")
+ (setq-local indent-line-function 'lisp-indent-line)
  (run-hooks 'octaspire-dern-mode-hook))
 
 (show-paren-mode 1)
