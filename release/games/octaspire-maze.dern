@@ -2830,11 +2830,10 @@
 
 (define entity-render as (fn (entity dt always)
 
+    (if (and (not always) (== (ln@ entity 'name 'hash) [])) (return))
+
     (define x  as (ln@ entity 'x  'hash) [tx])
     (define y  as (ln@ entity 'y  'hash) [ty])
-
-    (if (and (not always) (level-is-slot-empty? x y)) (return))
-    (if (== (ln@ entity 'name 'hash) []) (return))
 
     (define tx as (ln@ entity 'tx 'hash) [tx])
     (define ty as (ln@ entity 'ty 'hash) [ty])

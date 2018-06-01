@@ -58,7 +58,7 @@ else
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 endif
 
-.PHONY: development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push
+.PHONY: development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push tag
 
 all: development
 
@@ -289,18 +289,27 @@ TAGS: $(TAGS_C_FILES) $(TAGS_DERN_FILES)
 
 major:
 	@sh dev/etc/bump-version.sh major
+	@rm -f release/octaspire-dern-amalgamated.c      # This ensures that the version number is updated
+	@make -s release/octaspire-dern-amalgamated.c # also in the amalgamation.
 	@make -s TAGS
 	@echo "OK  Done."
 
 minor:
 	@sh dev/etc/bump-version.sh minor
+	@rm -f release/octaspire-dern-amalgamated.c      # This ensures that the version number is updated
+	@make -s release/octaspire-dern-amalgamated.c # also in the amalgamation.
 	@make -s TAGS
 	@echo "OK  Done."
 
 patch:
 	@sh dev/etc/bump-version.sh patch
+	@rm -f release/octaspire-dern-amalgamated.c      # This ensures that the version number is updated
+	@make -s release/octaspire-dern-amalgamated.c # also in the amalgamation.
 	@make -s TAGS
 	@echo "OK  Done."
+
+tag:
+	@sh dev/etc/tag-version.sh
 
 push:
 	@git push origin-gitlab
