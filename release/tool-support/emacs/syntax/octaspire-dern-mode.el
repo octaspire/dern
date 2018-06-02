@@ -12,8 +12,8 @@
 
 (defvar octaspire-dern-mode-map
   (let ((map (make-keymap)))
-    (define-key map "\C-j" 'newline-and-indent)
-    (define-key map "tab"  'indent-for-tab-command)
+    (define-key map "\C-j"        'newline-and-indent)
+    (define-key map (kbd "<tab>") 'indent-for-tab-command)
     map)
   "Keymap for octaspire-dern major mode")
 
