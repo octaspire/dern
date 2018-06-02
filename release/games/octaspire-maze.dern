@@ -490,7 +490,7 @@
                     (ln@ slot 'th 'hash)
                     []
                     0
-                    '((+ 160 (* count 16)) 0 16 16   0 0 16 16 0.2))
+                    (vector (+ 160 (* count 16)) 0 16 16   0 0 16 16 0.2))
     (animation-playing name true)
     (= slot 'count count))
   [should be called when stop counter has collision with player]
@@ -1578,7 +1578,7 @@
                     (ln@ slot 'th 'hash)
                     []
                     0
-                    (vector (+ 0 (* count 16)) 16 16 16   0 0 16 16 0.2))
+                    (vector (+ 0 (* (- count 1) 16)) 16 16 16   0 0 16 16 0.2))
      (animation-playing id true)
      (+= pass-counters id slot))
   [entity-new-pass-counter]
@@ -1616,7 +1616,7 @@
                     (ln@ slot 'th 'hash)
                     []
                     0
-                    (vector (+ 0 (* count 16)) 16 16 16   0 0 16 16 0.2))
+                    (vector (+ 0 (* (- count 1) 16)) 16 16 16   0 0 16 16 0.2))
      (animation-playing name true))
   [decrease a pass counter] '(slot [slot for the pass counter]) howto-no)
 
