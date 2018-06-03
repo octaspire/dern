@@ -355,6 +355,25 @@ static char const *dern_sdl2_private_helper_sdl_keycode_to_c_string(
     }
 }
 
+static char const *dern_sdl2_private_helper_sdl_keymodcode_to_c_string(
+    SDL_Keymod const code)
+{
+    if (code & KMOD_NONE)   return "KMOD_NONE";
+    if (code & KMOD_LSHIFT) return "KMOD_LSHIFT";
+    if (code & KMOD_RSHIFT) return "KMOD_RSHIFT";
+    if (code & KMOD_LCTRL)  return "KMOD_LCTRL";
+    if (code & KMOD_RCTRL)  return "KMOD_RCTRL";
+    if (code & KMOD_LALT)   return "KMOD_LALT";
+    if (code & KMOD_RALT)   return "KMOD_RALT";
+    if (code & KMOD_LGUI)   return "KMOD_LGUI";
+    if (code & KMOD_RGUI)   return "KMOD_RGUI";
+    if (code & KMOD_NUM)    return "KMOD_NUM";
+    if (code & KMOD_CAPS)   return "KMOD_CAPS";
+    if (code & KMOD_MODE)   return "KMOD_MODE";
+
+    return "unsupported";
+}
+
 static char const *dern_sdl2_private_helper_sdl_pixelformat_to_c_string(
     Uint32 const format)
 {
@@ -1514,6 +1533,14 @@ octaspire_dern_value_t *dern_sdl2_PollEvent(
 
                 octaspire_helpers_verify_not_null(keyValue);
                 octaspire_dern_value_as_vector_push_back_element(result, &keyValue);
+
+                octaspire_dern_value_t * modValue =
+                    octaspire_dern_vm_create_new_value_string_from_c_string(
+                        vm,
+                        dern_sdl2_private_helper_sdl_keymodcode_to_c_string(event.key.keysym.mod));
+
+                octaspire_helpers_verify_not_null(modValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &modValue);
             }
             break;
 

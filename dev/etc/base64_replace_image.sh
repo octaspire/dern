@@ -11,4 +11,6 @@ LINE_NUMBER=$(grep -n  '^.\{500\}' $2 | cut -f1 -d:)
 BASE64_DATA=$(base64 -w 0 $1)
 
 echo "encoding:          $1\nreplacing line $LINE_NUMBER: $2"
-sed -i "${LINE_NUMBER}s_.*_        [${BASE64_DATA}]_" $2
+sed -i -f - $2 <<EOF  $2
+${LINE_NUMBER}s_.*_        [${BASE64_DATA}]_
+EOF
