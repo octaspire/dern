@@ -68,7 +68,6 @@ void dern_socket_socket_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
     close((intptr_t)payload);
-    payload = 0;
 }
 
 octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(

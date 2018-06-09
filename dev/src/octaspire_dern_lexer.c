@@ -32,7 +32,7 @@ limitations under the License.
 
 struct octaspire_dern_lexer_token_t
 {
-    octaspire_allocator_t          *allocator;
+    octaspire_allocator_t                 *allocator;
     octaspire_dern_lexer_token_position_t *line;
     octaspire_dern_lexer_token_position_t *column;
     octaspire_dern_lexer_token_position_t *ucsIndex;
@@ -45,13 +45,13 @@ struct octaspire_dern_lexer_token_t
         octaspire_string_t *symbol;
         octaspire_string_t *error;
         octaspire_string_t *moreInputRequired;
-        int32_t                            integer;
-        double                             real;
+        int32_t             integer;
+        double              real;
     }
     value;
 
-    octaspire_dern_lexer_token_tag_t       typeTag;
-    char                                   padding[4];
+    octaspire_dern_lexer_token_tag_t typeTag;
+    char                             padding[4];
 };
 
 static char const * const octaspire_dern_lexer_private_token_tag_types_as_c_strings[] =

@@ -21720,8 +21720,8 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "361"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "362"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
     OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "." \
@@ -24419,7 +24419,7 @@ limitations under the License.
 
 struct octaspire_dern_lexer_token_t
 {
-    octaspire_allocator_t          *allocator;
+    octaspire_allocator_t                 *allocator;
     octaspire_dern_lexer_token_position_t *line;
     octaspire_dern_lexer_token_position_t *column;
     octaspire_dern_lexer_token_position_t *ucsIndex;
@@ -24432,13 +24432,13 @@ struct octaspire_dern_lexer_token_t
         octaspire_string_t *symbol;
         octaspire_string_t *error;
         octaspire_string_t *moreInputRequired;
-        int32_t                            integer;
-        double                             real;
+        int32_t             integer;
+        double              real;
     }
     value;
 
-    octaspire_dern_lexer_token_tag_t       typeTag;
-    char                                   padding[4];
+    octaspire_dern_lexer_token_tag_t typeTag;
+    char                             padding[4];
 };
 
 static char const * const octaspire_dern_lexer_private_token_tag_types_as_c_strings[] =
@@ -26915,20 +26915,20 @@ limitations under the License.
 
 struct octaspire_dern_lib_t
 {
-    octaspire_allocator_t      *allocator;
-    octaspire_dern_vm_t               *vm;
-    octaspire_string_t *name;
-    octaspire_string_t *errorMessage;
+    octaspire_allocator_t   *allocator;
+    octaspire_dern_vm_t     *vm;
+    octaspire_string_t      *name;
+    octaspire_string_t      *errorMessage;
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #ifdef _WIN32
-    HINSTANCE                          binaryLibHandle;
+    HINSTANCE                binaryLibHandle;
 #else
-    void                              *binaryLibHandle;
+    void                    *binaryLibHandle;
 #endif
     bool (*libMarkFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const);
 #endif
-    octaspire_dern_lib_tag_t           typeTag;
-    char                               padding[4];
+    octaspire_dern_lib_tag_t typeTag;
+    char                     padding[4];
 };
 
 octaspire_dern_lib_t *octaspire_dern_lib_new_source(
@@ -26945,10 +26945,10 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_source(
         return self;
     }
 
-    self->allocator       = allocator;
-    self->vm              = vm;
-    self->name            = octaspire_string_new(name, self->allocator);
-    self->typeTag         = OCTASPIRE_DERN_LIB_TAG_SOURCE;
+    self->allocator = allocator;
+    self->vm        = vm;
+    self->name      = octaspire_string_new(name, self->allocator);
+    self->typeTag   = OCTASPIRE_DERN_LIB_TAG_SOURCE;
 
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #ifdef _WIN32
@@ -27447,16 +27447,16 @@ limitations under the License.
 
 struct octaspire_dern_c_data_t
 {
-    octaspire_string_t         *pluginName;
-    octaspire_string_t         *typeNameForPayload;
-    void                                      *payload;
-    octaspire_string_t         *cleanUpCallbackName;
-    octaspire_string_t         *stdLibLenCallbackName;
-    octaspire_string_t         *stdLibLinkAtCallbackName;
-    octaspire_string_t         *stdLibCopyAtCallbackName;
-    octaspire_allocator_t              *allocator;
-    bool                                       copyingAllowed;
-    char                                       padding[7];
+    octaspire_string_t    *pluginName;
+    octaspire_string_t    *typeNameForPayload;
+    void                  *payload;
+    octaspire_string_t    *cleanUpCallbackName;
+    octaspire_string_t    *stdLibLenCallbackName;
+    octaspire_string_t    *stdLibLinkAtCallbackName;
+    octaspire_string_t    *stdLibCopyAtCallbackName;
+    octaspire_allocator_t *allocator;
+    bool                   copyingAllowed;
+    char                   padding[7];
 };
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new(
@@ -27704,9 +27704,9 @@ limitations under the License.
 
 struct octaspire_dern_port_t
 {
-    octaspire_allocator_t      *allocator;
-    octaspire_string_t *name;
-    ptrdiff_t                          lengthInOctets;
+    octaspire_allocator_t *allocator;
+    octaspire_string_t    *name;
+    ptrdiff_t              lengthInOctets;
 
     union
     {
@@ -27714,8 +27714,8 @@ struct octaspire_dern_port_t
     }
     value;
 
-    octaspire_dern_port_tag_t          typeTag;
-    char                               padding[4];
+    octaspire_dern_port_tag_t typeTag;
+    char                      padding[4];
 };
 
 octaspire_dern_port_t *octaspire_dern_port_new_copy(
@@ -27779,9 +27779,7 @@ octaspire_dern_port_t *octaspire_dern_port_new_copy(
                 self->typeTag = OCTASPIRE_DERN_PORT_TAG_NOT_OPEN;
             }
 
-            octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_END) == 0);
             self->lengthInOctets = ftell(self->value.file);
-            octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_SET) == 0);
         }
         break;
 
@@ -27850,10 +27848,7 @@ octaspire_dern_port_t *octaspire_dern_port_new_output_file(
         return self;
     }
 
-    octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_END) == 0);
     self->lengthInOctets = ftell(self->value.file);
-    octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_SET) == 0);
-
     return self;
 }
 
@@ -29546,7 +29541,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_eval(
             if (envVal->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
             {
                 octaspire_dern_vm_pop_value(vm, arguments);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -29556,7 +29551,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_eval(
             if (envVal->typeTag != OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT)
             {
                 octaspire_dern_vm_pop_value(vm, arguments);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -29660,7 +29655,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_select(
             if (i != (numArgs-2))
             {
                 octaspire_dern_vm_pop_value(vm, arguments);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -29678,7 +29673,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_select(
                     environment);
 
                 octaspire_dern_vm_pop_value(vm, arguments);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -29942,7 +29937,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_while(
                 result = octaspire_dern_vm_get_function_return(vm);
                 //octaspire_dern_vm_set_function_return(vm, 0);
                 octaspire_dern_vm_pop_value(vm, arguments);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -30275,7 +30270,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -30333,7 +30328,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -30397,7 +30392,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -30467,7 +30462,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -30481,7 +30476,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -30537,7 +30532,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -32236,7 +32231,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_port_write(
             else
             {
                 octaspire_dern_vm_pop_value(vm, arguments);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -34969,7 +34964,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_textual_string(
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
             {
                 octaspire_dern_vm_pop_value(vm, result);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -35069,7 +35064,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_textual_char(
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
             {
                 octaspire_dern_vm_pop_value(vm, result);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -37883,7 +37878,7 @@ bool octaspire_dern_stdlib_private_special_howto_helper(
                 {
                     octaspire_dern_vm_pop_value(vm, evaluatedValue);
                     octaspire_dern_vm_pop_value(vm, form);
-                    
+
                     octaspire_helpers_verify_true(
                         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -37907,7 +37902,7 @@ bool octaspire_dern_stdlib_private_special_howto_helper(
                     octaspire_dern_vm_pop_value(vm, expectedResultEvaluated);
                     octaspire_dern_vm_pop_value(vm, evaluatedValue);
                     octaspire_dern_vm_pop_value(vm, form);
-                    
+
                     octaspire_helpers_verify_true(
                         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -38123,32 +38118,22 @@ octaspire_dern_function_t *octaspire_dern_function_new_copy(
 
     self->howtoAllowed = other->howtoAllowed;
 
-
-
     self->formals =
         octaspire_dern_vm_create_new_value_copy(vm, other->formals);
 
     octaspire_dern_vm_push_value(vm, self->formals);
-
-
 
     self->body =
         octaspire_dern_vm_create_new_value_copy(vm, other->body);
 
     octaspire_dern_vm_push_value(vm, self->body);
 
-
-
     self->definitionEnvironment =
         octaspire_dern_vm_create_new_value_copy(vm, other->definitionEnvironment);
 
     octaspire_dern_vm_push_value(vm, self->definitionEnvironment);
 
-
-
     self->allocator             = allocator;
-
-
 
     octaspire_dern_vm_pop_value(vm, self->definitionEnvironment);
     octaspire_dern_vm_pop_value(vm, self->body);
@@ -38591,9 +38576,6 @@ int octaspire_dern_error_message_compare(
 
     return self->lineNumber - other->lineNumber;
 }
-
-
-
 
 
 octaspire_dern_builtin_t *octaspire_dern_builtin_new(
@@ -41941,7 +41923,6 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
     return false;
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          dev/src/octaspire_dern_value.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41971,7 +41952,6 @@ limitations under the License.
 
 
 
-
 static void octaspire_dern_vm_private_release_value(
     octaspire_dern_vm_t *self,
     octaspire_dern_value_t *value);
@@ -41986,29 +41966,28 @@ static octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_list_f
     octaspire_list_t * const list);
 
 
-
 struct octaspire_dern_vm_t
 {
-    octaspire_vector_t   *stack;
-    octaspire_allocator_t   *allocator;
-    octaspire_stdio_t              *stdio;
-    octaspire_vector_t   *all;
-    octaspire_dern_value_t         *globalEnvironment;
-    octaspire_dern_value_t         *valueNil;
-    octaspire_dern_value_t         *valueTrue;
-    octaspire_dern_value_t         *valueFalse;
-    void                           *userData;
-    octaspire_dern_value_t         *functionReturn;
-    octaspire_map_t *libraries;
-    octaspire_vector_t   *commandLineArguments;
-    octaspire_vector_t   *environmentVariables;
-    size_t                          numAllocatedWithoutGc;
-    size_t                          gcTriggerLimit;
-    uintmax_t                       nextFreeUniqueIdForValues;
-    int32_t                         exitCode;
-    bool                            preventGc;
-    bool                            quit;
-    octaspire_dern_vm_config_t      config;
+    octaspire_vector_t        *stack;
+    octaspire_allocator_t     *allocator;
+    octaspire_stdio_t         *stdio;
+    octaspire_vector_t        *all;
+    octaspire_dern_value_t    *globalEnvironment;
+    octaspire_dern_value_t    *valueNil;
+    octaspire_dern_value_t    *valueTrue;
+    octaspire_dern_value_t    *valueFalse;
+    void                      *userData;
+    octaspire_dern_value_t    *functionReturn;
+    octaspire_map_t           *libraries;
+    octaspire_vector_t        *commandLineArguments;
+    octaspire_vector_t        *environmentVariables;
+    size_t                     numAllocatedWithoutGc;
+    size_t                     gcTriggerLimit;
+    uintmax_t                  nextFreeUniqueIdForValues;
+    int32_t                    exitCode;
+    bool                       preventGc;
+    bool                       quit;
+    octaspire_dern_vm_config_t config;
 };
 
 octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(
@@ -43448,7 +43427,7 @@ bool octaspire_dern_vm_pop_value(
             (void*)valueForBalanceCheck);
 
         printf("REAL TOP IS:\n");
-        
+
         octaspire_dern_value_print(
             octaspire_vector_peek_back_element(self->stack), self->allocator);
 
@@ -43499,12 +43478,12 @@ octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(
 
     octaspire_vector_push_back_element(self->all, &result);
 
-    result->typeTag                        = typeTag;
-    result->mark                           = false;
-    result->docstr                         = 0;
-    result->vm                             = self;
-    result->uniqueId                       = self->nextFreeUniqueIdForValues;
-    result->howtoAllowed                   = false;
+    result->typeTag      = typeTag;
+    result->mark         = false;
+    result->docstr       = 0;
+    result->vm           = self;
+    result->uniqueId     = self->nextFreeUniqueIdForValues;
+    result->howtoAllowed = false;
 
     if (self->nextFreeUniqueIdForValues == UINTMAX_MAX)
     {
@@ -44050,8 +44029,6 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_error(
     result->value.error = message;
 
     octaspire_string_release(value);
-    value = 0;
-
     return result;
 }
 
@@ -45301,7 +45278,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                         octaspire_helpers_verify_not_null(function->body);
                         octaspire_helpers_verify_not_null(function->body->value.vector);
                         octaspire_helpers_verify_not_null(function->definitionEnvironment);
-                        
+
                         octaspire_helpers_verify_not_null(
                             function->definitionEnvironment->value.environment);
 
@@ -45803,7 +45780,7 @@ void octaspire_dern_vm_print_stack(
          i >= 0; --i)
     {
 #ifdef __AROS__
-        printf("--------------------------- #%ld ------------------------\n", i);
+        printf("--------------------------- #%ld ------------------------\n", (long)i);
 #else
         printf("--------------------------- #%td ------------------------\n", i);
 #endif

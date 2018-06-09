@@ -35,20 +35,20 @@ limitations under the License.
 
 struct octaspire_dern_lib_t
 {
-    octaspire_allocator_t      *allocator;
-    octaspire_dern_vm_t               *vm;
-    octaspire_string_t *name;
-    octaspire_string_t *errorMessage;
+    octaspire_allocator_t   *allocator;
+    octaspire_dern_vm_t     *vm;
+    octaspire_string_t      *name;
+    octaspire_string_t      *errorMessage;
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #ifdef _WIN32
-    HINSTANCE                          binaryLibHandle;
+    HINSTANCE                binaryLibHandle;
 #else
-    void                              *binaryLibHandle;
+    void                    *binaryLibHandle;
 #endif
     bool (*libMarkFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const);
 #endif
-    octaspire_dern_lib_tag_t           typeTag;
-    char                               padding[4];
+    octaspire_dern_lib_tag_t typeTag;
+    char                     padding[4];
 };
 
 octaspire_dern_lib_t *octaspire_dern_lib_new_source(
@@ -65,10 +65,10 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_source(
         return self;
     }
 
-    self->allocator       = allocator;
-    self->vm              = vm;
-    self->name            = octaspire_string_new(name, self->allocator);
-    self->typeTag         = OCTASPIRE_DERN_LIB_TAG_SOURCE;
+    self->allocator = allocator;
+    self->vm        = vm;
+    self->name      = octaspire_string_new(name, self->allocator);
+    self->typeTag   = OCTASPIRE_DERN_LIB_TAG_SOURCE;
 
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #ifdef _WIN32
