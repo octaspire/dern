@@ -40,7 +40,6 @@ static char const * const octaspire_dern_value_helper_type_tags_as_c_strings[] =
     "integer",
     "real",
     "string",
-    "multiline comment",
     "character",
     "symbol",
     "error",
@@ -786,15 +785,6 @@ bool octaspire_dern_value_set(
         }
         break;
 
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
-        {
-            self->value.comment =
-                octaspire_string_new_copy(
-                    value->value.comment,
-                    octaspire_dern_vm_get_allocator(self->vm));
-        }
-        break;
-
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
             self->value.character =
@@ -1176,9 +1166,6 @@ uint32_t octaspire_dern_value_get_hash(
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
             return octaspire_string_get_hash(self->value.string);
 
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
-            return octaspire_string_get_hash(self->value.comment);
-
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
             return octaspire_string_get_hash(self->value.character);
 
@@ -1320,12 +1307,6 @@ octaspire_string_t *octaspire_dern_private_value_to_string(
             {
                 return octaspire_string_new_format(allocator, plain ? "%s" :"[%s]",
                     octaspire_string_get_c_string(self->value.string));
-            }
-
-            case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
-            {
-                return octaspire_string_new_format(allocator, "#!\n%s\n!#",
-                    octaspire_string_get_c_string(self->value.comment));
             }
 
             case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
@@ -1986,7 +1967,6 @@ bool octaspire_dern_value_as_hash_map_add(
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
@@ -2140,7 +2120,6 @@ bool octaspire_dern_value_as_character_add(
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
@@ -2214,7 +2193,6 @@ bool octaspire_dern_value_as_character_subtract(
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
@@ -2320,7 +2298,6 @@ bool octaspire_dern_value_as_integer_add(
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
@@ -2426,7 +2403,6 @@ bool octaspire_dern_value_as_integer_subtract(
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
@@ -2526,7 +2502,6 @@ bool octaspire_dern_value_as_real_add(
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
@@ -2627,7 +2602,6 @@ bool octaspire_dern_value_as_real_subtract(
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
@@ -2712,7 +2686,6 @@ bool octaspire_dern_value_as_string_push_back(
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
@@ -2795,7 +2768,6 @@ bool octaspire_dern_value_as_symbol_push_back(
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
         case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
@@ -2889,7 +2861,6 @@ bool octaspire_dern_value_as_string_remove_all_substrings(
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
@@ -2992,7 +2963,6 @@ bool octaspire_dern_value_as_text_is_equal_to_c_string(
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
@@ -3042,7 +3012,6 @@ char const *octaspire_dern_value_as_text_get_c_string(
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
@@ -3095,7 +3064,6 @@ size_t octaspire_dern_value_as_text_get_length_in_octets(
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
@@ -3413,11 +3381,6 @@ size_t octaspire_dern_value_get_length(
             return octaspire_string_get_length_in_ucs_characters(
                 self->value.string);
         }
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
-        {
-            return octaspire_string_get_length_in_ucs_characters(
-                self->value.comment);
-        }
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         {
             return octaspire_string_get_length_in_ucs_characters(
@@ -3702,12 +3665,6 @@ int octaspire_dern_value_compare(
                 self->value.string,
                 other->value.string);
         }
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
-        {
-            return octaspire_string_compare(
-                self->value.comment,
-                other->value.comment);
-        }
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
             return octaspire_string_compare(
@@ -3901,7 +3858,6 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
-        case OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT:
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
