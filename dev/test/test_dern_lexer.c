@@ -991,25 +991,7 @@ TEST octaspire_dern_lexer_pop_next_token_multiline_comment_test(void)
     ASSERT(input);
 
     octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(input, octaspireDernLexerTestAllocator);
-    ASSERT(token);
-
-    octaspire_dern_lexer_token_position_t  const expectedLine     = {2, 3};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {3, 7};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {5, 30};
-
-    ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
-
-    ASSERT        (octaspire_dern_lexer_token_position_is_equal(&expectedLine,     token->line));
-    ASSERT        (octaspire_dern_lexer_token_position_is_equal(&expectedColumn,   token->column));
-    ASSERT        (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
-
-    ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT, token->typeTag);
-    ASSERT_STR_EQ(
-        " here is comment\n 1024",
-        octaspire_string_get_c_string(token->value.comment));
-
-    octaspire_dern_lexer_token_release(token);
-    token = 0;
+    ASSERT_EQ(0, token);
 
     octaspire_input_release(input);
     input = 0;

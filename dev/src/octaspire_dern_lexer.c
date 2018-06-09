@@ -1009,22 +1009,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_multiline_comment
 
             if (currentChar == '#')
             {
-                size_t const endIndexInInput  = octaspire_input_get_ucs_character_index(input);
-                octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new(
-                    OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT,
-                    octaspire_string_get_c_string(commentStr),
-                    octaspire_dern_lexer_token_position_init(
-                        startLine,
-                        octaspire_input_get_line_number(input)),
-                    octaspire_dern_lexer_token_position_init(
-                        startColumn,
-                        //octaspire_input_get_column_number(input) - (endsInDelimiter ? 1 : 0)),
-                        octaspire_input_get_column_number(input)),
-                    octaspire_dern_lexer_token_position_init(
-                        startIndexInInput,
-                        endIndexInInput),
-                    allocator);
-
                 if (!octaspire_input_pop_next_ucs_character(input))
                 {
                     abort();
@@ -1033,7 +1017,9 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_multiline_comment
                 octaspire_string_release(commentStr);
                 commentStr = 0;
 
-                return result;
+                // Multiline comment was lexed OK. Return 0 instead of a new
+                // lexer token, because comments should not leave the lexer.
+                return 0;
             }
             else
             {
@@ -2328,6 +2314,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
             case ';':
             {
                 octaspire_dern_lexer_private_pop_rest_of_line(input);
+                return octaspire_dern_lexer_pop_next_token(input, allocator);
             }
             break;
 
@@ -2337,12 +2324,20 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
                 {
                     case '!':
                     {
-                        return octaspire_dern_lexer_private_pop_multiline_comment(
-                            input,
-                            allocator,
-                            startLine,
-                            startColumn,
-                            startIndexInInput);
+                        octaspire_dern_lexer_token_t * const errorOrNull =
+                            octaspire_dern_lexer_private_pop_multiline_comment(
+                                input,
+                                allocator,
+                                startLine,
+                                startColumn,
+                                startIndexInInput);
+
+                        if (errorOrNull)
+                        {
+                            return errorOrNull;
+                        }
+
+                        return octaspire_dern_lexer_pop_next_token(input, allocator);
                     }
 
                     default:

@@ -11102,6 +11102,67 @@ TEST octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_val
     PASS();
 }
 
+TEST octaspire_dern_vm_comment_alone_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "; comment");
+
+    ASSERT_EQ(0, evaluatedValue);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_comment_after_integer_1_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "1 ;comment");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(1, evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_comment_before_integer_123_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            ";comment\n123");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(123, evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_multiline_comment_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -11111,10 +11172,58 @@ TEST octaspire_dern_vm_multiline_comment_test(void)
             vm,
             "#!/bin/octaspire-dern-repl\n!#");
 
-    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_MULTILINE_COMMENT, evaluatedValue->typeTag);
+    ASSERT_EQ(0, evaluatedValue);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_multiline_comment_in_vector_1_2_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(len (vector 1 2 #! comment !# 3 #!abc!# 4 #!!# 5))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(5, evaluatedValue->value.integer);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string (vector 1 2 #! comment !# 3 #!abc!# 4 #!!# 5))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "/bin/octaspire-dern-repl\n",
-        octaspire_string_get_c_string(evaluatedValue->value.comment));
+        "(1 2 3 4 5)",
+        octaspire_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_multiline_comment_before_integer_123_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "#!comment!#\n123");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(123, evaluatedValue->value.integer);
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -15694,7 +15803,13 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
 
     RUN_TEST(octaspire_dern_vm_create_new_value_copy_called_with_vector_value_of_int_values_test);
 
+    RUN_TEST(octaspire_dern_vm_comment_alone_test);
+    RUN_TEST(octaspire_dern_vm_comment_after_integer_1_test);
+    RUN_TEST(octaspire_dern_vm_comment_before_integer_123_test);
+
     RUN_TEST(octaspire_dern_vm_multiline_comment_test);
+    RUN_TEST(octaspire_dern_vm_multiline_comment_in_vector_1_2_test);
+    RUN_TEST(octaspire_dern_vm_multiline_comment_before_integer_123_test);
     RUN_TEST(octaspire_dern_vm_multiline_comment_missing_chars_test);
 
     RUN_TEST(octaspire_dern_vm_io_file_open_success_test);
