@@ -25,9 +25,9 @@ limitations under the License.
 
 struct octaspire_dern_port_t
 {
-    octaspire_allocator_t      *allocator;
-    octaspire_string_t *name;
-    ptrdiff_t                          lengthInOctets;
+    octaspire_allocator_t *allocator;
+    octaspire_string_t    *name;
+    ptrdiff_t              lengthInOctets;
 
     union
     {
@@ -35,8 +35,8 @@ struct octaspire_dern_port_t
     }
     value;
 
-    octaspire_dern_port_tag_t          typeTag;
-    char                               padding[4];
+    octaspire_dern_port_tag_t typeTag;
+    char                      padding[4];
 };
 
 octaspire_dern_port_t *octaspire_dern_port_new_copy(
@@ -100,9 +100,7 @@ octaspire_dern_port_t *octaspire_dern_port_new_copy(
                 self->typeTag = OCTASPIRE_DERN_PORT_TAG_NOT_OPEN;
             }
 
-            octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_END) == 0);
             self->lengthInOctets = ftell(self->value.file);
-            octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_SET) == 0);
         }
         break;
 
@@ -171,10 +169,7 @@ octaspire_dern_port_t *octaspire_dern_port_new_output_file(
         return self;
     }
 
-    octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_END) == 0);
     self->lengthInOctets = ftell(self->value.file);
-    octaspire_helpers_verify_true(fseek(self->value.file, 0, SEEK_SET) == 0);
-
     return self;
 }
 

@@ -840,7 +840,6 @@ void dern_sdl2_window_clean_up_callback(void *payload)
     octaspire_helpers_verify_not_null(payload);
     dern_sdl2_clean_up_resources();
     SDL_DestroyWindow((SDL_Window*)payload);
-    payload = 0;
 }
 
 void dern_sdl2_renderer_clean_up_callback(void *payload)
@@ -848,7 +847,6 @@ void dern_sdl2_renderer_clean_up_callback(void *payload)
     octaspire_helpers_verify_not_null(payload);
     dern_sdl2_clean_up_resources();
     SDL_DestroyRenderer((SDL_Renderer*)payload);
-    payload = 0;
 }
 
 static octaspire_sdl2_texture_t * dern_sdl2_private_helper_uid_to_texture(

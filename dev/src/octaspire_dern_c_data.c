@@ -30,16 +30,16 @@ limitations under the License.
 
 struct octaspire_dern_c_data_t
 {
-    octaspire_string_t         *pluginName;
-    octaspire_string_t         *typeNameForPayload;
-    void                                      *payload;
-    octaspire_string_t         *cleanUpCallbackName;
-    octaspire_string_t         *stdLibLenCallbackName;
-    octaspire_string_t         *stdLibLinkAtCallbackName;
-    octaspire_string_t         *stdLibCopyAtCallbackName;
-    octaspire_allocator_t              *allocator;
-    bool                                       copyingAllowed;
-    char                                       padding[7];
+    octaspire_string_t    *pluginName;
+    octaspire_string_t    *typeNameForPayload;
+    void                  *payload;
+    octaspire_string_t    *cleanUpCallbackName;
+    octaspire_string_t    *stdLibLenCallbackName;
+    octaspire_string_t    *stdLibLinkAtCallbackName;
+    octaspire_string_t    *stdLibCopyAtCallbackName;
+    octaspire_allocator_t *allocator;
+    bool                   copyingAllowed;
+    char                   padding[7];
 };
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new(

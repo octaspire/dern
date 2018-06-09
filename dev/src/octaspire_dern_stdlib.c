@@ -1266,7 +1266,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_eval(
             if (envVal->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
             {
                 octaspire_dern_vm_pop_value(vm, arguments);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -1276,7 +1276,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_eval(
             if (envVal->typeTag != OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT)
             {
                 octaspire_dern_vm_pop_value(vm, arguments);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -1380,7 +1380,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_select(
             if (i != (numArgs-2))
             {
                 octaspire_dern_vm_pop_value(vm, arguments);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -1398,7 +1398,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_select(
                     environment);
 
                 octaspire_dern_vm_pop_value(vm, arguments);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -1662,7 +1662,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_while(
                 result = octaspire_dern_vm_get_function_return(vm);
                 //octaspire_dern_vm_set_function_return(vm, 0);
                 octaspire_dern_vm_pop_value(vm, arguments);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -1995,7 +1995,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -2053,7 +2053,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -2117,7 +2117,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -2187,7 +2187,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -2201,7 +2201,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -2257,7 +2257,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                         octaspire_dern_vm_pop_value(vm, extendedEnvVal);
                         octaspire_dern_vm_pop_value(vm, container);
                         octaspire_dern_vm_pop_value(vm, arguments);
-                        
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -3956,7 +3956,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_port_write(
             else
             {
                 octaspire_dern_vm_pop_value(vm, arguments);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -6689,7 +6689,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_textual_string(
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
             {
                 octaspire_dern_vm_pop_value(vm, result);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -6789,7 +6789,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_textual_char(
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
             {
                 octaspire_dern_vm_pop_value(vm, result);
-                
+
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -9603,7 +9603,7 @@ bool octaspire_dern_stdlib_private_special_howto_helper(
                 {
                     octaspire_dern_vm_pop_value(vm, evaluatedValue);
                     octaspire_dern_vm_pop_value(vm, form);
-                    
+
                     octaspire_helpers_verify_true(
                         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -9627,7 +9627,7 @@ bool octaspire_dern_stdlib_private_special_howto_helper(
                     octaspire_dern_vm_pop_value(vm, expectedResultEvaluated);
                     octaspire_dern_vm_pop_value(vm, evaluatedValue);
                     octaspire_dern_vm_pop_value(vm, form);
-                    
+
                     octaspire_helpers_verify_true(
                         stackLength == octaspire_dern_vm_get_stack_length(vm));
 

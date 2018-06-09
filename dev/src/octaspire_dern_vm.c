@@ -35,7 +35,6 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_stdlib.h"
 
 
-
 static void octaspire_dern_vm_private_release_value(
     octaspire_dern_vm_t *self,
     octaspire_dern_value_t *value);
@@ -50,29 +49,28 @@ static octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_list_f
     octaspire_list_t * const list);
 
 
-
 struct octaspire_dern_vm_t
 {
-    octaspire_vector_t   *stack;
-    octaspire_allocator_t   *allocator;
-    octaspire_stdio_t              *stdio;
-    octaspire_vector_t   *all;
-    octaspire_dern_value_t         *globalEnvironment;
-    octaspire_dern_value_t         *valueNil;
-    octaspire_dern_value_t         *valueTrue;
-    octaspire_dern_value_t         *valueFalse;
-    void                           *userData;
-    octaspire_dern_value_t         *functionReturn;
-    octaspire_map_t *libraries;
-    octaspire_vector_t   *commandLineArguments;
-    octaspire_vector_t   *environmentVariables;
-    size_t                          numAllocatedWithoutGc;
-    size_t                          gcTriggerLimit;
-    uintmax_t                       nextFreeUniqueIdForValues;
-    int32_t                         exitCode;
-    bool                            preventGc;
-    bool                            quit;
-    octaspire_dern_vm_config_t      config;
+    octaspire_vector_t        *stack;
+    octaspire_allocator_t     *allocator;
+    octaspire_stdio_t         *stdio;
+    octaspire_vector_t        *all;
+    octaspire_dern_value_t    *globalEnvironment;
+    octaspire_dern_value_t    *valueNil;
+    octaspire_dern_value_t    *valueTrue;
+    octaspire_dern_value_t    *valueFalse;
+    void                      *userData;
+    octaspire_dern_value_t    *functionReturn;
+    octaspire_map_t           *libraries;
+    octaspire_vector_t        *commandLineArguments;
+    octaspire_vector_t        *environmentVariables;
+    size_t                     numAllocatedWithoutGc;
+    size_t                     gcTriggerLimit;
+    uintmax_t                  nextFreeUniqueIdForValues;
+    int32_t                    exitCode;
+    bool                       preventGc;
+    bool                       quit;
+    octaspire_dern_vm_config_t config;
 };
 
 octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(
@@ -1512,7 +1510,7 @@ bool octaspire_dern_vm_pop_value(
             (void*)valueForBalanceCheck);
 
         printf("REAL TOP IS:\n");
-        
+
         octaspire_dern_value_print(
             octaspire_vector_peek_back_element(self->stack), self->allocator);
 
@@ -1563,12 +1561,12 @@ octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(
 
     octaspire_vector_push_back_element(self->all, &result);
 
-    result->typeTag                        = typeTag;
-    result->mark                           = false;
-    result->docstr                         = 0;
-    result->vm                             = self;
-    result->uniqueId                       = self->nextFreeUniqueIdForValues;
-    result->howtoAllowed                   = false;
+    result->typeTag      = typeTag;
+    result->mark         = false;
+    result->docstr       = 0;
+    result->vm           = self;
+    result->uniqueId     = self->nextFreeUniqueIdForValues;
+    result->howtoAllowed = false;
 
     if (self->nextFreeUniqueIdForValues == UINTMAX_MAX)
     {
@@ -2114,8 +2112,6 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_error(
     result->value.error = message;
 
     octaspire_string_release(value);
-    value = 0;
-
     return result;
 }
 
@@ -3365,7 +3361,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                         octaspire_helpers_verify_not_null(function->body);
                         octaspire_helpers_verify_not_null(function->body->value.vector);
                         octaspire_helpers_verify_not_null(function->definitionEnvironment);
-                        
+
                         octaspire_helpers_verify_not_null(
                             function->definitionEnvironment->value.environment);
 
@@ -3867,7 +3863,7 @@ void octaspire_dern_vm_print_stack(
          i >= 0; --i)
     {
 #ifdef __AROS__
-        printf("--------------------------- #%ld ------------------------\n", i);
+        printf("--------------------------- #%ld ------------------------\n", (long)i);
 #else
         printf("--------------------------- #%td ------------------------\n", i);
 #endif

@@ -123,32 +123,22 @@ octaspire_dern_function_t *octaspire_dern_function_new_copy(
 
     self->howtoAllowed = other->howtoAllowed;
 
-
-
     self->formals =
         octaspire_dern_vm_create_new_value_copy(vm, other->formals);
 
     octaspire_dern_vm_push_value(vm, self->formals);
-
-
 
     self->body =
         octaspire_dern_vm_create_new_value_copy(vm, other->body);
 
     octaspire_dern_vm_push_value(vm, self->body);
 
-
-
     self->definitionEnvironment =
         octaspire_dern_vm_create_new_value_copy(vm, other->definitionEnvironment);
 
     octaspire_dern_vm_push_value(vm, self->definitionEnvironment);
 
-
-
     self->allocator             = allocator;
-
-
 
     octaspire_dern_vm_pop_value(vm, self->definitionEnvironment);
     octaspire_dern_vm_pop_value(vm, self->body);
@@ -591,9 +581,6 @@ int octaspire_dern_error_message_compare(
 
     return self->lineNumber - other->lineNumber;
 }
-
-
-
 
 
 octaspire_dern_builtin_t *octaspire_dern_builtin_new(
@@ -3940,5 +3927,4 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
     abort();
     return false;
 }
-
 
