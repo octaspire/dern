@@ -23303,6 +23303,11 @@ char const *octaspire_dern_vm_get_environment_variable_at(
 octaspire_dern_vm_config_t const * octaspire_dern_vm_get_config_const(
     octaspire_dern_vm_t const * const self);
 
+octaspire_dern_value_t *octaspire_dern_vm_parse_token(
+    octaspire_dern_vm_t * const self,
+    octaspire_dern_lexer_token_t const * const token,
+    octaspire_input_t *input);
+
 #ifdef __cplusplus
 /* extern "C" */ }
 #endif
@@ -41922,10 +41927,6 @@ octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(
 bool octaspire_dern_vm_private_mark_all(octaspire_dern_vm_t *self);
 bool octaspire_dern_vm_private_mark(octaspire_dern_vm_t *self, octaspire_dern_value_t *value);
 bool octaspire_dern_vm_private_sweep(octaspire_dern_vm_t *self);
-octaspire_dern_value_t *octaspire_dern_vm_private_parse_token(
-    octaspire_dern_vm_t * const self,
-    octaspire_dern_lexer_token_t const * const token,
-    octaspire_input_t *input);
 
 octaspire_dern_vm_config_t octaspire_dern_vm_config_default(void)
 {
@@ -44500,7 +44501,7 @@ bool octaspire_dern_vm_private_sweep(octaspire_dern_vm_t *self)
     return true;
 }
 
-octaspire_dern_value_t *octaspire_dern_vm_private_parse_token(
+octaspire_dern_value_t *octaspire_dern_vm_parse_token(
     octaspire_dern_vm_t * const self,
     octaspire_dern_lexer_token_t const * const token,
     octaspire_input_t *input)
@@ -44602,7 +44603,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_parse_token(
                         else
                         {
                             octaspire_dern_value_t *element =
-                                octaspire_dern_vm_private_parse_token(self, token2, input);
+                                octaspire_dern_vm_parse_token(self, token2, input);
 
                             //octaspire_helpers_verify_not_null(element);
 
@@ -44802,7 +44803,7 @@ octaspire_dern_value_t *octaspire_dern_vm_parse(
         octaspire_dern_lexer_pop_next_token(input, self->allocator);
 
     octaspire_dern_value_t *result =
-        octaspire_dern_vm_private_parse_token(self, token, input);
+        octaspire_dern_vm_parse_token(self, token, input);
 
     octaspire_dern_lexer_token_release(token);
     token = 0;
@@ -47443,8 +47444,9 @@ void main(int argc, char *argv[])
 
     do
     {
-newInput:
-        octaspire_dern_repl_print_message_c_str("> ", OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+        octaspire_dern_repl_print_message_c_str(
+            "> ",
+            OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
 moreInput:
         line = octaspire_stdio_read_line(stdio, stdin);
 
@@ -47457,108 +47459,67 @@ moreInput:
         {
             octaspire_input_push_back_from_string(input, line);
 
-            octaspire_dern_value_t *value = octaspire_dern_vm_parse(vm, input);
+            octaspire_dern_lexer_token_t *token =
+                octaspire_dern_lexer_pop_next_token(input, allocator);
 
-            do
+            if (!token)
             {
-                if (!value)
-                {
-                    octaspire_input_rewind(input);
-
-                    octaspire_dern_repl_print_message_c_str(
-                        "| ",
-                        OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
-
-                    goto moreInput;
-                }
-                else if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
-                {
-                    octaspire_string_t *str =
-                        octaspire_dern_value_to_string(value, allocator);
-
-                    octaspire_dern_repl_print_message(
-                        str,
-                        OCTASPIRE_DERN_REPL_MESSAGE_ERROR,
-                        useColors);
-
-                    printf("\n");
-
-                    octaspire_string_release(str);
-                    str = 0;
-
-                    octaspire_input_clear(input);
-                    goto newInput;
-                }
-                else
-                {
-                    octaspire_dern_vm_push_value(vm, value);
-
-                    octaspire_dern_value_t *evaluatedValue =
-                        octaspire_dern_vm_eval_in_global_environment(
-                            vm,
-                            value);
-
-                    if (!evaluatedValue)
-                    {
-                        octaspire_dern_vm_pop_value(vm, value);
-                        octaspire_input_rewind(input);
-
-                        octaspire_dern_repl_print_message_c_str(
-                            "+ ",
-                            OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
-
-                        goto moreInput;
-                    }
-                    else if (evaluatedValue->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
-                    {
-                        printf("--------------------\n");
-
-                        octaspire_dern_value_print(
-                            evaluatedValue,
-                            octaspire_dern_vm_get_allocator(vm));
-
-                        octaspire_input_clear(input);
-                        goto newInput;
-                    }
-
-                    octaspire_dern_vm_push_value(vm, evaluatedValue);
-
-                    octaspire_string_t *str =
-                        octaspire_dern_value_to_string(evaluatedValue, allocator);
-
-                    octaspire_helpers_verify_not_null(str);
-
-                    if (evaluatedValue->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
-                    {
-                        octaspire_dern_repl_print_message(
-                            str,
-                            OCTASPIRE_DERN_REPL_MESSAGE_ERROR,
-                            useColors);
-
-                        octaspire_input_clear(input);
-                    }
-                    else
-                    {
-                        octaspire_dern_repl_print_message(
-                            str,
-                            OCTASPIRE_DERN_REPL_MESSAGE_OUTPUT,
-                            useColors);
-                    }
-
-                    printf("\n");
-
-                    octaspire_string_release(str);
-                    str = 0;
-
-                    octaspire_dern_vm_pop_value(vm, evaluatedValue); // evaluatedValue
-                    octaspire_dern_vm_pop_value(vm, value); // value
-
-                    //octaspire_input_clear(input);
-                }
-
-                value = octaspire_dern_vm_parse(vm, input);
+                goto noToken;
             }
-            while (value && !octaspire_dern_vm_is_quit(vm));
+
+            octaspire_dern_value_t *parsedValue =
+                octaspire_dern_vm_parse_token(vm, token, input);
+
+            octaspire_dern_lexer_token_release(token);
+            token = 0;
+
+            if (!parsedValue)
+            {
+                octaspire_input_rewind(input);
+
+                octaspire_dern_repl_print_message_c_str(
+                    "| ",
+                    OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+
+                goto moreInput;
+            }
+
+            octaspire_dern_vm_push_value(vm, parsedValue);
+
+            octaspire_dern_value_t *evaluatedValue =
+                octaspire_dern_vm_eval_in_global_environment(vm, parsedValue);
+
+            if (!evaluatedValue)
+            {
+                octaspire_input_rewind(input);
+
+                octaspire_dern_repl_print_message_c_str(
+                    "| ",
+                    OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+
+                octaspire_dern_vm_pop_value(vm, parsedValue);
+                goto moreInput;
+            }
+
+            octaspire_string_t *str =
+                octaspire_dern_value_to_string(evaluatedValue, allocator);
+
+            octaspire_dern_repl_print_message(
+                str,
+                (parsedValue->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+                    ? OCTASPIRE_DERN_REPL_MESSAGE_ERROR
+                    : OCTASPIRE_DERN_REPL_MESSAGE_OUTPUT,
+                useColors);
+
+            octaspire_dern_vm_pop_value(vm, parsedValue);
+
+        noToken:
+            printf("\n");
+
+            octaspire_string_release(str);
+            str = 0;
+
+            octaspire_input_clear(input);
         }
 
         octaspire_string_release(line);

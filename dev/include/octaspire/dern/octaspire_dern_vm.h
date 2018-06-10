@@ -30,6 +30,7 @@ limitations under the License.
 
 #include "octaspire/dern/octaspire_dern_environment.h"
 #include "octaspire/dern/octaspire_dern_value.h"
+#include "octaspire/dern/octaspire_dern_lexer.h"
 #include "octaspire/dern/octaspire_dern_lib.h"
 #include "octaspire/dern/octaspire_dern_c_data.h"
 
@@ -381,6 +382,11 @@ char const *octaspire_dern_vm_get_environment_variable_at(
 
 octaspire_dern_vm_config_t const * octaspire_dern_vm_get_config_const(
     octaspire_dern_vm_t const * const self);
+
+octaspire_dern_value_t *octaspire_dern_vm_parse_token(
+    octaspire_dern_vm_t * const self,
+    octaspire_dern_lexer_token_t const * const token,
+    octaspire_input_t *input);
 
 #ifdef __cplusplus
 /* extern "C" */ }
