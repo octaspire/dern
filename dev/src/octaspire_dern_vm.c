@@ -80,10 +80,6 @@ octaspire_dern_value_t *octaspire_dern_vm_private_create_new_value_struct(
 bool octaspire_dern_vm_private_mark_all(octaspire_dern_vm_t *self);
 bool octaspire_dern_vm_private_mark(octaspire_dern_vm_t *self, octaspire_dern_value_t *value);
 bool octaspire_dern_vm_private_sweep(octaspire_dern_vm_t *self);
-octaspire_dern_value_t *octaspire_dern_vm_private_parse_token(
-    octaspire_dern_vm_t * const self,
-    octaspire_dern_lexer_token_t const * const token,
-    octaspire_input_t *input);
 
 octaspire_dern_vm_config_t octaspire_dern_vm_config_default(void)
 {
@@ -2658,7 +2654,7 @@ bool octaspire_dern_vm_private_sweep(octaspire_dern_vm_t *self)
     return true;
 }
 
-octaspire_dern_value_t *octaspire_dern_vm_private_parse_token(
+octaspire_dern_value_t *octaspire_dern_vm_parse_token(
     octaspire_dern_vm_t * const self,
     octaspire_dern_lexer_token_t const * const token,
     octaspire_input_t *input)
@@ -2760,7 +2756,7 @@ octaspire_dern_value_t *octaspire_dern_vm_private_parse_token(
                         else
                         {
                             octaspire_dern_value_t *element =
-                                octaspire_dern_vm_private_parse_token(self, token2, input);
+                                octaspire_dern_vm_parse_token(self, token2, input);
 
                             //octaspire_helpers_verify_not_null(element);
 
@@ -2960,7 +2956,7 @@ octaspire_dern_value_t *octaspire_dern_vm_parse(
         octaspire_dern_lexer_pop_next_token(input, self->allocator);
 
     octaspire_dern_value_t *result =
-        octaspire_dern_vm_private_parse_token(self, token, input);
+        octaspire_dern_vm_parse_token(self, token, input);
 
     octaspire_dern_lexer_token_release(token);
     token = 0;
