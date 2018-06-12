@@ -1,0 +1,5 @@
+(require 'dern_sqlite3)
+(define db as (sqlite3-open [dern-example-database.db]) [db])
+(sqlite3-exec db [CREATE TABLE test(x INTEGER);] (fn (r) ()))
+(sqlite3-exec db [SELECT * FROM test;] (fn (r) (println r)))
+(sqlite3-close db)

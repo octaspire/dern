@@ -226,6 +226,12 @@ octaspire_dern_value_t *octaspire_dern_vm_eval_in_global_environment(
     octaspire_dern_vm_t *self,
     octaspire_dern_value_t *value);
 
+octaspire_dern_value_t *octaspire_dern_vm_call_lambda(
+    octaspire_dern_vm_t * const self,
+    octaspire_dern_function_t const * const function,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment);
+
 octaspire_dern_value_t *octaspire_dern_vm_eval(
     octaspire_dern_vm_t *self,
     octaspire_dern_value_t *value,

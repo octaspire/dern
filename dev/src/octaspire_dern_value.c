@@ -1733,6 +1733,13 @@ void octaspire_dern_value_as_error_set_line_number(
     self->value.error->lineNumber = lineNumber;
 }
 
+char const *octaspire_dern_value_as_error_get_c_string(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR);
+    return octaspire_string_get_c_string(self->value.error->message);
+}
+
 octaspire_dern_environment_t *octaspire_dern_value_as_environment_get_value(
     octaspire_dern_value_t * const self)
 {

@@ -66,7 +66,7 @@ all: development
 ####### Development part: build using separate implementation files ###########
 ###############################################################################
 
-development: octaspire-dern-repl octaspire-dern-unit-test-runner libdern_socket$(DLSUFFIX) libdern_dir$(DLSUFFIX) libdern_easing$(DLSUFFIX) libdern_animation$(DLSUFFIX) libdern_ncurses$(DLSUFFIX) libdern_sdl2$(DLSUFFIX)
+development: octaspire-dern-repl octaspire-dern-unit-test-runner libdern_socket$(DLSUFFIX) libdern_dir$(DLSUFFIX) libdern_easing$(DLSUFFIX) libdern_animation$(DLSUFFIX) libdern_ncurses$(DLSUFFIX) libdern_sdl2$(DLSUFFIX) libdern_sqlite3$(DLSUFFIX)
 
 octaspire-dern-repl: $(SRCDIR)octaspire_dern_repl.o $(DEVOBJS)
 	$(info LD  $@)
@@ -115,6 +115,14 @@ libdern_ncurses$(DLSUFFIX): $(PLUGINDIR)dern_ncurses.c $(AMALGAMATION)
 libdern_sdl2$(DLSUFFIX): $(PLUGINDIR)dern_sdl2.c $(AMALGAMATION)
 	$(info PC  $<)
 	@$(CC) $(CFLAGS) -I release $(SDL2CONFIG_CFLAGS) $(SDL2FLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(SDL2CONFIG_LDFLAGS) $(LDFLAGS)
+
+libsqlite3$(DLSUFFIX): $(PLUGINDIR)external/sqlite3.c
+	$(info PC  $<)
+	@$(CC) -g $(DLFLAGS) -c -o $@ $< -ldl -lpthread
+
+libdern_sqlite3$(DLSUFFIX): $(PLUGINDIR)dern_sqlite3.c $(AMALGAMATION) libsqlite3$(DLSUFFIX)
+	$(info PC  $<)
+	@$(CC) $(CFLAGS) -I release -I $(PLUGINDIR)external $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(LDFLAGS) -ldl -lpthread  -L . -lsqlite3
 
 perf-linux: octaspire-dern-unit-test-runner
 	@echo "+---------------------------------------------------------------------+"
@@ -250,7 +258,8 @@ clean:
                 octaspire-dern-repl                                                   \
                 octaspire-dern-unit-test-runner                                       \
                 perf.data perf.data.old                                               \
-                *.so *.dylib
+                *.so *.dylib                                                          \
+                dern-example-database.db
 
 codestyle:
 	@vera++ --root dev/external/vera --profile octaspire-plugin --error $(wildcard $(SRCDIR)*.[ch])
