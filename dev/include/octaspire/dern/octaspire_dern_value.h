@@ -355,6 +355,9 @@ void octaspire_dern_value_as_error_set_line_number(
     octaspire_dern_value_t const * const self,
     size_t const lineNumber);
 
+char const *octaspire_dern_value_as_error_get_c_string(
+    octaspire_dern_value_t const * const self);
+
 struct octaspire_dern_environment_t *octaspire_dern_value_as_environment_get_value(
     octaspire_dern_value_t * const self);
 

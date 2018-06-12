@@ -2971,6 +2971,112 @@ octaspire_dern_value_t *octaspire_dern_vm_eval_in_global_environment(
     return octaspire_dern_vm_eval(self, value, self->globalEnvironment);
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_call_lambda(
+    octaspire_dern_vm_t * const self,
+    octaspire_dern_function_t const * const function,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    octaspire_dern_value_t * result = 0;
+
+    octaspire_helpers_verify_not_null(function);
+    octaspire_helpers_verify_not_null(function->formals);
+    octaspire_helpers_verify_not_null(function->formals->value.vector);
+    octaspire_helpers_verify_not_null(function->body);
+    octaspire_helpers_verify_not_null(function->body->value.vector);
+    octaspire_helpers_verify_not_null(function->definitionEnvironment);
+
+    octaspire_helpers_verify_not_null(
+        function->definitionEnvironment->value.environment);
+
+    octaspire_dern_environment_t *extendedEnvironment =
+        octaspire_dern_environment_new(
+            function->definitionEnvironment,
+            self,
+            self->allocator);
+
+    octaspire_helpers_verify_not_null(extendedEnvironment);
+
+    octaspire_dern_value_t *extendedEnvVal =
+        octaspire_dern_vm_create_new_value_environment_from_environment(
+            self,
+            extendedEnvironment);
+
+    octaspire_helpers_verify_not_null(extendedEnvVal);
+
+    octaspire_dern_vm_push_value(self, extendedEnvVal);
+
+    octaspire_dern_value_t *error = octaspire_dern_environment_extend(
+        extendedEnvironment,
+        function->formals,
+        arguments);
+
+    if (error)
+    {
+        octaspire_dern_vm_pop_value(self, extendedEnvVal);
+        return error;
+    }
+
+    octaspire_helpers_verify_true(
+        function->body->typeTag ==
+        OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_not_null(
+        function->body->value.vector);
+
+    for (size_t i = 0;
+         i < octaspire_vector_get_length(
+             function->body->value.vector);
+         ++i)
+    {
+        octaspire_dern_value_t *toBeEvaluated =
+            octaspire_vector_get_element_at(
+                function->body->value.vector,
+                (ptrdiff_t)i);
+
+        octaspire_dern_vm_push_value(self, toBeEvaluated);
+
+        result = octaspire_dern_vm_eval(
+            self,
+            toBeEvaluated,
+            extendedEnvVal);
+
+        if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+        {
+            octaspire_string_t *tmpStr =
+                octaspire_dern_value_to_string(toBeEvaluated, self->allocator);
+
+            octaspire_string_concatenate_format(
+                result->value.error->message,
+                "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
+                octaspire_string_get_c_string(tmpStr));
+
+            octaspire_string_release(tmpStr);
+            tmpStr = 0;
+
+            octaspire_dern_vm_pop_value(self, toBeEvaluated);
+            octaspire_dern_vm_pop_value(self, extendedEnvVal);
+            return result;
+        }
+
+        octaspire_dern_vm_pop_value(self, toBeEvaluated);
+
+        if (self->functionReturn)
+        {
+            result = self->functionReturn;
+            self->functionReturn = 0;
+            break;
+        }
+    }
+
+    octaspire_dern_vm_pop_value(self, extendedEnvVal);
+
+    octaspire_helpers_verify_not_null(result);
+    return result;
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_eval(
     octaspire_dern_vm_t *self,
     octaspire_dern_value_t *value,
