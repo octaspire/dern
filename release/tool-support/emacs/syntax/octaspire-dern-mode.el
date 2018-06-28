@@ -36,7 +36,7 @@
                        ) t) "\\_>") font-lock-builtin-face)
    (cons (regexp-opt '("nil" "false" "true") t) font-lock-constant-face)
    (cons "\\('\\w*'\\)" font-lock-variable-name-face)
-   (cons "\\('\\d*'\\)" font-lock-constant-face))
+   (cons "\\('{[DB][+-][0-9 .]+}'\\)" font-lock-constant-face))
    "Minimal highlighting expressions for octaspire-dern mode")
 
 (defvar octaspire-dern-font-lock-keywords octaspire-dern-lock-keywords-1

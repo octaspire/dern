@@ -787,7 +787,7 @@ TEST octaspire_dern_lexer_pop_next_token_symbol_length_amid_whitespace_test(void
 TEST octaspire_dern_lexer_pop_next_token_integer_12_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "12",
+        "{D+12}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -796,8 +796,8 @@ TEST octaspire_dern_lexer_pop_next_token_integer_12_test(void)
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 2};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {0, 1};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 6};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {0, 5};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -820,7 +820,7 @@ TEST octaspire_dern_lexer_pop_next_token_integer_12_test(void)
 TEST octaspire_dern_lexer_pop_next_token_real_12_dot_3_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "12.3",
+        "{D+12.3}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -829,8 +829,8 @@ TEST octaspire_dern_lexer_pop_next_token_real_12_dot_3_test(void)
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 4};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {0, 3};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 8};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {0, 7};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -853,7 +853,7 @@ TEST octaspire_dern_lexer_pop_next_token_real_12_dot_3_test(void)
 TEST octaspire_dern_lexer_pop_next_token_integer_759_after_whitespace_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "   \t   759", // 3 spaces + 1 tab + 3 spaces
+        "   \t   {D+759}", // 3 spaces + 1 tab + 3 spaces
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -862,8 +862,8 @@ TEST octaspire_dern_lexer_pop_next_token_integer_759_after_whitespace_test(void)
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {8, 10};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {7, 9};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {8, 14};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {7, 13};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -886,7 +886,7 @@ TEST octaspire_dern_lexer_pop_next_token_integer_759_after_whitespace_test(void)
 TEST octaspire_dern_lexer_pop_next_token_real_759_dot_2_after_whitespace_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "   \t   759.2", // 3 spaces + 1 tab + 3 spaces
+        "   \t   {D+759.2}", // 3 spaces + 1 tab + 3 spaces
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -895,8 +895,8 @@ TEST octaspire_dern_lexer_pop_next_token_real_759_dot_2_after_whitespace_test(vo
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {8, 12};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {7, 11};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {8, 16};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {7, 15};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -919,7 +919,7 @@ TEST octaspire_dern_lexer_pop_next_token_real_759_dot_2_after_whitespace_test(vo
 TEST octaspire_dern_lexer_pop_next_token_integer_759_amid_whitespace_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "   \t   759   \t   ", // 3 spaces + 1 tab + 3 spaces
+        "   \t   {D+759}   \t   ", // 3 spaces + 1 tab + 3 spaces
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -928,8 +928,8 @@ TEST octaspire_dern_lexer_pop_next_token_integer_759_amid_whitespace_test(void)
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {8, 10};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {7, 9};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {8, 14};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {7, 13};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -952,7 +952,7 @@ TEST octaspire_dern_lexer_pop_next_token_integer_759_amid_whitespace_test(void)
 TEST octaspire_dern_lexer_pop_next_token_real_759_dot_2_amid_whitespace_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "   \t   759.2   \t   ", // 3 spaces + 1 tab + 3 spaces
+        "   \t   {D+759.2}   \t   ", // 3 spaces + 1 tab + 3 spaces
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -961,8 +961,8 @@ TEST octaspire_dern_lexer_pop_next_token_real_759_dot_2_amid_whitespace_test(voi
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {8, 12};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {7, 11};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {8, 16};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {7, 15};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -1072,7 +1072,7 @@ TEST octaspire_dern_lexer_pop_next_token_multiline_comment_more_input_required_o
 TEST octaspire_dern_lexer_pop_next_token_integer_1024_after_whitespace_and_comment_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "  \n  ; here is comment\n1024",
+        "  \n  ; here is comment\n{D+1024}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1081,8 +1081,8 @@ TEST octaspire_dern_lexer_pop_next_token_integer_1024_after_whitespace_and_comme
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {3, 3};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 4};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 26};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 8};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 30};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -1105,7 +1105,7 @@ TEST octaspire_dern_lexer_pop_next_token_integer_1024_after_whitespace_and_comme
 TEST octaspire_dern_lexer_pop_next_token_real_1024_dot_987_after_whitespace_and_comment_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "  \n  ; here is comment\n1024.987",
+        "  \n  ; here is comment\n{D+1024.987}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1114,8 +1114,8 @@ TEST octaspire_dern_lexer_pop_next_token_real_1024_dot_987_after_whitespace_and_
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {3, 3};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 8};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 30};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 12};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 34};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -1138,7 +1138,7 @@ TEST octaspire_dern_lexer_pop_next_token_real_1024_dot_987_after_whitespace_and_
 TEST octaspire_dern_lexer_pop_next_token_integer_0_after_whitespace_and_comment_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "  \n  ; here is comment\n0",
+        "  \n  ; here is comment\n{D+0}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1147,8 +1147,8 @@ TEST octaspire_dern_lexer_pop_next_token_integer_0_after_whitespace_and_comment_
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {3, 3};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 1};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 23};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 5};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 27};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -1171,7 +1171,7 @@ TEST octaspire_dern_lexer_pop_next_token_integer_0_after_whitespace_and_comment_
 TEST octaspire_dern_lexer_pop_next_token_real_0_dot_0_after_whitespace_and_comment_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "  \n  ; here is comment\n0.0",
+        "  \n  ; here is comment\n{D+0.0}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1180,8 +1180,8 @@ TEST octaspire_dern_lexer_pop_next_token_real_0_dot_0_after_whitespace_and_comme
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {3, 3};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 3};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 25};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 7};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 29};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -1204,7 +1204,7 @@ TEST octaspire_dern_lexer_pop_next_token_real_0_dot_0_after_whitespace_and_comme
 TEST octaspire_dern_lexer_pop_next_token_integer_minus_1024_after_whitespace_and_comment_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "  \n  ; here is comment\n-1024",
+        "  \n  ; here is comment\n{D-1024}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1213,8 +1213,8 @@ TEST octaspire_dern_lexer_pop_next_token_integer_minus_1024_after_whitespace_and
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {3, 3};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 5};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 27};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 8};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 30};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -1237,7 +1237,7 @@ TEST octaspire_dern_lexer_pop_next_token_integer_minus_1024_after_whitespace_and
 TEST octaspire_dern_lexer_pop_next_token_real_minus_1024_dot_987_after_whitespace_and_comment_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "  \n  ; here is comment\n-1024.987",
+        "  \n  ; here is comment\n{D-1024.987}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1246,8 +1246,8 @@ TEST octaspire_dern_lexer_pop_next_token_real_minus_1024_dot_987_after_whitespac
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {3,  3};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1,  9};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 31};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1,  12};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 34};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -1270,7 +1270,7 @@ TEST octaspire_dern_lexer_pop_next_token_real_minus_1024_dot_987_after_whitespac
 TEST octaspire_dern_lexer_pop_next_token_integer_1234567890_after_whitespace_and_comment_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "  \n  ; here is comment\n1234567890",
+        "  \n  ; here is comment\n{D+1234567890}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1279,8 +1279,8 @@ TEST octaspire_dern_lexer_pop_next_token_integer_1234567890_after_whitespace_and
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {3,  3};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1,  10};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 32};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1,  14};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 36};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -1303,7 +1303,7 @@ TEST octaspire_dern_lexer_pop_next_token_integer_1234567890_after_whitespace_and
 TEST octaspire_dern_lexer_pop_next_token_integer_minus_1234567890_after_whitespace_and_comment_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "  \n  ; here is comment\n-1234567890",
+        "  \n  ; here is comment\n{D-1234567890}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1312,8 +1312,8 @@ TEST octaspire_dern_lexer_pop_next_token_integer_minus_1234567890_after_whitespa
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {3,  3};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1,  11};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 33};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1,  14};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 36};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -1336,7 +1336,7 @@ TEST octaspire_dern_lexer_pop_next_token_integer_minus_1234567890_after_whitespa
 TEST octaspire_dern_lexer_pop_next_token_real_12345_dot_67890_after_whitespace_and_comment_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "  \n  ; here is comment\n12345.67890",
+        "  \n  ; here is comment\n{D+12345.67890}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1345,8 +1345,8 @@ TEST octaspire_dern_lexer_pop_next_token_real_12345_dot_67890_after_whitespace_a
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {3,  3};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1,  11};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 33};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1,  15};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 37};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -1369,7 +1369,7 @@ TEST octaspire_dern_lexer_pop_next_token_real_12345_dot_67890_after_whitespace_a
 TEST octaspire_dern_lexer_pop_next_token_real_minus_12345_dot_67890_after_whitespace_and_comment_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "  \n  ; here is comment\n-12345.67890",
+        "  \n  ; here is comment\n{D-12345.67890}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1378,8 +1378,8 @@ TEST octaspire_dern_lexer_pop_next_token_real_minus_12345_dot_67890_after_whites
     ASSERT(token);
 
     octaspire_dern_lexer_token_position_t  const expectedLine     = {3,  3};
-    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1,  12};
-    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 34};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1,  15};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {23, 37};
 
     ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -1402,7 +1402,7 @@ TEST octaspire_dern_lexer_pop_next_token_real_minus_12345_dot_67890_after_whites
 TEST octaspire_dern_lexer_pop_next_token_five_integers_11_22_33_44_55_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "11 22 33 44 55",
+        "{D+11} {D+22} {D+33} {D+44} {D+55}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1413,8 +1413,8 @@ TEST octaspire_dern_lexer_pop_next_token_five_integers_11_22_33_44_55_test(void)
         ASSERT(token);
 
         octaspire_dern_lexer_token_position_t const expectedLine     = {1,           1};
-        octaspire_dern_lexer_token_position_t const expectedColumn   = {1 + (i * 3), 2 + (i * 3)};
-        octaspire_dern_lexer_token_position_t const expectedUcsIndex = {0 + (i * 3), 1 + (i * 3)};
+        octaspire_dern_lexer_token_position_t const expectedColumn   = {1 + (i * 7), 6 + (i * 7)};
+        octaspire_dern_lexer_token_position_t const expectedUcsIndex = {0 + (i * 7), 5 + (i * 7)};
 
         ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -1440,7 +1440,7 @@ TEST octaspire_dern_lexer_pop_next_token_five_integers_11_22_33_44_55_test(void)
 TEST octaspire_dern_lexer_pop_next_token_five_reals_11_dot_1_22_dot_2_33_dot_3_44_dot_4_55_dot_5_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "11.1 22.2 33.3 44.4 55.5",
+        "{D+11.1} {D+22.2} {D+33.3} {D+44.4} {D+55.5}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1451,8 +1451,8 @@ TEST octaspire_dern_lexer_pop_next_token_five_reals_11_dot_1_22_dot_2_33_dot_3_4
         ASSERT(token);
 
         octaspire_dern_lexer_token_position_t const expectedLine     = {1,           1};
-        octaspire_dern_lexer_token_position_t const expectedColumn   = {1 + (i * 5), 4 + (i * 5)};
-        octaspire_dern_lexer_token_position_t const expectedUcsIndex = {0 + (i * 5), 3 + (i * 5)};
+        octaspire_dern_lexer_token_position_t const expectedColumn   = {1 + (i * 9), 8 + (i * 9)};
+        octaspire_dern_lexer_token_position_t const expectedUcsIndex = {0 + (i * 9), 7 + (i * 9)};
 
         ASSERT_EQ(octaspireDernLexerTestAllocator,                              token->allocator);
 
@@ -1485,13 +1485,13 @@ TEST octaspire_dern_lexer_pop_next_token_failure_on_integer_12_with_character_a_
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
         value,
         octaspire_dern_lexer_token_position_init(1, 1),
-        octaspire_dern_lexer_token_position_init(1, 3),
-        octaspire_dern_lexer_token_position_init(0, 2),
+        octaspire_dern_lexer_token_position_init(1, 6),
+        octaspire_dern_lexer_token_position_init(0, 5),
         octaspireDernLexerTestAllocator);
     ASSERT(expected);
 
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "12a",
+        "{D+12a}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1520,13 +1520,13 @@ TEST octaspire_dern_lexer_pop_next_token_failure_on_illegal_real_12_dot_2_dot_2_
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
         value,
         octaspire_dern_lexer_token_position_init(1, 1),
-        octaspire_dern_lexer_token_position_init(1, 5),
-        octaspire_dern_lexer_token_position_init(0, 4),
+        octaspire_dern_lexer_token_position_init(1, 8),
+        octaspire_dern_lexer_token_position_init(0, 7),
         octaspireDernLexerTestAllocator);
     ASSERT(expected);
 
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "12.2.2",
+        "{D+12.2.2}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1550,18 +1550,18 @@ TEST octaspire_dern_lexer_pop_next_token_failure_on_illegal_real_12_dot_2_dot_2_
 
 TEST octaspire_dern_lexer_pop_next_token_failure_on_illegal_integer_minus_12_minus_22_test(void)
 {
-    char const * const value = "Number can contain only one '-' character";
+    char const * const value = "Number cannot contain character '-'";
     octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
         value,
         octaspire_dern_lexer_token_position_init(1, 1),
-        octaspire_dern_lexer_token_position_init(1, 4),
-        octaspire_dern_lexer_token_position_init(0, 3),
+        octaspire_dern_lexer_token_position_init(1, 6),
+        octaspire_dern_lexer_token_position_init(0, 5),
         octaspireDernLexerTestAllocator);
     ASSERT(expected);
 
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "-12-22",
+        "{D-12-22}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1585,18 +1585,18 @@ TEST octaspire_dern_lexer_pop_next_token_failure_on_illegal_integer_minus_12_min
 
 TEST octaspire_dern_lexer_pop_next_token_failure_on_illegal_real_minus_12_dot_22_minus_33_test(void)
 {
-    char const * const value = "Number can contain only one '-' character";
+    char const * const value = "Number cannot contain character '-'";
     octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
         value,
         octaspire_dern_lexer_token_position_init(1, 1),
-        octaspire_dern_lexer_token_position_init(1, 7),
-        octaspire_dern_lexer_token_position_init(0, 6),
+        octaspire_dern_lexer_token_position_init(1, 9),
+        octaspire_dern_lexer_token_position_init(0, 8),
         octaspireDernLexerTestAllocator);
     ASSERT(expected);
 
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "-12.22-33",
+        "{D-12.22-33}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1620,18 +1620,18 @@ TEST octaspire_dern_lexer_pop_next_token_failure_on_illegal_real_minus_12_dot_22
 
 TEST octaspire_dern_lexer_pop_next_token_failure_on_illegal_integer_12_minus_22_test(void)
 {
-    char const * const value = "Number can have '-' character only in the beginning";
+    char const * const value = "Number cannot contain character '-'";
     octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
         value,
         octaspire_dern_lexer_token_position_init(1, 1),
-        octaspire_dern_lexer_token_position_init(1, 3),
-        octaspire_dern_lexer_token_position_init(0, 2),
+        octaspire_dern_lexer_token_position_init(1, 6),
+        octaspire_dern_lexer_token_position_init(0, 5),
         octaspireDernLexerTestAllocator);
     ASSERT(expected);
 
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "12-22",
+        "{D+12-22}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -1655,18 +1655,18 @@ TEST octaspire_dern_lexer_pop_next_token_failure_on_illegal_integer_12_minus_22_
 
 TEST octaspire_dern_lexer_pop_next_token_failure_on_illegal_integer_12_dot_22_minus_22_test(void)
 {
-    char const * const value = "Number can have '-' character only in the beginning";
+    char const * const value = "Number cannot contain character '-'";
     octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
         value,
         octaspire_dern_lexer_token_position_init(1, 1),
-        octaspire_dern_lexer_token_position_init(1, 6),
-        octaspire_dern_lexer_token_position_init(0, 5),
+        octaspire_dern_lexer_token_position_init(1, 9),
+        octaspire_dern_lexer_token_position_init(0, 8),
         octaspireDernLexerTestAllocator);
     ASSERT(expected);
 
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "12.22-22",
+        "{D+12.22-22}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -2139,12 +2139,12 @@ TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(vo
         {7, 10},
         {12, 16},
         {18, 20},
-        {22, 24},
-        {26, 32},
-        {34, 51},
-        {53, 55},
-        {57, 72},
-        {74, 76}
+        {22, 28},
+        {30, 40},
+        {42, 59},
+        {61, 63},
+        {65, 80},
+        {82, 87}
     };
 
     // + 6
@@ -2156,12 +2156,12 @@ TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(vo
         {6, 9},
         {11, 15},
         {17, 19},
-        {21, 23},
-        {25, 31},
-        {33, 50},
-        {52, 54},
-        {56, 71},
-        {73, 75}
+        {21, 27},
+        {29, 39},
+        {41, 58},
+        {60, 62},
+        {64, 79},
+        {81, 86}
     };
 
     ASSERT((sizeof(expected) / sizeof(expected[0])) == (sizeof(values) / sizeof(values[0])));
@@ -2185,7 +2185,7 @@ TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(vo
     }
 
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "( ) ' true false nil 123 987.456 [here is a string] |+| here_is_a_symbol 12a",
+        "( ) ' true false nil {D+123} {D+987.456} [here is a string] |+| here_is_a_symbol {D+12a}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);

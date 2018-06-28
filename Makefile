@@ -272,13 +272,13 @@ cppcheck:
 valgrind: $(RELDIR)octaspire-dern-repl octaspire-dern-unit-test-runner
 	@valgrind --leak-check=full --track-origins=yes --error-exitcode=1 $(RELDIR)octaspire-dern-unit-test-runner --write-test-files
 	@valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./octaspire-dern-unit-test-runner --write-test-files
-	@valgrind --leak-check=full --track-origins=yes --error-exitcode=1 $(RELDIR)octaspire-dern-repl -e "(+ 1 2 3)(exit)"
+	@valgrind --leak-check=full --track-origins=yes --error-exitcode=1 $(RELDIR)octaspire-dern-repl -e "(+ {D+1} {D+2} {D+3})(exit)"
 
 # Test both amalgamation and development version.
 test: $(RELDIR)octaspire-dern-repl octaspire-dern-unit-test-runner
 	@$(RELDIR)octaspire-dern-unit-test-runner --write-test-files
 	@./octaspire-dern-unit-test-runner --write-test-files
-	@$(RELDIR)octaspire-dern-repl -e "(+ 1 2 3)(exit)"
+	@$(RELDIR)octaspire-dern-repl -e "(+ {D+1} {D+2} {D+3})(exit)"
 
 coverage: $(AMALGAMATION)
 	@sh $(ETCDIR)build_amalgamation.sh "gcc --coverage"

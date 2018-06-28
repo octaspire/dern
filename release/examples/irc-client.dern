@@ -5,7 +5,7 @@
 (ncurses-set-keypad win true)
 (ncurses-set-cbreak true)
 (ncurses-set-nl true)
-(ncurses-halfdelay 1)
+(ncurses-halfdelay {D+1})
 (ncurses-set-echo false)
 
 (define running           as true                             [should this program be running])
@@ -17,21 +17,21 @@
 (define statusbar         as []                               [shows username, realname and hint])
 (define socket            as nil                              [socket])
 (define num-rows-and-cols as (ncurses-getmaxyx win)           [number of rows and cols on screen] )
-(define maxlines          as (- (cp@ num-rows-and-cols 0) 3)  [maxlines] )
+(define maxlines          as (- (cp@ num-rows-and-cols {D+0}) {D+3})  [maxlines] )
 (define lines             as (queue-with-max-length maxlines) [messages] )
 (define title             as []                               [title])
 (define debug             as false                            [is debug mode on])
 (define user-input-buffer as []                               [stores line of user input])
 (define redraw-required   as true                             [is (re)draw required or not])
 
-(define PAIR-BORDER          as 1 [PAIR-BORDER])
-(define PAIR-PROMPT          as 2 [PAIR-PROMPT])
-(define PAIR-INPUT           as 3 [PAIR-INPUT])
-(define PAIR-OTHER           as 4 [PAIR-OTHER])
-(define PAIR-DEBUG           as 5 [PAIR-DEBUG])
-(define PAIR-USER            as 6 [PAIR-USER])
-(define PAIR-MESSAGE         as 7 [PAIR-MESSAGE])
-(define PAIR-PRIVATE-MESSAGE as 8 [PAIR-PRIVATE-MESSAGE])
+(define PAIR-BORDER          as {D+1} [PAIR-BORDER])
+(define PAIR-PROMPT          as {D+2} [PAIR-PROMPT])
+(define PAIR-INPUT           as {D+3} [PAIR-INPUT])
+(define PAIR-OTHER           as {D+4} [PAIR-OTHER])
+(define PAIR-DEBUG           as {D+5} [PAIR-DEBUG])
+(define PAIR-USER            as {D+6} [PAIR-USER])
+(define PAIR-MESSAGE         as {D+7} [PAIR-MESSAGE])
+(define PAIR-PRIVATE-MESSAGE as {D+8} [PAIR-PRIVATE-MESSAGE])
 
 (if (ncurses-has-colors)
     (do
@@ -62,13 +62,13 @@
 
     (if (>= startIndex (len str)) (return result))
 
-    (for i from startIndex to (- (len str) 1)
+    (for i from startIndex to (- (len str) {D+1})
          (+= result (cp@ str i)))
     result)
   [substr] '(str [str] startIndex [startIndex]) howto-no)
 
 (define handle-nick as (fn (line)
-    (= current-username (substr line 6))
+    (= current-username (substr line {D+6}))
     (send-user-data))
   [handle /nick] '(line [line of text starting with /nick]) howto-no)
 
@@ -76,7 +76,7 @@
     (if (== current-username [])
       (do (set-hint [Please set a nick first by using /nick or /user]) (return)))
 
-    (define channel as (substr line 6) [channel])
+    (define channel as (substr line {D+6}) [channel])
 
     (define message as (string-format [JOIN {}|newline|] channel) [message])
     (socket-send socket message)
@@ -85,18 +85,18 @@
   [handle /join] '(line [line of text starting with /join]) howto-no)
 
 (define handle-msg as (fn (line)
-    (define restOfLine as (substr line 5) [line without /msg])
+    (define restOfLine as (substr line {D+5}) [line without /msg])
 
     (define tokens as (split restOfLine | |) [line split by space])
 
-    (if (< (len tokens) 2) (do (set-hint [/msg expect target name and message]) (return)))
+    (if (< (len tokens) {D+2}) (do (set-hint [/msg expect target name and message]) (return)))
 
-    (define target as (ln@ tokens 0) [target] )
+    (define target as (ln@ tokens {D+0}) [target] )
     (define msgtxt as [] [msgtxt])
 
-    (for i from 1 to (- (len tokens) 1)
+    (for i from {D+1} to (- (len tokens) {D+1})
          (+= msgtxt (ln@ tokens i))
-         (if (< i (- (len tokens) 1)) (+= msgtxt | |)))
+         (if (< i (- (len tokens) {D+1})) (+= msgtxt | |)))
 
     (define message as (string-format [PRIVMSG {} :{}|newline|] target msgtxt) [message])
     (socket-send socket message)
@@ -112,20 +112,20 @@
     (= redraw-required true)
     (= rebuild-statusbar false)
     (= statusbar (string-format [--/{}/{}/{}/--] current-username current-realname hint))
-    (for i from (len statusbar) to (- (cp@ num-rows-and-cols 1) 1) (+= statusbar |-|)))
+    (for i from (len statusbar) to (- (cp@ num-rows-and-cols {D+1}) {D+1}) (+= statusbar |-|)))
   [Build string for the status bar from the username, realname and hint] '() howto-no)
 
 (define handle-connect as (fn (line)
     (if (== current-username [])
       (do (set-hint [Please set a nick first by using /nick or nick and a real name using /user]) (return)))
 
-    (define restOfLine as (substr line 9)        [line without /connect])
-    (define tokens     as (split restOfLine | |) [line split by space] )
-    (define address    as [localhost]            [address])
-    (define portnum    as 6667                   [portnum])
+    (define restOfLine as (substr line {D+9})        [line without /connect])
+    (define tokens     as (split restOfLine | |)     [line split by space] )
+    (define address    as [localhost]                [address])
+    (define portnum    as {D+6667}                   [portnum])
 
-    (if (>= (len tokens) 1) (= address (ln@ tokens 0)))
-    (if (>= (len tokens) 2) (= portnum (ln@ tokens 1)))
+    (if (>= (len tokens) {D+1}) (= address (ln@ tokens {D+0})))
+    (if (>= (len tokens) {D+2}) (= portnum (ln@ tokens {D+1})))
 
     (= portnum (to-integer portnum))
 
@@ -153,19 +153,19 @@
   [send nick and possible real name to server] '() howto-no)
 
 (define handle-user as (fn (line)
-    (define restOfLine as (substr line 6) [line without /user])
+    (define restOfLine as (substr line {D+6}) [line without /user])
 
     (define tokens as (split restOfLine | |) [line split by space])
 
-    (= current-username (cp@ tokens 0))
+    (= current-username (cp@ tokens {D+0}))
     (= current-realname [])
 
     (= rebuild-statusbar true)
 
-    (if (> (len tokens) 1)
-        (for i from 1 to (- (len tokens) 1)
+    (if (> (len tokens) {D+1})
+        (for i from {D+1} to (- (len tokens) {D+1})
              (+= current-realname (cp@ tokens i))
-             (if (< i (- (len tokens) 1)) (+= current-realname | |))))
+             (if (< i (- (len tokens) {D+1})) (+= current-realname | |))))
 
     (send-user-data))
   [handle /user] '(line [line of text starting with /user]) howto-no)
@@ -201,7 +201,7 @@
 (define show-title as (fn (t)
     (ncurses-attron 'BOLD)
     (if (ncurses-has-colors) (ncurses-attron PAIR-BORDER))
-    (ncurses-print win 0 0 t)
+    (ncurses-print win {D+0} {D+0} t)
     (if (ncurses-has-colors) (ncurses-attroff PAIR-BORDER))
     (ncurses-attroff 'BOLD))
   [show title bar] '(t [title message]) howto-no)
@@ -209,24 +209,24 @@
 (define show-statusbar as (fn ()
     (ncurses-attron 'BOLD)
     (if (ncurses-has-colors) (ncurses-attron PAIR-BORDER))
-    (ncurses-print win (- (cp@ num-rows-and-cols 0) 2) 0 statusbar)
+    (ncurses-print win (- (cp@ num-rows-and-cols {D+0}) {D+2}) {D+0} statusbar)
     (if (ncurses-has-colors) (ncurses-attroff PAIR-BORDER))
     (ncurses-attroff 'BOLD))
   [draw statusbar into display] '() howto-no)
 
 (define set-title as (fn (m)
     (= title (string-format [--{}] m))
-    (for i from (len title) to (- (cp@ num-rows-and-cols 1) 1) (+= title |-|)))
+    (for i from (len title) to (- (cp@ num-rows-and-cols {D+1}) {D+1}) (+= title |-|)))
   [show title message] '(m [title message]) howto-no)
 
 (define show-input-line as (fn ()
     (ncurses-attron 'BOLD)
     (ncurses-attron PAIR-PROMPT)
-    (ncurses-print win (- (cp@ num-rows-and-cols 0) 1) 0 (string-format [>{}] user-input-buffer))
+    (ncurses-print win (- (cp@ num-rows-and-cols {D+0}) {D+1}) {D+0} (string-format [>{}] user-input-buffer))
     (ncurses-attroff PAIR-PROMPT)
     (ncurses-attroff 'BOLD)
     (ncurses-attroff PAIR-INPUT)
-    (ncurses-move win (- (cp@ num-rows-and-cols 0) 1) (+ (len user-input-buffer) 1)))
+    (ncurses-move win (- (cp@ num-rows-and-cols {D+0}) {D+1}) (+ (len user-input-buffer) {D+1})))
     [show user input] '() howto-no)
 
 (define read-and-handle-input as (fn ()
@@ -243,7 +243,7 @@
             (show-input-line)
             (return)))
 
-    (if (and (or (== 'KEY_BACKSPACE char) (== 'KEY_DC char)) (> (len user-input-buffer) 0))
+    (if (and (or (== 'KEY_BACKSPACE char) (== 'KEY_DC char)) (> (len user-input-buffer) {D+0}))
           (do
             (-- user-input-buffer)
             (show-input-line)
@@ -257,9 +257,9 @@
     [read input and handle it if needed] '() howto-no)
 
 (define handle-input-line as (fn ()
-    (if (== 0 (len user-input-buffer)) (return))
+    (if (== {D+0} (len user-input-buffer)) (return))
 
-    (define first-char as (cp@ user-input-buffer 0) [first character of user input])
+    (define first-char as (cp@ user-input-buffer {D+0}) [first character of user input])
 
     (if (== |/| first-char)
       (handle-command user-input-buffer)
@@ -267,7 +267,7 @@
   [get user input and handle it] '() howto-no)
 
 (define handle-ping as (fn (message)
-    (= message 1 |O|)
+    (= message {D+1} |O|)
     ;(+= lines message) ; TODO remove
     (socket-send socket message))
   [handle PING message from the IRC server] '(message [message]) howto-no)
@@ -275,35 +275,35 @@
 (define push-text-to-lines as (fn (type text)
     (define line as [] [tmp line])
 
-    (if (== 0 (len text)) (return))
+    (if (== {D+0} (len text)) (return))
 
-    (for i from 0 to (- (len text) 1)
+    (for i from {D+0} to (- (len text) {D+1})
          (define c as (cp@ text i) [c])
          (if (== c |newline|)
             (do (+= lines (vector type line))
                 (=  line []))
             (+= line c))
-         (if (>= (len line) (cp@ num-rows-and-cols 1))
+         (if (>= (len line) (cp@ num-rows-and-cols {D+1}))
            (do
              (+= lines (vector type line))
              (= line []))))
 
-    (if (> (len line) 0)
+    (if (> (len line) {D+0})
         (do (+= lines (vector type line)))))
   [push text to lines] '(type [type] text [text]) howto-no)
 
 (define extract-only-message-from-input as (fn (message)
 
     (define result as [] [result])
-    (define numsyms as 0 [number of syms])
+    (define numsyms as {D+0} [number of syms])
 
-    (for i from 0 to (- (len message) 1)
+    (for i from {D+0} to (- (len message) {D+1})
         (define c as (cp@ message i) [c])
-        (if (>= numsyms 2)
+        (if (>= numsyms {D+2})
           (+= result c)
           (if (== c |:|) (++ numsyms))))
 
-    (if (>= numsyms 2) result message))
+    (if (>= numsyms {D+2}) result message))
   [get only the actual message] '(message [message]) howto-no)
 
 (define read-socket as (fn ()
@@ -317,7 +317,7 @@
 
     (if debug (push-text-to-lines 'DEBUG input-from-socket))
 
-    (define first-char as (cp@ input-from-socket 0) [first character of user input])
+    (define first-char as (cp@ input-from-socket {D+0}) [first character of user input])
 
     (if (== |P| first-char)
         (return (handle-ping input-from-socket)))
@@ -326,24 +326,24 @@
 
     (define command as [] [command])
 
-    (if (>= (len tokens) 2) (= command (ln@ tokens 1)))
+    (if (>= (len tokens) {D+2}) (= command (ln@ tokens {D+1})))
 
     (if (== command [PRIVMSG])
       (do
         (define receiver as [] [channel or user])
         (define sender   as [] [message is from])
 
-        (if (>= (len tokens) 1) (= sender (substr (ln@ tokens 0) 1)))
-        (if (>= (len tokens) 3) (= receiver (ln@ tokens 2)))
+        (if (>= (len tokens) {D+1}) (= sender (substr (ln@ tokens {D+0}) {D+1})))
+        (if (>= (len tokens) {D+3}) (= receiver (ln@ tokens {D+2})))
 
-        (if (> (len sender) 32)
+        (if (> (len sender) {D+32})
           (do
-            (for i from 0 to 3 (-- sender))
+            (for i from {D+0} to {D+3} (-- sender))
             (+= sender [...])))
 
         ; TODO XXX fix crash on (++ sender | |)
-        (if (< (len sender) 32)
-            (for i from (len sender) to 32 (+= sender |-|)))
+        (if (< (len sender) {D+32})
+            (for i from (len sender) to {D+32} (+= sender |-|)))
 
         (define msgToShow as
           (string-format [<{}> {}] sender (extract-only-message-from-input input-from-socket)) [msgToShow])
@@ -359,9 +359,9 @@
     (show-title title)
     (show-statusbar)
 
-    (define row as 1 [current row])
+    (define row as {D+1} [current row])
     (for line in lines
-         (define type as (cp@ line 0) [type])
+         (define type as (cp@ line {D+0}) [type])
 
          (if (== type 'OTHER)           (ncurses-attron PAIR-OTHER))
          (if (== type 'DEBUG)           (ncurses-attron PAIR-DEBUG))
@@ -371,7 +371,7 @@
          (if (== type 'PRIVATE-MESSAGE) (do (ncurses-attron PAIR-PRIVATE-MESSAGE)
                                             (ncurses-attron 'BOLD)))
 
-         (ncurses-print win row 1 (ln@ line 1))
+         (ncurses-print win row {D+1} (ln@ line {D+1}))
 
          (if (== type 'OTHER)           (ncurses-attroff PAIR-OTHER))
          (if (== type 'DEBUG)           (ncurses-attroff PAIR-DEBUG))

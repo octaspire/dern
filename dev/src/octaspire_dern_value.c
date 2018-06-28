@@ -1291,7 +1291,8 @@ octaspire_string_t *octaspire_dern_private_value_to_string(
             {
                 return octaspire_string_new_format(
                     allocator,
-                    "%" PRId32 "",
+                    "%s%" PRId32 "}",
+                    (self->value.integer >= 0) ? "{D+" : "{D",
                     self->value.integer);
             }
 
@@ -1299,7 +1300,8 @@ octaspire_string_t *octaspire_dern_private_value_to_string(
             {
                 return octaspire_string_new_format(
                     allocator,
-                    "%g",
+                    "%s%g}",
+                    (self->value.real >= 0) ? "{D+" : "{D",
                     self->value.real);
             }
 

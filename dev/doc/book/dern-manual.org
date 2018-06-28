@@ -182,7 +182,8 @@ of it directly to the interactive REPL.
   (println)
 
   ; 2. Print 11 times 'Hello x World!', x is 0 .. 10
-  (for i from 0 to 10 (println [Hello {} World!] i))
+  (for i from {D+0} to {D+10}
+    (println [Hello {} World!] i))
   (println)
 
   ; 3. Print greetings to everybody on the vector
@@ -233,16 +234,23 @@ of it directly to the interactive REPL.
                              'Mike 'Bonjour)
                           [My custom greetings])
 
-  (for i in names (greeter (ln@ i 1) (ln@ i 0)))
+  (for i in names (greeter (ln@ i {D+1}) (ln@ i {D+0})))
 #+END_SRC
 
 ** Values
 
 #+BEGIN_SRC octaspire-dern
- 128              ; These are integers
--100
- 3.14             ; These are real
--1.12
+{D+128}              ; These are integers
+{D-100}
+
+{B+1001}             ;   9 in binary
+{B-10011}            ; -19 in binary
+
+{D+100 000 000}      ; Spaces can be used
+
+{D+3.14}             ; These are real
+{D-1.12}
+
 [Hello]           ; These are strings (utf-8)
 [Hell|6F|]        ; Hello
 [Hello|newline|]  ; Hello and newline
@@ -259,13 +267,14 @@ of it directly to the interactive REPL.
 true              ; These are booleans
 false
 nil               ; Nil
-'(1 2 |a| [cat])               ; These are vectors
+'({D+1} {D+2} |a| [cat])      ; These are vectors
 '()
-(hash-map 'John [likes cats]   ; This is hash map
+(hash-map 'John [likes cats]  ; This is hash map
           'Lisa [likes dogs]
-          'Mike '([likes numbers] 1 2 3 4)
-           1    |a|
-           [Hi] 2)
+          'Mike '([likes numbers] {D+1} {D+2}
+                                  {D+3} {D+4})
+           {D+1}    |a|
+           [Hi] {D+2})
 #+END_SRC
 
 The text after character =;= is a *single line comment*. Single line comments run until the end
@@ -306,9 +315,9 @@ Multiline comments can be used to make script files executable in UNIX-like syst
 ** Binding names to values with =define=
 
 #+BEGIN_SRC octaspire-dern
-(define pi as 3.14 [value for pi])
+(define pi as {D+3.14} [value for pi])
 (define names as '(John Lisa Mark) [names list])
-(define double as (fn (x) (* 2 x)) [doubles numbers]
+(define double as (fn (x) (* {D+2} x)) [doubles nums]
     '(x [this is doubled]) howto-ok)
 #+END_SRC
 
@@ -318,7 +327,7 @@ Here is an example of using those names:
 #+BEGIN_SRC octaspire-dern
 pi
 names
-(double 1)
+(double {D+1})
 #+END_SRC
 
 And to see the documentation for these values:
@@ -344,7 +353,7 @@ names to values in other environments than the current one. Example:
 
 #+BEGIN_SRC octaspire-dern
 (define myEnv as (env-new) [my own environment])
-(define pi as 3.14 [value for pi] in myEnv)
+(define pi as {D+3.14} [value for pi] in myEnv)
 
 pi                  ; <error>: Unbound symbol 'pi'
 (eval pi myEnv)     ; 3.14
@@ -361,14 +370,14 @@ container (vector, string, hash-map, etc.) and with (input) *ports*.
 Below is couple of examples:
 
 #+BEGIN_SRC octaspire-dern
-(define i as 0 [my counter])
-(while (<= i 10) (println [Counting at {}] i) (++ i))
+(define i as {D+0} [my counter])
+(while (<= i {D+10}) (println [Going at {}] i) (++ i))
 #+END_SRC
 
 Numerical for:
 
 #+BEGIN_SRC octaspire-dern
-(for i from 0 to 10 (println [Hello {} World!] i))
+(for i from {D+0} to {D+10} (println [Hello {}!] i))
 #+END_SRC
 
 Container for:
@@ -382,10 +391,12 @@ Both the *numerical for* and *container for* support the use of optional =step= 
 way the iterator is incremented:
 
 #+BEGIN_SRC octaspire-dern
-(for i from 0 to 10 step 3 (println [Hello {}!] i))
+(for i from {D+0} to {D+10} step {D+3}
+  (println [Hello {}!] i))
 
 (define names as '(John Mark Lisa) [names list])
-(for i in names step 2 (println [Hello {} World!] i))
+(for i in names step {D+2}
+  (println [Hello {} World!] i))
 #+END_SRC
 
 ** Comparing and changing values, predicates
@@ -393,32 +404,32 @@ way the iterator is incremented:
 Here are few examples:
 
 #+BEGIN_SRC octaspire-dern
-(<  1 2)   ; true
-(<  2 2)   ; false
-(>  2 1)   ; true
-(<= 1 1)   ; true
-(>= 1 1)   ; true
-(== 3 3)   ; true
-(== 3 1)   ; false
-(!= 3 1)   ; true
-(+ 1)      ;  1
-(+ 1 1)    ;  2
-(- 1)      ; -1
-(- 1 2 3)  ; -4
+(<  {D+1} {D+2})   ; true
+(<  {D+2} {D+2})   ; false
+(>  {D+2} {D+1})   ; true
+(<= {D+1} {D+1})   ; true
+(>= {D+1} {D+1})   ; true
+(== {D+3} {D+3})   ; true
+(== {D+3} {D+1})   ; false
+(!= {D+3} {D+1})   ; true
+(+ {D+1})      ;  1
+(+ {D+1} {D+1})    ;  2
+(- {D+1})      ; -1
+(- {D+1} {D+2} {D+3})  ; -4
 
 (not true)     ; false
 
 (uid +)        ; unique id of +
 (=== + +)      ; compare using unique id
 
-(len '(1 2 3))          ; length of vector:   3
-(len [abc])             ; length of string:   3
-(len (hash-map 1 |a|))  ; length of hash-map: 1
+(len '({D+1} {D+2} {D+3}))  ; length of vector:   3
+(len [abc])                 ; length of string:   3
+(len (hash-map {D+1} |a|))  ; length of hash-map: 1
 
-(define number as 1 [my number])
+(define number as {D+1} [my number])
 (++ number)                      ; number is 2
 (-- number)                      ; number is 1
-(+= number 2)                    ; number is 3
+(+= number {D+2})                ; number is 3
 
 (+ [Hello] [ ] [World.] [ Bye.]) ; Hello World. Bye.
 
@@ -426,27 +437,33 @@ Here are few examples:
 (+= greeting [ World!])          ; Hello World!
 (+= greeting |!|)                ; Hello World!!
 
-(+= '(1 2 3) '(4 5 6))           ; (1 2 3 (4 5 6))
+(+= '({D+1} {D+2} {D+3}) '({D+4} {D+5} {D+6}))
+; (1 2 3 (4 5 6))
 
-(define capitals as (hash-map [United Kingdom] [London]
+(define capitals as (hash-map [United Kingdom]
+                                [London]
                               [Spain] [Madrid])
     [country -> capital])
 (+= capitals [Nepal] [Kathmandu])
 (+= capitals '([Norway] [Oslo] [Poland] [Warsaw]))
 (+= capitals (hash-map [Peru] [Lima]))
 
-(-= 10 1 2 3)                 ; 4
-(-= |x| 2)                    ; |v|
-(-= |x| |!|)                  ; |W|
-(-= [abba] |a|)               ; [bb]
-(-= (hash-map 1 |a| 2 |b|) 1) ; (hash-map 2 |b|)
-(-= '(1 1 2 2 3) 1 2)         ; (3)
+(-= {D+10} {D+1} {D+2} {D+3})             ; 4
+(-= |x| {D+2})                            ; |v|
+(-= |x| |!|)                              ; |W|
+(-= [abba] |a|)                           ; [bb]
 
-(define v as '(1 2 3 3) [v])
-(-= v (ln@ v -1))             ; (1 2)
+(-= (hash-map {D+1} |a| {D+2} |b|) {D+1})
+; (hash-map 2 |b|)
 
-(define v as '(1 2 3 3) [v])
-(-== v (ln@ v -1))            ; (1 2 3)
+(-= '({D+1} {D+1} {D+2} {D+2} {D+3}) {D+1} {D+2})
+; (3)
+
+(define v as '({D+1} {D+2} {D+3} {D+3}) [v])
+(-= v (ln@ v {D-1}))             ; (1 2)
+
+(define v as '({D+1} {D+2} {D+3} {D+3}) [v])
+(-== v (ln@ v {D-1}))            ; (1 2 3)
 #+END_SRC
 
 Operators =++=, =--=, =+==, =-==, ==== and =!== are similar to those in C. Note also that
@@ -466,11 +483,11 @@ for the above operators should be implemented in the standard library eventually
 Compare these two cases:
 
 #+BEGIN_SRC octaspire-dern
-(define v as '(1 2 3 3) [v])
-(-= v (ln@ v -1))             ; (1 2)
+(define v as '({D+1} {D+2} {D+3} {D+3}) [v])
+(-= v (ln@ v {D-1}))             ; (1 2)
 
-(define v as '(1 2 3 3) [v])
-(-== v (ln@ v -1))            ; (1 2 3)
+(define v as '({D+1} {D+2} {D+3} {D+3}) [v])
+(-== v (ln@ v {D-1}))            ; (1 2 3)
 #+END_SRC
 
 The last example removes really only the last value (compared using ~===~).
@@ -485,7 +502,7 @@ More efficient way of removing the last value from a collection is to use
 the builtin =pop-back=:
 
 #+BEGIN_SRC octaspire-dern
-(define v as '(1 2 3 3) [v])
+(define v as '({D+1} {D+2} {D+3} {D+3}) [v])
 (pop-back v)                  ; (1 2 3)
 #+END_SRC
 
@@ -498,7 +515,8 @@ Here are some examples using =if=:
 (if false [Yes])         ; nil
 (if false [Yes] [No])    ; No
 
-(if true  (println [Yes]) (println [No])) ; Prints Yes
+(if true  (println [Yes]) (println [No]))
+; Prints Yes
 
 ; Prints Yes|newline|OK
 (if true  (do (println [Yes]) (println [OK])))
@@ -535,8 +553,8 @@ Here are some examples using =select=:
 (select (f1)  (println [Sun is shining])
         (f2)  (println [It rains])
         false [Maybe]
-        false 2
-        false 3.14
+        false {D+2}
+        false {D+3.14}
         false |a|
         false [There can be many selectors...])
 #+END_SRC
@@ -547,10 +565,10 @@ Values can be selected from collections using =ln@= and copied with =cp@=.
 =ln@= is pronounced *link at* and =cp@= is pronounced *copy at*.
 
 #+BEGIN_SRC octaspire-dern
-(++ (ln@ '(1 2 3) 1))                  ; 3
-(+= (cp@ [abc] 1) 2))                  ; |d|
-(ln@ (hash-map |a| [abc]) |a| 'hash)   ; [abc]
-(ln@ (hash-map |a| [abc]) 0   'index)  ; [abc]
+(++ (ln@ '({D+1} {D+2} {D+3}) {D+1}))   ; 3
+(+= (cp@ [abc] {D+1}) {D+2}))           ; |d|
+(ln@ (hash-map |a| [abc]) |a|   'hash)  ; [abc]
+(ln@ (hash-map |a| [abc]) {D+0} 'index) ; [abc]
 #+END_SRC
 
 ** Accessing and manipulating command line arguments and environment variables
@@ -573,7 +591,7 @@ Here are few examples:
 
 (define name1  as 'Jim   [some name 1])
 (define name2  as 'Alice [some name 2])
-(define number as 30     [some number])
+(define number as {D+30} [some number])
 
 ; Prints Hi Jim and Alice! It is 30 degrees outside.
 (println [Hi {} and {}! It is {} degrees outside.]
@@ -587,12 +605,13 @@ Here are few examples:
 #+BEGIN_SRC octaspire-dern
 (define name1  as 'Jim   [some name 1])
 (define name2  as 'Alice [some name 2])
-(define number as 30     [some number])
+(define number as {D+30} [some number])
 
 ; Creates a sting
 ; [Hi Jim and Alice! It is 30 degrees outside]
-(string-format [Hi {} and {}! It is {} degrees outside]
-    name1 name2 number)
+(string-format
+  [Hi {} and {}! It is {} degrees outside]
+  name1 name2 number)
 #+END_SRC
 
 ** Functions with variable number of arguments
@@ -603,14 +622,14 @@ Here are few examples:
 (define f as (fn (x ...) x) [f]
     '(x [x] ... [varargs]) howto-no)
 
-(f 1 2 3)   ; (1 2 3)
+(f {D+1} {D+2} {D+3})   ; (1 2 3)
 
 
 (define f as (fn (x y ...) (println x) (println y))
     [f] '(x [x] y [rest of the args] ... [varargs])
     howto-no)
 
-(f 1 2 3)   ; Prints 1|newline|(2 3)
+(f {D+1} {D+2} {D+3})   ; Prints 1|newline|(2 3)
 #+END_SRC
 
 ** Environments
@@ -633,25 +652,31 @@ Here is small example:
 
 #+BEGIN_SRC octaspire-dern
 ; Enter these forms into the REPL
-(howto 1 2 3)              ; ((+ 1 2) (+ 2 1))
-(howto [a] [b] [ab])       ; ((+ [a] [b]))
-(howto '(John Mike Alice Lola) 0 'John)
-; ((ln@ (quote (John Mike Alice Lola)) 0)
-;  (cp@ (quote (John Mike Alice Lola)) 0))
+(howto {D+1} {D+2} {D+3})
+; ((+ {D+1} {D+2}) (+ {D+2} {D+1}))
 
-(howto '(John Mike Alice Lola) 'Lola '(3))
+(howto [a] [b] [ab]) ; ((+ [a] [b]))
+
+(howto '(John Mike Alice Lola) 0 'John)
+; ((ln@ (quote (John Mike Alice Lola)) {D+0})
+;  (cp@ (quote (John Mike Alice Lola)) {D+0}))
+
+(howto '(John Mike Alice Lola) 'Lola '({D+3}))
 ; ((find (quote (John Mike Alice Lola)) (quote Lola)))
 
 
 ; Or print them
-(println (howto 1 2 3)) ; prints ((+ 1 2) (+ 2 1))
+(println (howto {D+1} {D+2} {D+3}))
+; prints ((+ {D+1} {D+2}) (+ {D+2} {D+1}))
+
 (println (howto [a] [b] [ab])) ; prints ((+ [a] [b]))
 
 (println (howto '(John Mike Alice Lola) 0 'John))
-; prints ((ln@ (quote (John Mike Alice Lola)) 0)
-;         (cp@ (quote (John Mike Alice Lola)) 0))
+; prints ((ln@ (quote (John Mike Alice Lola)) {D+0})
+;         (cp@ (quote (John Mike Alice Lola)) {D+0}))
 
-(println (howto '(John Mike Alice Lola) 'Lola '(3)))
+(println (howto '(John Mike Alice Lola) 'Lola
+                '({D+3})))
 ; prints ((find (quote (John Mike Alice Lola))
 ;               (quote Lola)))
 #+END_SRC
@@ -663,10 +688,10 @@ However, by using =return= one can return early and have multiple exit points fr
 Small example:
 
 #+BEGIN_SRC octaspire-dern
-(define errorCode as 1 [0 means no error.])
+(define errorCode as {D+1} [0 means no error.])
 
 (define start-engine as (fn ()
-    (if (!= errorCode 0) (return [Cannot start]))
+    (if (!= errorCode {D+0}) (return [Cannot start]))
     ; .... Start the engine here...
     [Start engine if all OK] '() howto-no))
 #+END_SRC
@@ -692,10 +717,10 @@ called at runtime. Small example:
 (define level-next as (fn ()
     (level-reset)
 
-    (define lnum as (+ level-current-number 1)
+    (define lnum as (+ level-current-number {D+1})
         [level number])
 
-    (if (> lnum number-of-levels) (= lnum 1))
+    (if (> lnum number-of-levels) (= lnum {D+1}))
 
     (define name-of-fn-to-call as 'level-
         [name of the level builder function to call])
@@ -715,10 +740,10 @@ Here is small example:
 (define f as (io-file-open [/path/goes/here.xy]) [f])
 
 (port-read f)
-(port-read f 3)
+(port-read f {D+3})
 
-(port-write f 65)
-(port-write f '(65 66 67))
+(port-write f {D+65})
+(port-write f '({D+65} {D+66} {D+67}))
 #+END_SRC
 
 Ports can be explicitly closed, but it is not required; port will close automatically when the
@@ -728,29 +753,32 @@ garbage collector collects it. Some ports might also support *seeking*, *distanc
 #+BEGIN_SRC octaspire-dern
 (define f as (io-file-open [/path/goes/here.xy]) [f])
 
-(port-seek f -1) ; Seek to the end
-(port-write f 65)
+(port-seek f {D-1}) ; Seek to the end
+(port-write f {D+65})
 
-(port-seek f 0)  ; Seek to the beginning
-(port-write f 65)
+(port-seek f {D+0})  ; Seek to the beginning
+(port-write f {D+65})
 
-(port-seek f -2) ; Seek to one octet from the end
-(port-write f 66)
+(port-seek f {D-2}) ; Seek to one octet from the end
+(port-write f {D+66})
 
-(port-seek f 1)  ; Seek to one octet from the beginning
-(port-write f 65)
+(port-seek f {D+1})
+; Seek to one octet from the beginning
+
+(port-write f {D+65})
 
 ; Seek one octet forward  from the current position
-(port-seek f  1 'from-current)
+(port-seek f  {D+1} 'from-current)
 
 ; Seek one octet backward from the current position
-(port-seek f -1 'from-current)
+(port-seek f {D-1} 'from-current)
 
 ; Tell the distance (in octets) from
 ; the beginning of the port
 (port-dist f)
 
-(port-length f) ; Tell the size (in octets) of the port
+(port-length f)
+; Tell the size (in octets) of the port
 
 ; Buffer is flushed to disk.
 ; Happens also automatically on close.
@@ -766,17 +794,17 @@ Input ports can be iterated with =for= in similar way that containers are iterat
 #+BEGIN_SRC octaspire-dern
 (define f as (io-file-open [/path/goes/here.xy]) [f])
 
-(for i in f (println i))        ; Print every octet
+(for i in f (println i)) ; Print every octet
 
-(port-seek f 0)                 ; Seek to the beginning
+(port-seek f {D+0})      ; Seek to the beginning
 
 ; Print every other octet
-(for i in f step 2 (println i))
+(for i in f step {D+2} (println i))
 
-(port-seek f 0)                 ; Seek to the beginning
+(port-seek f {D+0}) ; Seek to the beginning
 
 ; Print every third octet
-(for i in f step 3 (println i))
+(for i in f step {D+3} (println i))
 #+END_SRC
 
 =io-file-open= will open a file for reading and writing, =input-file-open= will open a file
@@ -811,7 +839,7 @@ You can use =port-write= and ~+=~ to write to a port octets with values =integer
 
 (+= f |a| |b| [ cat] |!|)  ; ab cat!
 
-(port-write f '(65 |A| [ Hi!])) ; AA Hi!
+(port-write f '({D+65} |A| [ Hi!])) ; AA Hi!
 #+END_SRC
 
 ** Converting between types
@@ -824,27 +852,31 @@ TODO
 #+BEGIN_SRC octaspire-dern
 (define names as '(Mike John Lola Alice Lola) [names])
 
-(println (find names 'Mike))  ; prints (0)
-(println (find names 'John))  ; prints (1)
-(println (find names 'Lola))  ; prints (2 4)
+(println (find names 'Mike))  ; prints ({D+0})
+(println (find names 'John))  ; prints ({D+1})
+(println (find names 'Lola))  ; prints ({D+2} {D+4})
 
- ; prints ((0) (1) (2 4))
+ ; prints (({D+0}) ({D+1}) ({D+2} {D+4}))
 (println (find names 'Mike 'John 'Lola))
 
 
-(define rooms as (hash-map 'Mike 100
-                           'John 101
-                           'Lola '(102 103)
-                           'Alice 104) [room numbers])
+(define rooms as (hash-map 'Mike {D+100}
+                           'John {D+101}
+                           'Lola '({D+102} {D+103})
+                           'Alice {D+104})
+                 [room numbers])
 
-(println (find rooms 'Mike))    ; prints 100
-(println (find rooms 'Lola))    ; prints (102 103)
-(println (find rooms 'Nobody))  ; prints nil
+(println (find rooms 'Mike)) ; prints {D+100}
+
+(println (find rooms 'Lola))
+; prints ({D+102} {D+103})
+
+(println (find rooms 'Nobody)) ; prints nil
 
 
-; prints (7 11 15)
+; prints ({D+7} {D+11} {D+15})
 (println (find [012345 abc abc abc] [abc]))
-(println (find [012345] |3|))             ; prints (3)
+(println (find [012345] |3|)) ; prints ({D+3})
 #+END_SRC
 
 TODO

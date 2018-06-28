@@ -10,29 +10,29 @@
 
 (if (ncurses-has-colors) (ncurses-start-color))
 
-(ncurses-init-pair 1 'RED    'BLACK)
-(ncurses-init-pair 2 'YELLOW 'BLUE)
-(ncurses-init-pair 3 'GREEN  'BLACK)
+(ncurses-init-pair {D+1} 'RED    'BLACK)
+(ncurses-init-pair {D+2} 'YELLOW 'BLUE)
+(ncurses-init-pair {D+3} 'GREEN  'BLACK)
 
 (ncurses-print win [Hello])
 
-(ncurses-attron 'BOLD 1)
-(ncurses-print win 3 10 [World])
-(ncurses-attroff 'BOLD 1)
+(ncurses-attron 'BOLD {D+1})
+(ncurses-print win {D+3} {D+10} [World])
+(ncurses-attroff 'BOLD {D+1})
 
-(ncurses-print win 5 3 [from ncurses! öäå ÖÄÅ])
+(ncurses-print win {D+5} {D+3} [from ncurses! öäå ÖÄÅ])
 
-(ncurses-attron 'UNDERLINE 2)
-(ncurses-print win 8 [Bye!])
-(ncurses-attroff 'UNDERLINE 2)
+(ncurses-attron 'UNDERLINE {D+2})
+(ncurses-print win {D+8} [Bye!])
+(ncurses-attroff 'UNDERLINE {D+2})
 
 (define num-rows-and-cols as (ncurses-getmaxyx win)[number of rows and cols on screen])
 
-(ncurses-print win 10 10 (to-string num-rows-and-cols))
+(ncurses-print win {D+10} {D+10} (to-string num-rows-and-cols))
 
-(ncurses-print win (- (ln@ num-rows-and-cols 0) 1)  0                               [X])
-(ncurses-print win (- (ln@ num-rows-and-cols 0) 1)  (- (ln@ num-rows-and-cols 1) 1) [X])
-(ncurses-print win 0                                (- (ln@ num-rows-and-cols 1) 1) [X])
+(ncurses-print win (- (ln@ num-rows-and-cols {D+0}) {D+1})  {D+0}                                   [X])
+(ncurses-print win (- (ln@ num-rows-and-cols {D+0}) {D+1})  (- (ln@ num-rows-and-cols {D+1}) {D+1}) [X])
+(ncurses-print win {D+0} (- (ln@ num-rows-and-cols {D+1}) {D+1}) [X])
 
 (ncurses-refresh)
 
@@ -40,11 +40,11 @@
 
 (ncurses-clear win)
 
-(ncurses-attron 'BLINK 'BOLD 3)
-(ncurses-print win 3 10 [Page 2])
-(ncurses-attroff 'BLINK 'BOLD 3)
+(ncurses-attron 'BLINK 'BOLD {D+3})
+(ncurses-print win {D+3} {D+10} [Page 2])
+(ncurses-attroff 'BLINK 'BOLD {D+3})
 
-(ncurses-attron 'BOLD 3)
+(ncurses-attron 'BOLD {D+3})
 (ncurses-print win 'ACS_BLOCK)
 (ncurses-print win 'ACS_BOARD)
 (ncurses-print win 'ACS_BTEE)
@@ -70,9 +70,9 @@
 (ncurses-print win 'ACS_ULCORNER)
 (ncurses-print win 'ACS_URCORNER)
 (ncurses-print win 'ACS_VLINE)
-(ncurses-print win 10 'ACS_VLINE)
-(ncurses-print win 6 6 'ACS_VLINE)
-(ncurses-attroff 'BOLD 3)
+(ncurses-print win {D+10} 'ACS_VLINE)
+(ncurses-print win {D+6} {D+6} 'ACS_VLINE)
+(ncurses-attroff 'BOLD {D+3})
 
 (ncurses-print win [Print line of text: ])
 (ncurses-set-cursor 'normal)

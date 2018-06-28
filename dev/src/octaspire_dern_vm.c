@@ -2765,11 +2765,21 @@ octaspire_dern_value_t *octaspire_dern_vm_parse_token(
 
                             if (!element)
                             {
+                                octaspire_dern_vm_pop_value(self, result);
+
+                                octaspire_helpers_verify_true(
+                                    stackLength == octaspire_dern_vm_get_stack_length(self));
+
                                 return element;
                             }
 
                             if (element->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                             {
+                                octaspire_dern_vm_pop_value(self, result);
+
+                                octaspire_helpers_verify_true(
+                                    stackLength == octaspire_dern_vm_get_stack_length(self));
+
                                 return element;
                             }
 

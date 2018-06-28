@@ -1846,7 +1846,8 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                 octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_error_format(
                     vm,
                     "The 'step' of special 'for' must be larger than zero. "
-                    "Now it is %" PRId32 ".",
+                    "Now it is %s%" PRId32 "}.",
+                    (requiredStepSize->value.integer >= 0) ? "{D+" : "{D",
                     requiredStepSize->value.integer);
 
                 octaspire_dern_vm_pop_value(vm, container);
@@ -2509,7 +2510,8 @@ octaspire_dern_value_t *octaspire_dern_vm_special_for(
                 octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_error_format(
                     vm,
                     "The 'step' of special 'for' must be larger than zero. "
-                    "Now it is %" PRId32 ".",
+                    "Now it is %s%" PRId32 "}.",
+                    (requiredStepSize->value.integer >= 0) ? "{D+" : "{D",
                     requiredStepSize->value.integer);
 
                 octaspire_dern_vm_pop_value(vm, toValue);

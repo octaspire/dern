@@ -1,26 +1,26 @@
 (require 'dern_animation)
 
-(define sx as 100 [sx])
-(define sy as 100 [sy])
-(define sw as 100 [sw])
-(define sh as 100 [sh])
+(define sx as {D+100} [sx])
+(define sy as {D+100} [sy])
+(define sw as {D+100} [sw])
+(define sh as {D+100} [sh])
 
-(define dx as 100 [dx])
-(define dy as 100 [dy])
-(define dw as 100 [dw])
-(define dh as 100 [dh])
+(define dx as {D+100} [dx])
+(define dy as {D+100} [dy])
+(define dw as {D+100} [dw])
+(define dh as {D+100} [dh])
 
 (animation-add [name]
                sx sy sw sh dx dy dw dh                   ; values to animate
                [(println 'animation-done)]               ; is evaluated when animation is done
-               3                                         ; loop count (negative loops forever)
-               '(101 101 99 99   101 101 99 99   0.2)
-               '(102 102 98 98   102 102 98 98   0.2))
+               {D+3}                                     ; loop count (negative loops forever)
+               '({D+101} {D+101} {D+99} {D+99}   {D+101} {D+101} {D+99} {D+99}   {D+0.2})
+               '({D+102} {D+102} {D+98} {D+98}   {D+102} {D+102} {D+98} {D+98}   {D+0.2}))
 
 (animation-playing [name] true)
 
 (while (animation-playing[name])
-    (animation-update 0.1)                  ; Update with time step of 0.1 seconds
+    (animation-update {D+0.1})                  ; Update with time step of 0.1 seconds
     (println [{} {}] sx sy))
 
 (println [Removed {} animations] (animation-remove [name]))
