@@ -4,7 +4,7 @@
 
 (require 'dern_socket)
 
-(define s as (socket-new-ipv4-stream-socket nil 6667) [socket])
+(define s as (socket-new-ipv4-stream-socket nil {D+6667}) [socket])
 
 (while true
     (define client as (socket-accept s) [socket for the new connection])

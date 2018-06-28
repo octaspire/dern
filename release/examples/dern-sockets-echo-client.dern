@@ -4,7 +4,7 @@
 
 (require 'dern_socket)
 
-(define s as (socket-new-ipv4-stream-socket [localhost] 6667) [socket])
+(define s as (socket-new-ipv4-stream-socket [localhost] {D+6667}) [socket])
 
 (socket-send s [Hello from client])
 (println(socket-receive s true))

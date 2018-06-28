@@ -1281,6 +1281,69 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_quote(
     }
 }
 
+static octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_expect_octet(
+    octaspire_input_t *input,
+    octaspire_allocator_t *allocator,
+    size_t const startLine,
+    size_t const startColumn,
+    size_t const startIndexInInput,
+    char const * const sourceName,
+    char const * const expected,
+    uint32_t * octetRead)
+{
+    size_t   endIndexInInput = startIndexInInput;
+
+    // Read one octet.
+    if (octaspire_input_is_good(input))
+    {
+        endIndexInInput  = octaspire_input_get_ucs_character_index(input);
+        uint32_t const c = octaspire_input_peek_next_ucs_character(input);
+
+        if (!strchr(expected, c))
+        {
+            return octaspire_dern_lexer_token_new_format(
+                OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+                octaspire_dern_lexer_token_position_init(
+                    startLine,
+                    octaspire_input_get_line_number(input)),
+                octaspire_dern_lexer_token_position_init(
+                    startColumn,
+                    octaspire_input_get_column_number(input)),
+                octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
+                allocator,
+                "%s: one of octets '%s' expected. Instead '%c' was found.",
+                sourceName,
+                expected,
+                (char)c);
+        }
+
+        *octetRead = c;
+
+        if (!octaspire_input_pop_next_ucs_character(input))
+        {
+            abort();
+        }
+
+        return 0;
+    }
+    else
+    {
+        return octaspire_dern_lexer_token_new_format(
+            OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                octaspire_input_get_column_number(input)),
+            octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
+            allocator,
+            "%s: one of octets '%s' expected",
+            sourceName,
+            expected);
+    }
+}
+
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_number(
     octaspire_input_t *input,
     octaspire_allocator_t *allocator,
@@ -1289,63 +1352,85 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
     size_t const startIndexInInput)
 {
     size_t   charsRead       = 0;
-    bool     minusRead       = false;
     bool     dotRead         = false;
 
     size_t   endIndexInInput = startIndexInInput;
-    bool     endsInDelimiter = false;
+    size_t   endColumn       = startColumn;
 
     double   factor          = 1;
+    size_t   base            = 10;
     uint32_t prevChar        = 0;
 
     char digits[256]         = {'\0'};
     size_t nextDigitIndex    = 0;
 
+    uint32_t octetRead       = 0;
+
+    // Read '{'
+    octaspire_dern_lexer_token_t * potentialError =
+        octaspire_dern_lexer_private_expect_octet(
+            input,
+            allocator,
+            startLine,
+            startColumn,
+            startIndexInInput,
+            "Number",
+            "{",
+            &octetRead);
+
+    if (potentialError)
+    {
+        return potentialError;
+    }
+
+    // Read 'D' or 'B'
+    potentialError =
+        octaspire_dern_lexer_private_expect_octet(
+            input,
+            allocator,
+            startLine,
+            startColumn,
+            startIndexInInput,
+            "Number",
+            "DB",
+            &octetRead);
+
+    if (potentialError)
+    {
+        return potentialError;
+    }
+
+    base = (octetRead == 'D') ? 10 : 2;
+
+    // Read '+' or '-'
+    potentialError =
+        octaspire_dern_lexer_private_expect_octet(
+            input,
+            allocator,
+            startLine,
+            startColumn,
+            startIndexInInput,
+            "Number",
+            "+-",
+            &octetRead);
+
+    if (potentialError)
+    {
+        return potentialError;
+    }
+
+    factor = (octetRead == '-') ? -1 : 1;
+
     while (octaspire_input_is_good(input))
     {
+        // Spaces can be used to make the number more readable,
+        // for example {D+100 000 000}.
+        octaspire_dern_lexer_private_pop_whitespace(input);
+
         endIndexInInput  = octaspire_input_get_ucs_character_index(input);
         uint32_t const c = octaspire_input_peek_next_ucs_character(input);
 
-        if (c == '-')
-        {
-            if (minusRead)
-            {
-                return octaspire_dern_lexer_token_new(
-                    OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
-                    "Number can contain only one '-' character",
-                    octaspire_dern_lexer_token_position_init(
-                        startLine,
-                        octaspire_input_get_line_number(input)),
-                    octaspire_dern_lexer_token_position_init(
-                        startColumn,
-                        octaspire_input_get_column_number(input)),
-                    octaspire_dern_lexer_token_position_init(
-                        startIndexInInput,
-                        endIndexInInput),
-                    allocator);
-            }
-
-            if (charsRead > 0)
-            {
-                return octaspire_dern_lexer_token_new(
-                    OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
-                    "Number can have '-' character only in the beginning",
-                    octaspire_dern_lexer_token_position_init(
-                        startLine,
-                        octaspire_input_get_line_number(input)),
-                    octaspire_dern_lexer_token_position_init(
-                        startColumn,
-                        octaspire_input_get_column_number(input)),
-                    octaspire_dern_lexer_token_position_init(
-                        startIndexInInput,
-                        endIndexInInput),
-                    allocator);
-            }
-
-            minusRead = true;
-            factor    = -factor;
-        }
-        else if (c == '.')
+        if (c == '.')
         {
             if (dotRead)
             {
@@ -1387,7 +1472,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
         {
             if (dotRead)
             {
-                factor /= 10;
+                factor /= base;
             }
 
             if (nextDigitIndex >= 256)
@@ -1395,13 +1480,39 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
                 abort();
             }
 
+            if (base == 2)
+            {
+                if (c != '0' && c != '1')
+                {
+                    return octaspire_dern_lexer_token_new(
+                        OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+                        "Binary number can contain only '0' and '1' digits.",
+                        octaspire_dern_lexer_token_position_init(
+                            startLine,
+                            octaspire_input_get_line_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startColumn,
+                            octaspire_input_get_column_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startIndexInInput,
+                            endIndexInInput),
+                        allocator);
+                }
+            }
+
             digits[nextDigitIndex] = c;
             ++nextDigitIndex;
         }
-        else if (octaspire_dern_lexer_private_is_delimeter(c))
+        else if (c == '}')
         {
-            --endIndexInInput;
-            endsInDelimiter = true;
+            endColumn = octaspire_input_get_column_number(input);
+
+            if (!octaspire_input_pop_next_ucs_character(input))
+            {
+                abort();
+            }
+
+            ++charsRead;
             break;
         }
         else
@@ -1428,7 +1539,13 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
         }
 
         ++charsRead;
-        prevChar = c;
+
+        if (c != ' ')
+        {
+            // ' ' could hide case where number has . or - as
+            // last non-whitespace octet.
+            prevChar = c;
+        }
     }
 
     if (prevChar == '.')
@@ -1441,7 +1558,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
                     octaspire_input_get_line_number(input)),
                 octaspire_dern_lexer_token_position_init(
                     startColumn,
-                    octaspire_input_get_column_number(input)),
+                    endColumn),
                 octaspire_dern_lexer_token_position_init(
                     startIndexInInput,
                     endIndexInInput),
@@ -1458,7 +1575,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
                     octaspire_input_get_line_number(input)),
                 octaspire_dern_lexer_token_position_init(
                     startColumn,
-                    octaspire_input_get_column_number(input)),
+                    endColumn),
                 octaspire_dern_lexer_token_position_init(
                     startIndexInInput,
                     endIndexInInput),
@@ -1470,7 +1587,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
     for (size_t i = 0; i < nextDigitIndex; ++i)
     {
         char const c = digits[nextDigitIndex - 1 - i];
-        value += (pow(10, i) * (c - '0'));
+        value += (pow(base, i) * (c - '0'));
     }
 
     if (dotRead)
@@ -1485,7 +1602,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
                 octaspire_input_get_line_number(input)),
             octaspire_dern_lexer_token_position_init(
                 startColumn,
-                octaspire_input_get_column_number(input) - (endsInDelimiter ? 1 : 0)),
+                endColumn),
             octaspire_dern_lexer_token_position_init(
                 startIndexInInput,
                 endIndexInInput),
@@ -1502,7 +1619,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
             octaspire_input_get_line_number(input)),
         octaspire_dern_lexer_token_position_init(
             startColumn,
-            octaspire_input_get_column_number(input) - (endsInDelimiter ? 1 : 0)),
+            endColumn),
         octaspire_dern_lexer_token_position_init(
             startIndexInInput,
             endIndexInInput),
@@ -2384,49 +2501,15 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
 
             case '-':
             {
-                switch (octaspire_input_peek_next_next_ucs_character(input))
-                {
-                    case '0':
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8':
-                    case '9':
-                    {
-                        return octaspire_dern_lexer_private_pop_integer_or_real_number(
-                            input,
-                            allocator,
-                            startLine,
-                            startColumn,
-                            startIndexInInput);
-                    }
-
-                    default:
-                    {
-                        return octaspire_dern_lexer_private_pop_true_or_false_or_nil_or_symbol(
-                            input,
-                            allocator,
-                            startLine,
-                            startColumn,
-                            startIndexInInput);
-                    }
-                }
+                return octaspire_dern_lexer_private_pop_true_or_false_or_nil_or_symbol(
+                    input,
+                    allocator,
+                    startLine,
+                    startColumn,
+                    startIndexInInput);
             }
 
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
+            case '{':
             {
                 return octaspire_dern_lexer_private_pop_integer_or_real_number(
                     input,
