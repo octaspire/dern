@@ -53045,6 +53045,86 @@ TEST octaspire_dern_lexer_pop_next_token_integer_binary_1F_failure_test(void)
     PASS();
 }
 
+TEST octaspire_dern_lexer_pop_next_token_integer_octal_18_failure_test(void)
+{
+    char const * const value = "Octal number can contain only digits '0' - '7'.";
+    octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
+        OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+        value,
+        octaspire_dern_lexer_token_position_init(1, 1),
+        octaspire_dern_lexer_token_position_init(1, 5),
+        octaspire_dern_lexer_token_position_init(0, 4),
+        octaspireDernLexerTestAllocator);
+    ASSERT(expected);
+
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{O+18}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+    printf("\n");
+    octaspire_dern_lexer_token_print(token);
+    octaspire_dern_lexer_token_print(expected);
+    ASSERT(octaspire_dern_lexer_token_is_equal(expected, token));
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_dern_lexer_token_release(expected);
+    expected = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_integer_decimal_1A_failure_test(void)
+{
+    char const * const value = "Decinal number can contain only digits '0' - '9'.";
+    octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
+        OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+        value,
+        octaspire_dern_lexer_token_position_init(1, 1),
+        octaspire_dern_lexer_token_position_init(1, 5),
+        octaspire_dern_lexer_token_position_init(0, 4),
+        octaspireDernLexerTestAllocator);
+    ASSERT(expected);
+
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{O+1A}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+    printf("\n");
+    octaspire_dern_lexer_token_print(token);
+    octaspire_dern_lexer_token_print(expected);
+    ASSERT(octaspire_dern_lexer_token_is_equal(expected, token));
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_dern_lexer_token_release(expected);
+    expected = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_lexer_pop_next_token_real_759_dot_2_after_whitespace_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
@@ -54417,7 +54497,9 @@ GREATEST_SUITE(octaspire_dern_lexer_suite)
     RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_hexadecimal_negative_4B5_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_hexadecimal_FF_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_hexadecimal_FQ_failure_test);
-    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_binary_1X_failure_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_binary_1F_failure_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_octal_18_failure_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_decimal_1A_failure_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_real_759_dot_2_after_whitespace_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_759_amid_whitespace_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_real_759_dot_2_amid_whitespace_test);
