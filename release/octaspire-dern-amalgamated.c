@@ -52970,7 +52970,7 @@ TEST octaspire_dern_lexer_pop_next_token_integer_hexadecimal_FF_test(void)
 
 TEST octaspire_dern_lexer_pop_next_token_integer_hexadecimal_FQ_failure_test(void)
 {
-    char const * const value = "Number cannot contain character 'Q'";
+    char const * const value = "error: error: Number cannot contain character 'Q'";
     octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
         value,
@@ -52991,7 +52991,7 @@ TEST octaspire_dern_lexer_pop_next_token_integer_hexadecimal_FQ_failure_test(voi
         octaspireDernLexerTestAllocator);
 
     ASSERT(token);
-
+    octaspire_dern_lexer_token_print(expected);
     ASSERT(octaspire_dern_lexer_token_is_equal(expected, token));
 
     octaspire_dern_lexer_token_release(token);
