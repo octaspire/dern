@@ -1173,7 +1173,7 @@ TEST octaspire_dern_lexer_pop_next_token_integer_hexadecimal_FF_test(void)
 
 TEST octaspire_dern_lexer_pop_next_token_integer_hexadecimal_FQ_failure_test(void)
 {
-    char const * const value = "Decimal number can contain only digits '0' - '9'.";
+    char const * const value = "Number cannot contain character 'Q'";
     octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
         value,
