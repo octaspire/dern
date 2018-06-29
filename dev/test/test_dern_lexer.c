@@ -1178,8 +1178,8 @@ TEST octaspire_dern_lexer_pop_next_token_integer_hexadecimal_FQ_failure_test(voi
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
         value,
         octaspire_dern_lexer_token_position_init(1, 1),
-        octaspire_dern_lexer_token_position_init(1, 6),
-        octaspire_dern_lexer_token_position_init(0, 5),
+        octaspire_dern_lexer_token_position_init(1, 5),
+        octaspire_dern_lexer_token_position_init(0, 4),
         octaspireDernLexerTestAllocator);
     ASSERT(expected);
 
@@ -1194,9 +1194,6 @@ TEST octaspire_dern_lexer_pop_next_token_integer_hexadecimal_FQ_failure_test(voi
         octaspireDernLexerTestAllocator);
 
     ASSERT(token);
-    printf("\n");
-    octaspire_dern_lexer_token_print(expected);
-    octaspire_dern_lexer_token_print(token);
     ASSERT(octaspire_dern_lexer_token_is_equal(expected, token));
 
     octaspire_dern_lexer_token_release(token);
