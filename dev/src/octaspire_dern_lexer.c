@@ -1383,7 +1383,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
         return potentialError;
     }
 
-    // Read 'D','O' or 'B'
+    // Read 'X', 'D','O' or 'B'
     potentialError =
         octaspire_dern_lexer_private_expect_octet(
             input,
@@ -1392,7 +1392,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
             startColumn,
             startIndexInInput,
             "Number",
-            "DOB",
+            "XDOB",
             &octetRead);
 
     if (potentialError)
@@ -1402,11 +1402,11 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
 
     switch (octetRead)
     {
+        case 'X': { base = 16; } break;
         case 'D': { base = 10; } break;
         case 'O': { base =  8; } break;
         case 'B': { base =  2; } break;
     }
-    base = (octetRead == 'D') ? 10 : 2;
 
     // Read '+' or '-'
     potentialError =
@@ -1474,7 +1474,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
 
             dotRead = true;
         }
-        else if (isdigit((int const)c))
+        else if (isxdigit((int const)c))
         {
             if (dotRead)
             {
@@ -1513,6 +1513,26 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
                     return octaspire_dern_lexer_token_new(
                         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                         "Octal number can contain only digits '0' - '7'.",
+                        octaspire_dern_lexer_token_position_init(
+                            startLine,
+                            octaspire_input_get_line_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startColumn,
+                            octaspire_input_get_column_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startIndexInInput,
+                            endIndexInInput),
+                        allocator);
+                }
+            }
+            else if (base == 10)
+            {
+                if (c != '0' && c != '1' && c != '2' && c != '3' && c != '4' &&
+                    c != '5' && c != '6' && c != '7' && c != '8' && c != '9')
+                {
+                    return octaspire_dern_lexer_token_new(
+                        OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+                        "Decimal number can contain only digits '0' - '9'.",
                         octaspire_dern_lexer_token_position_init(
                             startLine,
                             octaspire_input_get_line_number(input)),
@@ -1613,7 +1633,15 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
     for (size_t i = 0; i < nextDigitIndex; ++i)
     {
         char const c = digits[nextDigitIndex - 1 - i];
-        value += (pow(base, i) * (c - '0'));
+
+        if (c >= '0' && c <= '9')
+        {
+            value += (pow(base, i) * (c - '0'));
+        }
+        else
+        {
+            value += (pow(base, i) * (10 + (tolower(c) - 'a')));
+        }
     }
 
     if (dotRead)
