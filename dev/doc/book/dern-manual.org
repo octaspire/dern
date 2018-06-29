@@ -246,6 +246,12 @@ of it directly to the interactive REPL.
 {B+1001}             ;   9 in binary
 {B-10011}            ; -19 in binary
 
+{O+764}              ;  500 in octal
+{O-764}              ; -500 in octal
+
+{X+4B5}              ; 1205 in hexadecimal
+{X-FF}               ; -255 in hexadecimal
+
 {D+100 000 000}      ; Spaces can be used
 
 {D+3.14}             ; These are real

@@ -883,6 +883,442 @@ TEST octaspire_dern_lexer_pop_next_token_integer_759_after_whitespace_test(void)
     PASS();
 }
 
+TEST octaspire_dern_lexer_pop_next_token_integer_binary_10011_test(void)
+{
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{B+10011}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+
+    octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 9};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {0, 8};
+
+    ASSERT_EQ(octaspireDernLexerTestAllocator, token->allocator);
+
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedLine,     token->line));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedColumn,   token->column));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
+
+    ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER, token->typeTag);
+    ASSERT_EQ(19,                                     token->value.integer);
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_integer_binary_negative_10011_test(void)
+{
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{B-10011}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+
+    octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 9};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {0, 8};
+
+    ASSERT_EQ(octaspireDernLexerTestAllocator, token->allocator);
+
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedLine,     token->line));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedColumn,   token->column));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
+
+    ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER, token->typeTag);
+    ASSERT_EQ(-19,                                    token->value.integer);
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_integer_octal_764_test(void)
+{
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{O+764}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+
+    octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 7};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {0, 6};
+
+    ASSERT_EQ(octaspireDernLexerTestAllocator, token->allocator);
+
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedLine,     token->line));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedColumn,   token->column));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
+
+    ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER, token->typeTag);
+    ASSERT_EQ(500,                                    token->value.integer);
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_integer_octal_negative_764_test(void)
+{
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{O-764}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+
+    octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 7};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {0, 6};
+
+    ASSERT_EQ(octaspireDernLexerTestAllocator, token->allocator);
+
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedLine,     token->line));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedColumn,   token->column));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
+
+    ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER, token->typeTag);
+    ASSERT_EQ(-500,                                   token->value.integer);
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_integer_hexadecimal_4B5_test(void)
+{
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{X+4B5}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+
+    octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 7};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {0, 6};
+
+    ASSERT_EQ(octaspireDernLexerTestAllocator, token->allocator);
+
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedLine,     token->line));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedColumn,   token->column));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
+
+    ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER, token->typeTag);
+    ASSERT_EQ(1205,                                   token->value.integer);
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_integer_hexadecimal_4b5_test(void)
+{
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{X+4b5}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+
+    octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 7};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {0, 6};
+
+    ASSERT_EQ(octaspireDernLexerTestAllocator, token->allocator);
+
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedLine,     token->line));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedColumn,   token->column));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
+
+    ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER, token->typeTag);
+    ASSERT_EQ(1205,                                   token->value.integer);
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_integer_hexadecimal_negative_4B5_test(void)
+{
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{X-4B5}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+
+    octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 7};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {0, 6};
+
+    ASSERT_EQ(octaspireDernLexerTestAllocator, token->allocator);
+
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedLine,     token->line));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedColumn,   token->column));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
+
+    ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER, token->typeTag);
+    ASSERT_EQ(-1205,                                  token->value.integer);
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_integer_hexadecimal_FF_test(void)
+{
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{X+FF}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+
+    octaspire_dern_lexer_token_position_t  const expectedLine     = {1, 1};
+    octaspire_dern_lexer_token_position_t  const expectedColumn   = {1, 6};
+    octaspire_dern_lexer_token_position_t  const expectedUcsIndex = {0, 5};
+
+    ASSERT_EQ(octaspireDernLexerTestAllocator, token->allocator);
+
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedLine,     token->line));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedColumn,   token->column));
+    ASSERT   (octaspire_dern_lexer_token_position_is_equal(&expectedUcsIndex, token->ucsIndex));
+
+    ASSERT_EQ(OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER, token->typeTag);
+    ASSERT_EQ(255,                                    token->value.integer);
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_integer_hexadecimal_FQ_failure_test(void)
+{
+    char const * const value = "Number cannot contain character 'Q'";
+    octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
+        OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+        value,
+        octaspire_dern_lexer_token_position_init(1, 1),
+        octaspire_dern_lexer_token_position_init(1, 5),
+        octaspire_dern_lexer_token_position_init(0, 4),
+        octaspireDernLexerTestAllocator);
+    ASSERT(expected);
+
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{X+FQ}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+    ASSERT(octaspire_dern_lexer_token_is_equal(expected, token));
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_dern_lexer_token_release(expected);
+    expected = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_integer_binary_1F_failure_test(void)
+{
+    char const * const value = "Binary number can contain only '0' and '1' digits.";
+    octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
+        OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+        value,
+        octaspire_dern_lexer_token_position_init(1, 1),
+        octaspire_dern_lexer_token_position_init(1, 5),
+        octaspire_dern_lexer_token_position_init(0, 4),
+        octaspireDernLexerTestAllocator);
+    ASSERT(expected);
+
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{B+1F}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+    ASSERT(octaspire_dern_lexer_token_is_equal(expected, token));
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_dern_lexer_token_release(expected);
+    expected = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_integer_octal_18_failure_test(void)
+{
+    char const * const value = "Octal number can contain only digits '0' - '7'.";
+    octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
+        OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+        value,
+        octaspire_dern_lexer_token_position_init(1, 1),
+        octaspire_dern_lexer_token_position_init(1, 5),
+        octaspire_dern_lexer_token_position_init(0, 4),
+        octaspireDernLexerTestAllocator);
+    ASSERT(expected);
+
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{O+18}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+    ASSERT(octaspire_dern_lexer_token_is_equal(expected, token));
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_dern_lexer_token_release(expected);
+    expected = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_lexer_pop_next_token_integer_decimal_1A_failure_test(void)
+{
+    char const * const value = "Decimal number can contain only digits '0' - '9'.";
+    octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
+        OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+        value,
+        octaspire_dern_lexer_token_position_init(1, 1),
+        octaspire_dern_lexer_token_position_init(1, 5),
+        octaspire_dern_lexer_token_position_init(0, 4),
+        octaspireDernLexerTestAllocator);
+    ASSERT(expected);
+
+    octaspire_input_t *input = octaspire_input_new_from_c_string(
+        "{D+1A}",
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(input);
+
+    octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(
+        input,
+        octaspireDernLexerTestAllocator);
+
+    ASSERT(token);
+    ASSERT(octaspire_dern_lexer_token_is_equal(expected, token));
+
+    octaspire_dern_lexer_token_release(token);
+    token = 0;
+
+    octaspire_dern_lexer_token_release(expected);
+    expected = 0;
+
+    octaspire_input_release(input);
+    input = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_lexer_pop_next_token_real_759_dot_2_after_whitespace_test(void)
 {
     octaspire_input_t *input = octaspire_input_new_from_c_string(
@@ -1480,7 +1916,7 @@ TEST octaspire_dern_lexer_pop_next_token_five_reals_11_dot_1_22_dot_2_33_dot_3_4
 
 TEST octaspire_dern_lexer_pop_next_token_failure_on_integer_12_with_character_a_after_test(void)
 {
-    char const * const value = "Number cannot contain character 'a'";
+    char const * const value = "Decimal number can contain only digits '0' - '9'.";
     octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
         value,
@@ -2097,7 +2533,7 @@ TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(vo
     char const * const strVal     = "here is a string";
     char const * const charVal    = "+";
     char const * const symbolVal  = "here_is_a_symbol";
-    char const * const errorVal   = "Number cannot contain character 'a'";
+    char const * const errorVal   = "Decimal number can contain only digits '0' - '9'.";
 
     void const * const values[12] =
     {
@@ -2246,6 +2682,18 @@ GREATEST_SUITE(octaspire_dern_lexer_suite)
     RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_12_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_real_12_dot_3_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_759_after_whitespace_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_binary_10011_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_binary_negative_10011_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_octal_764_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_octal_negative_764_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_hexadecimal_4B5_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_hexadecimal_4b5_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_hexadecimal_negative_4B5_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_hexadecimal_FF_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_hexadecimal_FQ_failure_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_binary_1F_failure_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_octal_18_failure_test);
+    RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_decimal_1A_failure_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_real_759_dot_2_after_whitespace_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_integer_759_amid_whitespace_test);
     RUN_TEST(octaspire_dern_lexer_pop_next_token_real_759_dot_2_amid_whitespace_test);
