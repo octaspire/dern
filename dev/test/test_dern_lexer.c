@@ -1480,7 +1480,7 @@ TEST octaspire_dern_lexer_pop_next_token_five_reals_11_dot_1_22_dot_2_33_dot_3_4
 
 TEST octaspire_dern_lexer_pop_next_token_failure_on_integer_12_with_character_a_after_test(void)
 {
-    char const * const value = "Number cannot contain character 'a'";
+    char const * const value = "Decimal number can contain only digits '0' - '9'.";
     octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
         value,
@@ -2097,7 +2097,7 @@ TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(vo
     char const * const strVal     = "here is a string";
     char const * const charVal    = "+";
     char const * const symbolVal  = "here_is_a_symbol";
-    char const * const errorVal   = "Number cannot contain character 'a'";
+    char const * const errorVal   = "Decimal number can contain only digits '0' - '9'.";
 
     void const * const values[12] =
     {
