@@ -1383,7 +1383,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
         return potentialError;
     }
 
-    // Read 'D' or 'B'
+    // Read 'D','O' or 'B'
     potentialError =
         octaspire_dern_lexer_private_expect_octet(
             input,
@@ -1392,7 +1392,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
             startColumn,
             startIndexInInput,
             "Number",
-            "DB",
+            "DOB",
             &octetRead);
 
     if (potentialError)
@@ -1400,6 +1400,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
         return potentialError;
     }
 
+    switch (octetRead)
+    {
+        case 'D': { base = 10; } break;
+        case 'O': { base =  8; } break;
+        case 'B': { base =  2; } break;
+    }
     base = (octetRead == 'D') ? 10 : 2;
 
     // Read '+' or '-'
@@ -1487,6 +1493,26 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
                     return octaspire_dern_lexer_token_new(
                         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
                         "Binary number can contain only '0' and '1' digits.",
+                        octaspire_dern_lexer_token_position_init(
+                            startLine,
+                            octaspire_input_get_line_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startColumn,
+                            octaspire_input_get_column_number(input)),
+                        octaspire_dern_lexer_token_position_init(
+                            startIndexInInput,
+                            endIndexInInput),
+                        allocator);
+                }
+            }
+            else if (base == 8)
+            {
+                if (c != '0' && c != '1' && c != '2' && c != '3' && c != '4' &&
+                    c != '5' && c != '6' && c != '7')
+                {
+                    return octaspire_dern_lexer_token_new(
+                        OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+                        "Octal number can contain only digits '0' - '7'.",
                         octaspire_dern_lexer_token_position_init(
                             startLine,
                             octaspire_input_get_line_number(input)),
