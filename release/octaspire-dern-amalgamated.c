@@ -53028,9 +53028,6 @@ TEST octaspire_dern_lexer_pop_next_token_integer_binary_1F_failure_test(void)
         octaspireDernLexerTestAllocator);
 
     ASSERT(token);
-    printf("\n");
-    octaspire_dern_lexer_token_print(token);
-    octaspire_dern_lexer_token_print(expected);
     ASSERT(octaspire_dern_lexer_token_is_equal(expected, token));
 
     octaspire_dern_lexer_token_release(token);
@@ -53068,9 +53065,6 @@ TEST octaspire_dern_lexer_pop_next_token_integer_octal_18_failure_test(void)
         octaspireDernLexerTestAllocator);
 
     ASSERT(token);
-    printf("\n");
-    octaspire_dern_lexer_token_print(token);
-    octaspire_dern_lexer_token_print(expected);
     ASSERT(octaspire_dern_lexer_token_is_equal(expected, token));
 
     octaspire_dern_lexer_token_release(token);
@@ -53087,7 +53081,7 @@ TEST octaspire_dern_lexer_pop_next_token_integer_octal_18_failure_test(void)
 
 TEST octaspire_dern_lexer_pop_next_token_integer_decimal_1A_failure_test(void)
 {
-    char const * const value = "Decinal number can contain only digits '0' - '9'.";
+    char const * const value = "Decimal number can contain only digits '0' - '9'.";
     octaspire_dern_lexer_token_t *expected = octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
         value,
@@ -53098,7 +53092,7 @@ TEST octaspire_dern_lexer_pop_next_token_integer_decimal_1A_failure_test(void)
     ASSERT(expected);
 
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "{O+1A}",
+        "{D+1A}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -53108,9 +53102,6 @@ TEST octaspire_dern_lexer_pop_next_token_integer_decimal_1A_failure_test(void)
         octaspireDernLexerTestAllocator);
 
     ASSERT(token);
-    printf("\n");
-    octaspire_dern_lexer_token_print(token);
-    octaspire_dern_lexer_token_print(expected);
     ASSERT(octaspire_dern_lexer_token_is_equal(expected, token));
 
     octaspire_dern_lexer_token_release(token);
