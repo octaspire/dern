@@ -2062,6 +2062,18 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol(
     return result;
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_semver(
+    octaspire_dern_vm_t *self,
+    octaspire_semver_t * const value)
+{
+    octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(
+        self,
+        OCTASPIRE_DERN_VALUE_TAG_SEMVER);
+
+    result->value.semver = semver;
+    return result;
+}
+
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol_from_c_string(
     octaspire_dern_vm_t *self,
     char const * const value)
@@ -2918,6 +2930,16 @@ octaspire_dern_value_t *octaspire_dern_vm_parse_token(
                 self,
                 octaspire_string_new(
                     octaspire_dern_lexer_token_get_symbol_value_as_c_string(token),
+                    self->allocator));
+        }
+        break;
+
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SEMVER:
+        {
+            result = octaspire_dern_vm_create_new_value_semver(
+                self,
+                octaspire_semver_new_copy(
+                    octaspire_dern_lexer_token_get_semver_value(token),
                     self->allocator));
         }
         break;

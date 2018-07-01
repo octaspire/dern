@@ -69,7 +69,8 @@ static char const * const octaspire_dern_lexer_private_token_tag_types_as_c_stri
     "OCTASPIRE_DERN_LEXER_TOKEN_TAG_SYMBOL",
     "OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR",
     "OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED",
-    "OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT"
+    "OCTASPIRE_DERN_LEXER_TOKEN_TAG_MULTILINE_COMMENT",
+    "OCTASPIRE_DERN_LEXER_TOKEN_TAG_SEMVER",
 };
 
 void octaspire_dern_lexer_private_pop_whitespace(
@@ -263,6 +264,19 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
         }
         break;
 
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SEMVER:
+        {
+            self->value.semver = value;
+
+            if (!self->value.semver)
+            {
+                octaspire_dern_lexer_token_release(self);
+                self = 0;
+                return 0;
+            }
+        }
+        break;
+
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_MORE_INPUT_REQUIRED:
         {
             self->value.moreInputRequired = octaspire_string_new(
@@ -425,6 +439,12 @@ void octaspire_dern_lexer_token_release(
         }
         break;
 
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SEMVER:
+        {
+            octaspire_semver_release(self->value.semver);
+        }
+        break;
+
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_LPAREN:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_QUOTE:
@@ -505,6 +525,13 @@ char const *octaspire_dern_lexer_token_get_error_value_as_c_string(
     octaspire_dern_lexer_token_t const * const self)
 {
     return octaspire_string_get_c_string(self->value.error);
+}
+
+octaspire_semver_t const *octaspire_dern_lexer_token_get_semver_value(
+    octaspire_dern_lexer_token_t const * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_LEXER_TOKEN_TAG_SEMVER);
+    return self->value.semver;
 }
 
 char const *octaspire_dern_lexer_token_get_multiline_comment_value_as_c_string(
@@ -613,6 +640,13 @@ bool octaspire_dern_lexer_token_is_equal(
             return octaspire_string_is_equal(
                 self->value.comment,
                 other->value.comment);
+        }
+
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SEMVER:
+        {
+            return octaspire_semver_is_equal_to(
+                self->value.semver,
+                other->value.semver);
         }
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_LPAREN:
@@ -839,6 +873,26 @@ octaspire_string_t *octaspire_dern_lexer_token_to_string(
                 return 0;
             }
 
+            return result;
+        }
+
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SEMVER:
+        {
+            octaspire_string_t * str =
+                octaspire_semver_to_string(self->value.semver);
+
+            if (!octaspire_string_concatenate_format(
+                result,
+                "%s",
+                octaspire_string_get_c_string(str)))
+            {
+                octaspire_string_release(str);
+                str = 0;
+                return 0;
+            }
+
+            octaspire_string_release(str);
+            str = 0;
             return result;
         }
 
@@ -1344,6 +1398,61 @@ static octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_expect_octet(
     }
 }
 
+static size_t octaspire_dern_lexer_private_expect_semver_number(
+    octaspire_input_t *input,
+    octaspire_allocator_t *allocator,
+    size_t const startLine,
+    size_t const startColumn,
+    size_t const startIndexInInput,
+    char const * const numberName,
+    size_t * result)
+{
+    char digits[256]       = {'\0'};
+    size_t nextDigitIndex  = 0;
+
+    while (octaspire_input_is_good(input))
+    {
+        endIndexInInput  = octaspire_input_get_ucs_character_index(input);
+        uint32_t const c = octaspire_input_peek_next_ucs_character(input);
+
+        if (isdigit((int const)c))
+        {
+            if (nextDigitIndex >= 256)
+            {
+                abort();
+            }
+
+            digits[nextDigitIndex] = c;
+            ++nextDigitIndex;
+        }
+        else
+        {
+            *result = 0;
+            for (size_t i = 0; i < nextDigitIndex; ++i)
+            {
+                char const c = digits[nextDigitIndex - 1 - i];
+                result += (pow(10, i) * (c - '0'));
+            }
+
+            return nextDigitIndex;
+        }
+
+        if (!octaspire_input_pop_next_ucs_character(input))
+        {
+            abort();
+        }
+    }
+
+    *result = 0;
+    for (size_t i = 0; i < nextDigitIndex; ++i)
+    {
+        char const c = digits[nextDigitIndex - 1 - i];
+        result += (pow(10, i) * (c - '0'));
+    }
+
+    return nextDigitIndex;
+}
+
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_number(
     octaspire_input_t *input,
     octaspire_allocator_t *allocator,
@@ -1668,6 +1777,175 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
     return octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER,
         &resultValue,
+        octaspire_dern_lexer_token_position_init(
+            startLine,
+            octaspire_input_get_line_number(input)),
+        octaspire_dern_lexer_token_position_init(
+            startColumn,
+            endColumn),
+        octaspire_dern_lexer_token_position_init(
+            startIndexInInput,
+            endIndexInInput),
+        allocator);
+}
+
+octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_semver(
+    octaspire_input_t *input,
+    octaspire_allocator_t *allocator,
+    size_t const startLine,
+    size_t const startColumn,
+    size_t const startIndexInInput)
+{
+    size_t   charsRead       = 0;
+    bool     dotRead         = false;
+
+    size_t   endIndexInInput = startIndexInInput;
+    size_t   endColumn       = startColumn;
+
+    uint32_t octetRead       = 0;
+
+    size_t   major           = 0;
+    size_t   minor           = 0;
+    size_t   patch           = 0;
+
+    octaspire_vector_t * preRelease = octaspire_vector_new(
+        sizeof(octaspire_semver_pre_release_elem_t*),
+        true,
+        (octaspire_vector_element_callback_t)octaspire_semver_pre_release_elem_release,
+        allocator);
+
+    if (!preRelease)
+    {
+        abort();
+    }
+
+    octaspire_vector_t * buildMetadata = octaspire_vector_new(
+        sizeof(octaspire_string_t*),
+        true,
+        (octaspire_vector_element_callback_t)octaspire_string_release,
+        allocator);
+
+    if (!buildMetadata)
+    {
+        abort();
+    }
+
+    uint32_t prevChar        = 0;
+
+    // Read major version number.
+    if (!octaspire_dern_lexer_private_expect_semver_number(
+        input,
+        allocator,
+        startLine,
+        startColumn,
+        startIndexInInput,
+        &major))
+    {
+        return octaspire_dern_lexer_token_new(
+            OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+            "Major component of semantic version number cannot be empty",
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                octaspire_input_get_column_number(input)),
+            octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
+            allocator);
+    }
+
+    // Read '.'
+    octaspire_dern_lexer_token_t * potentialError =
+        octaspire_dern_lexer_private_expect_octet(
+            input,
+            allocator,
+            startLine,
+            startColumn,
+            startIndexInInput,
+            "SemVer: after major component",
+            ".",
+            &octetRead);
+
+    if (potentialError)
+    {
+        return potentialError;
+    }
+
+    // Read minor version number.
+    if (!octaspire_dern_lexer_private_expect_semver_number(
+        input,
+        allocator,
+        startLine,
+        startColumn,
+        startIndexInInput,
+        &minor))
+    {
+        return octaspire_dern_lexer_token_new(
+            OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+            "Minor component of semantic version number cannot be empty",
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                octaspire_input_get_column_number(input)),
+            octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
+            allocator);
+    }
+
+    // Read '.'
+    octaspire_dern_lexer_token_t * potentialError =
+        octaspire_dern_lexer_private_expect_octet(
+            input,
+            allocator,
+            startLine,
+            startColumn,
+            startIndexInInput,
+            "SemVer: after minor component",
+            ".",
+            &octetRead);
+
+    if (potentialError)
+    {
+        return potentialError;
+    }
+
+    // Read patch version number.
+    if (!octaspire_dern_lexer_private_expect_semver_number(
+        input,
+        allocator,
+        startLine,
+        startColumn,
+        startIndexInInput,
+        &patch))
+    {
+        return octaspire_dern_lexer_token_new(
+            OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+            "Patch component of semantic version number cannot be empty",
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                octaspire_input_get_column_number(input)),
+            octaspire_dern_lexer_token_position_init(startIndexInInput, endIndexInInput),
+            allocator);
+    }
+
+    octaspire_semver_t * semver =
+        octaspire_semver_new(
+            major,
+            minor,
+            patch,
+            0,
+            0,
+            allocator);
+
+    octaspire_helpers_verify_not_null(semver);
+
+    return octaspire_dern_lexer_token_new(
+        OCTASPIRE_DERN_LEXER_TOKEN_TAG_SEMVER,
+        semver,
         octaspire_dern_lexer_token_position_init(
             startLine,
             octaspire_input_get_line_number(input)),
@@ -2566,6 +2844,25 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
             case '{':
             {
                 return octaspire_dern_lexer_private_pop_integer_or_real_number(
+                    input,
+                    allocator,
+                    startLine,
+                    startColumn,
+                    startIndexInInput);
+            }
+
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            {
+                return octaspire_dern_lexer_private_pop_semver(
                     input,
                     allocator,
                     startLine,

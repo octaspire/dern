@@ -52,7 +52,8 @@ static char const * const octaspire_dern_value_helper_type_tags_as_c_strings[] =
     "special",
     "builtin",
     "port",
-    "C data"
+    "C data",
+    "semver"
 };
 
 static octaspire_string_t *octaspire_dern_function_private_is_string_in_vector(
@@ -785,6 +786,15 @@ bool octaspire_dern_value_set(
         }
         break;
 
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            self->value.semver =
+                octaspire_semver_new_copy(
+                    value->value.semver,
+                    octaspire_dern_vm_get_allocator(self->vm));
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         {
             self->value.character =
@@ -1166,6 +1176,18 @@ uint32_t octaspire_dern_value_get_hash(
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
             return octaspire_string_get_hash(self->value.string);
 
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            octaspire_string_t * str =
+                octaspire_semver_to_string(self->value.semver);
+
+            uint32_t const result = octaspire_string_get_hash(str);
+
+            octaspire_string_release(str);
+            str = 0;
+            return result;
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
             return octaspire_string_get_hash(self->value.character);
 
@@ -1310,6 +1332,13 @@ octaspire_string_t *octaspire_dern_private_value_to_string(
                 return octaspire_string_new_format(allocator, plain ? "%s" :"[%s]",
                     octaspire_string_get_c_string(self->value.string));
             }
+
+            case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+            {
+                return octaspire_semver_to_string(self->value.semver, allocator);
+            }
+
+            // continue from here
 
             case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
             {

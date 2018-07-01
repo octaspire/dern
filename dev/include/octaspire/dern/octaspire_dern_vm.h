@@ -122,6 +122,10 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol(
     octaspire_dern_vm_t *self,
     octaspire_string_t * const value);
 
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_semver(
+    octaspire_dern_vm_t *self,
+    octaspire_semver_t * const value);
+
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol_from_c_string(
     octaspire_dern_vm_t *self,
     char const * const value);
