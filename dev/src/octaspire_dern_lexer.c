@@ -45,6 +45,7 @@ struct octaspire_dern_lexer_token_t
         octaspire_string_t *symbol;
         octaspire_string_t *error;
         octaspire_string_t *moreInputRequired;
+        octaspire_semver_t *semver;
         int32_t             integer;
         double              real;
     }
