@@ -3924,6 +3924,10 @@ int octaspire_dern_value_compare(
         {
             return octaspire_dern_c_data_compare(self->value.cData, other->value.cData);
         }
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            return octaspire_semver_compare(self->value.semver, other->value.semver);
+        }
     }
 
     return 0;
