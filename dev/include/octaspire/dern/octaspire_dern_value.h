@@ -325,6 +325,9 @@ bool octaspire_dern_value_is_character(
 bool octaspire_dern_value_is_string(
     octaspire_dern_value_t const * const self);
 
+bool octaspire_dern_value_is_semver(
+    octaspire_dern_value_t const * const self);
+
 bool octaspire_dern_value_is_symbol(
     octaspire_dern_value_t const * const self);
 
@@ -503,6 +506,12 @@ bool octaspire_dern_value_as_string_remove_all_substrings(
 bool octaspire_dern_value_as_string_is_index_valid(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
+
+octaspire_semver_t const *octaspire_dern_value_as_semver_const(
+    octaspire_dern_value_t const * const self);
+
+octaspire_semver_t *octaspire_dern_value_as_semver(
+    octaspire_dern_value_t const * const self);
 
 char const *octaspire_dern_value_as_string_get_c_string(
     octaspire_dern_value_t const * const self);

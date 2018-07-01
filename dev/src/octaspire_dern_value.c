@@ -1338,8 +1338,6 @@ octaspire_string_t *octaspire_dern_private_value_to_string(
                 return octaspire_semver_to_string(self->value.semver, allocator);
             }
 
-            // continue from here
-
             case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
             {
                 if (octaspire_string_is_equal_to_c_string(
@@ -1700,6 +1698,12 @@ bool octaspire_dern_value_is_string(
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING;
 }
 
+bool octaspire_dern_value_is_semver(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SEMVER;
+}
+
 bool octaspire_dern_value_is_symbol(
     octaspire_dern_value_t const * const self)
 {
@@ -2016,6 +2020,7 @@ bool octaspire_dern_value_as_hash_map_add(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             if (!toBeAdded2)
             {
@@ -2170,6 +2175,7 @@ bool octaspire_dern_value_as_character_add(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             return false;
         }
@@ -2243,6 +2249,7 @@ bool octaspire_dern_value_as_character_subtract(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             return false;
         }
@@ -2348,6 +2355,7 @@ bool octaspire_dern_value_as_integer_add(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             return false;
         }
@@ -2453,6 +2461,7 @@ bool octaspire_dern_value_as_integer_subtract(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             return false;
         }
@@ -2552,6 +2561,7 @@ bool octaspire_dern_value_as_real_add(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             return false;
         }
@@ -2652,6 +2662,7 @@ bool octaspire_dern_value_as_real_subtract(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             return false;
         }
@@ -2930,6 +2941,20 @@ bool octaspire_dern_value_as_string_is_index_valid(
         possiblyNegativeIndex);
 }
 
+octaspire_semver_t const *octaspire_dern_value_as_semver_const(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SEMVER);
+    return self->value.semver;
+}
+
+octaspire_semver_t *octaspire_dern_value_as_semver(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SEMVER);
+    return self->value.semver;
+}
+
 char const *octaspire_dern_value_as_string_get_c_string(
     octaspire_dern_value_t const * const self)
 {
@@ -2990,6 +3015,11 @@ bool octaspire_dern_value_as_text_is_equal_to_c_string(
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         {
             return octaspire_string_is_equal_to_c_string(self->value.string, str);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            return octaspire_semver_is_equal_to_c_string(self->value.semver, str);
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
