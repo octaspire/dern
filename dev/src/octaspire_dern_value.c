@@ -3964,6 +3964,7 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             return false;
         }
