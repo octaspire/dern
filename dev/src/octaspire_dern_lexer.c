@@ -267,7 +267,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
 
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SEMVER:
         {
-            self->value.semver = value;
+            self->value.semver = octaspire_semver_new_copy(value, allocator);
 
             if (!self->value.semver)
             {
@@ -1413,7 +1413,6 @@ static size_t octaspire_dern_lexer_private_expect_semver_number(
 
     while (octaspire_input_is_good(input))
     {
-        endIndexInInput  = octaspire_input_get_ucs_character_index(input);
         uint32_t const c = octaspire_input_peek_next_ucs_character(input);
 
         if (isdigit((int const)c))
@@ -1432,7 +1431,7 @@ static size_t octaspire_dern_lexer_private_expect_semver_number(
             for (size_t i = 0; i < nextDigitIndex; ++i)
             {
                 char const c = digits[nextDigitIndex - 1 - i];
-                result += (pow(10, i) * (c - '0'));
+                result += (pow((size_t)10, i) * (c - '0'));
             }
 
             return nextDigitIndex;
