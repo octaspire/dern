@@ -1335,7 +1335,7 @@ octaspire_string_t *octaspire_dern_private_value_to_string(
 
             case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
             {
-                return octaspire_semver_to_string(self->value.semver, allocator);
+                return octaspire_semver_to_string(self->value.semver);
             }
 
             case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
@@ -2745,6 +2745,7 @@ bool octaspire_dern_value_as_string_push_back(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             octaspire_string_t *tmpStr =
                 octaspire_dern_value_to_string(value, octaspire_dern_vm_get_allocator(self->vm));
@@ -2827,6 +2828,7 @@ bool octaspire_dern_value_as_symbol_push_back(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             octaspire_string_t *tmpStr =
                 octaspire_dern_value_to_string(
@@ -2922,6 +2924,7 @@ bool octaspire_dern_value_as_string_remove_all_substrings(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             return false;
         }
@@ -3091,6 +3094,7 @@ char const *octaspire_dern_value_as_text_get_c_string(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             octaspire_helpers_verify_true(false);
         }
@@ -3143,6 +3147,7 @@ size_t octaspire_dern_value_as_text_get_length_in_octets(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             octaspire_helpers_verify_true(false);
         }
@@ -3496,6 +3501,18 @@ size_t octaspire_dern_value_get_length(
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         {
             return (size_t)octaspire_dern_port_get_length_in_octets(self->value.port);
+        }
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            octaspire_string_t * str =
+                octaspire_semver_to_string(self->value.semver);
+
+            size_t const result = octaspire_string_get_length_in_octets(str);
+
+            octaspire_string_release(str);
+            str = 0;
+
+            return result;
         }
     }
 

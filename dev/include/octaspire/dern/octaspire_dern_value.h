@@ -28,6 +28,7 @@ limitations under the License.
     #include <octaspire/core/octaspire_queue.h>
     #include <octaspire/core/octaspire_list.h>
     #include <octaspire/core/octaspire_string.h>
+    #include <octaspire/core/octaspire_semver.h>
 #endif
 
 #include "octaspire/dern/octaspire_dern_port.h"
@@ -252,6 +253,7 @@ struct octaspire_dern_value_t
         octaspire_dern_builtin_t            *builtin;
         octaspire_dern_port_t               *port;
         octaspire_dern_c_data_t             *cData;
+        octaspire_semver_t                  *semver;
     }
     value;
 
