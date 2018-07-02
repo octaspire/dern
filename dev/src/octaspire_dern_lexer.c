@@ -1408,6 +1408,12 @@ static size_t octaspire_dern_lexer_private_expect_semver_number(
     char const * const numberName,
     size_t * result)
 {
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(allocator);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(startLine);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(startColumn);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(startIndexInput);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(numberName);
+
     char digits[256]       = {'\0'};
     size_t nextDigitIndex  = 0;
 
