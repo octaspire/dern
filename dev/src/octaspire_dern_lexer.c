@@ -1431,7 +1431,7 @@ static size_t octaspire_dern_lexer_private_expect_semver_number(
             for (size_t i = 0; i < nextDigitIndex; ++i)
             {
                 char const c = digits[nextDigitIndex - 1 - i];
-                result += (pow((size_t)10, i) * (c - '0'));
+                *result += (pow(10, i) * (c - '0'));
             }
 
             return nextDigitIndex;
@@ -1447,7 +1447,7 @@ static size_t octaspire_dern_lexer_private_expect_semver_number(
     for (size_t i = 0; i < nextDigitIndex; ++i)
     {
         char const c = digits[nextDigitIndex - 1 - i];
-        result += (pow(10, i) * (c - '0'));
+        *result += (pow(10, i) * (c - '0'));
     }
 
     return nextDigitIndex;
