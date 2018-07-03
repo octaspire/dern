@@ -2485,7 +2485,10 @@ bool octaspire_dern_value_as_semver_subtract(
 
         case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
-            return octaspire_semver_add_or_subtract(self->value.integer, other->value.integer);
+            return octaspire_semver_add_or_subtract(
+                self->value.semver,
+                other->value.semver,
+                false);
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
@@ -2506,7 +2509,6 @@ bool octaspire_dern_value_as_semver_subtract(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
-        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             return false;
         }
@@ -2514,6 +2516,21 @@ bool octaspire_dern_value_as_semver_subtract(
 
     return false;
 }
+
+bool octaspire_dern_value_as_semver_pop_back(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SEMVER);
+    return octaspire_semver_pop_back(self->value.semver);
+}
+
+bool octaspire_dern_value_as_semver_pop_front(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SEMVER);
+    return octaspire_semver_pop_front(self->value.semver);
+}
+
 
 bool octaspire_dern_value_as_real_add(
     octaspire_dern_value_t * const self,

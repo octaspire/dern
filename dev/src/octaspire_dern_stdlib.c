@@ -5499,6 +5499,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_equals_equals(
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
         case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -5611,6 +5612,12 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_pop_back(
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         {
             octaspire_dern_value_as_symbol_pop_back(firstArg);
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            octaspire_dern_value_as_semver_pop_back(firstArg);
         }
         break;
 

@@ -470,9 +470,17 @@ bool octaspire_dern_value_as_integer_subtract(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const other);
 
+
 bool octaspire_dern_value_as_semver_subtract(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const other);
+
+bool octaspire_dern_value_as_semver_pop_back(
+    octaspire_dern_value_t * const self);
+
+bool octaspire_dern_value_as_semver_pop_front(
+    octaspire_dern_value_t * const self);
+
 
 bool octaspire_dern_value_as_real_add(
     octaspire_dern_value_t * const self,
