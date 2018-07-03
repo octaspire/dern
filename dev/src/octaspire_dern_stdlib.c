@@ -5402,6 +5402,28 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_equals(
         }
         break;
 
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            for (size_t i = 1; i < octaspire_vector_get_length(vec); ++i)
+            {
+                octaspire_dern_value_t * const anotherArg =
+                    octaspire_vector_get_element_at(
+                        vec,
+                        (ptrdiff_t)i);
+
+                if (!octaspire_dern_value_as_semver_subtract(firstArg, anotherArg))
+                {
+                    octaspire_helpers_verify_true(
+                        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                    return octaspire_dern_vm_create_new_value_error_from_c_string(
+                        vm,
+                        "Builtin '-=' failed on SemVer");
+                }
+            }
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));

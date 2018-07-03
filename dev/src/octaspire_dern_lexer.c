@@ -1845,6 +1845,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_semver(
         startLine,
         startColumn,
         startIndexInInput,
+        "Major",
         &major))
     {
         return octaspire_dern_lexer_token_new(
@@ -1884,6 +1885,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_semver(
         startLine,
         startColumn,
         startIndexInInput,
+        "Minor",
         &minor))
     {
         return octaspire_dern_lexer_token_new(
@@ -1900,7 +1902,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_semver(
     }
 
     // Read '.'
-    octaspire_dern_lexer_token_t * potentialError =
+    potentialError =
         octaspire_dern_lexer_private_expect_octet(
             input,
             allocator,
@@ -1923,6 +1925,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_semver(
         startLine,
         startColumn,
         startIndexInInput,
+        "Patch",
         &patch))
     {
         return octaspire_dern_lexer_token_new(
