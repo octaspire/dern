@@ -3179,7 +3179,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
-        // How about these? Self evaluating or not?
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
