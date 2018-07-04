@@ -6350,6 +6350,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_slash(
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             case OCTASPIRE_DERN_VALUE_TAG_PORT:
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+            case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
             {
                 if (currentArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                 {
@@ -6419,6 +6420,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_slash(
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             case OCTASPIRE_DERN_VALUE_TAG_PORT:
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+            case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
             {
                 if (currentArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                 {
@@ -6530,6 +6532,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_times(
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             case OCTASPIRE_DERN_VALUE_TAG_PORT:
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+            case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
             {
                 if (currentArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                 {
@@ -6626,6 +6629,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_numerical(
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             case OCTASPIRE_DERN_VALUE_TAG_PORT:
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+            case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
             {
                 if (currentArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                 {
@@ -6733,6 +6737,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_textual_string(
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             case OCTASPIRE_DERN_VALUE_TAG_PORT:
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+            case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
             {
                 octaspire_dern_vm_pop_value(vm, result);
 
@@ -6832,6 +6837,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_textual_char(
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             case OCTASPIRE_DERN_VALUE_TAG_PORT:
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+            case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
             {
                 octaspire_dern_vm_pop_value(vm, result);
 
@@ -6938,6 +6944,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_textual_symbol(
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             case OCTASPIRE_DERN_VALUE_TAG_PORT:
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+            case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
             {
                 octaspire_dern_vm_pop_value(vm, result);
                 octaspire_helpers_verify_true(
@@ -7025,6 +7032,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_vector(
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             case OCTASPIRE_DERN_VALUE_TAG_PORT:
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+            case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
             {
                 octaspire_dern_value_t * const copyOfArg =
                     octaspire_dern_vm_create_new_value_copy(
