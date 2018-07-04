@@ -15147,7 +15147,7 @@ TEST octaspire_dern_vm_compare_hash_maps_of_queues_of_integers_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(< (hash-map 1 (queue 1 2 3)) (hash-map 1 (queue 1 2 4)))");
+            "(< (hash-map {D+1} (queue {D+1} {D+2} {D+3})) (hash-map {D+1} (queue {D+1} {D+2} {D+4})))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, evaluatedValue->value.boolean);
@@ -15155,7 +15155,7 @@ TEST octaspire_dern_vm_compare_hash_maps_of_queues_of_integers_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(<= (hash-map 1 (queue 1 2 3)) (hash-map 1 (queue 1 2 4)))");
+            "(<= (hash-map {D+1} (queue {D+1} {D+2} {D+3})) (hash-map {D+1} (queue {D+1} {D+2} {D+4})))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, evaluatedValue->value.boolean);
@@ -15163,7 +15163,7 @@ TEST octaspire_dern_vm_compare_hash_maps_of_queues_of_integers_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(<= (hash-map 1 (queue 1 2 3)) (hash-map 1 (queue 1 2 3)))");
+            "(<= (hash-map {D+1} (queue {D+1} {D+2} {D+3})) (hash-map {D+1} (queue {D+1} {D+2} {D+3})))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, evaluatedValue->value.boolean);
@@ -15171,7 +15171,7 @@ TEST octaspire_dern_vm_compare_hash_maps_of_queues_of_integers_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(< (hash-map 1 (queue 1 2 3)) (hash-map 1 (queue 1 2 3)))");
+            "(< (hash-map {D+1} (queue {D+1} {D+2} {D+3})) (hash-map {D+1} (queue {D+1} {D+2} {D+3})))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(false, evaluatedValue->value.boolean);
@@ -15179,7 +15179,7 @@ TEST octaspire_dern_vm_compare_hash_maps_of_queues_of_integers_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(== (hash-map 1 (queue 1 2 3)) (hash-map 1 (queue 1 2 3)))");
+            "(== (hash-map {D+1} (queue {D+1} {D+2} {D+3})) (hash-map {D+1} (queue {D+1} {D+2} {D+3})))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, evaluatedValue->value.boolean);
@@ -15187,7 +15187,7 @@ TEST octaspire_dern_vm_compare_hash_maps_of_queues_of_integers_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(!= (hash-map 1 (queue 1 2 3)) (hash-map 1 (queue 1 2 3)))");
+            "(!= (hash-map {D+1} (queue {D+1} {D+2} {D+3})) (hash-map {D+1} (queue {D+1} {D+2} {D+3})))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(false, evaluatedValue->value.boolean);
@@ -15195,7 +15195,7 @@ TEST octaspire_dern_vm_compare_hash_maps_of_queues_of_integers_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(!= (hash-map 1 (queue 1 2 3)) (hash-map 1 (queue 1 2 4)))");
+            "(!= (hash-map {D+1} (queue {D+1} {D+2} {D+3})) (hash-map {D+1} (queue {D+1} {D+2} {D+4})))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, evaluatedValue->value.boolean);
@@ -15203,7 +15203,7 @@ TEST octaspire_dern_vm_compare_hash_maps_of_queues_of_integers_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(> (hash-map 1 (queue 1 2 3)) (hash-map 1 (queue 1 2 3)))");
+            "(> (hash-map {D+1} (queue {D+1} {D+2} {D+3})) (hash-map {D+1} (queue {D+1} {D+2} {D+3})))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(false, evaluatedValue->value.boolean);
@@ -15211,7 +15211,7 @@ TEST octaspire_dern_vm_compare_hash_maps_of_queues_of_integers_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(>= (hash-map 1 (queue 1 2 3)) (hash-map 1 (queue 1 2 3)))");
+            "(>= (hash-map {D+1} (queue {D+1} {D+2} {D+3})) (hash-map {D+1} (queue {D+1} {D+2} {D+3})))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, evaluatedValue->value.boolean);
