@@ -7245,6 +7245,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_minus_numerical(
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             case OCTASPIRE_DERN_VALUE_TAG_PORT:
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+            case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
             {
                 if (currentArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                 {
@@ -7345,6 +7346,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_minus_textual(
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             case OCTASPIRE_DERN_VALUE_TAG_PORT:
             case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+            case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
             {
                 octaspire_helpers_verify_true(
                     stackLength == octaspire_dern_vm_get_stack_length(vm));
@@ -7529,6 +7531,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_builtin_private_minus_numerical(vm, arguments, environment);
@@ -7728,6 +7731,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_split(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -8488,6 +8492,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_ln_at_sign(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
@@ -8790,6 +8795,15 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
                 octaspire_dern_value_as_list_get_element_at(
                     collectionVal,
                     octaspire_dern_value_as_integer_get_value(indexVal)));
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "TODO: Builtin 'cp@' doesn't have SemVer support yet. It has to be implemented.");
+
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
@@ -9457,6 +9471,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_copy(
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_create_new_value_error_format(
