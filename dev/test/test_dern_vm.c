@@ -609,14 +609,16 @@ TEST octaspire_dern_vm_special_select_called_with_default_as_first_selector_fail
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(select default [a] 2 [b])");
+            "(select default [a] {D+2} [b])");
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
+    printf(">>>%s<<<\n", octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
     ASSERT_STR_EQ(
         "'default' must be the last selector in special 'select'.\n"
-        "\tAt form: >>>>>>>>>>(select default [a] 2 [b])<<<<<<<<<<\n",
+        "\tAt form: >>>>>>>>>>(select default [a] {D+2} [b])<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
