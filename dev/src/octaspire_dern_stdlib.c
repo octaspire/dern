@@ -5411,7 +5411,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus_equals(
                         vec,
                         (ptrdiff_t)i);
 
-                if (!octaspire_dern_value_as_semver_subtract(firstArg, anotherArg))
+                if (!octaspire_dern_value_as_semver_add_or_subtract(firstArg, anotherArg, false))
                 {
                     octaspire_helpers_verify_true(
                         stackLength == octaspire_dern_vm_get_stack_length(vm));
