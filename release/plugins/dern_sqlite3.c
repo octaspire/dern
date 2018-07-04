@@ -46,7 +46,7 @@ static int dern_sqlite3_private_callback(
     octaspire_helpers_verify_not_null(arguments);
     octaspire_dern_vm_push_value(context->vm, arguments);
 
-    for(int i = 0; i < argc; ++i)
+    for (int i = 0; i < argc; ++i)
     {
         octaspire_dern_value_t *pairVal =
             octaspire_dern_vm_create_new_value_vector(context->vm);

@@ -28,6 +28,7 @@ limitations under the License.
     #include <octaspire/core/octaspire_queue.h>
     #include <octaspire/core/octaspire_list.h>
     #include <octaspire/core/octaspire_string.h>
+    #include <octaspire/core/octaspire_semver.h>
 #endif
 
 #include "octaspire/dern/octaspire_dern_port.h"
@@ -57,7 +58,8 @@ typedef enum
     OCTASPIRE_DERN_VALUE_TAG_SPECIAL,
     OCTASPIRE_DERN_VALUE_TAG_BUILTIN,
     OCTASPIRE_DERN_VALUE_TAG_PORT,
-    OCTASPIRE_DERN_VALUE_TAG_C_DATA
+    OCTASPIRE_DERN_VALUE_TAG_C_DATA,
+    OCTASPIRE_DERN_VALUE_TAG_SEMVER,
 }
 octaspire_dern_value_tag_t;
 
@@ -251,6 +253,7 @@ struct octaspire_dern_value_t
         octaspire_dern_builtin_t            *builtin;
         octaspire_dern_port_t               *port;
         octaspire_dern_c_data_t             *cData;
+        octaspire_semver_t                  *semver;
     }
     value;
 
@@ -322,6 +325,9 @@ bool octaspire_dern_value_is_character(
     octaspire_dern_value_t const * const self);
 
 bool octaspire_dern_value_is_string(
+    octaspire_dern_value_t const * const self);
+
+bool octaspire_dern_value_is_semver(
     octaspire_dern_value_t const * const self);
 
 bool octaspire_dern_value_is_symbol(
@@ -464,6 +470,19 @@ bool octaspire_dern_value_as_integer_subtract(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const other);
 
+
+bool octaspire_dern_value_as_semver_add_or_subtract(
+    octaspire_dern_value_t * const self,
+    octaspire_dern_value_t * const other,
+    bool                     const add);
+
+bool octaspire_dern_value_as_semver_pop_back(
+    octaspire_dern_value_t * const self);
+
+bool octaspire_dern_value_as_semver_pop_front(
+    octaspire_dern_value_t * const self);
+
+
 bool octaspire_dern_value_as_real_add(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const other);
@@ -502,6 +521,12 @@ bool octaspire_dern_value_as_string_remove_all_substrings(
 bool octaspire_dern_value_as_string_is_index_valid(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
+
+octaspire_semver_t const *octaspire_dern_value_as_semver_const(
+    octaspire_dern_value_t const * const self);
+
+octaspire_semver_t *octaspire_dern_value_as_semver(
+    octaspire_dern_value_t const * const self);
 
 char const *octaspire_dern_value_as_string_get_c_string(
     octaspire_dern_value_t const * const self);

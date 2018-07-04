@@ -1641,6 +1641,14 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
         }
         break;
 
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            result->value.semver = octaspire_semver_new_copy(
+                valueToBeCopied->value.semver,
+                self->allocator);
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         {
             result->value.error = octaspire_dern_error_message_new_copy(
@@ -2062,6 +2070,18 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol(
     return result;
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_semver(
+    octaspire_dern_vm_t *self,
+    octaspire_semver_t * const value)
+{
+    octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(
+        self,
+        OCTASPIRE_DERN_VALUE_TAG_SEMVER);
+
+    result->value.semver = value;
+    return result;
+}
+
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol_from_c_string(
     octaspire_dern_vm_t *self,
     char const * const value)
@@ -2442,6 +2462,13 @@ void octaspire_dern_vm_clear_value_to_nil(
         {
             octaspire_string_release(value->value.symbol);
             value->value.symbol = 0;
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            octaspire_semver_release(value->value.semver);
+            value->value.semver = 0;
         }
         break;
 
@@ -2922,6 +2949,16 @@ octaspire_dern_value_t *octaspire_dern_vm_parse_token(
         }
         break;
 
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_SEMVER:
+        {
+            result = octaspire_dern_vm_create_new_value_semver(
+                self,
+                octaspire_semver_new_copy(
+                    octaspire_dern_lexer_token_get_semver_value(token),
+                    self->allocator));
+        }
+        break;
+
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR:
         {
             result = octaspire_dern_vm_create_new_value_error(
@@ -3142,7 +3179,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
-        // How about these? Self evaluating or not?
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
@@ -3551,6 +3588,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                 case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
                 case OCTASPIRE_DERN_VALUE_TAG_PORT:
                 case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+                case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
                 {
                     octaspire_string_t *str = octaspire_dern_value_to_string(
                         operator,
@@ -4366,6 +4404,7 @@ octaspire_dern_value_t *octaspire_dern_vm_find_from_value(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
             return octaspire_dern_vm_create_new_value_error_format(
