@@ -471,9 +471,10 @@ bool octaspire_dern_value_as_integer_subtract(
     octaspire_dern_value_t * const other);
 
 
-bool octaspire_dern_value_as_semver_subtract(
+bool octaspire_dern_value_as_semver_add_or_subtract(
     octaspire_dern_value_t * const self,
-    octaspire_dern_value_t * const other);
+    octaspire_dern_value_t * const other,
+    bool                     const add);
 
 bool octaspire_dern_value_as_semver_pop_back(
     octaspire_dern_value_t * const self);

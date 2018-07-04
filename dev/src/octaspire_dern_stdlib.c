@@ -5954,7 +5954,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
                         vec,
                         (ptrdiff_t)i);
 
-                if (!octaspire_dern_value_as_semver_add(firstArg, anotherArg))
+                if (!octaspire_dern_value_as_semver_add_or_subtract(firstArg, anotherArg, true))
                 {
                     //success = false;
                 }

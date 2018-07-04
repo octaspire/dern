@@ -2470,9 +2470,10 @@ bool octaspire_dern_value_as_integer_subtract(
     return false;
 }
 
-bool octaspire_dern_value_as_semver_subtract(
+bool octaspire_dern_value_as_semver_add_or_subtract(
     octaspire_dern_value_t * const self,
-    octaspire_dern_value_t * const other)
+    octaspire_dern_value_t * const other,
+    bool                     const add)
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SEMVER);
 
@@ -2488,7 +2489,7 @@ bool octaspire_dern_value_as_semver_subtract(
             return octaspire_semver_add_or_subtract(
                 self->value.semver,
                 other->value.semver,
-                false);
+                add);
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
