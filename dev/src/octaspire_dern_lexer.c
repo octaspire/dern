@@ -1802,9 +1802,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_semver(
     size_t const startColumn,
     size_t const startIndexInInput)
 {
-    size_t   charsRead       = 0;
-    bool     dotRead         = false;
-
     size_t   endIndexInInput = startIndexInInput;
     size_t   endColumn       = startColumn;
 

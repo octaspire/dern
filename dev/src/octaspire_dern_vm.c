@@ -1641,6 +1641,14 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
         }
         break;
 
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            result->value.semver = octaspire_semver_new_copy(
+                valueToBeCopied->value.semver,
+                self->allocator);
+        }
+        break;
+
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         {
             result->value.error = octaspire_dern_error_message_new_copy(
@@ -2454,6 +2462,13 @@ void octaspire_dern_vm_clear_value_to_nil(
         {
             octaspire_string_release(value->value.symbol);
             value->value.symbol = 0;
+        }
+        break;
+
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            octaspire_semver_release(value->value.semver);
+            value->value.semver = 0;
         }
         break;
 
@@ -3573,6 +3588,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                 case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
                 case OCTASPIRE_DERN_VALUE_TAG_PORT:
                 case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+                case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
                 {
                     octaspire_string_t *str = octaspire_dern_value_to_string(
                         operator,
