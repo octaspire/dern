@@ -14732,7 +14732,7 @@ TEST octaspire_dern_vm_compare_vectors_of_vectors_of_misc_types_test(void)
     octaspire_dern_value_t *evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(< '((1 |a|) ([b] c)) '((1 |a|) ([b] d)))");
+            "(< '(({D+1} |a|) ([b] c)) '(({D+1} |a|) ([b] d)))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, evaluatedValue->value.boolean);
@@ -14740,7 +14740,7 @@ TEST octaspire_dern_vm_compare_vectors_of_vectors_of_misc_types_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(<= '((1 |a|) ([b] c)) '((1 |a|) ([b] d)))");
+            "(<= '(({D+1} |a|) ([b] c)) '(({D+1} |a|) ([b] d)))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, evaluatedValue->value.boolean);
@@ -14748,7 +14748,7 @@ TEST octaspire_dern_vm_compare_vectors_of_vectors_of_misc_types_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(<= '((1 |a|) ([b] c)) '((1 |a|) ([b] c)))");
+            "(<= '(({D+1} |a|) ([b] c)) '(({D+1} |a|) ([b] c)))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, evaluatedValue->value.boolean);
@@ -14756,7 +14756,7 @@ TEST octaspire_dern_vm_compare_vectors_of_vectors_of_misc_types_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(< '((1 |a|) ([b] c)) '((1 |a|) ([b] c)))");
+            "(< '(({D+1} |a|) ([b] c)) '(({D+1} |a|) ([b] c)))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(false, evaluatedValue->value.boolean);
@@ -14764,7 +14764,7 @@ TEST octaspire_dern_vm_compare_vectors_of_vectors_of_misc_types_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(== '((1 |a|) ([b] c)) '((1 |a|) ([b] c)))");
+            "(== '(({D+1} |a|) ([b] c)) '(({D+1} |a|) ([b] c)))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, evaluatedValue->value.boolean);
@@ -14772,7 +14772,7 @@ TEST octaspire_dern_vm_compare_vectors_of_vectors_of_misc_types_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(!= '((1 |a|) ([b] c)) '((1 |a|) ([b] c)))");
+            "(!= '(({D+1} |a|) ([b] c)) '(({D+1} |a|) ([b] c)))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(false, evaluatedValue->value.boolean);
@@ -14780,7 +14780,7 @@ TEST octaspire_dern_vm_compare_vectors_of_vectors_of_misc_types_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(!= '((1 |a|) ([b] c)) '((1 |a|) ([b] d)))");
+            "(!= '(({D+1} |a|) ([b] c)) '(({D+1} |a|) ([b] d)))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, evaluatedValue->value.boolean);
@@ -14788,7 +14788,7 @@ TEST octaspire_dern_vm_compare_vectors_of_vectors_of_misc_types_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(> '((1 |a|) ([b] c)) '((1 |a|) ([b] c)))");
+            "(> '(({D+1} |a|) ([b] c)) '(({D+1} |a|) ([b] c)))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(false, evaluatedValue->value.boolean);
@@ -14796,7 +14796,7 @@ TEST octaspire_dern_vm_compare_vectors_of_vectors_of_misc_types_test(void)
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(>= '((1 |a|) ([b] c)) '((1 |a|) ([b] c)))");
+            "(>= '(({D+1} |a|) ([b] c)) '(({D+1} |a|) ([b] c)))");
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
     ASSERT_EQ(true, evaluatedValue->value.boolean);
