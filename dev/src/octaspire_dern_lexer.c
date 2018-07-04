@@ -1836,8 +1836,6 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_semver(
         abort();
     }
 
-    uint32_t prevChar        = 0;
-
     // Read major version number.
     if (!octaspire_dern_lexer_private_expect_semver_number(
         input,
