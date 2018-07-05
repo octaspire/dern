@@ -1923,7 +1923,7 @@ TEST octaspire_dern_vm_builtin_plus_semver_1_1_1_and_1_0_0_and_0_2_0_and_0_0_3_t
     octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
         evaluatedValue,
         octaspire_dern_vm_get_allocator(vm));
-
+    printf(">>>%s<<<\n", octaspire_string_get_c_string(tmpStr));
     ASSERT_STR_EQ(
         "2.3.4",
         octaspire_string_get_c_string(tmpStr));
