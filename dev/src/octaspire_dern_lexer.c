@@ -1843,6 +1843,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_semver(
         "Major",
         &major))
     {
+        octaspire_vector_release(preRelease);
+        preRelease = 0;
+
+        octaspire_vector_release(buildMetadata);
+        buildMetadata= 0;
+
         return octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
             "Major component of semantic version number cannot be empty",
@@ -1870,6 +1876,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_semver(
 
     if (potentialError)
     {
+        octaspire_vector_release(preRelease);
+        preRelease = 0;
+
+        octaspire_vector_release(buildMetadata);
+        buildMetadata= 0;
+
         return potentialError;
     }
 
@@ -1883,6 +1895,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_semver(
         "Minor",
         &minor))
     {
+        octaspire_vector_release(preRelease);
+        preRelease = 0;
+
+        octaspire_vector_release(buildMetadata);
+        buildMetadata= 0;
+
         return octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
             "Minor component of semantic version number cannot be empty",
@@ -1910,6 +1928,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_semver(
 
     if (potentialError)
     {
+        octaspire_vector_release(preRelease);
+        preRelease = 0;
+
+        octaspire_vector_release(buildMetadata);
+        buildMetadata= 0;
+
         return potentialError;
     }
 
@@ -1923,6 +1947,12 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_semver(
         "Patch",
         &patch))
     {
+        octaspire_vector_release(preRelease);
+        preRelease = 0;
+
+        octaspire_vector_release(buildMetadata);
+        buildMetadata= 0;
+
         return octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
             "Patch component of semantic version number cannot be empty",
@@ -1941,25 +1971,36 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_semver(
             major,
             minor,
             patch,
-            0,
-            0,
+            preRelease,
+            buildMetadata,
             allocator);
 
     octaspire_helpers_verify_not_null(semver);
 
-    return octaspire_dern_lexer_token_new(
-        OCTASPIRE_DERN_LEXER_TOKEN_TAG_SEMVER,
-        semver,
-        octaspire_dern_lexer_token_position_init(
-            startLine,
-            octaspire_input_get_line_number(input)),
-        octaspire_dern_lexer_token_position_init(
-            startColumn,
-            endColumn),
-        octaspire_dern_lexer_token_position_init(
-            startIndexInInput,
-            endIndexInInput),
-        allocator);
+    octaspire_vector_release(preRelease);
+    preRelease = 0;
+
+    octaspire_vector_release(buildMetadata);
+    buildMetadata= 0;
+
+    octaspire_dern_lexer_token_t * const result =
+        octaspire_dern_lexer_token_new(
+            OCTASPIRE_DERN_LEXER_TOKEN_TAG_SEMVER,
+            semver,
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                endColumn),
+            octaspire_dern_lexer_token_position_init(
+                startIndexInInput,
+                endIndexInInput),
+            allocator);
+
+    octaspire_semver_release(semver);
+    semver = 0;
+    return result;
 }
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_string(

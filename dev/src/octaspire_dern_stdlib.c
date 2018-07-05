@@ -6989,7 +6989,9 @@ static octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_semver(
     octaspire_dern_value_t * const result =
         octaspire_dern_vm_create_new_value_semver(
             vm,
-            firstArg->value.semver);
+            octaspire_semver_new_copy(
+                firstArg->value.semver,
+                octaspire_dern_vm_get_allocator(vm)));
 
     octaspire_dern_vm_push_value(vm, result);
 
