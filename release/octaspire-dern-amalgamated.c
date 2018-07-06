@@ -206,7 +206,7 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "108"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "110"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_STR "Octaspire Core version " \
@@ -1739,6 +1739,10 @@ octaspire_semver_pre_release_elem_type_t octaspire_semver_get_prerelease_at(
     size_t * outNumerical,
     char const ** outLexical);
 
+char const * octaspire_semver_get_build_metadata_at(
+    octaspire_semver_t const * const self,
+    size_t const index);
+
 bool octaspire_semver_add_buildmetadata(
     octaspire_semver_t * const self,
     char const * const buildMetaData);
@@ -1778,11 +1782,22 @@ bool octaspire_semver_is_unequal_to(
     octaspire_semver_t const * const self,
     octaspire_semver_t const * const other);
 
+size_t octaspire_semver_get_major(
+    octaspire_semver_t const * const self);
+
+size_t octaspire_semver_get_minor(
+    octaspire_semver_t const * const self);
+
+size_t octaspire_semver_get_patch(
+    octaspire_semver_t const * const self);
+
 size_t octaspire_semver_get_num_pre_release_identifiers(
     octaspire_semver_t const * const self);
 
 size_t octaspire_semver_get_num_build_metadata_identifiers(
     octaspire_semver_t const * const self);
+
+size_t octaspire_semver_get_length(octaspire_semver_t const * const self);
 
 bool octaspire_semver_add_or_subtract(
     octaspire_semver_t       * const self,
@@ -9108,6 +9123,19 @@ octaspire_semver_pre_release_elem_type_t octaspire_semver_get_prerelease_at(
     return OCTASPIRE_SEMVER_PRE_RELEASE_ELEM_TYPE_NUMERICAL;
 }
 
+char const * octaspire_semver_get_build_metadata_at(
+    octaspire_semver_t const * const self,
+    size_t const index)
+{
+    if (index >= octaspire_semver_get_num_build_metadata_identifiers(self))
+    {
+        return 0;
+    }
+
+    return octaspire_string_get_c_string(
+        octaspire_vector_get_element_at(self->buildMetadata, index));
+}
+
 octaspire_string_t * octaspire_semver_to_string(
     octaspire_semver_t const * const self)
 {
@@ -9374,6 +9402,24 @@ bool octaspire_semver_is_unequal_to(
     return (!octaspire_semver_is_equal_to(self, other));
 }
 
+size_t octaspire_semver_get_major(
+    octaspire_semver_t const * const self)
+{
+    return self->major;
+}
+
+size_t octaspire_semver_get_minor(
+    octaspire_semver_t const * const self)
+{
+    return self->minor;
+}
+
+size_t octaspire_semver_get_patch(
+    octaspire_semver_t const * const self)
+{
+    return self->patch;
+}
+
 size_t octaspire_semver_get_num_pre_release_identifiers(
     octaspire_semver_t const * const self)
 {
@@ -9384,6 +9430,14 @@ size_t octaspire_semver_get_num_build_metadata_identifiers(
     octaspire_semver_t const * const self)
 {
     return octaspire_vector_get_length(self->buildMetadata);
+}
+
+size_t octaspire_semver_get_length(octaspire_semver_t const * const self)
+{
+    return
+        3 +
+        octaspire_semver_get_num_pre_release_identifiers(self) +
+        octaspire_semver_get_num_build_metadata_identifiers(self);
 }
 
 bool octaspire_semver_add_or_subtract(
@@ -23262,6 +23316,140 @@ TEST octaspire_semver_new_copy_called_with_0_1_2_alpha_3_and_metadata_sha_5214f_
     PASS();
 }
 
+TEST octaspire_semver_get_build_metadata_at_called_with_0_1_2_alpha_3_and_metadata_sha_5214f_test(void)
+{
+    octaspire_semver_t * semver =
+        octaspire_semver_new_prerelease(
+            0,
+            1,
+            2,
+            octaspireSemverTestAllocator,
+            "alpha",
+            "3",
+            "");
+
+    ASSERT(semver);
+
+    ASSERT(octaspire_semver_add_buildmetadata(semver, "sha"));
+    ASSERT(octaspire_semver_add_buildmetadata(semver, "5214f"));
+
+    ASSERT_EQ(0,           octaspire_semver_get_build_metadata_at(semver, 3));
+    ASSERT_EQ(0,           octaspire_semver_get_build_metadata_at(semver, 2));
+    ASSERT_STR_EQ("5214f", octaspire_semver_get_build_metadata_at(semver, 1));
+    ASSERT_STR_EQ("sha",   octaspire_semver_get_build_metadata_at(semver, 0));
+
+    octaspire_semver_release(semver);
+    semver = 0;
+
+    PASS();
+}
+
+TEST octaspire_semver_get_prerelease_at_called_with_0_1_2_alpha_3_and_metadata_sha_5214f_test(void)
+{
+    octaspire_semver_t * semver =
+        octaspire_semver_new_prerelease(
+            0,
+            1,
+            2,
+            octaspireSemverTestAllocator,
+            "alpha",
+            "3",
+            "");
+
+    ASSERT(semver);
+
+    ASSERT(octaspire_semver_add_buildmetadata(semver, "sha"));
+    ASSERT(octaspire_semver_add_buildmetadata(semver, "5214f"));
+
+    size_t       numerical = 0;
+    char const * lexical   = 0;
+
+    octaspire_semver_pre_release_elem_type_t elemType =
+        octaspire_semver_get_prerelease_at(semver, 0, &numerical, &lexical);
+
+    ASSERT_EQ(OCTASPIRE_SEMVER_PRE_RELEASE_ELEM_TYPE_LEXICAL, elemType);
+    ASSERT(lexical);
+    ASSERT_EQ(0, numerical);
+    ASSERT_STR_EQ("alpha", lexical);
+
+    numerical = 0;
+    lexical   = 0;
+
+    elemType =
+        octaspire_semver_get_prerelease_at(semver, 1, &numerical, &lexical);
+
+    ASSERT_EQ(OCTASPIRE_SEMVER_PRE_RELEASE_ELEM_TYPE_NUMERICAL, elemType);
+    ASSERT_EQ(0, lexical);
+    ASSERT_EQ(3, numerical);
+
+    numerical = 0;
+    lexical   = 0;
+
+    elemType =
+        octaspire_semver_get_prerelease_at(semver, 2, &numerical, &lexical);
+
+    ASSERT_EQ(OCTASPIRE_SEMVER_PRE_RELEASE_ELEM_TYPE_UNKNOWN, elemType);
+    ASSERT_EQ(0, lexical);
+    ASSERT_EQ(0, numerical);
+
+    octaspire_semver_release(semver);
+    semver = 0;
+
+    PASS();
+}
+
+TEST octaspire_semver_get_length_called_with_0_1_2_alpha_3_and_metadata_sha_5214f_test(void)
+{
+    octaspire_semver_t * semver =
+        octaspire_semver_new_prerelease(
+            0,
+            1,
+            2,
+            octaspireSemverTestAllocator,
+            "alpha",
+            "3",
+            "");
+
+    ASSERT(semver);
+
+    ASSERT(octaspire_semver_add_buildmetadata(semver, "sha"));
+    ASSERT(octaspire_semver_add_buildmetadata(semver, "5214f"));
+
+    ASSERT_EQ(7, octaspire_semver_get_length(semver));
+
+    octaspire_semver_release(semver);
+    semver = 0;
+
+    PASS();
+}
+
+TEST octaspire_semver_get_major_minor_patch_called_with_0_1_2_alpha_3_and_metadata_sha_5214f_test(void)
+{
+    octaspire_semver_t * semver =
+        octaspire_semver_new_prerelease(
+            0,
+            1,
+            2,
+            octaspireSemverTestAllocator,
+            "alpha",
+            "3",
+            "");
+
+    ASSERT(semver);
+
+    ASSERT(octaspire_semver_add_buildmetadata(semver, "sha"));
+    ASSERT(octaspire_semver_add_buildmetadata(semver, "5214f"));
+
+    ASSERT_EQ(0, octaspire_semver_get_major(semver));
+    ASSERT_EQ(1, octaspire_semver_get_minor(semver));
+    ASSERT_EQ(2, octaspire_semver_get_patch(semver));
+
+    octaspire_semver_release(semver);
+    semver = 0;
+
+    PASS();
+}
+
 TEST octaspire_semver_compare_0_1_2_alpha_3_metadata_sha_5214f_test(void)
 {
     // First
@@ -25155,6 +25343,10 @@ GREATEST_SUITE(octaspire_semver_suite)
     RUN_TEST(octaspire_semver_new_called_with_null_allocator_test);
     RUN_TEST(octaspire_semver_new_prerelease_0_1_2_alpha_3_and_metadata_sha_5214f_test);
     RUN_TEST(octaspire_semver_new_copy_called_with_0_1_2_alpha_3_and_metadata_sha_5214f_test);
+    RUN_TEST(octaspire_semver_get_build_metadata_at_called_with_0_1_2_alpha_3_and_metadata_sha_5214f_test);
+    RUN_TEST(octaspire_semver_get_prerelease_at_called_with_0_1_2_alpha_3_and_metadata_sha_5214f_test);
+    RUN_TEST(octaspire_semver_get_length_called_with_0_1_2_alpha_3_and_metadata_sha_5214f_test);
+    RUN_TEST(octaspire_semver_get_major_minor_patch_called_with_0_1_2_alpha_3_and_metadata_sha_5214f_test);
     RUN_TEST(octaspire_semver_compare_0_1_2_alpha_3_metadata_sha_5214f_test);
     RUN_TEST(octaspire_semver_compare_0_1_2_alpha_3_sha_5214f_and_0_1_2_alpha_3_sha_5214g_test);
     RUN_TEST(octaspire_semver_compare_0_1_2_alpha_3_sha_5214f_and_0_1_2_alpha_4_sha_5214f_test);
@@ -26798,6 +26990,11 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_character_from
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol(
     octaspire_dern_vm_t *self,
     octaspire_string_t * const value);
+
+octaspire_dern_value_t * octaspire_dern_vm_value_as_semver_create_value_for_element_at(
+    octaspire_dern_vm_t    * const self,
+    octaspire_dern_value_t * const value,
+    int32_t                  const index);
 
 octaspire_dern_value_t *octaspire_dern_vm_create_new_value_semver(
     octaspire_dern_vm_t *self,
@@ -39574,6 +39771,98 @@ static octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_semver(
     return result;
 }
 
+static octaspire_dern_value_t *octaspire_dern_vm_builtin_private_minus_semver(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    octaspire_dern_value_t *firstArg =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    octaspire_helpers_verify_true(
+        firstArg->typeTag == OCTASPIRE_DERN_VALUE_TAG_SEMVER);
+
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_create_new_value_semver(
+            vm,
+            octaspire_semver_new_copy(
+                firstArg->value.semver,
+                octaspire_dern_vm_get_allocator(vm)));
+
+    octaspire_dern_vm_push_value(vm, result);
+
+    for (size_t i = 1; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t *currentArg =
+            octaspire_dern_value_as_vector_get_element_at(
+                arguments,
+                (ptrdiff_t)i);
+
+        octaspire_helpers_verify_not_null(currentArg);
+
+        switch (currentArg->typeTag)
+        {
+            case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+            {
+                abort();
+            }
+
+            case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+            {
+                octaspire_semver_add_or_subtract(
+                    result->value.semver,
+                    currentArg->value.semver,
+                    false);
+            }
+            break;
+
+            case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+            case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+            case OCTASPIRE_DERN_VALUE_TAG_NIL:
+            case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+            case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+            case OCTASPIRE_DERN_VALUE_TAG_REAL:
+            case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+            case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+            case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+            case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+            case OCTASPIRE_DERN_VALUE_TAG_LIST:
+            case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+            case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+            case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+            case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+            case OCTASPIRE_DERN_VALUE_TAG_PORT:
+            case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+            case OCTASPIRE_DERN_VALUE_TAG_STRING:
+            {
+                octaspire_dern_vm_pop_value(vm, result);
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin '-' expects SemVer arguments if the first argument is SemVer. "
+                    "%zuth argument has type %s.",
+                    i + 1,
+                    octaspire_dern_value_helper_get_type_as_c_string(currentArg->typeTag));
+            }
+        }
+    }
+
+    octaspire_dern_vm_pop_value(vm, result);
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_vector(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
@@ -40134,6 +40423,12 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus(
             return octaspire_dern_vm_builtin_private_minus_textual(vm, arguments, environment);
         }
 
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_builtin_private_minus_semver(vm, arguments, environment);
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
@@ -40151,7 +40446,6 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_minus(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
-        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
             octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
             return octaspire_dern_vm_builtin_private_minus_numerical(vm, arguments, environment);
@@ -41419,11 +41713,39 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
 
         case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
-            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-            return octaspire_dern_vm_create_new_value_error_from_c_string(
-                vm,
-                "TODO: Builtin 'cp@' doesn't have SemVer support yet. It has to be implemented.");
+            if (numArgs > 2)
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
 
+                return octaspire_dern_vm_create_new_value_error_from_c_string(
+                    vm,
+                    "Builtin 'cp@' expects exactly two arguments when used with semver.");
+            }
+
+            octaspire_dern_value_t const * const indexVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+            octaspire_helpers_verify_not_null(indexVal);
+
+            if (!octaspire_dern_value_is_integer(indexVal))
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'cp@' expects integer as second argument when indexing a semver. "
+                    "Now type '%s' was given.",
+                    octaspire_dern_value_helper_get_type_as_c_string(
+                        indexVal->typeTag));
+            }
+
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_value_as_semver_create_value_for_element_at(
+                vm,
+                collectionVal,
+                octaspire_dern_value_as_integer_get_value(indexVal));
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
@@ -45965,15 +46287,10 @@ size_t octaspire_dern_value_get_length(
         }
         case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
-            octaspire_string_t * str =
-                octaspire_semver_to_string(self->value.semver);
-
-            size_t const result = octaspire_string_get_length_in_octets(str);
-
-            octaspire_string_release(str);
-            str = 0;
-
-            return result;
+            return
+                3 +
+                octaspire_semver_get_num_pre_release_identifiers(self->value.semver) +
+                octaspire_semver_get_num_build_metadata_identifiers(self->value.semver);
         }
     }
 
@@ -48497,6 +48814,119 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol(
 
     result->value.symbol = value;
     return result;
+}
+
+octaspire_dern_value_t * octaspire_dern_vm_value_as_semver_create_value_for_element_at(
+    octaspire_dern_vm_t    * const self,
+    octaspire_dern_value_t * const value,
+    int32_t                  const index)
+{
+    octaspire_helpers_verify_true(value->typeTag == OCTASPIRE_DERN_VALUE_TAG_SEMVER);
+
+    size_t const len = octaspire_semver_get_length(value->value.semver);
+
+    if (abs(index) >= len)
+    {
+        return octaspire_dern_vm_create_new_value_error_format(
+            self,
+            "Index %" PRId32 " is outside the SemVer length %zu.",
+            index,
+            len);
+    }
+
+    size_t realIndex = index;
+
+    if (index < 0)
+    {
+        realIndex = len + index;
+        octaspire_helpers_verify_true(realIndex < len);
+    }
+
+    if (realIndex < 3)
+    {
+        if (realIndex == 0)
+        {
+            return octaspire_dern_vm_create_new_value_integer(
+                self,
+                octaspire_semver_get_major(value->value.semver));
+        }
+
+        if (realIndex == 1)
+        {
+            return octaspire_dern_vm_create_new_value_integer(
+                self,
+                octaspire_semver_get_minor(value->value.semver));
+        }
+
+        return octaspire_dern_vm_create_new_value_integer(
+            self,
+            octaspire_semver_get_patch(value->value.semver));
+    }
+
+    realIndex -= 3;
+
+    if (realIndex <
+        octaspire_semver_get_num_pre_release_identifiers(value->value.semver))
+    {
+            size_t       numerical = 0;
+            char const * lexical   = 0;
+
+            octaspire_semver_pre_release_elem_type_t elemType =
+                octaspire_semver_get_prerelease_at(
+                    value->value.semver,
+                    0,
+                    &numerical,
+                    &lexical);
+
+            if (OCTASPIRE_SEMVER_PRE_RELEASE_ELEM_TYPE_LEXICAL == elemType)
+            {
+                octaspire_helpers_verify_not_null(lexical);
+
+                return octaspire_dern_vm_create_new_value_string_from_c_string(
+                    self,
+                    lexical);
+            }
+
+            if (OCTASPIRE_SEMVER_PRE_RELEASE_ELEM_TYPE_NUMERICAL == elemType)
+            {
+                return octaspire_dern_vm_create_new_value_integer(
+                    self,
+                    numerical);
+            }
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                self,
+                "Bad pre release indentifier in SemVer at index %zu.",
+                realIndex);
+    }
+
+    realIndex -= octaspire_semver_get_num_pre_release_identifiers(value->value.semver);
+
+    if (realIndex <
+        octaspire_semver_get_num_build_metadata_identifiers(value->value.semver))
+    {
+
+        char const * const str = octaspire_semver_get_build_metadata_at(
+            value->value.semver,
+            realIndex);
+
+        if (str)
+        {
+            return octaspire_dern_vm_create_new_value_string_from_c_string(
+                self,
+                str);
+        }
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            self,
+            "Bad build metadata indentifier in SemVer at index %zu.",
+            realIndex);
+    }
+
+    return octaspire_dern_vm_create_new_value_error_format(
+        self,
+        "Bad index %" PRId32 " for SemVer.",
+        index);
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_create_new_value_semver(
@@ -57989,6 +58419,36 @@ TEST octaspire_dern_vm_builtin_plus_semver_1_1_1_and_1_0_0_and_0_2_0_and_0_0_3_t
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_minus_semver_3_4_5_and_1_0_0_and_0_2_0_and_0_0_3_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(- 3.5.7 1.0.0 0.2.0 0.0.3)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SEMVER, evaluatedValue->typeTag);
+
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
+        evaluatedValue,
+        octaspire_dern_vm_get_allocator(vm));
+
+    ASSERT_STR_EQ(
+        "2.3.4",
+        octaspire_string_get_c_string(tmpStr));
+
+    octaspire_string_release(tmpStr);
+    tmpStr = 0;
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_minus_string_cat_dog_cat_and_string_cat_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -62953,6 +63413,70 @@ TEST octaspire_dern_vm_error_in_function_body_is_reported_test(void)
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
         "\tAt form: >>>>>>>>>>(f {D+1})<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_1_2_3_and_integers_0_and_1_and_2_and_3_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    // 0
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ 1.2.3 {D+0})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+
+    ASSERT_EQ(
+        1,
+        octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    // 1
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ 1.2.3 {D+1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+
+    ASSERT_EQ(
+        2,
+        octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    // 2
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ 1.2.3 {D+2})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+
+    ASSERT_EQ(
+        3,
+        octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    // 3
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ 1.2.3 {D+3})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Index 3 is outside the SemVer length 3.\n"
+        "\tAt form: >>>>>>>>>>(cp@ 1.2.3 {D+3})<<<<<<<<<<\n",
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -71606,6 +72130,7 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_builtin_plus_hash_map_1_a_and_2_and_b_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_hash_map_1_a_and_2_and_b_and_3_and_c_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_semver_1_1_1_and_1_0_0_and_0_2_0_and_0_0_3_test);
+    RUN_TEST(octaspire_dern_vm_builtin_minus_semver_3_4_5_and_1_0_0_and_0_2_0_and_0_0_3_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_string_cat_dog_cat_and_string_cat_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_and_character_b_test);
@@ -71753,6 +72278,7 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
 
 
     RUN_TEST(octaspire_dern_vm_error_in_function_body_is_reported_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_1_2_3_and_integers_0_and_1_and_2_and_3_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_0_and_string_abc_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_1_and_string_abc_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_string_abc_test);

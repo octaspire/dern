@@ -24,6 +24,7 @@ of C99. Currently it is tested with *gcc*, *clang*, *Tiny C Compiler (tcc)*,
 Dern supports imperative and functional programming. It has atomic types
 =integer=, =real=, (utf-8) =string=, (utf-8) =character=, (utf-8) =symbol=, =boolean=,
 =nil=, (input/output) =port=, =hash-map=, =list=, =queue=, =environment=,
+first class =Semantic Versioning number=,
 first class =function=, =special= and =builtin=. As non-atomic type it has =vector=.
 So, where in scheme ='(1 2 3)= is a list, in Dern it is a vector.
 
@@ -235,6 +236,10 @@ of it directly to the interactive REPL.
                           [My custom greetings])
 
   (for i in names (greeter (ln@ i {D+1}) (ln@ i {D+0})))
+
+  (+ 1.0.0 0.0.1) ; 1.0.1
+  (< 1.0.0 1.0.1) ; true
+  (> 1.0.0 1.0.1) ; false
 #+END_SRC
 
 ** Values
@@ -256,6 +261,11 @@ of it directly to the interactive REPL.
 
 {D+3.14}             ; These are real
 {D-1.12}
+
+0.1.2-rc.1+amd64     ; Semantic version numbers
+1.0.1
+2.1.0-4344b11
+0.0.1+i386
 
 [Hello]           ; These are strings (utf-8)
 [Hell|6F|]        ; Hello

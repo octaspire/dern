@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-06-29 Fri 10:00 -->
+<!-- 2018-07-06 Fri 09:46 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Octaspire Dern Manual</title>
@@ -259,69 +259,69 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org885403c">1. About</a></li>
-<li><a href="#orgc8de449">2. Building the amalgamated source release</a>
+<li><a href="#orgfe698c0">1. About</a></li>
+<li><a href="#orgf3c6f96">2. Building the amalgamated source release</a>
 <ul>
-<li><a href="#org1480d41">2.1. Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, macOS, Termux, AROS</a></li>
-<li><a href="#orge0f60b9">2.2. Plan9</a></li>
-<li><a href="#orgbabcff7">2.3. Plan9 on ARM architecture</a></li>
-<li><a href="#org4df787d">2.4. Windows using MinGW and Git</a></li>
-<li><a href="#orgc92b99e">2.5. ReactOS</a></li>
-<li><a href="#org80fa4e3">2.6. AmigaOS 4.x</a></li>
+<li><a href="#orgf99e81d">2.1. Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, macOS, Termux, AROS</a></li>
+<li><a href="#orgad83a1a">2.2. Plan9</a></li>
+<li><a href="#org996a793">2.3. Plan9 on ARM architecture</a></li>
+<li><a href="#org13334c2">2.4. Windows using MinGW and Git</a></li>
+<li><a href="#orgf0cba09">2.5. ReactOS</a></li>
+<li><a href="#orgd4d3ca1">2.6. AmigaOS 4.x</a></li>
 </ul>
 </li>
-<li><a href="#org7dc765d">3. Hello world</a></li>
-<li><a href="#orgbdc6b28">4. Values</a></li>
-<li><a href="#orgecefe15">5. Single and multiline comments, making script files executable</a></li>
-<li><a href="#org9c241ce">6. Binding names to values with <code>define</code></a>
+<li><a href="#org80f7870">3. Hello world</a></li>
+<li><a href="#org53c23b4">4. Values</a></li>
+<li><a href="#org9faac49">5. Single and multiline comments, making script files executable</a></li>
+<li><a href="#orgdb82b97">6. Binding names to values with <code>define</code></a>
 <ul>
-<li><a href="#orge975951">6.1. Binding in other environments than the current one</a></li>
+<li><a href="#orgd9341e2">6.1. Binding in other environments than the current one</a></li>
 </ul>
 </li>
-<li><a href="#orgfa9c98d">7. Iteration</a></li>
-<li><a href="#orga21a9d3">8. Comparing and changing values, predicates</a></li>
-<li><a href="#orgc06e440">9. Removing the last value from a vector</a></li>
-<li><a href="#orgaf624fc">10. Branching and selection</a></li>
-<li><a href="#org78c66a5">11. Selecting values from collections</a></li>
-<li><a href="#orgf768510">12. Accessing and manipulating command line arguments and environment variables</a></li>
-<li><a href="#orgf84a2ac">13. Formatted and regular printing</a></li>
-<li><a href="#org6042b7f">14. Formatted string creation</a></li>
-<li><a href="#orgbb97136">15. Functions with variable number of arguments</a></li>
-<li><a href="#org881198a">16. Environments</a></li>
-<li><a href="#orgf6abdb6">17. Getting help with <code>howto</code></a></li>
-<li><a href="#orgba5ca35">18. Returning from functions early</a></li>
-<li><a href="#orgd6706ef">19. Evaluating values</a></li>
-<li><a href="#org6b15543">20. Input and output ports</a></li>
-<li><a href="#org0a8528a">21. Converting between types</a></li>
-<li><a href="#org123d3e5">22. Searching and indexing</a></li>
-<li><a href="#org804fbd1">23. Loading libraries with <code>require</code></a>
+<li><a href="#org6d1a9af">7. Iteration</a></li>
+<li><a href="#orgc087db3">8. Comparing and changing values, predicates</a></li>
+<li><a href="#org19922ed">9. Removing the last value from a vector</a></li>
+<li><a href="#org884793a">10. Branching and selection</a></li>
+<li><a href="#orgeb83913">11. Selecting values from collections</a></li>
+<li><a href="#org917017f">12. Accessing and manipulating command line arguments and environment variables</a></li>
+<li><a href="#orgec57df7">13. Formatted and regular printing</a></li>
+<li><a href="#org8a67eb6">14. Formatted string creation</a></li>
+<li><a href="#org98d691f">15. Functions with variable number of arguments</a></li>
+<li><a href="#org9e6f44c">16. Environments</a></li>
+<li><a href="#orga066f88">17. Getting help with <code>howto</code></a></li>
+<li><a href="#org347e470">18. Returning from functions early</a></li>
+<li><a href="#orge44b732">19. Evaluating values</a></li>
+<li><a href="#org63e05d2">20. Input and output ports</a></li>
+<li><a href="#orgd79bf2c">21. Converting between types</a></li>
+<li><a href="#orgfd03ce6">22. Searching and indexing</a></li>
+<li><a href="#org1d8f35b">23. Loading libraries with <code>require</code></a>
 <ul>
-<li><a href="#org5b9fa57">23.1. Building and using a binary library in Haiku</a></li>
-<li><a href="#org738ab1b">23.2. Building and using a binary library in MINIX 3</a></li>
-<li><a href="#org2932337">23.3. Building and using a binary library in Linux</a></li>
-<li><a href="#org421fd11">23.4. Building and using a binary library in FreeBSD</a></li>
-<li><a href="#orgf5a02e7">23.5. Building and using a binary library in NetBSD</a></li>
+<li><a href="#org7e9aab1">23.1. Building and using a binary library in Haiku</a></li>
+<li><a href="#orgad134dd">23.2. Building and using a binary library in MINIX 3</a></li>
+<li><a href="#orgdf1c72c">23.3. Building and using a binary library in Linux</a></li>
+<li><a href="#org39f98cd">23.4. Building and using a binary library in FreeBSD</a></li>
+<li><a href="#org132791c">23.5. Building and using a binary library in NetBSD</a></li>
 </ul>
 </li>
-<li><a href="#org9f944cf">24. Using custom library loader with <code>require</code></a></li>
-<li><a href="#orgcab30a2">25. Embedding in C programs</a></li>
-<li><a href="#orgb958fcd">26. Tool support</a></li>
-<li><a href="#org09c6484">27. Using the development repository</a>
+<li><a href="#orgff78035">24. Using custom library loader with <code>require</code></a></li>
+<li><a href="#org80de894">25. Embedding in C programs</a></li>
+<li><a href="#orgae0f7f5">26. Tool support</a></li>
+<li><a href="#org83e2c9b">27. Using the development repository</a>
 <ul>
-<li><a href="#orgf2ebe6a">27.1. Raspberry Pi, Debian and Ubuntu</a></li>
-<li><a href="#org8fb2827">27.2. Arch Linux</a></li>
-<li><a href="#orgd6ce023">27.3. Haiku</a></li>
-<li><a href="#orgdb2a47d">27.4. FreeBSD</a></li>
-<li><a href="#orgefed063">27.5. NetBSD</a></li>
-<li><a href="#org34a4bfa">27.6. MINIX 3</a></li>
+<li><a href="#org8d22305">27.1. Raspberry Pi, Debian and Ubuntu</a></li>
+<li><a href="#org963c209">27.2. Arch Linux</a></li>
+<li><a href="#org6ac7ca1">27.3. Haiku</a></li>
+<li><a href="#orgf3052dc">27.4. FreeBSD</a></li>
+<li><a href="#org29bcde9">27.5. NetBSD</a></li>
+<li><a href="#org4a8bc5c">27.6. MINIX 3</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org885403c" class="outline-2">
-<h2 id="org885403c"><span class="section-number-2">1</span> About</h2>
+<div id="outline-container-orgfe698c0" class="outline-2">
+<h2 id="orgfe698c0"><span class="section-number-2">1</span> About</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 Octaspire Dern<sup><a id="fnr.1" class="footref" href="#fn.1">1</a></sup> is a platform independent programming language in
@@ -348,6 +348,7 @@ of C99. Currently it is tested with <b>gcc</b>, <b>clang</b>, <b>Tiny C Compiler
 Dern supports imperative and functional programming. It has atomic types
 <code>integer</code>, <code>real</code>, (utf-8) <code>string</code>, (utf-8) <code>character</code>, (utf-8) <code>symbol</code>, <code>boolean</code>,
 <code>nil</code>, (input/output) <code>port</code>, <code>hash-map</code>, <code>list</code>, <code>queue</code>, <code>environment</code>,
+first class <code>Semantic Versioning number</code>,
 first class <code>function</code>, <code>special</code> and <code>builtin</code>. As non-atomic type it has <code>vector</code>.
 So, where in scheme <code>'(1 2 3)</code> is a list, in Dern it is a vector.
 </p>
@@ -410,8 +411,8 @@ even in backwards incompatible manner.
 </div>
 </div>
 
-<div id="outline-container-orgc8de449" class="outline-2">
-<h2 id="orgc8de449"><span class="section-number-2">2</span> Building the amalgamated source release</h2>
+<div id="outline-container-orgf3c6f96" class="outline-2">
+<h2 id="orgf3c6f96"><span class="section-number-2">2</span> Building the amalgamated source release</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 The amalgamated source release is the recommended way of using Dern, if you don&rsquo;t need to
@@ -420,8 +421,8 @@ C standard library supporting a subset of C99.
 </p>
 </div>
 
-<div id="outline-container-org1480d41" class="outline-3">
-<h3 id="org1480d41"><span class="section-number-3">2.1</span> Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, macOS, Termux, AROS</h3>
+<div id="outline-container-orgf99e81d" class="outline-3">
+<h3 id="orgf99e81d"><span class="section-number-3">2.1</span> Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, macOS, Termux, AROS</h3>
 <div class="outline-text-3" id="text-2-1">
 <div class="org-src-container">
 <pre class="src src-sh">curl -O octaspire.com/dern.tar.bz2
@@ -442,8 +443,8 @@ More scripts for different platforms will be added later.
 </div>
 </div>
 
-<div id="outline-container-orge0f60b9" class="outline-3">
-<h3 id="orge0f60b9"><span class="section-number-3">2.2</span> Plan9</h3>
+<div id="outline-container-orgad83a1a" class="outline-3">
+<h3 id="orgad83a1a"><span class="section-number-3">2.2</span> Plan9</h3>
 <div class="outline-text-3" id="text-2-2">
 <div class="org-src-container">
 <pre class="src src-sh">hget http://octaspire.com/dern.tar.bz2 &gt; dern.tar.bz2
@@ -455,8 +456,8 @@ rc how-to-build/Plan9.sh
 </div>
 </div>
 
-<div id="outline-container-orgbabcff7" class="outline-3">
-<h3 id="orgbabcff7"><span class="section-number-3">2.3</span> Plan9 on ARM architecture</h3>
+<div id="outline-container-org996a793" class="outline-3">
+<h3 id="org996a793"><span class="section-number-3">2.3</span> Plan9 on ARM architecture</h3>
 <div class="outline-text-3" id="text-2-3">
 <div class="org-src-container">
 <pre class="src src-sh">hget http://octaspire.com/dern.tar.bz2 &gt; dern.tar.bz2
@@ -468,8 +469,8 @@ rc how-to-build/Plan9-arm.sh
 </div>
 </div>
 
-<div id="outline-container-org4df787d" class="outline-3">
-<h3 id="org4df787d"><span class="section-number-3">2.4</span> Windows using MinGW and Git</h3>
+<div id="outline-container-org13334c2" class="outline-3">
+<h3 id="org13334c2"><span class="section-number-3">2.4</span> Windows using MinGW and Git</h3>
 <div class="outline-text-3" id="text-2-4">
 <p>
 Download and install <b>MinGW</b> from
@@ -502,8 +503,8 @@ above. Run examples and programs in the <b>Command Prompt</b> window
 </div>
 </div>
 
-<div id="outline-container-orgc92b99e" class="outline-3">
-<h3 id="orgc92b99e"><span class="section-number-3">2.5</span> ReactOS</h3>
+<div id="outline-container-orgf0cba09" class="outline-3">
+<h3 id="orgf0cba09"><span class="section-number-3">2.5</span> ReactOS</h3>
 <div class="outline-text-3" id="text-2-5">
 <p>
 Use <b>ReactOS Applications Manager</b> to install <b>CodeBlocks with GCC compiler</b> and
@@ -521,8 +522,8 @@ Extract the archive and move the contents into the <b>version-x.y.z</b> director
 </div>
 </div>
 
-<div id="outline-container-org80fa4e3" class="outline-3">
-<h3 id="org80fa4e3"><span class="section-number-3">2.6</span> AmigaOS 4.x</h3>
+<div id="outline-container-orgd4d3ca1" class="outline-3">
+<h3 id="orgd4d3ca1"><span class="section-number-3">2.6</span> AmigaOS 4.x</h3>
 <div class="outline-text-3" id="text-2-6">
 <p>
 Download and install
@@ -548,8 +549,8 @@ sh how-to-build/AmigaOS41.sh
 </div>
 </div>
 
-<div id="outline-container-org7dc765d" class="outline-2">
-<h2 id="org7dc765d"><span class="section-number-2">3</span> Hello world</h2>
+<div id="outline-container-org80f7870" class="outline-2">
+<h2 id="org80f7870"><span class="section-number-2">3</span> Hello world</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 Here we have a version of the classic &rsquo;Hello World&rsquo;-program in Octaspire Dern.
@@ -623,13 +624,17 @@ of it directly to the interactive REPL.
                         <span style="color: #CC9393;">[My custom greetings]</span><span style="color: #ff8c00;">)</span>
 
 <span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">for</span> i <span style="color: #DCDCCC; font-weight: bold;">in</span> names <span style="color: #ff1493;">(</span>greeter <span style="color: #7fff00;">(</span>ln@ i <span style="color: #00bfff;">{</span>D+1<span style="color: #00bfff;">}</span><span style="color: #7fff00;">)</span> <span style="color: #7fff00;">(</span>ln@ i <span style="color: #00bfff;">{</span>D+0<span style="color: #00bfff;">}</span><span style="color: #7fff00;">)</span><span style="color: #ff1493;">)</span><span style="color: #ff8c00;">)</span>
+
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">+</span> 1.0.0 0.0.1<span style="color: #ff8c00;">)</span> <span style="color: #7F9F7F;">; 1.0.1</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">&lt;</span> 1.0.0 1.0.1<span style="color: #ff8c00;">)</span> <span style="color: #7F9F7F;">; true</span>
+<span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">&gt;</span> 1.0.0 1.0.1<span style="color: #ff8c00;">)</span> <span style="color: #7F9F7F;">; false</span>
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgbdc6b28" class="outline-2">
-<h2 id="orgbdc6b28"><span class="section-number-2">4</span> Values</h2>
+<div id="outline-container-org53c23b4" class="outline-2">
+<h2 id="org53c23b4"><span class="section-number-2">4</span> Values</h2>
 <div class="outline-text-2" id="text-4">
 <div class="org-src-container">
 <pre class="src src-octaspire-dern"><span style="color: #ff8c00;">{</span>D+128<span style="color: #ff8c00;">}</span>              <span style="color: #7F9F7F;">; These are integers</span>
@@ -648,6 +653,11 @@ of it directly to the interactive REPL.
 
 <span style="color: #ff8c00;">{</span>D+3.14<span style="color: #ff8c00;">}</span>             <span style="color: #7F9F7F;">; These are real</span>
 <span style="color: #ff8c00;">{</span>D-1.12<span style="color: #ff8c00;">}</span>
+
+0.1.2-rc.1+amd64     <span style="color: #7F9F7F;">; Semantic version numbers</span>
+1.0.1
+2.1.0-4344b11
+0.0.1+i386
 
 <span style="color: #CC9393;">[Hello]</span>           <span style="color: #7F9F7F;">; These are strings (utf-8)</span>
 <span style="color: #CC9393;">[Hell|6F|]</span>        <span style="color: #7F9F7F;">; Hello</span>
@@ -699,8 +709,8 @@ a program and need it to have strings inside.
 </div>
 </div>
 
-<div id="outline-container-orgecefe15" class="outline-2">
-<h2 id="orgecefe15"><span class="section-number-2">5</span> Single and multiline comments, making script files executable</h2>
+<div id="outline-container-org9faac49" class="outline-2">
+<h2 id="org9faac49"><span class="section-number-2">5</span> Single and multiline comments, making script files executable</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 Below are examples of single and multiline comments:
@@ -729,8 +739,8 @@ Multiline comments can be used to make script files executable in UNIX-like syst
 </div>
 </div>
 
-<div id="outline-container-org9c241ce" class="outline-2">
-<h2 id="org9c241ce"><span class="section-number-2">6</span> Binding names to values with <code>define</code></h2>
+<div id="outline-container-orgdb82b97" class="outline-2">
+<h2 id="orgdb82b97"><span class="section-number-2">6</span> Binding names to values with <code>define</code></h2>
 <div class="outline-text-2" id="text-6">
 <div class="org-src-container">
 <pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> pi <span style="color: #DCDCCC; font-weight: bold;">as</span> <span style="color: #ff1493;">{</span>D+3.14<span style="color: #ff1493;">}</span> <span style="color: #CC9393;">[value for pi]</span><span style="color: #ff8c00;">)</span>
@@ -778,8 +788,8 @@ in Dern&rsquo;s standard library are not yet documented properly. This is a work
 </p>
 </div>
 
-<div id="outline-container-orge975951" class="outline-3">
-<h3 id="orge975951"><span class="section-number-3">6.1</span> Binding in other environments than the current one</h3>
+<div id="outline-container-orgd9341e2" class="outline-3">
+<h3 id="orgd9341e2"><span class="section-number-3">6.1</span> Binding in other environments than the current one</h3>
 <div class="outline-text-3" id="text-6-1">
 <p>
 By using an explicit environment argument as the first argument to <code>define</code>, we can bind
@@ -804,8 +814,8 @@ is defined in the <code>myEnv</code>-environment. We use special <code>eval</cod
 </div>
 </div>
 
-<div id="outline-container-orgfa9c98d" class="outline-2">
-<h2 id="orgfa9c98d"><span class="section-number-2">7</span> Iteration</h2>
+<div id="outline-container-org6d1a9af" class="outline-2">
+<h2 id="org6d1a9af"><span class="section-number-2">7</span> Iteration</h2>
 <div class="outline-text-2" id="text-7">
 <p>
 Dern has two looping constructs: <code>while</code> and <code>for</code>. For can be used numerically, with a
@@ -855,8 +865,8 @@ way the iterator is incremented:
 </div>
 </div>
 
-<div id="outline-container-orga21a9d3" class="outline-2">
-<h2 id="orga21a9d3"><span class="section-number-2">8</span> Comparing and changing values, predicates</h2>
+<div id="outline-container-orgc087db3" class="outline-2">
+<h2 id="orgc087db3"><span class="section-number-2">8</span> Comparing and changing values, predicates</h2>
 <div class="outline-text-2" id="text-8">
 <p>
 Here are few examples:
@@ -944,8 +954,8 @@ for the above operators should be implemented in the standard library eventually
 </div>
 </div>
 
-<div id="outline-container-orgc06e440" class="outline-2">
-<h2 id="orgc06e440"><span class="section-number-2">9</span> Removing the last value from a vector</h2>
+<div id="outline-container-org19922ed" class="outline-2">
+<h2 id="org19922ed"><span class="section-number-2">9</span> Removing the last value from a vector</h2>
 <div class="outline-text-2" id="text-9">
 <p>
 Compare these two cases:
@@ -985,8 +995,8 @@ the builtin <code>pop-back</code>:
 </div>
 </div>
 
-<div id="outline-container-orgaf624fc" class="outline-2">
-<h2 id="orgaf624fc"><span class="section-number-2">10</span> Branching and selection</h2>
+<div id="outline-container-org884793a" class="outline-2">
+<h2 id="org884793a"><span class="section-number-2">10</span> Branching and selection</h2>
 <div class="outline-text-2" id="text-10">
 <p>
 Here are some examples using <code>if</code>:
@@ -1047,8 +1057,8 @@ Here are some examples using <code>select</code>:
 </div>
 </div>
 
-<div id="outline-container-org78c66a5" class="outline-2">
-<h2 id="org78c66a5"><span class="section-number-2">11</span> Selecting values from collections</h2>
+<div id="outline-container-orgeb83913" class="outline-2">
+<h2 id="orgeb83913"><span class="section-number-2">11</span> Selecting values from collections</h2>
 <div class="outline-text-2" id="text-11">
 <p>
 Values can be selected from collections using <code>ln@</code> and copied with <code>cp@</code>.
@@ -1065,8 +1075,8 @@ Values can be selected from collections using <code>ln@</code> and copied with <
 </div>
 </div>
 
-<div id="outline-container-orgf768510" class="outline-2">
-<h2 id="orgf768510"><span class="section-number-2">12</span> Accessing and manipulating command line arguments and environment variables</h2>
+<div id="outline-container-org917017f" class="outline-2">
+<h2 id="org917017f"><span class="section-number-2">12</span> Accessing and manipulating command line arguments and environment variables</h2>
 <div class="outline-text-2" id="text-12">
 <p>
 This section is not ready yet. See the example below. More information will
@@ -1081,8 +1091,8 @@ be added later.
 </div>
 </div>
 
-<div id="outline-container-orgf84a2ac" class="outline-2">
-<h2 id="orgf84a2ac"><span class="section-number-2">13</span> Formatted and regular printing</h2>
+<div id="outline-container-orgec57df7" class="outline-2">
+<h2 id="orgec57df7"><span class="section-number-2">13</span> Formatted and regular printing</h2>
 <div class="outline-text-2" id="text-13">
 <p>
 Here are few examples:
@@ -1104,8 +1114,8 @@ Here are few examples:
 </div>
 </div>
 
-<div id="outline-container-org6042b7f" class="outline-2">
-<h2 id="org6042b7f"><span class="section-number-2">14</span> Formatted string creation</h2>
+<div id="outline-container-org8a67eb6" class="outline-2">
+<h2 id="org8a67eb6"><span class="section-number-2">14</span> Formatted string creation</h2>
 <div class="outline-text-2" id="text-14">
 <p>
 Here are few examples:
@@ -1126,8 +1136,8 @@ Here are few examples:
 </div>
 </div>
 
-<div id="outline-container-orgbb97136" class="outline-2">
-<h2 id="orgbb97136"><span class="section-number-2">15</span> Functions with variable number of arguments</h2>
+<div id="outline-container-org98d691f" class="outline-2">
+<h2 id="org98d691f"><span class="section-number-2">15</span> Functions with variable number of arguments</h2>
 <div class="outline-text-2" id="text-15">
 <p>
 Here are few examples:
@@ -1150,8 +1160,8 @@ Here are few examples:
 </div>
 </div>
 
-<div id="outline-container-org881198a" class="outline-2">
-<h2 id="org881198a"><span class="section-number-2">16</span> Environments</h2>
+<div id="outline-container-org9e6f44c" class="outline-2">
+<h2 id="org9e6f44c"><span class="section-number-2">16</span> Environments</h2>
 <div class="outline-text-2" id="text-16">
 <p>
 Here are few examples:
@@ -1166,8 +1176,8 @@ Here are few examples:
 </div>
 </div>
 
-<div id="outline-container-orgf6abdb6" class="outline-2">
-<h2 id="orgf6abdb6"><span class="section-number-2">17</span> Getting help with <code>howto</code></h2>
+<div id="outline-container-orga066f88" class="outline-2">
+<h2 id="orga066f88"><span class="section-number-2">17</span> Getting help with <code>howto</code></h2>
 <div class="outline-text-2" id="text-17">
 <p>
 Function <code>howto</code> can be used for asking howto do something. It is given first the arguments and then the expected result. It returns a vector containing
@@ -1213,8 +1223,8 @@ Here is small example:
 </div>
 </div>
 
-<div id="outline-container-orgba5ca35" class="outline-2">
-<h2 id="orgba5ca35"><span class="section-number-2">18</span> Returning from functions early</h2>
+<div id="outline-container-org347e470" class="outline-2">
+<h2 id="org347e470"><span class="section-number-2">18</span> Returning from functions early</h2>
 <div class="outline-text-2" id="text-18">
 <p>
 The value of the last expression of function is usually the return value from that function.
@@ -1245,8 +1255,8 @@ will return the value <code>nil</code>. Short example:
 </div>
 </div>
 
-<div id="outline-container-orgd6706ef" class="outline-2">
-<h2 id="orgd6706ef"><span class="section-number-2">19</span> Evaluating values</h2>
+<div id="outline-container-orge44b732" class="outline-2">
+<h2 id="orge44b732"><span class="section-number-2">19</span> Evaluating values</h2>
 <div class="outline-text-2" id="text-19">
 <p>
 Special <code>eval</code> can be used to evaluate a given value. It can be called with one or two arguments.
@@ -1278,8 +1288,8 @@ called at runtime. Small example:
 </div>
 </div>
 
-<div id="outline-container-org6b15543" class="outline-2">
-<h2 id="org6b15543"><span class="section-number-2">20</span> Input and output ports</h2>
+<div id="outline-container-org63e05d2" class="outline-2">
+<h2 id="org63e05d2"><span class="section-number-2">20</span> Input and output ports</h2>
 <div class="outline-text-2" id="text-20">
 <p>
 Input and output can be done through ports. Ports can be created and attached to different
@@ -1413,8 +1423,8 @@ You can use <code>port-write</code> and <code>+=</code> to write to a port octet
 </div>
 </div>
 
-<div id="outline-container-org0a8528a" class="outline-2">
-<h2 id="org0a8528a"><span class="section-number-2">21</span> Converting between types</h2>
+<div id="outline-container-orgd79bf2c" class="outline-2">
+<h2 id="orgd79bf2c"><span class="section-number-2">21</span> Converting between types</h2>
 <div class="outline-text-2" id="text-21">
 <p>
 TODO
@@ -1422,8 +1432,8 @@ TODO
 </div>
 </div>
 
-<div id="outline-container-org123d3e5" class="outline-2">
-<h2 id="org123d3e5"><span class="section-number-2">22</span> Searching and indexing</h2>
+<div id="outline-container-orgfd03ce6" class="outline-2">
+<h2 id="orgfd03ce6"><span class="section-number-2">22</span> Searching and indexing</h2>
 <div class="outline-text-2" id="text-22">
 <div class="org-src-container">
 <pre class="src src-octaspire-dern"><span style="color: #ff8c00;">(</span><span style="color: #DCDCCC; font-weight: bold;">define</span> names <span style="color: #DCDCCC; font-weight: bold;">as</span> '<span style="color: #ff1493;">(</span>Mike John Lola Alice Lola<span style="color: #ff1493;">)</span> <span style="color: #CC9393;">[names]</span><span style="color: #ff8c00;">)</span>
@@ -1462,8 +1472,8 @@ TODO
 </div>
 </div>
 
-<div id="outline-container-org804fbd1" class="outline-2">
-<h2 id="org804fbd1"><span class="section-number-2">23</span> Loading libraries with <code>require</code></h2>
+<div id="outline-container-org1d8f35b" class="outline-2">
+<h2 id="org1d8f35b"><span class="section-number-2">23</span> Loading libraries with <code>require</code></h2>
 <div class="outline-text-2" id="text-23">
 <p>
 Dern has support for loading libraries or &ldquo;plugins&rdquo; during run time with the builtin <code>require</code>.
@@ -1583,8 +1593,8 @@ for different systems.
 </p>
 </div>
 
-<div id="outline-container-org5b9fa57" class="outline-3">
-<h3 id="org5b9fa57"><span class="section-number-3">23.1</span> Building and using a binary library in Haiku</h3>
+<div id="outline-container-org7e9aab1" class="outline-3">
+<h3 id="org7e9aab1"><span class="section-number-3">23.1</span> Building and using a binary library in Haiku</h3>
 <div class="outline-text-3" id="text-23-1">
 <p>
 Run these commands from the <b>build</b>-directory of the source distribution:
@@ -1609,8 +1619,8 @@ Write into the REPL:
 </div>
 </div>
 
-<div id="outline-container-org738ab1b" class="outline-3">
-<h3 id="org738ab1b"><span class="section-number-3">23.2</span> Building and using a binary library in MINIX 3</h3>
+<div id="outline-container-orgad134dd" class="outline-3">
+<h3 id="orgad134dd"><span class="section-number-3">23.2</span> Building and using a binary library in MINIX 3</h3>
 <div class="outline-text-3" id="text-23-2">
 <p>
 Run these commands from the <b>build</b>-directory of the source distribution:
@@ -1635,8 +1645,8 @@ Write into the REPL:
 </div>
 </div>
 
-<div id="outline-container-org2932337" class="outline-3">
-<h3 id="org2932337"><span class="section-number-3">23.3</span> Building and using a binary library in Linux</h3>
+<div id="outline-container-orgdf1c72c" class="outline-3">
+<h3 id="orgdf1c72c"><span class="section-number-3">23.3</span> Building and using a binary library in Linux</h3>
 <div class="outline-text-3" id="text-23-3">
 <p>
 Run these commands from the <b>build</b>-directory of the source distribution:
@@ -1661,8 +1671,8 @@ Write into the REPL:
 </div>
 </div>
 
-<div id="outline-container-org421fd11" class="outline-3">
-<h3 id="org421fd11"><span class="section-number-3">23.4</span> Building and using a binary library in FreeBSD</h3>
+<div id="outline-container-org39f98cd" class="outline-3">
+<h3 id="org39f98cd"><span class="section-number-3">23.4</span> Building and using a binary library in FreeBSD</h3>
 <div class="outline-text-3" id="text-23-4">
 <p>
 Run these commands from the <b>build</b>-directory of the source distribution:
@@ -1687,8 +1697,8 @@ Write into the REPL:
 </div>
 </div>
 
-<div id="outline-container-orgf5a02e7" class="outline-3">
-<h3 id="orgf5a02e7"><span class="section-number-3">23.5</span> Building and using a binary library in NetBSD</h3>
+<div id="outline-container-org132791c" class="outline-3">
+<h3 id="org132791c"><span class="section-number-3">23.5</span> Building and using a binary library in NetBSD</h3>
 <div class="outline-text-3" id="text-23-5">
 <p>
 Run these commands from the <b>build</b>-directory of the source distribution:
@@ -1714,8 +1724,8 @@ Write into the REPL:
 </div>
 </div>
 
-<div id="outline-container-org9f944cf" class="outline-2">
-<h2 id="org9f944cf"><span class="section-number-2">24</span> Using custom library loader with <code>require</code></h2>
+<div id="outline-container-orgff78035" class="outline-2">
+<h2 id="orgff78035"><span class="section-number-2">24</span> Using custom library loader with <code>require</code></h2>
 <div class="outline-text-2" id="text-24">
 <p>
 Sometimes you might want to override the default library searching and loading
@@ -1773,8 +1783,8 @@ program, or maybe the library must be first downloaded through a socket.
 </div>
 </div>
 
-<div id="outline-container-orgcab30a2" class="outline-2">
-<h2 id="orgcab30a2"><span class="section-number-2">25</span> Embedding in C programs</h2>
+<div id="outline-container-org80de894" class="outline-2">
+<h2 id="org80de894"><span class="section-number-2">25</span> Embedding in C programs</h2>
 <div class="outline-text-2" id="text-25">
 <p>
 TODO
@@ -1782,8 +1792,8 @@ TODO
 </div>
 </div>
 
-<div id="outline-container-orgb958fcd" class="outline-2">
-<h2 id="orgb958fcd"><span class="section-number-2">26</span> Tool support</h2>
+<div id="outline-container-orgae0f7f5" class="outline-2">
+<h2 id="orgae0f7f5"><span class="section-number-2">26</span> Tool support</h2>
 <div class="outline-text-2" id="text-26">
 <p>
 <b>etc</b>-directory of the source distribution contains syntax files for <b>vim</b>, <b>emacs</b>,
@@ -1792,8 +1802,8 @@ TODO
 </div>
 </div>
 
-<div id="outline-container-org09c6484" class="outline-2">
-<h2 id="org09c6484"><span class="section-number-2">27</span> Using the development repository</h2>
+<div id="outline-container-org83e2c9b" class="outline-2">
+<h2 id="org83e2c9b"><span class="section-number-2">27</span> Using the development repository</h2>
 <div class="outline-text-2" id="text-27">
 <p>
 The amalgamated source release can be used without Make or other build tools;
@@ -1889,8 +1899,8 @@ builds the documentation.
 </p>
 </div>
 
-<div id="outline-container-orgf2ebe6a" class="outline-3">
-<h3 id="orgf2ebe6a"><span class="section-number-3">27.1</span> Raspberry Pi, Debian and Ubuntu</h3>
+<div id="outline-container-org8d22305" class="outline-3">
+<h3 id="org8d22305"><span class="section-number-3">27.1</span> Raspberry Pi, Debian and Ubuntu</h3>
 <div class="outline-text-3" id="text-27-1">
 <p>
 To build Dern from the regular source distribution in Raspberry Pi (Raspbian), Debian or Ubuntu (16.04 LTS) system:
@@ -1907,8 +1917,8 @@ make
 </div>
 </div>
 
-<div id="outline-container-org8fb2827" class="outline-3">
-<h3 id="org8fb2827"><span class="section-number-3">27.2</span> Arch Linux</h3>
+<div id="outline-container-org963c209" class="outline-3">
+<h3 id="org963c209"><span class="section-number-3">27.2</span> Arch Linux</h3>
 <div class="outline-text-3" id="text-27-2">
 <p>
 To build on Arch Linux (Arch Linux ARM) system:
@@ -1925,8 +1935,8 @@ make
 </div>
 </div>
 
-<div id="outline-container-orgd6ce023" class="outline-3">
-<h3 id="orgd6ce023"><span class="section-number-3">27.3</span> Haiku</h3>
+<div id="outline-container-org6ac7ca1" class="outline-3">
+<h3 id="org6ac7ca1"><span class="section-number-3">27.3</span> Haiku</h3>
 <div class="outline-text-3" id="text-27-3">
 <p>
 To build on Haiku (Version Walter (Revision hrev51127) x86<sub>gcc2</sub>):
@@ -1943,8 +1953,8 @@ make submodules-init
 </div>
 </div>
 
-<div id="outline-container-orgdb2a47d" class="outline-3">
-<h3 id="orgdb2a47d"><span class="section-number-3">27.4</span> FreeBSD</h3>
+<div id="outline-container-orgf3052dc" class="outline-3">
+<h3 id="orgf3052dc"><span class="section-number-3">27.4</span> FreeBSD</h3>
 <div class="outline-text-3" id="text-27-4">
 <p>
 To build on FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2) system:
@@ -1961,8 +1971,8 @@ make
 </div>
 </div>
 
-<div id="outline-container-orgefed063" class="outline-3">
-<h3 id="orgefed063"><span class="section-number-3">27.5</span> NetBSD</h3>
+<div id="outline-container-org29bcde9" class="outline-3">
+<h3 id="org29bcde9"><span class="section-number-3">27.5</span> NetBSD</h3>
 <div class="outline-text-3" id="text-27-5">
 <p>
 To build on NetBSD (NetBSD-7.1-i386) system:
@@ -1980,8 +1990,8 @@ make
 </div>
 </div>
 
-<div id="outline-container-org34a4bfa" class="outline-3">
-<h3 id="org34a4bfa"><span class="section-number-3">27.6</span> MINIX 3</h3>
+<div id="outline-container-org4a8bc5c" class="outline-3">
+<h3 id="org4a8bc5c"><span class="section-number-3">27.6</span> MINIX 3</h3>
 <div class="outline-text-3" id="text-27-6">
 <p>
 To build from the regular source distribution on MINIX 3 (minix<sub>R3.3.0</sub>-588a35b) system:
@@ -2014,7 +2024,7 @@ make
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: www.octaspire.com</p>
-<p class="date">Created: 2018-06-29 Fri 10:00</p>
+<p class="date">Created: 2018-07-06 Fri 09:46</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
