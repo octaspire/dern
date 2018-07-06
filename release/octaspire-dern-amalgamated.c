@@ -25638,7 +25638,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "371"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "372"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -48825,7 +48825,7 @@ octaspire_dern_value_t * octaspire_dern_vm_value_as_semver_create_value_for_elem
 
     size_t const len = octaspire_semver_get_length(value->value.semver);
 
-    if (abs(index) >= len)
+    if ((size_t)(abs(index)) >= len)
     {
         return octaspire_dern_vm_create_new_value_error_format(
             self,

@@ -2079,7 +2079,7 @@ octaspire_dern_value_t * octaspire_dern_vm_value_as_semver_create_value_for_elem
 
     size_t const len = octaspire_semver_get_length(value->value.semver);
 
-    if (abs(index) >= len)
+    if ((size_t)(abs(index)) >= len)
     {
         return octaspire_dern_vm_create_new_value_error_format(
             self,
