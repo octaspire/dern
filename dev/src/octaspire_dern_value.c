@@ -3567,15 +3567,10 @@ size_t octaspire_dern_value_get_length(
         }
         case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
-            octaspire_string_t * str =
-                octaspire_semver_to_string(self->value.semver);
-
-            size_t const result = octaspire_string_get_length_in_octets(str);
-
-            octaspire_string_release(str);
-            str = 0;
-
-            return result;
+            return
+                3 +
+                octaspire_semver_get_num_pre_release_identifiers(self->value.semver) +
+                octaspire_semver_get_num_build_metadata_identifiers(self->value.semver);
         }
     }
 

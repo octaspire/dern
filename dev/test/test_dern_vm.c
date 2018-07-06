@@ -1939,6 +1939,36 @@ TEST octaspire_dern_vm_builtin_plus_semver_1_1_1_and_1_0_0_and_0_2_0_and_0_0_3_t
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_minus_semver_3_4_5_and_1_0_0_and_0_2_0_and_0_0_3_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(- 3.5.7 1.0.0 0.2.0 0.0.3)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_SEMVER, evaluatedValue->typeTag);
+
+    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
+        evaluatedValue,
+        octaspire_dern_vm_get_allocator(vm));
+
+    ASSERT_STR_EQ(
+        "2.3.4",
+        octaspire_string_get_c_string(tmpStr));
+
+    octaspire_string_release(tmpStr);
+    tmpStr = 0;
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_minus_string_cat_dog_cat_and_string_cat_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -6903,6 +6933,70 @@ TEST octaspire_dern_vm_error_in_function_body_is_reported_test(void)
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
         "\tAt form: >>>>>>>>>>(f {D+1})<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_1_2_3_and_integers_0_and_1_and_2_and_3_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    // 0
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ 1.2.3 {D+0})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+
+    ASSERT_EQ(
+        1,
+        octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    // 1
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ 1.2.3 {D+1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+
+    ASSERT_EQ(
+        2,
+        octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    // 2
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ 1.2.3 {D+2})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+
+    ASSERT_EQ(
+        3,
+        octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
+    // 3
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ 1.2.3 {D+3})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Index 3 is outside the SemVer length 3.\n"
+        "\tAt form: >>>>>>>>>>(cp@ 1.2.3 {D+3})<<<<<<<<<<\n",
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -15556,6 +15650,7 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_builtin_plus_hash_map_1_a_and_2_and_b_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_hash_map_1_a_and_2_and_b_and_3_and_c_test);
     RUN_TEST(octaspire_dern_vm_builtin_plus_semver_1_1_1_and_1_0_0_and_0_2_0_and_0_0_3_test);
+    RUN_TEST(octaspire_dern_vm_builtin_minus_semver_3_4_5_and_1_0_0_and_0_2_0_and_0_0_3_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_string_cat_dog_cat_and_string_cat_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_test);
     RUN_TEST(octaspire_dern_vm_builtin_minus_string_abcabcabc_and_character_a_and_character_b_test);
@@ -15703,6 +15798,7 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
 
 
     RUN_TEST(octaspire_dern_vm_error_in_function_body_is_reported_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_1_2_3_and_integers_0_and_1_and_2_and_3_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_0_and_string_abc_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_1_and_string_abc_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_string_abc_test);

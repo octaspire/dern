@@ -2070,6 +2070,119 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol(
     return result;
 }
 
+octaspire_dern_value_t * octaspire_dern_vm_value_as_semver_create_value_for_element_at(
+    octaspire_dern_vm_t    * const self,
+    octaspire_dern_value_t * const value,
+    int32_t                  const index)
+{
+    octaspire_helpers_verify_true(value->typeTag == OCTASPIRE_DERN_VALUE_TAG_SEMVER);
+
+    size_t const len = octaspire_semver_get_length(value->value.semver);
+
+    if (abs(index) >= len)
+    {
+        return octaspire_dern_vm_create_new_value_error_format(
+            self,
+            "Index %" PRId32 " is outside the SemVer length %zu.",
+            index,
+            len);
+    }
+
+    size_t realIndex = index;
+
+    if (index < 0)
+    {
+        realIndex = len + index;
+        octaspire_helpers_verify_true(realIndex < len);
+    }
+
+    if (realIndex < 3)
+    {
+        if (realIndex == 0)
+        {
+            return octaspire_dern_vm_create_new_value_integer(
+                self,
+                octaspire_semver_get_major(value->value.semver));
+        }
+
+        if (realIndex == 1)
+        {
+            return octaspire_dern_vm_create_new_value_integer(
+                self,
+                octaspire_semver_get_minor(value->value.semver));
+        }
+
+        return octaspire_dern_vm_create_new_value_integer(
+            self,
+            octaspire_semver_get_patch(value->value.semver));
+    }
+
+    realIndex -= 3;
+
+    if (realIndex <
+        octaspire_semver_get_num_pre_release_identifiers(value->value.semver))
+    {
+            size_t       numerical = 0;
+            char const * lexical   = 0;
+
+            octaspire_semver_pre_release_elem_type_t elemType =
+                octaspire_semver_get_prerelease_at(
+                    value->value.semver,
+                    0,
+                    &numerical,
+                    &lexical);
+
+            if (OCTASPIRE_SEMVER_PRE_RELEASE_ELEM_TYPE_LEXICAL == elemType)
+            {
+                octaspire_helpers_verify_not_null(lexical);
+
+                return octaspire_dern_vm_create_new_value_string_from_c_string(
+                    self,
+                    lexical);
+            }
+
+            if (OCTASPIRE_SEMVER_PRE_RELEASE_ELEM_TYPE_NUMERICAL == elemType)
+            {
+                return octaspire_dern_vm_create_new_value_integer(
+                    self,
+                    numerical);
+            }
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                self,
+                "Bad pre release indentifier in SemVer at index %zu.",
+                realIndex);
+    }
+
+    realIndex -= octaspire_semver_get_num_pre_release_identifiers(value->value.semver);
+
+    if (realIndex <
+        octaspire_semver_get_num_build_metadata_identifiers(value->value.semver))
+    {
+
+        char const * const str = octaspire_semver_get_build_metadata_at(
+            value->value.semver,
+            realIndex);
+
+        if (str)
+        {
+            return octaspire_dern_vm_create_new_value_string_from_c_string(
+                self,
+                str);
+        }
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            self,
+            "Bad build metadata indentifier in SemVer at index %zu.",
+            realIndex);
+    }
+
+    return octaspire_dern_vm_create_new_value_error_format(
+        self,
+        "Bad index %" PRId32 " for SemVer.",
+        index);
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_create_new_value_semver(
     octaspire_dern_vm_t *self,
     octaspire_semver_t * const value)
