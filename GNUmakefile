@@ -65,32 +65,31 @@ else ifeq ($(UNAME), OpenBSD)
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 else ifeq ($(UNAME)$(MACHINE), Haikux86_64)
-    	OS                 := "X86_64 Haiku"
-        LDFLAGS            := -lm -Wl,-export-dynamic
-        DLSUFFIX           := .so
-        LIBCFLAGS          := -fPIC
-        DLFLAGS            := -shared
-        CURSESLDFLAGS      := -lncursesw
-	SOCKETLDFLAGS      := -L/system/lib -lnetwork
+    OS                 := "X86_64 Haiku"
+    LDFLAGS            := -lm -Wl,-export-dynamic
+    DLSUFFIX           := .so
+    LIBCFLAGS          := -fPIC
+    DLFLAGS            := -shared
+    CURSESLDFLAGS      := -lncursesw
+    SOCKETLDFLAGS      := -L/system/lib -lnetwork
 
-        SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
-        SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
-        SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+    SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+    SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
+    SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 else ifeq ($(UNAME)$(MACHINE), Haikux86)
-    	OS                 := "Haiku"
-        LDFLAGS            := -lm -Wl,-export-dynamic
-        DLSUFFIX           := .so
-        LIBCFLAGS          := -fPIC
-        DLFLAGS            := -shared
-        CURSESLDFLAGS      := -lncursesw
-	SOCKETLDFLAGS      := -L/system/lib -lnetwork
+    OS                 := "Haiku"
+    LDFLAGS            := -lm -Wl,-export-dynamic
+    DLSUFFIX           := .so
+    LIBCFLAGS          := -fPIC
+    DLFLAGS            := -shared
+    CURSESLDFLAGS      := -lncursesw
+    SOCKETLDFLAGS      := -L/system/lib -lnetwork
 
-        SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
-        SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
-        SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
-else
-    OS                 := "Other"
-    # GNU/Linux
+    SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+    SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
+    SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+else ifeq ($(UNAME), Linux)
+    OS                 := "GNU/Linux"
     LDFLAGS            := -lm -Wl,-export-dynamic -ldl
     DLSUFFIX           := .so
     LIBCFLAGS          := -fPIC
