@@ -37,9 +37,12 @@ DEVOBJS := $(TESTOBJS)                           \
 EMACSFLAGS=--load dev/external/octaspire_dotfiles/emacs/.emacs.d/init.el --batch
 
 UNAME := $(shell uname)
+MACHINE := $(shell uname -m)
+OS := "Unknown"
 
 # TODO Detect more platforms and show message about using the amalgamation on other platforms
 ifeq ($(UNAME), Darwin)
+    OS                 := "macOS"
     LDFLAGS            :=
     DLSUFFIX           := .dylib
     LIBCFLAGS          :=
@@ -50,30 +53,62 @@ ifeq ($(UNAME), Darwin)
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 else ifeq ($(UNAME), OpenBSD)
+    OS                 := "OpenBSD"
     LDFLAGS            := -lm
     DLSUFFIX           := .so
     LIBCFLAGS          := -fPIC
     DLFLAGS            := -shared
     CURSESLDFLAGS      := -lncurses
+    SOCKETLDFLAGS      :=
 
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
-else
-    # GNU/Linux
+else ifeq ($(UNAME)$(MACHINE), Haikux86_64)
+    OS                 := "X86_64 Haiku"
+    LDFLAGS            := -lm -Wl,-export-dynamic
+    DLSUFFIX           := .so
+    LIBCFLAGS          := -fPIC
+    DLFLAGS            := -shared
+    CURSESLDFLAGS      := -lncursesw
+    SOCKETLDFLAGS      := -L/system/lib -lnetwork
+
+    SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+    SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
+    SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+else ifeq ($(UNAME)$(MACHINE), Haikux86)
+    OS                 := "Haiku"
+    LDFLAGS            := -lm -Wl,-export-dynamic
+    DLSUFFIX           := .so
+    LIBCFLAGS          := -fPIC
+    DLFLAGS            := -shared
+    CURSESLDFLAGS      := -lncursesw
+    SOCKETLDFLAGS      := -L/system/lib -lnetwork
+
+    SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+    SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
+    SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+else ifeq ($(UNAME), Linux)
+    OS                 := "GNU/Linux"
     LDFLAGS            := -lm -Wl,-export-dynamic -ldl
     DLSUFFIX           := .so
     LIBCFLAGS          := -fPIC
     DLFLAGS            := -shared
     CURSESLDFLAGS      := -lncursesw
+    SOCKETLDFLAGS      :=
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 endif
 
-.PHONY: development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push tag
+.PHONY: oscheck development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push tag
 
-all: development
+all: oscheck development
+
+oscheck:
+ifeq ($(OS), "Unknown")
+    $(error "This platform is not supported for development builds. Please use the release.")
+endif
 
 ###############################################################################
 ####### Development part: build using separate implementation files ###########
@@ -107,7 +142,7 @@ $(TESTDR)test_dern_vm.o: $(TESTDR)test_dern_vm.c
 
 libdern_socket$(DLSUFFIX): $(PLUGINDIR)dern_socket.c $(AMALGAMATION)
 	$(info PC  $<)
-	@$(CC) $(CFLAGS) $(LIBCFLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -I release -o $@ $< $(LDFLAGS)
+	@$(CC) $(CFLAGS) $(LIBCFLAGS) $(DLFLAGS) $(LDFLAGS) $(SOCKETLDFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -I release -o $@ $<
 
 libdern_dir$(DLSUFFIX): $(PLUGINDIR)dern_dir.c $(AMALGAMATION)
 	$(info PC  $<)
