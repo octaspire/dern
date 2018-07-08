@@ -76,6 +76,18 @@ else ifeq ($(UNAME), FreeBSD)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+else ifeq ($(UNAME), NetBSD)
+    OS                 := "NetBSD"
+    LDFLAGS            := -lm
+    DLSUFFIX           := .so
+    LIBCFLAGS          := -fPIC
+    DLFLAGS            := -shared
+    CURSESLDFLAGS      := -lcurses -lterminfo
+    SOCKETLDFLAGS      :=
+
+    SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+    SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
+    SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_ttf
 else ifeq ($(UNAME)$(MACHINE), Haikux86_64)
     OS                 := "X86_64 Haiku"
     LDFLAGS            := -lm -Wl,-export-dynamic
