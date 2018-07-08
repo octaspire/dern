@@ -128,11 +128,23 @@ endif
 
 .PHONY: oscheck development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push tag
 
-all: oscheck development
+all: oscheck submodulecheck development
 
 oscheck:
 ifeq ($(OS), "Unknown")
     $(error "This platform is not supported for development builds. Please use the release.")
+endif
+
+define init_submodules
+    @echo "--  Initializing submodules..."
+    @git submodule init --quiet
+    @git submodule update --quiet
+    @echo "OK  Done."
+endef
+
+submodulecheck:
+ifeq (,$(wildcard dev/external/octaspire_core/release/octaspire-core-amalgamated.c))
+	$(call init_submodules)
 endif
 
 ###############################################################################
@@ -233,10 +245,7 @@ $(CORDIR)LICENSE:
 	@make submodules-init --silent
 
 submodules-init:
-	@echo "--  Initializing submodules..."
-	@git submodule init --quiet
-	@git submodule update --quiet
-	@echo "OK  Done."
+	$(call init_submodules)
 
 submodules-pull:
 	@echo "--  Pulling submodules..."
