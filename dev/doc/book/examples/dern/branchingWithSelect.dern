@@ -1,0 +1,32 @@
+(select true [Yes])            ; Yes
+
+(select false [No]
+        true  [Yes])           ; Yes
+
+(select default [Yes])         ; Yes
+
+(select false   [No]
+        default [Yes])         ; Yes
+
+(select false   [No]
+        true    [Maybe]
+        default [Yes])         ; Maybe
+
+(select false [Yes])           ; nil
+
+
+(define f1 as (fn () true)  [f1] '() howto-no)
+(define f2 as (fn () false) [f2] '() howto-no)
+
+(select (f1)  [Yes]
+        (f2)  [No]
+        false [Maybe])         ; Yes
+
+; Prints: Sun is shining
+(select (f1)  (println [Sun is shining])
+        (f2)  (println [It rains])
+        false [Maybe]
+        false {D+2}
+        false {D+3.14}
+        false |a|
+        false [There can be many selectors...])

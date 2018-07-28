@@ -1,0 +1,2 @@
+(define names as '(John Mark Lisa) [names list])
+(for i in names (println [Hello {} World!] i))

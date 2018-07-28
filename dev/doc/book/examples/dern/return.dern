@@ -1,0 +1,6 @@
+(define errorCode as {D+1} [0 means no error.])
+
+(define start-engine as (fn ()
+    (if (!= errorCode {D+0}) (return [Cannot start]))
+    ; .... Start the engine here...
+    [Start engine if all OK] '() howto-no))

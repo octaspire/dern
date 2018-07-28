@@ -1,0 +1,13 @@
+(define f as (io-file-open [/path/goes/here.xy]) [f])
+
+(for i in f (println i)) ; Print every octet
+
+(port-seek f {D+0})      ; Seek to the beginning
+
+; Print every other octet
+(for i in f step {D+2} (println i))
+
+(port-seek f {D+0}) ; Seek to the beginning
+
+; Print every third octet
+(for i in f step {D+3} (println i))

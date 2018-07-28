@@ -1,0 +1,1179 @@
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" context="width=device-width, initial-scale=1"/>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Ubuntu:400,700&amp;subset=cyrillic-ext,greek-ext,latin-ext" rel="stylesheet">
+    <style>
+      // Source highlight
+      .keyword          {color: darkred; font-weight: 600;}
+      .type, .classname {color: #00baff;}
+      .string           {color: #ff0048;}
+      .regexp           {color: orange;}
+      .specialchar      {color: #ff9600;}
+      .comment          {color: #697f96; font-style: italic;}
+      .number           {color: #4fc8de;}
+      .preproc          {color: darkorange; font-weight: 600;}
+      .symbol           {color: darkred;}
+      .function         {color: black; font-weight: 600;}
+      .cbracket         {color: darkblue;}
+      .todo             {color: darkorange; font-weight: 600; background-color: hotpink;}
+      .linenum          {color: black;}
+      .url              {color: #ff6400; text-decoration: underline;}
+
+      /*
+      * Modified version of Wing 1.0.0-beta
+      * Original Copyright 2016, Kabir Shah
+      * http://usewing.ml/
+      * Free to use under the MIT license.
+      * https://kingpixil.github.io/license
+      * Modifications by octaspire released under
+      * the MIT license.
+      */
+
+      /*------------------------------------------------------------
+      Base Style
+      ------------------------------------------------------------*/
+
+      html {
+      box-sizing: border-box;
+      font-size: 100.0%;
+      margin: 0;
+      padding: 0;
+      }
+
+      body {
+      line-height: 1.6;
+      margin: auto;
+      max-width: 800px;
+      font-family: 'Ubuntu', sans-serif;
+      }
+
+      p {
+      text-align: justify;
+      }
+
+      /*------------------------------------------------------------
+      Links
+      ------------------------------------------------------------*/
+      a {
+      color: #ff6400;
+      transition: all .1s ease;
+      text-decoration: none;
+      }
+
+      a:hover {
+      cursor: pointer;
+      color: #ff0000;
+      }
+
+      .container {
+      max-width: 800px;
+      margin: 0 auto;
+      width: 80%;
+      }
+
+      .row {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-between;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      }
+
+      .row > :first-child {
+      margin-left: 0;
+      }
+
+      .col {
+      -webkit-box-flex: 1;
+      -moz-box-flex: 1;
+      -webkit-flex: 1;
+      -ms-flex: 1;
+      flex: 1;
+      }
+
+      .col, [class^='col-'], [class*=" col-"] {
+      margin-left: 4%;
+      }
+
+      .col-1 {
+      flex: 1;
+      }
+
+      .col-2 {
+      flex: 2;
+      }
+
+      .col-3 {
+      flex: 3;
+      }
+
+      .col-4 {
+      flex: 4;
+      }
+
+      .col-5 {
+      flex: 5;
+      }
+
+      .col-6 {
+      flex: 6;
+      }
+
+      .col-7 {
+      flex: 7;
+      }
+
+      .col-8 {
+      flex: 8;
+      }
+
+      .col-9 {
+      flex: 9;
+      }
+
+      .col-10 {
+      flex: 10;
+      }
+
+      .col-11 {
+      flex: 11;
+      }
+
+      .col-12 {
+      flex: 12;
+      }
+
+      @media screen and (max-width: 768px) {
+      .col, [class^='col-'], [class*=" col-"] {
+      margin: 1rem 0;
+      flex: 0 0 100%;
+      }
+      }
+
+      /*------------------------------------------------------------
+      Lists
+      ------------------------------------------------------------*/
+
+      ul, ol {
+      padding-left: 0;
+      margin-top: 0;
+      }
+
+      ul ul, ul ol, ol ol, ol ul {
+      margin: 1rem 0 1rem 2rem;
+      font-size: 95%;
+      }
+
+      ul {
+      list-style: circle inside;
+      }
+
+      ol {
+      list-style: decimal inside;
+      }
+
+      li {
+      margin-bottom: 1rem;
+      }
+
+      /*------------------------------------------------------------
+      Misc
+      ------------------------------------------------------------*/
+
+      code {
+      padding: 0.3rem 0.4rem;
+      margin: -1.5rem 0.0rem -2.0rem 0.0rem;
+      font-size: 100%;
+      white-space: nowrap;
+      background: #F1F1F1;
+      border: 1px solid #E1E1E1;
+      border-radius: 4px;
+      font-family: 'Ubuntu Mono', monospace;
+      }
+
+      pre {
+      font-size: 100%;
+      background: #F1F1F1;
+      border: 1px solid #E1E1E1;
+      border-radius: 4px;
+      font-family: 'Ubuntu Mono', monospace;
+
+      padding: 1rem 1.5rem;
+      margin: 1.0rem 0.0rem 1.0rem 0.0rem;
+      white-space: pre-wrap;
+      white-space: -moz-pre-wrap;
+      white-space: -pre-wrap;
+      white-space: -o-pre-wrap;
+      word-wrap: break-word;
+      }
+
+      /*------------------------------------------------------------
+      Navigation
+      ------------------------------------------------------------*/
+
+      .nav {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 1rem;
+      }
+
+      .nav-menu,
+      .nav-brand {
+      display: flex;
+      }
+
+      .nav-menu {
+      flex-flow: row;
+      flex: 1 0 auto;
+      }
+
+      .nav-item {
+      padding: 0.25rem 0.5rem;
+      }
+
+      .nav-logo {
+      font-weight: bolder;
+      font-size: 2rem;
+      line-height: 0;
+      padding-right: 2rem;
+      }
+
+      .cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      overflow: hidden;
+      margin-bottom: 2rem
+      }
+
+      @media (max-width: 675px) {
+      .cards > .card {
+      flex: auto;
+      }
+      }
+
+      .card {
+      flex-direction: column;
+      overflow: hidden;
+      flex: 0 1 calc(50% - 0.5rem);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+      width: 200px;
+      }
+
+      .card-header {
+      font-weight: 600;
+      margin: 0;
+      padding: 2rem 3rem 1rem;
+      }
+
+      .card-body {
+      padding: 0 3rem 2rem 3rem;
+      min-height: 100px;
+      }
+
+      .card-footer {
+      display: flex;
+      align-items: stretch;
+      border-top: 1px solid #dbdbdb;
+      flex: 1;
+      }
+
+      .card-footer .card-footer-item {
+      display: flex;
+      flex-basis: 0;
+      flex-grow: 1;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 1rem;
+      }
+
+      .card-footer-item:not(:first-child) {
+      border-left: 1px solid #dbdbdb;
+      }
+
+      .footer {
+      color: gray;
+      font-size: 80%;
+      }
+      // MIT licensed modified style Wing 1.0.0-beta ends.
+    </style>
+  </head>
+
+  <body>
+    <div class="horizontal-align">
+      <a href="https:octaspire.io">
+        <img class="nav-logo" src="data:image/png;base64,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"
+             width="128" title="Octaspire Logo" alt="Octaspire Logo"/>
+      </a>
+      <h1>Octaspire Dern Manual</h1>
+    </div>
+
+  .TOC: here
+
+  <h2>About</h2>
+
+  <p>
+    Octaspire <span class="footnote"
+          title="An obscure language (https://en.wiktionary.org/wiki/dern)">
+      Dern</span>
+    is a platform independent programming language in
+    standard C99. It is a dialect of Lisp with influences from Scheme,
+    Emacs Lisp and C. It runs in Amiga, Haiku, Plan9, Unix, Windows and
+    almost anything between.
+  </p>
+
+  <p>
+    Dern is a dynamically typed language with <b>lexical scoping</b> and has
+    <b>mark and sweep</b> garbage collector. Functions in Dern are first
+    class values. Somewhat unique property of Dern is that it has
+    <b>first class semantic version numbers</b> built-in in the language.
+    Unlike Lisp, that uses linked lists as its major data structure,
+    Dern uses vectors.
+  </p>
+
+  <p>
+    Dern is written in standard <b>C99</b> and depends only on a C compiler,
+    standard library and <b>octaspire-core</b> library. Dern should compile
+    cleanly without any warnings using <i>-Wall -Wextra</i> on any
+    compiler supporting a subset of C99. Currently it is tested with
+    gcc, clang, Tiny C Compiler (tcc), Portable C compiler (pcc) and
+    Plan9&apos;s 8c.
+  </p>
+
+  <p>
+    Dern supports imperative and functional programming. It has atomic types
+    <b>integer</b>, <b>real</b>, (utf-8) <b>string</b>, (utf-8)
+    <b>character</b>, (utf-8) <b>symbol</b>, <b>boolean</b>,
+    <b>nil</b>, (input/output) <b>port</b>, <b>hash-map</b>,
+    <b>list</b>, <b>queue</b>, <b>environment</b>,
+    first class <b>SemVer 2.0.0</b>,
+    first class <b>function</b>, <b>special</b> and <b>builtin</b>.
+    As non-atomic type it has <b>vector</b>.
+    So, where in scheme <code>&apos;(1 2 3)</code> is a list, in Dern
+    it is a vector.
+  </p>
+
+  <p>
+    Every variable and function definition in Dern must be documented by a
+    <b>documentation string</b>. Dern also makes sure that every formal
+    function parameter is documented in the documentation of a
+    function definition. The documentation can be accessed with
+    the <code>doc</code>-function. <code>howto</code> is
+    another useful function. You can give it examples of function arguments
+    and expected result and it will tell you what functions you can call to
+    get the expected result from the given arguments.
+  </p>
+
+  <p>
+    Dern can also be extended with functions written in C; C-functions
+    can be registered as builtin or special. Arguments to builtins are
+    evaluated normally, but to specials are not, so specials can be used
+    to implement special forms like <code>if</code>. When defining
+    your own builtins and specials, you can tell Dern whether the function
+    can be tested by <code>howto</code> or not. Pure functions - functions
+    without side effects - can always be tested, but if the function
+    writes a file, or sends data through a socket, it probably should not
+    be tested.
+  </p>
+
+  <p>
+    Dern has also a library system, that allows one to load libraries using
+    builtin <code>require</code>. On most systems Dern also supports loading
+    of binary libraries (<i>.so</i>, <i>.dll</i> or <i>.dylib</i> files).
+    For the end user, it doesn&apos;t matter whether the library she loaded
+    was binary or written in Dern; it can be used exactly the same way.
+  </p>
+
+  <p>
+    By using the amalgamated version of Dern, you need only one file.
+    This same single source file, <b>octaspire-dern-amalgamated.c</b>, can be
+    compiled into (1) stand-alone unit test runner, (2) interactive Dern-REPL
+    and (3) used as a single header file library in programs that want
+    to embed the Dern-language. The file contains also the source for
+    the Octaspire Core library. The amalgamated source release is
+    the recommended way of using Dern; there is only one file
+    to keep track of, it is easy to use with any build system,
+    and the resulting machine code even runs faster.
+  </p>
+
+  <p>
+    Dern is portable and is tested and known to run in Linux, FreeBSD,
+    OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3,
+    Haiku, Windows, ReactOS, macOS, Termux, Plan9, AROS and Amiga.
+    The <b>how-to-build</b>-directory of the amalgamated source release
+    contains a build script for all tested platforms.
+  </p>
+
+  <p>
+    Please note, that this is the first language I have ever designed
+    or implemented. There are some features that are not yet implemented
+    and probably bugs that are not yet fixed. The interpreter is
+    currently also just a tree walker, and not a faster bytecode vm.
+  </p>
+
+  <p>
+    Dern uses <a href="http://semver.org">Semantic Versioning 2.0.0</a>
+    version numbering scheme. As long as the MAJOR version number is zero
+    anything can change at any time, even in backwards incompatible manner.
+  </p>
+
+
+  <h2>Building the amalgamated source release</h2>
+
+  <p>
+    The amalgamated source release is the recommended way of using Dern,
+    if you don&apos;t need to modify Dern itself. To use the amalgamated release,
+    you will need only a C compiler and C standard library supporting
+    a subset of C99.
+  </p>
+
+  <h3>Linux, FreeBSD, OpenBSD, NetBSD, OpenIndiana, DragonFly BSD, MidnightBSD, MINIX 3, Haiku, macOS, Termux, AROS</h3>
+
+  .INCLUDE: dev/doc/book/examples/sh/unixLike.sh
+
+  <p>
+    Replace <i>YOUR_PLATFORM_NAME_HERE.XX</i> with <i>FreeBSD.sh</i>,
+    <i>NetBSD.sh</i>, <i>OpenBSD.sh</i>, <i>OpenIndiana.sh</i>,
+    <i>DragonFlyBSD.sh</i>, <i>MidnightBSD.sh</i>, <i>linux.sh</i>,
+    <i>minix3.sh</i>, <i>haiku.sh</i>, <i>macOS.sh</i>, <i>termux.sh</i>
+    or <i>AROS.sh</i>. More scripts for different platforms will be
+    added later.
+  </p>
+
+  <h3>Plan9</h3>
+
+  .INCLUDE: dev/doc/book/examples/sh/plan9.sh
+
+  <h3>Plan9 on ARM architecture</h3>
+
+  .INCLUDE: dev/doc/book/examples/sh/plan9Arm.sh
+
+  <h3>Windows using MinGW and Git</h3>
+
+  <p>
+    Download and install <a href="http://www.mingw.org">MinGW</a> into
+    a directory, for example into <i>C:\MinGW</i>.
+    Install the <b>GCC</b> compiler. Add <i>MinGW\bin</i> into the <b>PATH</b>
+    (for example, if you installed into <i>C:\MinGW</i>, add
+    <i>C:\MinGW\bin</i> into the <i>PATH</i>).
+  </p>
+
+  <p>
+    Download and install
+    <a href="https://git-scm.com/download/win">Git for Windows</a>.
+  </p>
+
+  <p>
+    Start <b>Git Bash</b> and run the following commands:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/windows.sh
+
+  <p>
+    Start <b>Windows Command Prompt</b> and change directory to the same
+    release directory, as above. Run examples and programs
+    in the <b>Command Prompt</b> window (NOT in the Git Bash window).
+  </p>
+
+  <h3>ReactOS</h3>
+
+  <p>
+    Use <b>ReactOS Applications Manager</b> to install
+    <b>CodeBlocks with GCC compiler</b>, a <b>web browser</b> and
+    <b>7-Zip</b>. Remember the path where you installed CodeBlocks.
+    Add <b>CodeBlocks\MinGW\bin</b> and <b>CodeBlocks\MinGW</b> into
+    the <b>PATH</b>. Use a web browser to download
+    <a href="https://octaspire.io/dern.tar.bz2">Dern release</a>.
+    Extract the file two times using 7-Zip, first into <b>dern.tar</b>
+    and then into <b>dern</b>.
+    Go to the path where you extracted the archive and into the
+    <b>version-x.y.z</b> directory.
+    Run command <b>how-to-build\ReactOS.bat</b>. If you need, you can
+    download curses and SDL2 libraries and headers from
+    <a href="https://octaspire.io/dern-windeps.zip">here</a>.
+    Extract the archive and move the contents into
+    the <b>version-x.y.z</b> directory.
+  </p>
+
+  <h3>AmigaOS 4.x</h3>
+
+  <p>
+    Download and install
+    <a href="http://www.hyperion-entertainment.biz/index.php/downloads?view=download&amp;layout=form&amp;file=82">AmigaOS SDK</a>.
+    Download and extract
+    <a href="http://aminet.net/util/arc/bzip2.lha">bzip2</a> to get
+    <b>bzip2_68k</b> executable.
+    Download the
+    <a href="http://octaspire.com/dern.tar.bz2">amalgamated Dern source release</a>.
+  </p>
+
+  <p>
+    Open Shell window and run the following commands:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/amiga.sh
+
+  <h2>Hello world</h2>
+
+  <p>
+    Here we have a version of the classic <i>Hello World</i>-program in
+    Octaspire Dern. Instead of just printing <i>Hello, World!</i>, it is
+    a bit more complex to give you some feeling for the language.
+    If you are in Unix-like system and have <b>octaspire-dern-repl</b> in
+    somewhere on your PATH, you can make the script executable using
+    the shebang. You can also run the file by
+    <code>octaspire-dern-repl hello-world.dern</code> or by writing it
+    or parts of it directly to the interactive REPL.
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/hello.dern
+
+  <h2>Values</h2>
+
+  .INCLUDE: dev/doc/book/examples/dern/values.dern
+
+  <p>
+    The text after character <code>;</code> is a <b>single line comment</b>.
+    Single line comments run until the end of the line. Dern has also
+    <b>multiline comments</b> that are written between <code>#!</code> and
+    <code>!#</code>. Note that string delimiters in Dern are <code>[</code>
+    and <code>]</code> and not <code>"</code>; this way dern code can be
+    written inside C-programs without escaping.
+  </p>
+
+  <p>
+    Strings can be embedded in strings like this:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/strInStr.dern
+
+  <p>
+    This can be useful sometimes, for example, if you need to evaluate a string as
+    a program and need it to have strings inside.
+  </p>
+
+  <h2>Single and multiline comments, making script files executable</h2>
+
+  <p>
+    Below are examples of single and multiline comments:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/comments.dern
+
+  <p>
+    Multiline comments can be used to make script files executable
+    in UNIX-like systems:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/executable.dern
+
+  <h2>Binding names to values with <code>define</code></h2>
+
+  .INCLUDE: dev/doc/book/examples/dern/binding.dern
+
+  <p>
+    Here we bind three values to a name: one real, one vector
+    and one function taking one argument. Here is an example
+    of using those names:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/usingBindings.dern
+
+  <p>
+    And to see the documentation for these values:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/showDocOfBindings.dern
+
+  <p>
+    The documentation of the function contains also documentation for
+    the parameters.
+  </p>
+
+  <p>
+    Function <code>doc</code> can also be used with builtins and
+    specials defined by the standard library or user in C.
+  </p>
+
+  <p>
+    Please note that at the time of writing most of the functions
+    in Dern's standard library are not yet documented properly.
+    This is a work in progress.
+  </p>
+
+  <h3>Binding in other environments than the current one</h3>
+
+  <p>
+    By using an explicit environment argument as the first argument
+    to <code>define</code>, we can bind names to values in other
+    environments than the current one. Example:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/bindInOther.dern
+
+  <p>
+    In the example above, <code>pi</code> is undefined in the current
+    (global) environment, but it is defined in
+    the <code>myEnv</code>-environment. We use special
+    <code>eval</code> to evaluate <code>pi</code> in the
+    <code>myEnv</code>-environment.
+  </p>
+
+  <h2>Iteration</h2>
+
+  <p>
+    Dern has two looping constructs: <code>while</code> and <code>for</code>.
+    For can be used numerically, with a container (vector, string, hash-map,
+    etc.) and with (input) <b>ports</b>. Below is couple of examples:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/while.dern
+
+  <p>
+    Numerical for:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/numericalFor.dern
+
+  <p>
+    Container for:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/containerFor.dern
+
+  <p>
+    Both the <b>numerical for</b> and <b>container for</b> support the use
+    of optional <code>step</code> to change the way the iterator is incremented:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/iteratorStep.dern
+
+  <h2>Comparing and changing values, predicates</h2>
+
+  <p>
+    Here are few examples:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/comparing.dern
+
+  <p>
+    Operators <code>++</code>, <code>--</code>, <code>+=</code>,
+    <code>-=</code>, <code>==</code> and <code>!=</code> are similar to
+    those in C. Note also that <b>the operands need not to be numbers</b>.
+    You can, for example, use <code>+=</code> to push values to the
+    back of a vector, add characters into a string, write values into
+    a port, etc. <code>-==</code> removes values from a supported
+    collection by comparing the unique identifiers of values.
+    It removes only values that are the same (equal values might not be
+    the same).
+  </p>
+
+  <p>
+    Please note: all the examples above should work, but support for
+    non-numeric types is not finished on most of the operators. Using
+    those operators with non-numeric arguments aborts the program or
+    returns error. Complete support for non numeric operands for
+    the above operators should be implemented in the standard library
+    eventually.
+  </p>
+
+  <h2>Removing the last value from a vector</h2>
+
+  <p>
+    Compare these two cases:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/removeLast.dern
+
+  <p>
+    The last example removes really only the last value (compared using
+    <code>===</code>). The first example removes all the values that are
+    equal to the last value (compared using <code>==</code>).
+  </p>
+
+  <p>
+    Values can be removed this way from any position by using different
+    indices. As with other functions, negative indices count from the
+    end of the collection and positive from the beginning.
+  </p>
+
+  <p>
+    More efficient way of removing the last value from a collection is to use
+    the builtin <code>pop-back</code>:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/removeLastWithPopBack.dern
+
+  <h2>Branching and selection</h2>
+
+  <p>
+    Here are some examples using <code>if</code>:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/branchingWithIf.dern
+
+  <p>
+    Here are some examples using <code>select</code>:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/branchingWithSelect.dern
+
+  <h2>Selecting values from collections</h2>
+
+  <p>
+    Values can be selected from collections using <code>ln@</code> and
+    copied with <code>cp@</code>. <code>ln@</code> is pronounced
+    <b>link at</b> and <code>cp@</code> is pronounced <b>copy at</b>.
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/selectingFromCollection.dern
+
+  <h2>Accessing and manipulating command line arguments and environment variables</h2>
+
+  <p>
+    This section is not ready yet. See the example below. More information will
+    be added later.
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/argsAndEnv.dern
+
+  <h2>Formatted and regular printing</h2>
+
+  <p>
+    Here are few examples:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/formattedAndRegularPrinting.dern
+
+  <h2>Formatted string creation</h2>
+
+  <p>
+    Here are few examples:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/formattedStringCreation.dern
+
+  <h2>Functions with variable number of arguments</h2>
+
+  <p>
+    Here are few examples:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/varArgs.dern
+
+  <h2>Environments</h2>
+
+  <p>
+    Here are few examples:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/environments.dern
+
+  <h2>Getting help with <code>howto</code></h2>
+
+  <p>
+    Function <code>howto</code> can be used for asking howto do something.
+    It is given first the arguments and then the expected result. It returns
+    a vector containing a listing of forms to do the task. Not all functions
+    support <code>howto</code>, but many do. Usually functions supporting
+    <code>howto</code> should not have (large) side effects. When writing Dern
+    functions, one has to decide whether those functions should support
+    <code>howto</code> or not.
+  </p>
+
+  <p>
+    Here is small example:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/howto.dern
+
+  <h2>Returning from functions early</h2>
+
+  <p>
+    The value of the last expression of function is usually the return value
+    from that function. However, by using <code>return</code> one can return
+    early and have multiple exit points from a function. Small example:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/return.dern
+
+  <p>
+    Function <code>return</code> can be called with zero or one argument.
+    If no arguments are given, then <code>return</code> will return
+    the value <code>nil</code>. Short example:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/returnWithoutArguments.dern
+
+  <h2>Evaluating values</h2>
+
+  <p>
+    Special <code>eval</code> can be used to evaluate a given value. It can
+    be called with one or two arguments. The second argument, if present,
+    must be an environment that is used while evaluating. If no environment
+    is given, the global environment is used instead.
+  </p>
+
+  <p>
+    Function <code>eval</code> is useful, for example, in situations where
+    you build the name of the function to be called at runtime. Small example:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/eval.dern
+
+  <h2>Input and output ports</h2>
+
+  <p>
+    Input and output can be done through ports. Ports can be created and
+    attached to different sources and sinks of data (for example
+    the file system).
+  </p>
+
+  <p>
+    Here is small example:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/ioPorts.dern
+
+  <p>
+    Ports can be explicitly closed, but it is not required; port will close automatically when the
+    garbage collector collects it. Some ports might also support <b>seeking</b>,
+    <b>distance measurement</b>, <b>length measurement</b> and <b>flushing</b>.
+    Here is another small example:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/ioPortOperations.dern
+
+  <p>
+    Input ports can be iterated with <code>for</code> in similar way that
+    containers are iterated:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/ioPortIteration.dern
+
+  <p>
+    <code>io-file-open</code> will open a file for reading and writing,
+    <code>input-file-open</code> will open a file only for reading and
+    <code>output-file-open</code> will open file only for writing.
+  </p>
+
+  <p>
+    Below is short example about querying a port for supported operations:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/ioPortQuerySupported.dern
+
+  <p>
+    You can use <code>port-write</code> and <code>+=</code> to write to
+    a port octets with values <b>integer</b>, <b>character</b>,
+    <b>string</b> and <b>vector</b> of these types. Example:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/ioPortAdding.dern
+
+  <h2>Converting between types</h2>
+
+  <p>
+    TODO
+  </p>
+
+  <h2>Searching and indexing</h2>
+
+  <p>
+    TODO
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/searching.dern
+
+  <h2>Loading libraries with <code>require</code></h2>
+
+  <p>
+    Dern has support for loading libraries or "plugins" during run time with
+    the builtin <code>require</code>. Before loading the requested library,
+    <code>require</code> checks whether the library is already loaded,
+    and loads it only if it isn't already loaded.
+  </p>
+
+  <p>
+    It first tries to find a source library (<i>.dern</i> file) with
+    the given name. If it finds, it loads that. Next it tries to find
+    a binary library (<i>.so</i> file in Unix) and loads that if found.
+  </p>
+
+  <p>
+    So, in the example below, <code>require</code> tries first to find file
+    named <b>mylib.dern</b> and then, if the system is Unix, file named
+    <b>libmylib.so</b>.
+  </p>
+
+  <p>
+    Here is small example:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/require.dern
+
+  <p>
+    If <b>mylib</b>-library is required later again, there is no need to
+    search and load it again, because <code>require</code> knows that
+    a library with that name is already loaded.
+  </p>
+
+  <p>
+    Below is a small example of a binary library for <i>Linux</i>,
+    <i>FreeBSD</i>, <i>NetBSD</i>, <i>Haiku</i> and
+    <i>MINIX 3</i> systems.
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/c/mylib.c
+
+  <p>
+    See directory doc/examples/plugin in the source distribution for
+    an example with Makefiles for different systems.
+  </p>
+
+  <h3>Building and using a binary library in Haiku</h3>
+
+  <p>
+    Run these commands from the <b>build</b>-directory of
+    the source distribution:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/buildMyLibInHaiku.sh
+
+  <p>
+    Write into the REPL:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/useMyLib.dern
+
+  <h3>Building and using a binary library in MINIX 3</h3>
+
+  <p>
+    Run these commands from the <b>build</b>-directory of
+    the source distribution:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/buildMyLibInMinix3.sh
+
+  <p>
+    Write into the REPL:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/useMyLib.dern
+
+  <h3>Building and using a binary library in Linux</h3>
+
+  <p>
+    Run these commands from the <b>build</b>-directory of
+    the source distribution:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/buildMyLibInLinux.sh
+
+  <p>
+    Write into the REPL:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/useMyLib.dern
+
+  <h3>Building and using a binary library in FreeBSD</h3>
+
+  <p>
+    Run these commands from the <b>build</b>-directory of
+    the source distribution:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/buildMyLibInFreeBSD.sh
+
+  <p>
+    Write into the REPL:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/useMyLib.dern
+
+  <h3>Building and using a binary library in NetBSD</h3>
+
+  <p>
+    Run these commands from the <b>build</b>-directory of
+    the source distribution:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/buildMyLibInNetBSD.sh
+
+  <p>
+    Write into the REPL:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/useMyLib.dern
+
+  <h2>Using custom library loader with <code>require</code></h2>
+
+  <p>
+    Sometimes you might want to override the default library searching and
+    loading functionality and use a custom loader instead. For example, when
+    writing a game that contains all the resources in a compressed archive or
+    inside the executable program, or maybe the library must be first
+    downloaded through a socket.
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/c/customLibraryLoader.c
+
+  <h2>Embedding in C programs</h2>
+
+  <p>
+    TODO
+  </p>
+
+  <h2>Tool support</h2>
+
+  <p>
+    <b>etc</b>-directory of the source distribution contains syntax files
+    for <b>vim</b>, <b>emacs</b>, <b>pygments</b> and
+    <b>GNU source-highlight</b>.
+  </p>
+
+  <h2>Using the development repository</h2>
+
+  <p>
+  The amalgamated source release can be used without Make or other build tools;
+  only a compiler is needed. It is the recommended way of using Dern and is
+  available from the <b>release</b> directory of the git repository and
+  from the <b>dern.tar.bz2</b> archives at
+  <a href="https://octaspire.io">octaspire.io</a> and
+  <a href="http://www.octaspire.com">octaspire.com</a>. However, when
+  there is a need to modify Dern itself or to build the documentation, then
+  some tools are needed and the Makefile in the git repository should be used.
+  In this case the files to be modified are found from the <b>dev</b>
+  directory.
+  </p>
+
+  <p>
+    On different systems the required installation commands can vary.
+    In any case, you should install a <b>C compiler</b> and <b>git</b>.
+    Depending on the system, you might also need to install <b>GNU make</b>.
+    If you want to build the documentation, you should also install
+    <b>Emacs 26.1</b> or newer. For code coverage and performance
+    measurement you might need to install additional tools.
+  </p>
+
+  <p>
+    That's it; <b>octaspire_core</b> and <b>octaspire_dotfiles</b> are
+    included as git submodules. The Emacs dotfiles are used to set
+    the correct settings and styling when building the documentation
+    (documentation is written using Emacs Org mode).
+  </p>
+
+  <p>
+    Example of using the development repository and the different
+    targets available in the Makefile:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/usingMake.sh
+
+  <p>
+    Running <code>make</code> should run <code>make submodules-init</code>
+    automatically if needed (<code>make submodules-init</code> clones and
+    initializes submodules), but it can be run also manually when cloning
+    the repository for the first time. There is no need to run it again
+    later.
+  </p>
+
+  <p>
+    If you want to update the submodules into the latest commits, you can
+    run <code>make submodules-pull</code>. It does a git pull on all
+    the submodules.
+  </p>
+
+  <p>
+    Running <code>make</code> builds the Dern REPL and unit test runner from
+    the separate Dern source files and then the binary plugins using
+    the amalgamation.
+  </p>
+
+  <p>
+    Running <code>make amalgamation</code> generates first the amalgamation
+    (only, if the source files are changed). Then it detects the system and
+    runs the correct build script. This creates the Dern REPL and unit test
+    runner binaries and also the binary plugins on some systems.
+  </p>
+
+  <p>
+    <code>make test</code> runs the unit tests, <code>make codestyle</code>
+    runs the C coding style checks, <code>make cppcheck</code> runs
+    the cppcheck static analysis on the code, <code>make valgrind</code> runs
+    the unit tests through Valgrind (dynamic analysis and memory leak
+    detection) and <code>make coverage</code> generates a unit test
+    coverage report that can be used for finding code that is not covered
+    yet by unit tests. <code>make coverage-show</code> generates and shows
+    the coverage report in a web browser. <code>make perf-linux</code> measures
+    the performance in GNU/Linux using the unit test runner.
+    <code>make release/documentation/dern-manual.html</code> builds
+    the documentation.
+  </p>
+
+  <h3>Raspberry Pi, Debian and Ubuntu</h3>
+
+  <p>
+    To build Dern from the regular source distribution in <i>Raspberry Pi
+    (Raspbian)</i>, <i>Debian</i> or <i>Ubuntu (16.04 LTS)</i> system:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/buildDevInDebianLike.sh
+
+  <h3>Arch Linux</h3>
+
+  <p>
+    To build on <i>Arch Linux (Arch Linux ARM)</i> system:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/buildDevOnArchLinux.sh
+
+  <h3>Haiku</h3>
+
+  <p>
+    To build on <i>Haiku (Version Walter (Revision hrev51127) x86_gcc2)</i>:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/buildDevOnHaiku.sh
+
+  <h3>FreeBSD</h3>
+
+  <p>
+    To build on <i>FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2)</i> system:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/buildDevOnFreeBSD.sh
+
+  <h3>NetBSD</h3>
+
+  <p>
+    To build on <i>NetBSD (NetBSD-7.1-i386)</i> system:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/buildDevOnNetBSD.sh
+
+  <h3>MINIX 3</h3>
+
+  <p>
+    To build from the regular source distribution on
+    <i>MINIX 3 (minix_R3.3.0-588a35b)</i> system:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/sh/buildDevOnMINIX3.sh
+
+  <div class="footer">
+    <p>
+      Copyright © 2017, 2018 octaspire.com<br/>
+      All content in this site is released under the Apache 2.0 license,
+      unless stated otherwise.
+    </p>
+  </div>
+
+  </body>
+</html>

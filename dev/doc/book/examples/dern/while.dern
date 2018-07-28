@@ -1,0 +1,2 @@
+(define i as {D+0} [my counter])
+(while (<= i {D+10}) (println [Going at {}] i) (++ i))

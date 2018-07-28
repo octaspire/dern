@@ -1,0 +1,4 @@
+(++ (ln@ '({D+1} {D+2} {D+3}) {D+1}))   ; 3
+(+= (cp@ [abc] {D+1}) {D+2}))           ; |d|
+(ln@ (hash-map |a| [abc]) |a|   'hash)  ; [abc]
+(ln@ (hash-map |a| [abc]) {D+0} 'index) ; [abc]

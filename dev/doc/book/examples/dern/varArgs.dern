@@ -1,0 +1,11 @@
+(define f as (fn (x ...) x) [f]
+    '(x [x] ... [varargs]) howto-no)
+
+(f {D+1} {D+2} {D+3})   ; (1 2 3)
+
+
+(define f as (fn (x y ...) (println x) (println y))
+    [f] '(x [x] y [rest of the args] ... [varargs])
+    howto-no)
+
+(f {D+1} {D+2} {D+3})   ; Prints 1|newline|(2 3)

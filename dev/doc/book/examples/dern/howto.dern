@@ -1,0 +1,28 @@
+; Enter these forms into the REPL
+(howto {D+1} {D+2} {D+3})
+; ((+ {D+1} {D+2}) (+ {D+2} {D+1}))
+
+(howto [a] [b] [ab]) ; ((+ [a] [b]))
+
+(howto '(John Mike Alice Lola) 0 'John)
+; ((ln@ (quote (John Mike Alice Lola)) {D+0})
+;  (cp@ (quote (John Mike Alice Lola)) {D+0}))
+
+(howto '(John Mike Alice Lola) 'Lola '({D+3}))
+; ((find (quote (John Mike Alice Lola)) (quote Lola)))
+
+
+; Or print them
+(println (howto {D+1} {D+2} {D+3}))
+; prints ((+ {D+1} {D+2}) (+ {D+2} {D+1}))
+
+(println (howto [a] [b] [ab])) ; prints ((+ [a] [b]))
+
+(println (howto '(John Mike Alice Lola) 0 'John))
+; prints ((ln@ (quote (John Mike Alice Lola)) {D+0})
+;         (cp@ (quote (John Mike Alice Lola)) {D+0}))
+
+(println (howto '(John Mike Alice Lola) 'Lola
+                '({D+3})))
+; prints ((find (quote (John Mike Alice Lola))
+;               (quote Lola)))

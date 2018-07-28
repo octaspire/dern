@@ -1,0 +1,13 @@
+(define level-next as (fn ()
+    (level-reset)
+
+    (define lnum as (+ level-current-number {D+1})
+        [level number])
+
+    (if (> lnum number-of-levels) (= lnum {D+1}))
+
+    (define name-of-fn-to-call as 'level-
+        [name of the level builder function to call])
+    (+= name-of-fn-to-call lnum)
+    (eval ((eval name-of-fn-to-call)))) [next level]
+        '() howto-no)

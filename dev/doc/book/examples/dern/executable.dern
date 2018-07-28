@@ -1,0 +1,4 @@
+#!/usr/bin/env octaspire-dern-repl
+!#
+
+(println [Hello World])

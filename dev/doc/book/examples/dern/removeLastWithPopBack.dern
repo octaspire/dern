@@ -1,0 +1,2 @@
+(define v as '({D+1} {D+2} {D+3} {D+3}) [v])
+(pop-back v)                  ; (1 2 3)

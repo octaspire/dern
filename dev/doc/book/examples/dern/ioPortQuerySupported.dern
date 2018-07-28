@@ -1,0 +1,16 @@
+(define f as (io-file-open [/path/goes/here.xy]) [f])
+
+(port-supports-output? f)          ; true
+(port-supports-input?  f)          ; true
+
+(define f as
+    (output-file-open [/path/goes/here.xy]) [f])
+
+(port-supports-output? f)          ; true
+(port-supports-input?  f)          ; false
+
+(define f as
+    (input-file-open [/path/goes/here.xy]) [f])
+
+(port-supports-output? f)          ; false
+(port-supports-input?  f)          ; true

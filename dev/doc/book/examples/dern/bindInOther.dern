@@ -1,0 +1,5 @@
+(define myEnv as (env-new) [my own environment])
+(define pi as {D+3.14} [value for pi] in myEnv)
+
+pi                  ; <error>: Unbound symbol 'pi'
+(eval pi myEnv)     ; 3.14

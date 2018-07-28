@@ -1,0 +1,7 @@
+(define f as (io-file-open [/path/goes/here.xy]) [f])
+
+(port-read f)
+(port-read f {D+3})
+
+(port-write f {D+65})
+(port-write f '({D+65} {D+66} {D+67}))

@@ -1,0 +1,10 @@
+(print   [Hi])   ; Prints Hi without newline
+(println [Hi])   ; Prints Hi and newline
+
+(define name1  as 'Jim   [some name 1])
+(define name2  as 'Alice [some name 2])
+(define number as {D+30} [some number])
+
+; Prints Hi Jim and Alice! It is 30 degrees outside.
+(println [Hi {} and {}! It is {} degrees outside.]
+    name1 name2 number)
