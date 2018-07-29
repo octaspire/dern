@@ -33,6 +33,8 @@ with open(sys.argv[1]) as f:
             syncf = incf + ".html"
             with open(syncf, 'r') as myfile:
                 filec = myfile.read();
+                filec = filec.replace('<tt>', '')
+                filec = filec.replace('</tt>', '')
                 sys.stdout.write(filec)
         elif h2Pattern.match(line.lstrip(' ')):
                 sectionCounter = 0

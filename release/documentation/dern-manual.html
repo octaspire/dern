@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <title>Octaspire Dern Manual</title>
     <style>
-// Source highlight
+/* Style for Source highlight */
 .keyword {color: darkred; font-weight: 600;}
 .type, .classname { color: #00baff;}
 .string {color: #ff0048;}
@@ -327,7 +327,7 @@
       color: gray;
       font-size: 80%;
       }
-// MIT licensed modified style Wing 1.0.0-beta ends.
+      /* MIT licensed modified style Wing 1.0.0-beta ends */
     </style>
   </head>
 
@@ -492,13 +492,13 @@
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">curl -O octaspire</span><span class="symbol">.</span><span class="normal">com/dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2</span>
+<pre><span class="normal">curl -O octaspire</span><span class="symbol">.</span><span class="normal">com/dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2</span>
 <span class="normal">curl -O https</span><span class="symbol">:</span><span class="normal">//octaspire</span><span class="symbol">.</span><span class="normal">io/dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2</span><span class="symbol">.</span><span class="normal">sha512</span>
 <span class="normal">sha512sum -c dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2</span><span class="symbol">.</span><span class="normal">sha512</span>
 <span class="normal">tar jxf dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2</span>
 <span class="normal">cd dern</span>
 <span class="normal">sh how-to-build/YOUR_PLATFORM_NAME_HERE</span><span class="symbol">.</span><span class="normal">XX</span>
-</tt></pre>
+</pre>
 
   <p>
     Replace <i>YOUR_PLATFORM_NAME_HERE.XX</i> with <i>FreeBSD.sh</i>,
@@ -515,11 +515,11 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">hget http</span><span class="symbol">:</span><span class="normal">//octaspire</span><span class="symbol">.</span><span class="normal">com/dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2 </span><span class="symbol">&amp;</span><span class="normal">gt</span><span class="symbol">;</span><span class="normal"> dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2</span>
+<pre><span class="normal">hget http</span><span class="symbol">:</span><span class="normal">//octaspire</span><span class="symbol">.</span><span class="normal">com/dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2 </span><span class="symbol">&amp;</span><span class="normal">gt</span><span class="symbol">;</span><span class="normal"> dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2</span>
 <span class="normal">tar xf dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2</span>
 <span class="normal">cd dern</span><span class="symbol">/*</span>
 <span class="normal">rc how-to-build/Plan</span><span class="number">9</span><span class="symbol">.</span><span class="normal">sh</span>
-</tt></pre>
+</pre>
 
     <h3>2.3 Plan9 on ARM architecture</h3>
 
@@ -527,11 +527,11 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">hget http</span><span class="symbol">:</span><span class="normal">//octaspire</span><span class="symbol">.</span><span class="normal">com/dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2 </span><span class="symbol">&gt;</span><span class="normal"> dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2</span>
+<pre><span class="normal">hget http</span><span class="symbol">:</span><span class="normal">//octaspire</span><span class="symbol">.</span><span class="normal">com/dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2 </span><span class="symbol">&gt;</span><span class="normal"> dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2</span>
 <span class="normal">tar xf dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2</span>
 <span class="normal">cd dern</span><span class="symbol">/*</span>
 <span class="normal">rc how-to-build/Plan</span><span class="number">9</span><span class="normal">-arm</span><span class="symbol">.</span><span class="normal">sh</span>
-</tt></pre>
+</pre>
 
     <h3>2.4 Windows using MinGW and Git</h3>
 
@@ -556,10 +556,10 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">git clone https</span><span class="symbol">:</span><span class="normal">//github</span><span class="symbol">.</span><span class="normal">com/octaspire/dern</span><span class="symbol">.</span><span class="normal">git</span>
+<pre><span class="normal">git clone https</span><span class="symbol">:</span><span class="normal">//github</span><span class="symbol">.</span><span class="normal">com/octaspire/dern</span><span class="symbol">.</span><span class="normal">git</span>
 <span class="normal">cd dern/release</span>
 <span class="normal">how-to-build/windows</span><span class="symbol">.</span><span class="normal">sh</span>
-</tt></pre>
+</pre>
 
   <p>
     Start <b>Windows Command Prompt</b> and change directory to the same
@@ -607,11 +607,11 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">bzip2_68k -dk dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2</span>
+<pre><span class="normal">bzip2_68k -dk dern</span><span class="symbol">.</span><span class="normal">tar</span><span class="symbol">.</span><span class="normal">bz2</span>
 <span class="normal">tar xf dern</span><span class="symbol">.</span><span class="normal">tar</span>
 <span class="normal">cd dern</span>
 <span class="normal">sh how-to-build/AmigaOS</span><span class="number">41</span><span class="symbol">.</span><span class="normal">sh</span>
-</tt></pre>
+</pre>
 
   <h2><a id="3"></a>3. Hello world</h2>
 
@@ -630,7 +630,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">  </span><span class="comment">#!/usr/bin/env octaspire-dern-repl</span>
+<pre><span class="normal">  </span><span class="comment">#!/usr/bin/env octaspire-dern-repl</span>
 <span class="comment">  This is a multiline comment.    !#</span>
 
 <span class="normal">  </span><span class="comment">; 1. Print once 'Hello, World!' and newline</span>
@@ -695,7 +695,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">  </span><span class="cbracket">(</span><span class="keyword">+</span><span class="normal"> </span><span class="number">1.0.0</span><span class="normal"> </span><span class="number">0.0.1</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; 1.0.1</span>
 <span class="normal">  </span><span class="cbracket">(</span><span class="keyword">&lt;</span><span class="normal"> </span><span class="number">1.0.0</span><span class="normal"> </span><span class="number">1.0.1</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; true</span>
 <span class="normal">  </span><span class="cbracket">(</span><span class="keyword">&gt;</span><span class="normal"> </span><span class="number">1.0.0</span><span class="normal"> </span><span class="number">1.0.1</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; false</span>
-</tt></pre>
+</pre>
 
   <h2><a id="4"></a>4. Values</h2>
 
@@ -703,7 +703,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="number">{D+128}</span><span class="normal">              </span><span class="comment">; These are integers</span>
+<pre><span class="number">{D+128}</span><span class="normal">              </span><span class="comment">; These are integers</span>
 <span class="number">{D-100}</span>
 
 <span class="number">{B+1001}</span><span class="normal">             </span><span class="comment">;   9 in binary</span>
@@ -749,7 +749,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">                                  </span><span class="number">{D+3}</span><span class="normal"> </span><span class="number">{D+4}</span><span class="cbracket">)</span>
 <span class="normal">           </span><span class="number">{D+1}</span><span class="normal">    |a|</span>
 <span class="normal">           </span><span class="string">[Hi]</span><span class="normal"> </span><span class="number">{D+2}</span><span class="cbracket">)</span>
-</tt></pre>
+</pre>
 
   <p>
     The text after character <code>;</code> is a <b>single line comment</b>.
@@ -768,8 +768,8 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="string">[string </span><span class="specialchar">|string-start|</span><span class="string">with another inside</span><span class="specialchar">|string-end|</span><span class="string">]</span>
-</tt></pre>
+<pre><span class="string">[string </span><span class="specialchar">|string-start|</span><span class="string">with another inside</span><span class="specialchar">|string-end|</span><span class="string">]</span>
+</pre>
 
   <p>
     This can be useful sometimes, for example, if you need to evaluate a string as
@@ -786,12 +786,12 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="comment">; This is single line comment.</span>
+<pre><span class="comment">; This is single line comment.</span>
 
 <span class="comment">#! This is multiline comment.</span>
 <span class="comment">   It can contain multiple lines...</span>
 <span class="comment">   ... !#</span>
-</tt></pre>
+</pre>
 
   <p>
     Multiline comments can be used to make script files executable
@@ -802,11 +802,11 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="comment">#!/usr/bin/env octaspire-dern-repl</span>
+<pre><span class="comment">#!/usr/bin/env octaspire-dern-repl</span>
 <span class="comment">!#</span>
 
 <span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hello World]</span><span class="cbracket">)</span>
-</tt></pre>
+</pre>
 
   <h2><a id="6"></a>6. Binding names to values with <code>define</code></h2>
 
@@ -814,10 +814,10 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> pi </span><span class="keyword">as</span><span class="normal"> </span><span class="number">{D+3.14}</span><span class="normal"> </span><span class="string">[value for pi]</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> pi </span><span class="keyword">as</span><span class="normal"> </span><span class="number">{D+3.14}</span><span class="normal"> </span><span class="string">[value for pi]</span><span class="cbracket">)</span>
 <span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> names </span><span class="keyword">as</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">John Lisa Mark</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[names list]</span><span class="cbracket">)</span>
 <span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> </span><span class="keyword">do</span><span class="normal">uble </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">x</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">*</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> x</span><span class="cbracket">))</span><span class="normal"> </span><span class="string">[doubles nums]</span>
-<span class="normal">    '</span><span class="cbracket">(</span><span class="normal">x </span><span class="string">[this is doubled]</span><span class="cbracket">)</span><span class="normal"> </span><span class="keyword">howto-ok</span><span class="cbracket">)</span></tt></pre>
+<span class="normal">    '</span><span class="cbracket">(</span><span class="normal">x </span><span class="string">[this is doubled]</span><span class="cbracket">)</span><span class="normal"> </span><span class="keyword">howto-ok</span><span class="cbracket">)</span></pre>
 
   <p>
     Here we bind three values to a name: one real, one vector
@@ -829,9 +829,9 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">pi</span>
+<pre><span class="normal">pi</span>
 <span class="normal">names</span>
-<span class="cbracket">(</span><span class="keyword">do</span><span class="normal">uble </span><span class="number">{D+1}</span><span class="cbracket">)</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">do</span><span class="normal">uble </span><span class="number">{D+1}</span><span class="cbracket">)</span></pre>
 
   <p>
     And to see the documentation for these values:
@@ -841,9 +841,9 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">doc</span><span class="normal"> pi</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">doc</span><span class="normal"> pi</span><span class="cbracket">)</span>
 <span class="cbracket">(</span><span class="keyword">doc</span><span class="normal"> names</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="keyword">doc</span><span class="normal"> </span><span class="keyword">do</span><span class="normal">uble</span><span class="cbracket">)</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">doc</span><span class="normal"> </span><span class="keyword">do</span><span class="normal">uble</span><span class="cbracket">)</span></pre>
 
   <p>
     The documentation of the function contains also documentation for
@@ -873,11 +873,11 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> myEnv </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">env-new</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[my own environment]</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> myEnv </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">env-new</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[my own environment]</span><span class="cbracket">)</span>
 <span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> pi </span><span class="keyword">as</span><span class="normal"> </span><span class="number">{D+3.14}</span><span class="normal"> </span><span class="string">[value for pi]</span><span class="normal"> </span><span class="keyword">in</span><span class="normal"> myEnv</span><span class="cbracket">)</span>
 
 <span class="normal">pi                  </span><span class="comment">; &lt;error&gt;: Unbound symbol 'pi'</span>
-<span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> pi myEnv</span><span class="cbracket">)</span><span class="normal">     </span><span class="comment">; 3.14</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> pi myEnv</span><span class="cbracket">)</span><span class="normal">     </span><span class="comment">; 3.14</span></pre>
 
   <p>
     In the example above, <code>pi</code> is undefined in the current
@@ -899,8 +899,8 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> i </span><span class="keyword">as</span><span class="normal"> </span><span class="number">{D+0}</span><span class="normal"> </span><span class="string">[my counter]</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="keyword">while</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">&lt;=</span><span class="normal"> i </span><span class="number">{D+10}</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Going at {}]</span><span class="normal"> i</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">++</span><span class="normal"> i</span><span class="cbracket">))</span></tt></pre>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> i </span><span class="keyword">as</span><span class="normal"> </span><span class="number">{D+0}</span><span class="normal"> </span><span class="string">[my counter]</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="keyword">while</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">&lt;=</span><span class="normal"> i </span><span class="number">{D+10}</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Going at {}]</span><span class="normal"> i</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">++</span><span class="normal"> i</span><span class="cbracket">))</span></pre>
 
   <p>
     Numerical for:
@@ -910,7 +910,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">for</span><span class="normal"> i from </span><span class="number">{D+0}</span><span class="normal"> to </span><span class="number">{D+10}</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hello {}!]</span><span class="normal"> i</span><span class="cbracket">))</span></tt></pre>
+<pre><span class="cbracket">(</span><span class="keyword">for</span><span class="normal"> i from </span><span class="number">{D+0}</span><span class="normal"> to </span><span class="number">{D+10}</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hello {}!]</span><span class="normal"> i</span><span class="cbracket">))</span></pre>
 
   <p>
     Container for:
@@ -920,8 +920,8 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> names </span><span class="keyword">as</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">John Mark Lisa</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[names list]</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="keyword">for</span><span class="normal"> i </span><span class="keyword">in</span><span class="normal"> names </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hello {} World!]</span><span class="normal"> i</span><span class="cbracket">))</span></tt></pre>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> names </span><span class="keyword">as</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">John Mark Lisa</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[names list]</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="keyword">for</span><span class="normal"> i </span><span class="keyword">in</span><span class="normal"> names </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hello {} World!]</span><span class="normal"> i</span><span class="cbracket">))</span></pre>
 
   <p>
     Both the <b>numerical for</b> and <b>container for</b> support the use
@@ -932,12 +932,12 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">for</span><span class="normal"> i from </span><span class="number">{D+0}</span><span class="normal"> to </span><span class="number">{D+10}</span><span class="normal"> step </span><span class="number">{D+3}</span>
+<pre><span class="cbracket">(</span><span class="keyword">for</span><span class="normal"> i from </span><span class="number">{D+0}</span><span class="normal"> to </span><span class="number">{D+10}</span><span class="normal"> step </span><span class="number">{D+3}</span>
 <span class="normal">  </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hello {}!]</span><span class="normal"> i</span><span class="cbracket">))</span>
 
 <span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> names </span><span class="keyword">as</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">John Mark Lisa</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[names list]</span><span class="cbracket">)</span>
 <span class="cbracket">(</span><span class="keyword">for</span><span class="normal"> i </span><span class="keyword">in</span><span class="normal"> names step </span><span class="number">{D+2}</span>
-<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hello {} World!]</span><span class="normal"> i</span><span class="cbracket">))</span></tt></pre>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hello {} World!]</span><span class="normal"> i</span><span class="cbracket">))</span></pre>
 
   <h2><a id="8"></a>8. Comparing and changing values, predicates</h2>
 
@@ -949,7 +949,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">&lt;</span><span class="normal">  </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; true</span>
+<pre><span class="cbracket">(</span><span class="keyword">&lt;</span><span class="normal">  </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; true</span>
 <span class="cbracket">(</span><span class="keyword">&lt;</span><span class="normal">  </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; false</span>
 <span class="cbracket">(</span><span class="keyword">&gt;</span><span class="normal">  </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+1}</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; true</span>
 <span class="cbracket">(</span><span class="keyword">&lt;=</span><span class="normal"> </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+1}</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; true</span>
@@ -1008,7 +1008,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="cbracket">(</span><span class="keyword">-=</span><span class="normal"> v </span><span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> v </span><span class="number">{D-1}</span><span class="cbracket">))</span><span class="normal">             </span><span class="comment">; (1 2)</span>
 
 <span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> v </span><span class="keyword">as</span><span class="normal"> '</span><span class="cbracket">(</span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[v]</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="keyword">-==</span><span class="normal"> v </span><span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> v </span><span class="number">{D-1}</span><span class="cbracket">))</span><span class="normal">            </span><span class="comment">; (1 2 3)</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">-==</span><span class="normal"> v </span><span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> v </span><span class="number">{D-1}</span><span class="cbracket">))</span><span class="normal">            </span><span class="comment">; (1 2 3)</span></pre>
 
   <p>
     Operators <code>++</code>, <code>--</code>, <code>+=</code>,
@@ -1041,11 +1041,11 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> v </span><span class="keyword">as</span><span class="normal"> '</span><span class="cbracket">(</span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[v]</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> v </span><span class="keyword">as</span><span class="normal"> '</span><span class="cbracket">(</span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[v]</span><span class="cbracket">)</span>
 <span class="cbracket">(</span><span class="keyword">-=</span><span class="normal"> v </span><span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> v </span><span class="number">{D-1}</span><span class="cbracket">))</span><span class="normal">             </span><span class="comment">; (1 2)</span>
 
 <span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> v </span><span class="keyword">as</span><span class="normal"> '</span><span class="cbracket">(</span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[v]</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="keyword">-==</span><span class="normal"> v </span><span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> v </span><span class="number">{D-1}</span><span class="cbracket">))</span><span class="normal">            </span><span class="comment">; (1 2 3)</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">-==</span><span class="normal"> v </span><span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> v </span><span class="number">{D-1}</span><span class="cbracket">))</span><span class="normal">            </span><span class="comment">; (1 2 3)</span></pre>
 
   <p>
     The last example removes really only the last value (compared using
@@ -1068,8 +1068,8 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> v </span><span class="keyword">as</span><span class="normal"> '</span><span class="cbracket">(</span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[v]</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="keyword">pop-back</span><span class="normal"> v</span><span class="cbracket">)</span><span class="normal">                  </span><span class="comment">; (1 2 3)</span></tt></pre>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> v </span><span class="keyword">as</span><span class="normal"> '</span><span class="cbracket">(</span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[v]</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="keyword">pop-back</span><span class="normal"> v</span><span class="cbracket">)</span><span class="normal">                  </span><span class="comment">; (1 2 3)</span></pre>
 
   <h2><a id="10"></a>10. Branching and selection</h2>
 
@@ -1081,7 +1081,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="type">true</span><span class="normal">  </span><span class="string">[Yes]</span><span class="cbracket">)</span><span class="normal">         </span><span class="comment">; Yes</span>
+<pre><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="type">true</span><span class="normal">  </span><span class="string">[Yes]</span><span class="cbracket">)</span><span class="normal">         </span><span class="comment">; Yes</span>
 <span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="type">false</span><span class="normal"> </span><span class="string">[Yes]</span><span class="cbracket">)</span><span class="normal">         </span><span class="comment">; nil</span>
 <span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="type">false</span><span class="normal"> </span><span class="string">[Yes]</span><span class="normal"> </span><span class="string">[No]</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; No</span>
 
@@ -1089,7 +1089,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="comment">; Prints Yes</span>
 
 <span class="comment">; Prints Yes|newline|OK</span>
-<span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="type">true</span><span class="normal">  </span><span class="cbracket">(</span><span class="keyword">do</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Yes]</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[OK]</span><span class="cbracket">)))</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="type">true</span><span class="normal">  </span><span class="cbracket">(</span><span class="keyword">do</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Yes]</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[OK]</span><span class="cbracket">)))</span></pre>
 
   <p>
     Here are some examples using <code>select</code>:
@@ -1099,7 +1099,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">select</span><span class="normal"> </span><span class="type">true</span><span class="normal"> </span><span class="string">[Yes]</span><span class="cbracket">)</span><span class="normal">            </span><span class="comment">; Yes</span>
+<pre><span class="cbracket">(</span><span class="keyword">select</span><span class="normal"> </span><span class="type">true</span><span class="normal"> </span><span class="string">[Yes]</span><span class="cbracket">)</span><span class="normal">            </span><span class="comment">; Yes</span>
 
 <span class="cbracket">(</span><span class="keyword">select</span><span class="normal"> </span><span class="type">false</span><span class="normal"> </span><span class="string">[No]</span>
 <span class="normal">        </span><span class="type">true</span><span class="normal">  </span><span class="string">[Yes]</span><span class="cbracket">)</span><span class="normal">           </span><span class="comment">; Yes</span>
@@ -1130,7 +1130,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">        </span><span class="type">false</span><span class="normal"> </span><span class="number">{D+2}</span>
 <span class="normal">        </span><span class="type">false</span><span class="normal"> </span><span class="number">{D+3.14}</span>
 <span class="normal">        </span><span class="type">false</span><span class="normal"> |a|</span>
-<span class="normal">        </span><span class="type">false</span><span class="normal"> </span><span class="string">[There can be many selectors...]</span><span class="cbracket">)</span></tt></pre>
+<span class="normal">        </span><span class="type">false</span><span class="normal"> </span><span class="string">[There can be many selectors...]</span><span class="cbracket">)</span></pre>
 
   <h2><a id="11"></a>11. Selecting values from collections</h2>
 
@@ -1144,10 +1144,10 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">++</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> '</span><span class="cbracket">(</span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+1}</span><span class="cbracket">))</span><span class="normal">   </span><span class="comment">; 3</span>
+<pre><span class="cbracket">(</span><span class="keyword">++</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> '</span><span class="cbracket">(</span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+1}</span><span class="cbracket">))</span><span class="normal">   </span><span class="comment">; 3</span>
 <span class="cbracket">(</span><span class="keyword">+=</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">cp@</span><span class="normal"> </span><span class="string">[abc]</span><span class="normal"> </span><span class="number">{D+1}</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+2}</span><span class="cbracket">))</span><span class="normal">           </span><span class="comment">; |d|</span>
 <span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">hash-map</span><span class="normal"> |a| </span><span class="string">[abc]</span><span class="cbracket">)</span><span class="normal"> |a|   'h</span><span class="keyword">as</span><span class="normal">h</span><span class="cbracket">)</span><span class="normal">  </span><span class="comment">; [abc]</span>
-<span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">hash-map</span><span class="normal"> |a| </span><span class="string">[abc]</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+0}</span><span class="normal"> '</span><span class="keyword">in</span><span class="normal">dex</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; [abc]</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">hash-map</span><span class="normal"> |a| </span><span class="string">[abc]</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+0}</span><span class="normal"> '</span><span class="keyword">in</span><span class="normal">dex</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; [abc]</span></pre>
 
   <h2><a id="12"></a>12. Accessing and manipulating command line arguments and environment variables</h2>
 
@@ -1160,8 +1160,8 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="normal">host</span><span class="keyword">-</span><span class="normal">get</span><span class="keyword">-</span><span class="normal">comm</span><span class="keyword">and-</span><span class="normal">l</span><span class="keyword">in</span><span class="normal">e</span><span class="keyword">-</span><span class="normal">arguments</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">host</span><span class="keyword">-</span><span class="normal">get</span><span class="keyword">-</span><span class="normal">environment</span><span class="keyword">-</span><span class="normal">variables</span><span class="cbracket">)</span></tt></pre>
+<pre><span class="cbracket">(</span><span class="normal">host</span><span class="keyword">-</span><span class="normal">get</span><span class="keyword">-</span><span class="normal">comm</span><span class="keyword">and-</span><span class="normal">l</span><span class="keyword">in</span><span class="normal">e</span><span class="keyword">-</span><span class="normal">arguments</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="normal">host</span><span class="keyword">-</span><span class="normal">get</span><span class="keyword">-</span><span class="normal">environment</span><span class="keyword">-</span><span class="normal">variables</span><span class="cbracket">)</span></pre>
 
   <h2><a id="13"></a>13. Formatted and regular printing</h2>
 
@@ -1173,7 +1173,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">print</span><span class="normal">   </span><span class="string">[Hi]</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; Prints Hi without newline</span>
+<pre><span class="cbracket">(</span><span class="keyword">print</span><span class="normal">   </span><span class="string">[Hi]</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; Prints Hi without newline</span>
 <span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hi]</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; Prints Hi and newline</span>
 
 <span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> name1  </span><span class="keyword">as</span><span class="normal"> 'Jim   </span><span class="string">[some name 1]</span><span class="cbracket">)</span>
@@ -1182,7 +1182,7 @@ http://www.gnu.org/software/src-highlite -->
 
 <span class="comment">; Prints Hi Jim and Alice! It is 30 degrees outside.</span>
 <span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hi {} and {}! It is {} degrees outside.]</span>
-<span class="normal">    name1 name2 number</span><span class="cbracket">)</span></tt></pre>
+<span class="normal">    name1 name2 number</span><span class="cbracket">)</span></pre>
 
   <h2><a id="14"></a>14. Formatted string creation</h2>
 
@@ -1194,7 +1194,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> name1  </span><span class="keyword">as</span><span class="normal"> 'Jim   </span><span class="string">[some name 1]</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> name1  </span><span class="keyword">as</span><span class="normal"> 'Jim   </span><span class="string">[some name 1]</span><span class="cbracket">)</span>
 <span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> name2  </span><span class="keyword">as</span><span class="normal"> 'Alice </span><span class="string">[some name 2]</span><span class="cbracket">)</span>
 <span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> number </span><span class="keyword">as</span><span class="normal"> </span><span class="number">{D+30}</span><span class="normal"> </span><span class="string">[some number]</span><span class="cbracket">)</span>
 
@@ -1202,7 +1202,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="comment">; [Hi Jim and Alice! It is 30 degrees outside]</span>
 <span class="cbracket">(</span><span class="keyword">string-format</span>
 <span class="normal">  </span><span class="string">[Hi {} and {}! It is {} degrees outside]</span>
-<span class="normal">  name1 name2 number</span><span class="cbracket">)</span></tt></pre>
+<span class="normal">  name1 name2 number</span><span class="cbracket">)</span></pre>
 
   <h2><a id="15"></a>15. Functions with variable number of arguments</h2>
 
@@ -1214,7 +1214,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> f </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">x ...</span><span class="cbracket">)</span><span class="normal"> x</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[f]</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> f </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">x ...</span><span class="cbracket">)</span><span class="normal"> x</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[f]</span>
 <span class="normal">    '</span><span class="cbracket">(</span><span class="normal">x </span><span class="string">[x]</span><span class="normal"> ... </span><span class="string">[varargs]</span><span class="cbracket">)</span><span class="normal"> </span><span class="keyword">howto-no</span><span class="cbracket">)</span>
 
 <span class="cbracket">(</span><span class="normal">f </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; (1 2 3)</span>
@@ -1224,7 +1224,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">    </span><span class="string">[f]</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">x </span><span class="string">[x]</span><span class="normal"> y </span><span class="string">[rest of the args]</span><span class="normal"> ... </span><span class="string">[varargs]</span><span class="cbracket">)</span>
 <span class="normal">    </span><span class="keyword">howto-no</span><span class="cbracket">)</span>
 
-<span class="cbracket">(</span><span class="normal">f </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; Prints 1|newline|(2 3)</span></tt></pre>
+<span class="cbracket">(</span><span class="normal">f </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; Prints 1|newline|(2 3)</span></pre>
 
   <h2><a id="16"></a>16. Environments</h2>
 
@@ -1236,9 +1236,9 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">env-global</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">env-global</span><span class="cbracket">)</span>
 <span class="cbracket">(</span><span class="keyword">env-current</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="keyword">env-new</span><span class="cbracket">)</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">env-new</span><span class="cbracket">)</span></pre>
 
   <h2><a id="17"></a>17. Getting help with <code>howto</code></h2>
 
@@ -1260,7 +1260,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="comment">; Enter these forms into the REPL</span>
+<pre><span class="comment">; Enter these forms into the REPL</span>
 <span class="cbracket">(</span><span class="keyword">howto</span><span class="normal"> </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span>
 <span class="comment">; ((+ {D+1} {D+2}) (+ {D+2} {D+1}))</span>
 
@@ -1287,7 +1287,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">howto</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">John Mike Alice Lola</span><span class="cbracket">)</span><span class="normal"> 'Lola</span>
 <span class="normal">                '</span><span class="cbracket">(</span><span class="number">{D+3}</span><span class="cbracket">)))</span>
 <span class="comment">; prints ((find (quote (John Mike Alice Lola))</span>
-<span class="comment">;               (quote Lola)))</span></tt></pre>
+<span class="comment">;               (quote Lola)))</span></pre>
 
   <h2><a id="18"></a>18. Returning from functions early</h2>
 
@@ -1301,12 +1301,12 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> err</span><span class="keyword">or</span><span class="normal">Code </span><span class="keyword">as</span><span class="normal"> </span><span class="number">{D+1}</span><span class="normal"> </span><span class="string">[0 means no error.]</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> err</span><span class="keyword">or</span><span class="normal">Code </span><span class="keyword">as</span><span class="normal"> </span><span class="number">{D+1}</span><span class="normal"> </span><span class="string">[0 means no error.]</span><span class="cbracket">)</span>
 
 <span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> start</span><span class="keyword">-</span><span class="normal">eng</span><span class="keyword">in</span><span class="normal">e </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span>
 <span class="normal">    </span><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">!=</span><span class="normal"> err</span><span class="keyword">or</span><span class="normal">Code </span><span class="number">{D+0}</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="normal"> </span><span class="string">[Cannot start]</span><span class="cbracket">))</span>
 <span class="normal">    </span><span class="comment">; .... Start the engine here...</span>
-<span class="normal">    </span><span class="string">[Start engine if all OK]</span><span class="normal"> '</span><span class="cbracket">()</span><span class="normal"> </span><span class="keyword">howto-no</span><span class="cbracket">))</span></tt></pre>
+<span class="normal">    </span><span class="string">[Start engine if all OK]</span><span class="normal"> '</span><span class="cbracket">()</span><span class="normal"> </span><span class="keyword">howto-no</span><span class="cbracket">))</span></pre>
 
   <p>
     Function <code>return</code> can be called with zero or one argument.
@@ -1318,8 +1318,8 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">((</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="normal"> </span><span class="type">nil</span><span class="cbracket">)))</span><span class="normal">   </span><span class="comment">; Evaluates into 'nil'.</span>
-<span class="cbracket">((</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="cbracket">)))</span><span class="normal">       </span><span class="comment">; Evaluates into 'nil'.</span></tt></pre>
+<pre><span class="cbracket">((</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="normal"> </span><span class="type">nil</span><span class="cbracket">)))</span><span class="normal">   </span><span class="comment">; Evaluates into 'nil'.</span>
+<span class="cbracket">((</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="cbracket">)))</span><span class="normal">       </span><span class="comment">; Evaluates into 'nil'.</span></pre>
 
   <h2><a id="19"></a>19. Evaluating values</h2>
 
@@ -1339,7 +1339,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> level</span><span class="keyword">-</span><span class="normal">next </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> level</span><span class="keyword">-</span><span class="normal">next </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span>
 <span class="normal">    </span><span class="cbracket">(</span><span class="normal">level</span><span class="keyword">-</span><span class="normal">reset</span><span class="cbracket">)</span>
 
 <span class="normal">    </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> lnum </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">+</span><span class="normal"> level</span><span class="keyword">-</span><span class="normal">current</span><span class="keyword">-</span><span class="normal">number </span><span class="number">{D+1}</span><span class="cbracket">)</span>
@@ -1351,7 +1351,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">        </span><span class="string">[name of the level builder function to call]</span><span class="cbracket">)</span>
 <span class="normal">    </span><span class="cbracket">(</span><span class="keyword">+=</span><span class="normal"> name</span><span class="keyword">-</span><span class="normal">of</span><span class="keyword">-fn-</span><span class="normal">to</span><span class="keyword">-</span><span class="normal">call lnum</span><span class="cbracket">)</span>
 <span class="normal">    </span><span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> </span><span class="cbracket">((</span><span class="keyword">eval</span><span class="normal"> name</span><span class="keyword">-</span><span class="normal">of</span><span class="keyword">-fn-</span><span class="normal">to</span><span class="keyword">-</span><span class="normal">call</span><span class="cbracket">))))</span><span class="normal"> </span><span class="string">[next level]</span>
-<span class="normal">        '</span><span class="cbracket">()</span><span class="normal"> </span><span class="keyword">howto-no</span><span class="cbracket">)</span></tt></pre>
+<span class="normal">        '</span><span class="cbracket">()</span><span class="normal"> </span><span class="keyword">howto-no</span><span class="cbracket">)</span></pre>
 
   <h2><a id="20"></a>20. Input and output ports</h2>
 
@@ -1369,13 +1369,13 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> f </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">io-file-open</span><span class="normal"> </span><span class="string">[/path/goes/here.xy]</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[f]</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> f </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">io-file-open</span><span class="normal"> </span><span class="string">[/path/goes/here.xy]</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[f]</span><span class="cbracket">)</span>
 
 <span class="cbracket">(</span><span class="keyword">port-read</span><span class="normal"> f</span><span class="cbracket">)</span>
 <span class="cbracket">(</span><span class="keyword">port-read</span><span class="normal"> f </span><span class="number">{D+3}</span><span class="cbracket">)</span>
 
 <span class="cbracket">(</span><span class="keyword">port-write</span><span class="normal"> f </span><span class="number">{D+65}</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="keyword">port-write</span><span class="normal"> f '</span><span class="cbracket">(</span><span class="number">{D+65}</span><span class="normal"> </span><span class="number">{D+66}</span><span class="normal"> </span><span class="number">{D+67}</span><span class="cbracket">))</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">port-write</span><span class="normal"> f '</span><span class="cbracket">(</span><span class="number">{D+65}</span><span class="normal"> </span><span class="number">{D+66}</span><span class="normal"> </span><span class="number">{D+67}</span><span class="cbracket">))</span></pre>
 
   <p>
     Ports can be explicitly closed, but it is not required; port will close automatically when the
@@ -1388,7 +1388,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> f </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">io-file-open</span><span class="normal"> </span><span class="string">[/path/goes/here.xy]</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[f]</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> f </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">io-file-open</span><span class="normal"> </span><span class="string">[/path/goes/here.xy]</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[f]</span><span class="cbracket">)</span>
 
 <span class="cbracket">(</span><span class="keyword">port-seek</span><span class="normal"> f </span><span class="number">{D-1}</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; Seek to the end</span>
 <span class="cbracket">(</span><span class="keyword">port-write</span><span class="normal"> f </span><span class="number">{D+65}</span><span class="cbracket">)</span>
@@ -1423,7 +1423,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="comment">; Close port. This happens also automatically.</span>
 <span class="cbracket">(</span><span class="keyword">port-close</span><span class="normal"> f</span><span class="cbracket">)</span>
 
-<span class="cbracket">(</span><span class="keyword">port-length</span><span class="normal"> f</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; -1</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">port-length</span><span class="normal"> f</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; -1</span></pre>
 
   <p>
     Input ports can be iterated with <code>for</code> in similar way that
@@ -1434,7 +1434,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> f </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">io-file-open</span><span class="normal"> </span><span class="string">[/path/goes/here.xy]</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[f]</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> f </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">io-file-open</span><span class="normal"> </span><span class="string">[/path/goes/here.xy]</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[f]</span><span class="cbracket">)</span>
 
 <span class="cbracket">(</span><span class="keyword">for</span><span class="normal"> i </span><span class="keyword">in</span><span class="normal"> f </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> i</span><span class="cbracket">))</span><span class="normal"> </span><span class="comment">; Print every octet</span>
 
@@ -1446,7 +1446,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="cbracket">(</span><span class="keyword">port-seek</span><span class="normal"> f </span><span class="number">{D+0}</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; Seek to the beginning</span>
 
 <span class="comment">; Print every third octet</span>
-<span class="cbracket">(</span><span class="keyword">for</span><span class="normal"> i </span><span class="keyword">in</span><span class="normal"> f step </span><span class="number">{D+3}</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> i</span><span class="cbracket">))</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">for</span><span class="normal"> i </span><span class="keyword">in</span><span class="normal"> f step </span><span class="number">{D+3}</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> i</span><span class="cbracket">))</span></pre>
 
   <p>
     <code>io-file-open</code> will open a file for reading and writing,
@@ -1462,7 +1462,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> f </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">io-file-open</span><span class="normal"> </span><span class="string">[/path/goes/here.xy]</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[f]</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> f </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">io-file-open</span><span class="normal"> </span><span class="string">[/path/goes/here.xy]</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[f]</span><span class="cbracket">)</span>
 
 <span class="cbracket">(</span><span class="keyword">port-supports-output?</span><span class="normal"> f</span><span class="cbracket">)</span><span class="normal">          </span><span class="comment">; true</span>
 <span class="cbracket">(</span><span class="keyword">port-supports-input?</span><span class="normal">  f</span><span class="cbracket">)</span><span class="normal">          </span><span class="comment">; true</span>
@@ -1477,7 +1477,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">    </span><span class="cbracket">(</span><span class="keyword">input-file-open</span><span class="normal"> </span><span class="string">[/path/goes/here.xy]</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[f]</span><span class="cbracket">)</span>
 
 <span class="cbracket">(</span><span class="keyword">port-supports-output?</span><span class="normal"> f</span><span class="cbracket">)</span><span class="normal">          </span><span class="comment">; false</span>
-<span class="cbracket">(</span><span class="keyword">port-supports-input?</span><span class="normal">  f</span><span class="cbracket">)</span><span class="normal">          </span><span class="comment">; true</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">port-supports-input?</span><span class="normal">  f</span><span class="cbracket">)</span><span class="normal">          </span><span class="comment">; true</span></pre>
 
   <p>
     You can use <code>port-write</code> and <code>+=</code> to write to
@@ -1489,11 +1489,11 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> f </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">io-file-open</span><span class="normal"> </span><span class="string">[/path/goes/here.xy]</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[f]</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> f </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">io-file-open</span><span class="normal"> </span><span class="string">[/path/goes/here.xy]</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[f]</span><span class="cbracket">)</span>
 
 <span class="cbracket">(</span><span class="keyword">+=</span><span class="normal"> f |a| |b| </span><span class="string">[ cat]</span><span class="normal"> |!|</span><span class="cbracket">)</span><span class="normal">  </span><span class="comment">; ab cat!</span>
 
-<span class="cbracket">(</span><span class="keyword">port-write</span><span class="normal"> f '</span><span class="cbracket">(</span><span class="number">{D+65}</span><span class="normal"> |A| </span><span class="string">[ Hi!]</span><span class="cbracket">))</span><span class="normal"> </span><span class="comment">; AA Hi!</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">port-write</span><span class="normal"> f '</span><span class="cbracket">(</span><span class="number">{D+65}</span><span class="normal"> |A| </span><span class="string">[ Hi!]</span><span class="cbracket">))</span><span class="normal"> </span><span class="comment">; AA Hi!</span></pre>
 
   <h2><a id="21"></a>21. Converting between types</h2>
 
@@ -1511,7 +1511,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> names </span><span class="keyword">as</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">Mike John Lola Alice Lola</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[names]</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> names </span><span class="keyword">as</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">Mike John Lola Alice Lola</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[names]</span><span class="cbracket">)</span>
 
 <span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">find</span><span class="normal"> names 'Mike</span><span class="cbracket">))</span><span class="normal">  </span><span class="comment">; prints ({D+0})</span>
 <span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">find</span><span class="normal"> names 'John</span><span class="cbracket">))</span><span class="normal">  </span><span class="comment">; prints ({D+1})</span>
@@ -1537,7 +1537,7 @@ http://www.gnu.org/software/src-highlite -->
 
 <span class="comment">; prints ({D+7} {D+11} {D+15})</span>
 <span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">find</span><span class="normal"> </span><span class="string">[012345 abc abc abc]</span><span class="normal"> </span><span class="string">[abc]</span><span class="cbracket">))</span>
-<span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">find</span><span class="normal"> </span><span class="string">[012345]</span><span class="normal"> |3|</span><span class="cbracket">))</span><span class="normal"> </span><span class="comment">; prints ({D+3})</span></tt></pre>
+<span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">find</span><span class="normal"> </span><span class="string">[012345]</span><span class="normal"> |3|</span><span class="cbracket">))</span><span class="normal"> </span><span class="comment">; prints ({D+3})</span></pre>
 
   <h2><a id="23"></a>23. Loading libraries with <code>require</code></h2>
 
@@ -1568,8 +1568,8 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></tt></pre>
+<pre><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
 
   <p>
     If <b>mylib</b>-library is required later again, there is no need to
@@ -1587,7 +1587,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="comment">/***</span>
+<pre><span class="comment">/***</span>
 <span class="comment">  To build this file into a shared library in Linux:</span>
 
 <span class="comment">  gcc -c -fPIC mylib.c     \</span>
@@ -1658,7 +1658,7 @@ http://www.gnu.org/software/src-highlite -->
 
 <span class="normal">    </span><span class="keyword">return</span><span class="normal"> true</span><span class="symbol">;</span>
 <span class="cbracket">}</span>
-</tt></pre>
+</pre>
 
   <p>
     See directory doc/examples/plugin in the source distribution for
@@ -1676,10 +1676,10 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">make -C </span><span class="symbol">..</span><span class="normal">/doc/examples/plugin -f Makefile</span><span class="symbol">.</span><span class="normal">Haiku</span>
+<pre><span class="normal">make -C </span><span class="symbol">..</span><span class="normal">/doc/examples/plugin -f Makefile</span><span class="symbol">.</span><span class="normal">Haiku</span>
 <span class="variable">LIBRARY_PATH</span><span class="symbol">=</span><span class="variable">$LIBRARY_PATH</span><span class="symbol">:..</span><span class="normal">/doc/examples/plugin </span><span class="symbol">\</span>
 <span class="normal">    </span><span class="symbol">.</span><span class="normal">/octaspire-dern-repl -c</span>
-</tt></pre>
+</pre>
 
   <p>
     Write into the REPL:
@@ -1689,8 +1689,8 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></tt></pre>
+<pre><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
 
     <h3>23.2 Building and using a binary library in MINIX 3</h3>
 
@@ -1703,10 +1703,10 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">make -C </span><span class="symbol">..</span><span class="normal">/doc/examples/plugin -f Makefile</span><span class="symbol">.</span><span class="normal">MINIX3</span>
+<pre><span class="normal">make -C </span><span class="symbol">..</span><span class="normal">/doc/examples/plugin -f Makefile</span><span class="symbol">.</span><span class="normal">MINIX3</span>
 <span class="variable">LD_LIBRARY_PATH</span><span class="symbol">=..</span><span class="normal">/doc/examples/plugin </span><span class="symbol">\</span>
 <span class="normal">    </span><span class="symbol">.</span><span class="normal">/octaspire-dern-repl -c</span>
-</tt></pre>
+</pre>
 
   <p>
     Write into the REPL:
@@ -1716,8 +1716,8 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></tt></pre>
+<pre><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
 
     <h3>23.3 Building and using a binary library in Linux</h3>
 
@@ -1730,10 +1730,10 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">make -C </span><span class="symbol">..</span><span class="normal">/doc/examples/plugin</span>
+<pre><span class="normal">make -C </span><span class="symbol">..</span><span class="normal">/doc/examples/plugin</span>
 <span class="variable">LD_LIBRARY_PATH</span><span class="symbol">=..</span><span class="normal">/doc/examples/plugin </span><span class="symbol">\</span>
 <span class="normal">    </span><span class="symbol">.</span><span class="normal">/octaspire-dern-repl -c</span>
-</tt></pre>
+</pre>
 
   <p>
     Write into the REPL:
@@ -1743,8 +1743,8 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></tt></pre>
+<pre><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
 
     <h3>23.4 Building and using a binary library in FreeBSD</h3>
 
@@ -1757,10 +1757,10 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">make -C </span><span class="symbol">..</span><span class="normal">/doc/examples/plugin -f Makefile</span><span class="symbol">.</span><span class="normal">FreeBSD</span>
+<pre><span class="normal">make -C </span><span class="symbol">..</span><span class="normal">/doc/examples/plugin -f Makefile</span><span class="symbol">.</span><span class="normal">FreeBSD</span>
 <span class="variable">LD_LIBRARY_PATH</span><span class="symbol">=..</span><span class="normal">/doc/examples/plugin </span><span class="symbol">\</span>
 <span class="normal">    </span><span class="symbol">.</span><span class="normal">/octaspire-dern-repl -c</span>
-</tt></pre>
+</pre>
 
   <p>
     Write into the REPL:
@@ -1770,8 +1770,8 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></tt></pre>
+<pre><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
 
     <h3>23.5 Building and using a binary library in NetBSD</h3>
 
@@ -1784,10 +1784,10 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">make -C </span><span class="symbol">..</span><span class="normal">/doc/examples/plugin</span>
+<pre><span class="normal">make -C </span><span class="symbol">..</span><span class="normal">/doc/examples/plugin</span>
 <span class="variable">LD_LIBRARY_PATH</span><span class="symbol">=..</span><span class="normal">/doc/examples/plugin </span><span class="symbol">\</span>
 <span class="normal">    </span><span class="symbol">.</span><span class="normal">/octaspire-dern-repl -c</span>
-</tt></pre>
+</pre>
 
   <p>
     Write into the REPL:
@@ -1797,8 +1797,8 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></tt></pre>
+<pre><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
 
   <h2><a id="24"></a>24. Using custom library loader with <code>require</code></h2>
 
@@ -1814,7 +1814,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="comment">// ...</span>
+<pre><span class="comment">// ...</span>
 
 <span class="usertype">octaspire_input_t</span><span class="normal"> </span><span class="symbol">*</span><span class="function">my_custom_loader</span><span class="symbol">(</span>
 <span class="normal">    </span><span class="type">char</span><span class="normal"> </span><span class="keyword">const</span><span class="normal"> </span><span class="symbol">*</span><span class="normal"> </span><span class="keyword">const</span><span class="normal"> name</span><span class="symbol">,</span>
@@ -1856,7 +1856,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">    </span><span class="comment">// (require 'test2)</span>
 <span class="normal">    </span><span class="comment">// ...</span>
 <span class="cbracket">}</span>
-</tt></pre>
+</pre>
 
   <h2><a id="25"></a>25. Embedding in C programs</h2>
 
@@ -1912,7 +1912,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">git clone https</span><span class="symbol">:</span><span class="normal">//github</span><span class="symbol">.</span><span class="normal">com/octaspire/dern</span><span class="symbol">.</span><span class="normal">git</span>
+<pre><span class="normal">git clone https</span><span class="symbol">:</span><span class="normal">//github</span><span class="symbol">.</span><span class="normal">com/octaspire/dern</span><span class="symbol">.</span><span class="normal">git</span>
 <span class="normal">cd dern</span>
 <span class="normal">make submodules-init</span>
 <span class="normal">make</span>
@@ -1936,7 +1936,7 @@ http://www.gnu.org/software/src-highlite -->
 
 <span class="normal">rm release/documentation/dern-manual</span><span class="symbol">.</span><span class="normal">html</span>
 <span class="normal">make release/documentation/dern-manual</span><span class="symbol">.</span><span class="normal">html</span>
-</tt></pre>
+</pre>
 
   <p>
     Running <code>make</code> should run <code>make submodules-init</code>
@@ -1990,12 +1990,12 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">sudo apt-get install git</span>
+<pre><span class="normal">sudo apt-get install git</span>
 <span class="normal">git clone https</span><span class="symbol">:</span><span class="normal">//github</span><span class="symbol">.</span><span class="normal">com/octaspire/dern</span><span class="symbol">.</span><span class="normal">git</span>
 <span class="normal">cd dern</span>
 <span class="normal">make submodules-init</span>
 <span class="normal">make</span>
-</tt></pre>
+</pre>
 
     <h3>27.2 Arch Linux</h3>
 
@@ -2007,12 +2007,12 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">sudo pacman -S git gcc make</span>
+<pre><span class="normal">sudo pacman -S git gcc make</span>
 <span class="normal">git clone https</span><span class="symbol">:</span><span class="normal">//github</span><span class="symbol">.</span><span class="normal">com/octaspire/dern</span><span class="symbol">.</span><span class="normal">git</span>
 <span class="normal">cd dern</span>
 <span class="normal">make submodules-init</span>
 <span class="normal">make</span>
-</tt></pre>
+</pre>
 
     <h3>27.3 Haiku</h3>
 
@@ -2024,12 +2024,12 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">pkgman install gcc_x86</span>
+<pre><span class="normal">pkgman install gcc_x86</span>
 <span class="normal">git clone https</span><span class="symbol">:</span><span class="normal">//github</span><span class="symbol">.</span><span class="normal">com/octaspire/dern</span><span class="symbol">.</span><span class="normal">git</span>
 <span class="normal">cd dern</span>
 <span class="normal">make submodules-init</span>
 <span class="variable">CC</span><span class="symbol">=</span><span class="normal">gcc-x</span><span class="number">86</span><span class="normal"> make</span>
-</tt></pre>
+</pre>
 
     <h3>27.4 FreeBSD</h3>
 
@@ -2041,12 +2041,12 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">sudo pkg install git</span>
+<pre><span class="normal">sudo pkg install git</span>
 <span class="normal">git clone https</span><span class="symbol">:</span><span class="normal">//github</span><span class="symbol">.</span><span class="normal">com/octaspire/dern</span><span class="symbol">.</span><span class="normal">git</span>
 <span class="normal">cd dern</span>
 <span class="normal">make submodules-init</span>
 <span class="normal">make</span>
-</tt></pre>
+</pre>
 
     <h3>27.5 NetBSD</h3>
 
@@ -2058,13 +2058,13 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">sudo pkgin install git</span>
+<pre><span class="normal">sudo pkgin install git</span>
 <span class="normal">git clone git</span><span class="symbol">:</span><span class="normal">//github</span><span class="symbol">.</span><span class="normal">com/octaspire/dern</span>
 <span class="normal">cd dern</span>
 <span class="normal">perl -pi -e </span><span class="string">'s/https/git/'</span><span class="normal"> </span><span class="symbol">.</span><span class="normal">gitmodules</span>
 <span class="normal">make submodules-init</span>
 <span class="normal">make</span>
-</tt></pre>
+</pre>
 
     <h3>27.6 MINIX 3</h3>
 
@@ -2077,7 +2077,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span class="normal">su root</span>
+<pre><span class="normal">su root</span>
 <span class="normal">pkgin install clang binutils git-base</span>
 <span class="keyword">exit</span>
 <span class="normal">git clone git</span><span class="symbol">:</span><span class="normal">//github</span><span class="symbol">.</span><span class="normal">com/octaspire/dern</span>
@@ -2085,7 +2085,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">perl -pi -e </span><span class="string">'s/https/git/'</span><span class="normal"> </span><span class="symbol">.</span><span class="normal">gitmodules</span>
 <span class="normal">make submodules-init</span>
 <span class="normal">make</span>
-</tt></pre>
+</pre>
 
   <div class="footer">
     <p>
