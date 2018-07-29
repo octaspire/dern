@@ -20,6 +20,10 @@ CFLAGS=-std=c99 -Wall -Wextra -g -O2 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 TAGS_C_FILES := $(SRCDIR)*.c $(INCDIR)*.h $(CORDIR)octaspire-core-amalgamated.c
 TAGS_DERN_FILES := $(GAMESDIR)octaspire-lightboard.dern $(GAMESDIR)octaspire-maze.dern
 
+DOCEXAMPLES := $(wildcard $(DEVDOCDIR)book/examples/dern/*.dern)
+DOCEXAMPLES += $(wildcard $(DEVDOCDIR)book/examples/sh/*.sh)
+DOCEXAMPLES += $(wildcard $(DEVDOCDIR)book/examples/c/*.c)
+
 TESTOBJS := $(SRCDIR)octaspire_dern_c_data.o      \
             $(SRCDIR)octaspire_dern_environment.o \
             $(SRCDIR)octaspire_dern_helpers.o     \
@@ -318,9 +322,11 @@ $(AMALGAMATION): $(ETCDIR)amalgamation_head.c                \
 	@$(AMALGA) $(TESTDR)test_dern_vm.c                     $(AMALGAMATION)
 	@$(AMALGA) $(ETCDIR)amalgamation_impl_unit_test_tail.c $(AMALGAMATION)
 
-$(RELDOCDIR)dern-manual.html: $(DEVDOCDIR)book/dern-manual.org
-	@LANG=eng_US.utf8 emacs $(EMACSFLAGS) $< --funcall org-reload --funcall org-html-export-to-html --kill > /dev/null 2>&1
-	@mv dev/doc/book/dern-manual.html release/documentation/
+$(RELDOCDIR)dern-manual.html: $(DEVDOCDIR)book/dern-manual.htm $(DOCEXAMPLES)
+	$(info Generate $@)
+	@cp $(RELDIR)tool-support/source-highlight/dern.lang .
+	@cp $(DEVDOCDIR)book/lang.map .
+	@python2 $(DEVDOCDIR)book/build_book.py $< > $@
 
 clean:
 	@rm -rf $(AMALGAMATION) $(RELDIR)embedding-example $(RELDIR)*.so              \
@@ -341,7 +347,11 @@ clean:
                 octaspire-dern-unit-test-runner                                       \
                 perf.data perf.data.old                                               \
                 *.so *.dylib                                                          \
-                dern-example-database.db
+                dern-example-database.db                                              \
+                $(DEVDOCDIR)book/examples/sh/*.html                                   \
+                $(DEVDOCDIR)book/examples/dern/*.html                                 \
+                $(DEVDOCDIR)book/examples/c/*.html                                    \
+                dern.lang lang.map
 
 codestyle:
 	@vera++ --root dev/external/vera --profile octaspire-plugin --error $(wildcard $(SRCDIR)*.[ch])

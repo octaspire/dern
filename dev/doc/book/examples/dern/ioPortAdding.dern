@@ -1,0 +1,5 @@
+(define f as (io-file-open [/path/goes/here.xy]) [f])
+
+(+= f |a| |b| [ cat] |!|)  ; ab cat!
+
+(port-write f '({D+65} |A| [ Hi!])) ; AA Hi!

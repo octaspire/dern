@@ -1,0 +1,36 @@
+(define f as (io-file-open [/path/goes/here.xy]) [f])
+
+(port-seek f {D-1}) ; Seek to the end
+(port-write f {D+65})
+
+(port-seek f {D+0})  ; Seek to the beginning
+(port-write f {D+65})
+
+(port-seek f {D-2}) ; Seek to one octet from the end
+(port-write f {D+66})
+
+(port-seek f {D+1})
+; Seek to one octet from the beginning
+
+(port-write f {D+65})
+
+; Seek one octet forward  from the current position
+(port-seek f  {D+1} 'from-current)
+
+; Seek one octet backward from the current position
+(port-seek f {D-1} 'from-current)
+
+; Tell the distance (in octets) from
+; the beginning of the port
+(port-dist f)
+
+(port-length f)
+; Tell the size (in octets) of the port
+
+; Buffer is flushed to disk.
+; Happens also automatically on close.
+(port-flush f)
+; Close port. This happens also automatically.
+(port-close f)
+
+(port-length f) ; -1

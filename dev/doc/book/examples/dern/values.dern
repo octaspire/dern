@@ -1,0 +1,46 @@
+{D+128}              ; These are integers
+{D-100}
+
+{B+1001}             ;   9 in binary
+{B-10011}            ; -19 in binary
+
+{O+764}              ;  500 in octal
+{O-764}              ; -500 in octal
+
+{X+4B5}              ; 1205 in hexadecimal
+{X-FF}               ; -255 in hexadecimal
+
+{D+100 000 000}      ; Spaces can be used
+
+{D+3.14}             ; These are real
+{D-1.12}
+
+0.1.2-rc.1+amd64     ; Semantic version numbers
+1.0.1
+2.1.0-4344b11
+0.0.1+i386
+
+[Hello]           ; These are strings (utf-8)
+[Hell|6F|]        ; Hello
+[Hello|newline|]  ; Hello and newline
+[Я могу есть стекло, оно мне не вредит]
+|a|               ; These are characters (utf-8)
+|newline|         ; \n
+|tab|             ; \t
+|bar|             ; |
+|string-start|    ; [
+|string-end|      ; ]
+|61|              ; a in hexadecimal notation
+|7A|              ; z in hexadecimal notation
+|44F|             ; я in hexadecimal notation
+true              ; These are booleans
+false
+nil               ; Nil
+'({D+1} {D+2} |a| [cat])      ; These are vectors
+'()
+(hash-map 'John [likes cats]  ; This is hash map
+          'Lisa [likes dogs]
+          'Mike '([likes numbers] {D+1} {D+2}
+                                  {D+3} {D+4})
+           {D+1}    |a|
+           [Hi] {D+2})

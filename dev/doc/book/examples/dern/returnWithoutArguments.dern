@@ -1,0 +1,2 @@
+((fn () (return nil)))   ; Evaluates into 'nil'.
+((fn () (return)))       ; Evaluates into 'nil'.

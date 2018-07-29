@@ -1,0 +1,4 @@
+(define pi as {D+3.14} [value for pi])
+(define names as '(John Lisa Mark) [names list])
+(define double as (fn (x) (* {D+2} x)) [doubles nums]
+    '(x [this is doubled]) howto-ok)

@@ -1,0 +1,27 @@
+(define names as '(Mike John Lola Alice Lola) [names])
+
+(println (find names 'Mike))  ; prints ({D+0})
+(println (find names 'John))  ; prints ({D+1})
+(println (find names 'Lola))  ; prints ({D+2} {D+4})
+
+ ; prints (({D+0}) ({D+1}) ({D+2} {D+4}))
+(println (find names 'Mike 'John 'Lola))
+
+
+(define rooms as (hash-map 'Mike {D+100}
+                           'John {D+101}
+                           'Lola '({D+102} {D+103})
+                           'Alice {D+104})
+                 [room numbers])
+
+(println (find rooms 'Mike)) ; prints {D+100}
+
+(println (find rooms 'Lola))
+; prints ({D+102} {D+103})
+
+(println (find rooms 'Nobody)) ; prints nil
+
+
+; prints ({D+7} {D+11} {D+15})
+(println (find [012345 abc abc abc] [abc]))
+(println (find [012345] |3|)) ; prints ({D+3})

@@ -1,0 +1,9 @@
+(if true  [Yes])         ; Yes
+(if false [Yes])         ; nil
+(if false [Yes] [No])    ; No
+
+(if true  (println [Yes]) (println [No]))
+; Prints Yes
+
+; Prints Yes|newline|OK
+(if true  (do (println [Yes]) (println [OK])))

@@ -1,0 +1,6 @@
+(for i from {D+0} to {D+10} step {D+3}
+  (println [Hello {}!] i))
+
+(define names as '(John Mark Lisa) [names list])
+(for i in names step {D+2}
+  (println [Hello {} World!] i))
