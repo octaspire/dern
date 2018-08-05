@@ -44,6 +44,8 @@ UNAME := $(shell uname)
 MACHINE := $(shell uname -m)
 OS := "Unknown"
 
+MAKE=make
+
 # TODO Detect more platforms and show message about using the amalgamation on other platforms
 ifeq ($(UNAME), Darwin)
     OS                 := "macOS"
@@ -68,6 +70,8 @@ else ifeq ($(UNAME), OpenBSD)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+
+    MAKE=gmake
 else ifeq ($(UNAME), FreeBSD)
     OS                 := "FreeBSD"
     LDFLAGS            := -lm
@@ -246,7 +250,7 @@ $(RELDIR)games/octaspire-maze.dern: $(DEVGAMEDIR)maze/entities.png
 	 @$(ETCDIR)base64_replace_image.sh $< $@
 
 $(CORDIR)LICENSE:
-	@make submodules-init --silent
+	@$(MAKE) submodules-init --silent
 
 submodules-init:
 	$(call init_submodules)
@@ -254,7 +258,7 @@ submodules-init:
 submodules-pull:
 	@echo "--  Pulling submodules..."
 	@git submodule update --recursive --remote --quiet
-	@make -s TAGS
+	@$(MAKE) -s TAGS
 	@echo "OK  Done."
 
 $(AMALGAMATION): $(ETCDIR)amalgamation_head.c                \
@@ -391,22 +395,22 @@ TAGS: $(TAGS_C_FILES) $(TAGS_DERN_FILES)
 major:
 	@sh dev/etc/bump-version.sh major
 	@rm -f release/octaspire-dern-amalgamated.c      # This ensures that the version number is updated
-	@make -s release/octaspire-dern-amalgamated.c # also in the amalgamation.
-	@make -s TAGS
+	@$(MAKE) -s release/octaspire-dern-amalgamated.c # also in the amalgamation.
+	@$(MAKE) -s TAGS
 	@echo "OK  Done."
 
 minor:
 	@sh dev/etc/bump-version.sh minor
 	@rm -f release/octaspire-dern-amalgamated.c      # This ensures that the version number is updated
-	@make -s release/octaspire-dern-amalgamated.c # also in the amalgamation.
-	@make -s TAGS
+	@$(MAKE) -s release/octaspire-dern-amalgamated.c # also in the amalgamation.
+	@$(MAKE) -s TAGS
 	@echo "OK  Done."
 
 patch:
 	@sh dev/etc/bump-version.sh patch
 	@rm -f release/octaspire-dern-amalgamated.c      # This ensures that the version number is updated
-	@make -s release/octaspire-dern-amalgamated.c # also in the amalgamation.
-	@make -s TAGS
+	@$(MAKE) -s release/octaspire-dern-amalgamated.c # also in the amalgamation.
+	@$(MAKE) -s TAGS
 	@echo "OK  Done."
 
 tag:

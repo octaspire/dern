@@ -2331,12 +2331,12 @@
 
     ; 3. row
     (entity-new-wall                     {D-9} {D-2})
-    (for x from -7 to -6 (entity-new-wall x {D-2}))
-    (for x from -3 to -2 (entity-new-wall x {D-2}))
-    (for x from  1 to  2 (entity-new-wall x {D-2}))
-    (for x from  5 to  7 (entity-new-wall x {D-2}))
-    (entity-new-turnstile-ns              8 {D-2})
-    (entity-new-wall                      9 {D-2})
+    (for x from {D-7} to {D-6} (entity-new-wall x {D-2}))
+    (for x from {D-3} to {D-2} (entity-new-wall x {D-2}))
+    (for x from {D+1} to {D+2} (entity-new-wall x {D-2}))
+    (for x from {D+5} to {D+7} (entity-new-wall x {D-2}))
+    (entity-new-turnstile-ns              {D+8} {D-2})
+    (entity-new-wall                      {D+9} {D-2})
 
     ; 4. row
     (entity-new-wall         {D-9} {D-1})
@@ -2513,7 +2513,7 @@
     (entity-new-slope-en                  {D-6} {D+4})
     (entity-new-bomb                      {D-2} {D+4} {D+20})
     (entity-new-slope-sw                  {D-1} {D+4})
-    (for x from 0 to 8 (entity-new-wall   x     {D+4})))
+    (for x from {D+0} to {D+8} (entity-new-wall   x     {D+4})))
 
 
 
@@ -2537,14 +2537,14 @@
     ; 5. row
     (entity-new-wall                              {D-5} {D-5})
     (entity-new-exit                              {D-4} {D-5})
-    (for x from -3 to 0 (entity-new-pullable-ensw x     {D-5}))
+    (for x from {D-3} to {D+0} (entity-new-pullable-ensw x     {D-5}))
     (entity-new-wall                              {D+1} {D-5})
     (entity-new-wall                              {D+5} {D-5})
 
     ; 6 - 10. rows
     (for y from {D-4} to {D+0}
         (entity-new-wall                               {D-5} y)
-        (for x from -4 to 0 (entity-new-pullable-ensw  x y))
+        (for x from {D-4} to {D+0} (entity-new-pullable-ensw  x y))
         (entity-new-wall                               {D+1} y)
         (entity-new-wall                               {D+5} y))
 
@@ -2572,7 +2572,7 @@
 
     ; 16. row
     (entity-new-wall                     {D-5} {D+6})
-    (for x from -3 to 2 (entity-new-wall x     {D+6}))
+    (for x from {D-3} to {D+2} (entity-new-wall x     {D+6}))
     (entity-new-wall                     {D+5} {D+6})
 
     ; 17. row
@@ -2734,11 +2734,11 @@
                           (to-integer (find slot 'bomb-uptime))) [tmp secs])
 
     (define curSecs as (find slot 'count) [curret secs])
-    (if (== curSecs 0) (do (bomb-remove (find slot 'name)
+    (if (== curSecs {D+0}) (do (bomb-remove (find slot 'name)
                                         (find slot 'x)
                                         (find slot 'y)
                                         (return true))))
-    (if (== tmpSecs 0) (do (bomb-remove (find slot 'name)
+    (if (== tmpSecs {D+0}) (do (bomb-remove (find slot 'name)
                                         (find slot 'x)
                                         (find slot 'y)
                                         (return true))))
