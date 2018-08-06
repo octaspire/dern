@@ -51,12 +51,14 @@ octaspire_dern_repl_message_t;
 static void octaspire_dern_repl_print_message_c_str(
     char const * const message,
     octaspire_dern_repl_message_t const messageType,
-    bool const useColors);
+    bool const useColors,
+    octaspire_input_t const * const input);
 
 static void octaspire_dern_repl_print_message(
     octaspire_string_t const * const message,
     octaspire_dern_repl_message_t const messageType,
-    bool const useColors);
+    bool const useColors,
+    octaspire_input_t const * const input);
 
 static void octaspire_dern_repl_print_version(bool const useColors);
 
@@ -71,7 +73,8 @@ static void octaspire_dern_repl_print_usage(
 static void octaspire_dern_repl_print_message_c_str(
     char const * const message,
     octaspire_dern_repl_message_t const messageType,
-    bool const useColors)
+    bool const useColors,
+    octaspire_input_t const * const input)
 {
     if (useColors)
     {
@@ -103,6 +106,14 @@ static void octaspire_dern_repl_print_message_c_str(
         }
     }
 
+    if (input)
+    {
+        printf(
+            "At line %zu (character index %zu):\n",
+            octaspire_input_get_line_number(input),
+            octaspire_input_get_ucs_character_index(input));
+    }
+
     printf("%s", message);
 
     if (useColors)
@@ -114,12 +125,14 @@ static void octaspire_dern_repl_print_message_c_str(
 void octaspire_dern_repl_print_message(
     octaspire_string_t const * const message,
     octaspire_dern_repl_message_t const messageType,
-    bool const useColors)
+    bool const useColors,
+    octaspire_input_t const * const input)
 {
     octaspire_dern_repl_print_message_c_str(
         octaspire_string_get_c_string(message),
         messageType,
-        useColors);
+        useColors,
+        input);
 }
 
 void octaspire_dern_repl_print_version(bool const useColors)
@@ -128,7 +141,8 @@ void octaspire_dern_repl_print_version(bool const useColors)
     octaspire_dern_repl_print_message_c_str(
         OCTASPIRE_DERN_CONFIG_VERSION_STR,
         OCTASPIRE_DERN_REPL_MESSAGE_INFO,
-        useColors);
+        useColors,
+        0);
 
     printf("\n");
 }
@@ -155,7 +169,9 @@ void octaspire_dern_repl_print_banner(bool const useColors)
         "  \n"
         "  Licensed under the Apache License, Version 2.0. Distributed on\n"
         "  an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND.\n\n",
-        OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+        OCTASPIRE_DERN_REPL_MESSAGE_INFO,
+        useColors,
+        0);
 }
 
 void octaspire_dern_repl_print_usage(char const * const binaryName, bool const useColors)
@@ -243,7 +259,8 @@ void main(int argc, char *argv[])
         octaspire_dern_repl_print_message_c_str(
             "Cannot register the 'atexit' function",
             OCTASPIRE_DERN_REPL_MESSAGE_FATAL,
-            useColors);
+            useColors,
+            0);
 
         exit(EXIT_FAILURE);
     }
@@ -255,7 +272,8 @@ void main(int argc, char *argv[])
         octaspire_dern_repl_print_message_c_str(
             "Cannot create boot allocator",
             OCTASPIRE_DERN_REPL_MESSAGE_FATAL,
-            useColors);
+            useColors,
+            0);
 
         exit(EXIT_FAILURE);
     }
@@ -271,7 +289,8 @@ void main(int argc, char *argv[])
         octaspire_dern_repl_print_message_c_str(
             "Cannot create evaluation vector",
             OCTASPIRE_DERN_REPL_MESSAGE_FATAL,
-            useColors);
+            useColors,
+            0);
 
         exit(EXIT_FAILURE);
     }
@@ -293,7 +312,8 @@ void main(int argc, char *argv[])
                     octaspire_dern_repl_print_message_c_str(
                         "Cannot create string to be evaluated",
                         OCTASPIRE_DERN_REPL_MESSAGE_FATAL,
-                        useColors);
+                        useColors,
+                        0);
 
                     exit(EXIT_FAILURE);
                 }
@@ -357,7 +377,8 @@ void main(int argc, char *argv[])
         octaspire_dern_repl_print_message_c_str(
             "Allocation failure\n",
             OCTASPIRE_DERN_REPL_MESSAGE_FATAL,
-            useColors);
+            useColors,
+            0);
 
         exit(EXIT_FAILURE);
     }
@@ -400,7 +421,11 @@ void main(int argc, char *argv[])
             octaspire_string_t *tmpStr =
                 octaspire_dern_value_to_string(value, allocator);
 
-            octaspire_dern_repl_print_message(tmpStr, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
+            octaspire_dern_repl_print_message(
+                tmpStr,
+                OCTASPIRE_DERN_REPL_MESSAGE_ERROR,
+                useColors,
+                input);
 
             printf("\n");
 
@@ -418,10 +443,31 @@ void main(int argc, char *argv[])
             octaspire_dern_vm_add_command_line_argument(vm, argv[i]);
         }
 
-        octaspire_dern_value_t *value =
-            octaspire_dern_vm_read_from_path_and_eval_in_global_environment(
+        octaspire_input_release(input);
+        input = 0;
+
+        octaspire_input_t *input =
+            octaspire_input_new_from_path(
+                argv[userFilesStartIdx],
+                allocator,
+                stdio);
+
+        octaspire_helpers_verify_not_null(input);
+
+        octaspire_dern_value_t *value = 0;
+
+        if (!input)
+        {
+            value = octaspire_dern_vm_create_new_value_error_from_c_string(
                 vm,
-                argv[userFilesStartIdx]);
+                "Allocation failure of input");
+        }
+        else
+        {
+            value = octaspire_dern_vm_read_from_octaspire_input_and_eval_in_global_environment(
+                vm,
+                input);
+        }
 
         octaspire_helpers_verify_not_null(value);
 
@@ -430,7 +476,11 @@ void main(int argc, char *argv[])
             octaspire_string_t *str =
                 octaspire_dern_value_to_string(value, allocator);
 
-            octaspire_dern_repl_print_message(str, OCTASPIRE_DERN_REPL_MESSAGE_ERROR, useColors);
+            octaspire_dern_repl_print_message(
+                str,
+                OCTASPIRE_DERN_REPL_MESSAGE_ERROR,
+                useColors,
+                input);
 
             printf("\n");
 
@@ -440,6 +490,8 @@ void main(int argc, char *argv[])
             exit(EXIT_FAILURE);
         }
     }
+
+    octaspire_input_clear(input);
 
     if (octaspire_vector_get_length(stringsToBeEvaluated) > 0 || userFilesStartIdx >= 0)
     {
@@ -455,13 +507,17 @@ void main(int argc, char *argv[])
     octaspire_dern_repl_print_message_c_str(
         "\n  Quit by pressing CTRL-d on empty line\n"
         "  or by writing (exit) and then enter.\n\n",
-        OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+        OCTASPIRE_DERN_REPL_MESSAGE_INFO,
+        useColors,
+        0);
 
     do
     {
         octaspire_dern_repl_print_message_c_str(
             "> ",
-            OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+            OCTASPIRE_DERN_REPL_MESSAGE_INFO,
+            useColors,
+            0);
 moreInput:
         line = octaspire_stdio_read_line(stdio, stdin);
 
@@ -494,7 +550,9 @@ moreInput:
 
                 octaspire_dern_repl_print_message_c_str(
                     "| ",
-                    OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+                    OCTASPIRE_DERN_REPL_MESSAGE_INFO,
+                    useColors,
+                    0);
 
                 goto moreInput;
             }
@@ -510,7 +568,9 @@ moreInput:
 
                 octaspire_dern_repl_print_message_c_str(
                     "| ",
-                    OCTASPIRE_DERN_REPL_MESSAGE_INFO, useColors);
+                    OCTASPIRE_DERN_REPL_MESSAGE_INFO,
+                    useColors,
+                    0);
 
                 octaspire_dern_vm_pop_value(vm, parsedValue);
                 goto moreInput;
@@ -524,7 +584,8 @@ moreInput:
                 (parsedValue->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
                     ? OCTASPIRE_DERN_REPL_MESSAGE_ERROR
                     : OCTASPIRE_DERN_REPL_MESSAGE_OUTPUT,
-                useColors);
+                useColors,
+                input);
 
             octaspire_dern_vm_pop_value(vm, parsedValue);
 
