@@ -628,7 +628,7 @@
 
        (define event as (sdl2-PollEvent) [event from sdl2])
        (define type  as nil              [type of event])
-       (if (and (!= event nil) (> (len event) 0)) (= type (ln@ event {D+0})))
+       (if (and (!= event nil) (> (len event) {D+0})) (= type (ln@ event {D+0})))
        (define input as [] [input event]) ; TODO
 
        (select (== type 'QUIT)          (= running false)
