@@ -109,8 +109,10 @@ static void octaspire_dern_repl_print_message_c_str(
     if (input)
     {
         printf(
-            "At line %zu (character index %zu):\n",
+            "At line %zu, column %zu (character index %zu from the start of "
+            "the stream):\n",
             octaspire_input_get_line_number(input),
+            octaspire_input_get_column_number(input),
             octaspire_input_get_ucs_character_index(input));
     }
 
