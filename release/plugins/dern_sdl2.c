@@ -16,6 +16,8 @@ limitations under the License.
 ******************************************************************************/
 #include "octaspire-dern-amalgamated.c"
 #include "SDL.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 int const OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE = 32766;
 
@@ -29,6 +31,16 @@ int const OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE = 32766;
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
 #include "SDL_ttf.h"
+#endif
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+#include <SDL_opengl.h>
+#include <GL/glu.h>
+SDL_GLContext dernGlContext;
+#endif
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+static GLuint dern_sdl2_private_gltextures[1] = {0};
 #endif
 
 /////////////////////////////// timer //////////////////////////////////////////
@@ -1123,6 +1135,11 @@ octaspire_dern_value_t *dern_sdl2_Init(
             SDL_GetError());
     }
 
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+#endif
+
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
     if (TTF_Init() < 0)
     {
@@ -1439,6 +1456,33 @@ octaspire_dern_value_t *dern_sdl2_PollEvent(
                 typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "QUIT");
                 octaspire_helpers_verify_not_null(typeValue);
                 octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+            }
+            break;
+
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+            {
+                typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(
+                    vm,
+                    (event.button.type == SDL_MOUSEBUTTONDOWN) ? "MOUSEBUTTONDOWN" : "MOUSEBUTTONUP");
+                octaspire_helpers_verify_not_null(typeValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+
+                octaspire_dern_value_t * xValue =
+                    octaspire_dern_vm_create_new_value_integer(
+                        vm,
+                        event.button.x);
+
+                octaspire_helpers_verify_not_null(xValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &xValue);
+
+                octaspire_dern_value_t * yValue =
+                    octaspire_dern_vm_create_new_value_integer(
+                        vm,
+                        event.button.y);
+
+                octaspire_helpers_verify_not_null(yValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &yValue);
             }
             break;
 
@@ -2960,6 +3004,10 @@ octaspire_dern_value_t *dern_sdl2_CreateWindow(
         }
     }
 
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    flags |= SDL_WINDOW_OPENGL;
+#endif
+
     SDL_Window * const window = SDL_CreateWindow(
         octaspire_dern_value_as_text_get_c_string(firstArg),
         x,
@@ -2977,6 +3025,76 @@ octaspire_dern_value_t *dern_sdl2_CreateWindow(
             "Error message is: '%s'.",
             SDL_GetError());
     }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    dernGlContext = SDL_GL_CreateContext(window);
+
+    if (!dernGlContext)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-create-window' failed to create a OpenGL context. "
+            "Error message is: '%s'.",
+            SDL_GetError());
+    }
+
+    // Use Vsync
+    if (SDL_GL_SetSwapInterval(1) < 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-create-window' failed to enable Vsync for OpenGL."
+            "Error message is: '%s'.",
+            SDL_GetError());
+    }
+
+    GLenum error = GL_NO_ERROR;
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    error = glGetError();
+
+    if (error != GL_NO_ERROR)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-create-window' failed to set projection matrix for OpenGL."
+            "Error message is: '%s'.",
+            gluErrorString(error));
+    }
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    error = glGetError();
+
+    if (error != GL_NO_ERROR)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-create-window' failed to set modelview matrix for OpenGL."
+            "Error message is: '%s'.",
+            gluErrorString(error));
+    }
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    error = glGetError();
+
+    if (error != GL_NO_ERROR)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-create-window' failed to set clear color for OpenGL."
+            "Error message is: '%s'.",
+            gluErrorString(error));
+    }
+#endif
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_c_data(
@@ -3426,6 +3544,2309 @@ octaspire_dern_value_t *dern_sdl2_RenderPresent(
     SDL_Renderer * const renderer = octaspire_dern_c_data_get_payload(cData);
 
     SDL_RenderPresent(renderer);
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_GL_SwapWindow(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-GL-SwapWindow' expects one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-GL-SwapWindow' expects window as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * const cData = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_SDL2_PLUGIN_NAME,
+            "window"))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-GL-SwapWindow' expects 'dern_sdl2' and 'window' as "
+            "plugin name and payload type name for the C data of the first argument. "
+            "Names '%s' and '%s' were given.",
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+    }
+
+    SDL_Window * const window = octaspire_dern_c_data_get_payload(cData);
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    SDL_GL_SwapWindow(window);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-GL-SwapWindow' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glColor4ub(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 4)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glColor4ub' expects four arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    size_t r = 0;
+    size_t g = 0;
+    size_t b = 0;
+    size_t a = 0;
+
+    // Red
+    octaspire_dern_value_t const * arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_integer(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glColor4ub' expects integer as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    if (octaspire_dern_value_as_integer_get_value(arg) < 0)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-glColor4ub' expects positive integer as first argument. "
+            "Negative value was given");
+    }
+
+    r = octaspire_dern_value_as_integer_get_value(arg);
+
+    // Green
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_integer(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glColor4ub' expects integer as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    if (octaspire_dern_value_as_integer_get_value(arg) < 0)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-glColor4ub' expects positive integer as second argument. "
+            "Negative value was given");
+    }
+
+    g = octaspire_dern_value_as_integer_get_value(arg);
+
+    // Blue
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_integer(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glColor4ub' expects integer as third argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    if (octaspire_dern_value_as_integer_get_value(arg) < 0)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-glColor4ub' expects positive integer as third argument. "
+            "Negative value was given");
+    }
+
+    b = octaspire_dern_value_as_integer_get_value(arg);
+
+    // Alpha
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 3);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_integer(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glColor4ub' expects integer as fourth argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    if (octaspire_dern_value_as_integer_get_value(arg) < 0)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'sdl2-glColor4ub' expects positive integer as fourth argument. "
+            "Negative value was given");
+    }
+
+    a = octaspire_dern_value_as_integer_get_value(arg);
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glColor4ub(r, g, b, a);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glColor4ub' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glClearColor(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 4)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glClearColor' expects four arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    float r = 0;
+    float g = 0;
+    float b = 0;
+    float a = 0;
+
+    // Red
+    octaspire_dern_value_t const * arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glClearColor' expects number as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    r = octaspire_dern_value_as_number_get_value(arg);
+
+    // Green
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glClearColor' expects number as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    g = octaspire_dern_value_as_number_get_value(arg);
+
+    // Blue
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glClearColor' expects number as third argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    b = octaspire_dern_value_as_number_get_value(arg);
+
+    // Alpha
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 3);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glClearColor' expects number as fourth argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    a = octaspire_dern_value_as_number_get_value(arg);
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glClearColor(r, g, b, a);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glClearColor' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glReadPixel(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glReadPixel' expects two arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    int x = 0;
+    int y = 0;
+
+    // x
+    octaspire_dern_value_t const * arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glReadPixel' expects number as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    x = octaspire_dern_value_as_number_get_value(arg);
+
+    // y
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glReadPixel' expects number as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    y = octaspire_dern_value_as_number_get_value(arg);
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glFlush();
+    glFinish();
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    unsigned char data[4];
+    glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+    octaspire_dern_value_t * const result = octaspire_dern_vm_create_new_value_vector(vm);
+    octaspire_helpers_verify_not_null(result);
+    octaspire_dern_vm_push_value(vm, result);
+
+    for (size_t i = 0; i < (sizeof(data) / sizeof(data[0])); ++i)
+    {
+        octaspire_dern_value_t * const elem =
+            octaspire_dern_vm_create_new_value_integer(
+                vm,
+                data[i]);
+
+        octaspire_helpers_verify_not_null(elem);
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_value_as_vector_push_back_element(result, &elem));
+    }
+
+    octaspire_dern_vm_pop_value(vm, result);
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return result;
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glReadPixel' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+}
+
+octaspire_dern_value_t *dern_sdl2_glClear(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glClear' expects no arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glClearColor' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glPushMatrix(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glPushMatrix' expects no arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glPushMatrix();
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glPushMatrix' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glPopMatrix(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glPopMatrix' expects no arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glPopMatrix();
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glPopMatrix' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glLoadIdentity(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glLoadIdentity' expects no arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glLoadIdentity();
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glLoadIdentity' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glTranslatef(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 3)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glTranslatef' expects three arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    float x = 0;
+    float y = 0;
+    float z = 0;
+
+    // X
+    octaspire_dern_value_t const * arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glTranslatef' expects number as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    x = octaspire_dern_value_as_number_get_value(arg);
+
+    // Y
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glTranslatef' expects number as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    y = octaspire_dern_value_as_number_get_value(arg);
+
+    // Z
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glTranslatef' expects number as third argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    z = octaspire_dern_value_as_number_get_value(arg);
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glTranslatef(x, y, z);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glTranslatef' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_gluLookAt(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 9)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-gluLookAt' expects nine arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    float num[9]    = {0};
+
+    for (size_t i = 0; i < 9; ++i)
+    {
+        octaspire_dern_value_t const * const arg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
+
+        octaspire_helpers_verify_not_null(arg);
+
+        if (!octaspire_dern_value_is_number(arg))
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-gluLookAt' expects number as %zu. argument. "
+                "Type '%s' was given.",
+                i,
+                octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+        }
+
+        num[i] = octaspire_dern_value_as_number_get_value(arg);
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    gluLookAt(
+        num[0], num[1], num[2],
+        num[3], num[4], num[5],
+        num[6], num[7], num[8]);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-gluLookAt' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_gluPerspective(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 4)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-gluPerpective' expects four arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    float fovy   = 0;
+    float aspect = 0;
+    float zNear  = 0;
+    float zFar   = 0;
+
+    // fovy
+    octaspire_dern_value_t const * arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-gluPerpective' expects number as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    fovy = octaspire_dern_value_as_number_get_value(arg);
+
+    // aspect
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-gluPerpective' expects number as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    aspect = octaspire_dern_value_as_number_get_value(arg);
+
+    // zNear
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-gluPerpective' expects number as third argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    zNear = octaspire_dern_value_as_number_get_value(arg);
+
+    // zFar
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 3);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-gluPerspective' expects number as fourth argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    zFar = octaspire_dern_value_as_number_get_value(arg);
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    gluPerspective(fovy, aspect, zNear, zFar);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-gluPerspective' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glViewport(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 4)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glViewport' expects four arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    int    x      = 0;
+    int    y      = 0;
+    size_t width  = 0;
+    size_t height = 0;
+
+    // x
+    octaspire_dern_value_t const * arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glViewport' expects number as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    x = octaspire_dern_value_as_number_get_value(arg);
+
+    // y
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glViewport' expects number as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    y = octaspire_dern_value_as_number_get_value(arg);
+
+    // width
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glViewport' expects number as third argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    width = octaspire_dern_value_as_number_get_value(arg);
+
+    // height
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 3);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glViewport' expects number as fourth argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    width = octaspire_dern_value_as_number_get_value(arg);
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glViewport(x, y, width, height);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glViewport' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glClearDepth(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glClearDepth' expects one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    float  depth = 0;
+
+    // depth
+    octaspire_dern_value_t const * arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glClearDepth' expects number as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    depth = octaspire_dern_value_as_number_get_value(arg);
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glClearDepth(depth);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glClearDepth' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glRotatef(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 4)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glRotatef' expects four arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    float angle = 0;
+    float x     = 0;
+    float y     = 0;
+    float z     = 0;
+
+    // ANGLE
+    octaspire_dern_value_t const * arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glRotatef' expects number as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    angle = octaspire_dern_value_as_number_get_value(arg);
+
+    // X
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glRotatef' expects number as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    x = octaspire_dern_value_as_number_get_value(arg);
+
+    // Y
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glRotatef' expects number as third argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    y = octaspire_dern_value_as_number_get_value(arg);
+
+    // Z
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 3);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glRotatef' expects number as fourth argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    z = octaspire_dern_value_as_number_get_value(arg);
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glRotatef(angle, x, y, z);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glRotatef' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glVertex3(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 3)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glVertex3' expects three arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    float x = 0;
+    float y = 0;
+    float z = 0;
+
+    // X
+    octaspire_dern_value_t const * arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glVertex3' expects number as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    x = octaspire_dern_value_as_number_get_value(arg);
+
+    // Y
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glVertex3' expects number as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    y = octaspire_dern_value_as_number_get_value(arg);
+
+    // Z
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glVertex3' expects number as third argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    z = octaspire_dern_value_as_number_get_value(arg);
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glVertex3f(x, y, z);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glVertex3' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glTexCoord2f(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glTexCoord2f' expects two arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    float s = 0;
+    float t = 0;
+
+    // S
+    octaspire_dern_value_t const * arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glTexCoord2f' expects number as first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    s = octaspire_dern_value_as_number_get_value(arg);
+
+    // T
+    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glTexCoord2f' expects number as second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+
+    t = octaspire_dern_value_as_number_get_value(arg);
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glBindTexture(GL_TEXTURE_2D, dern_sdl2_private_gltextures[0]);
+    glTexCoord2f(s, t);
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glTexCoord2f' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glMatrixMode(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glMatrixMode' expects one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    GLenum mode;
+
+    octaspire_dern_value_t const * const arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (octaspire_dern_value_is_text(arg))
+    {
+        if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MODELVIEW"))
+        {
+            mode = GL_MODELVIEW;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_PROJECTION"))
+        {
+            mode = GL_PROJECTION;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE"))
+        {
+            mode = GL_TEXTURE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_COLOR"))
+        {
+            mode = GL_COLOR;
+        }
+        else
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-glMatrixMode': unknown mode '%s' as the first "
+                "argument.",
+                octaspire_dern_value_as_text_get_c_string(arg));
+        }
+
+        glMatrixMode(mode);
+    }
+    else
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glMatrixMode' expects symbol or string as the first "
+            "argument. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glMatrixMode' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glBegin(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glBegin' expects one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    GLenum mode;
+
+    octaspire_dern_value_t const * const arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (octaspire_dern_value_is_text(arg))
+    {
+        if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POINTS"))
+        {
+            mode = GL_POINTS;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_LINES"))
+        {
+            mode = GL_LINES;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_LINE_STRIP"))
+        {
+            mode = GL_LINE_STRIP;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_LINE_LOOP"))
+        {
+            mode = GL_LINE_LOOP;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TRIANGLES"))
+        {
+            mode = GL_TRIANGLES;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TRIANGLE_STRIP"))
+        {
+            mode = GL_TRIANGLE_STRIP;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TRIANGLE_FAN"))
+        {
+            mode = GL_TRIANGLE_FAN;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_QUADS"))
+        {
+            mode = GL_QUADS;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_QUAD_STRIP"))
+        {
+            mode = GL_QUAD_STRIP;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POLYGON"))
+        {
+            mode = GL_POLYGON;
+        }
+        else
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-glBegin': unknown mode '%s' as the first "
+                "argument.",
+                octaspire_dern_value_as_text_get_c_string(arg));
+        }
+
+        glBegin(mode);
+    }
+    else
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glBegin' expects symbol or string as the first "
+            "argument. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glBegin' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glEnable(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glEnable' expects one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    GLenum cap;
+
+    octaspire_dern_value_t const * const arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (octaspire_dern_value_is_text(arg))
+    {
+        if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_ALPHA_TEST"))
+        {
+            cap = GL_ALPHA_TEST;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_AUTO_NORMAL"))
+        {
+            cap = GL_AUTO_NORMAL;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_BLEND"))
+        {
+            cap = GL_BLEND;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_CLIP_PLANE0"))
+        {
+            cap = GL_CLIP_PLANE0;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_CLIP_PLANE1"))
+        {
+            cap = GL_CLIP_PLANE1;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_COLOR_LOGIC_OP"))
+        {
+            cap = GL_COLOR_LOGIC_OP;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_COLOR_MATERIAL"))
+        {
+            cap = GL_COLOR_MATERIAL;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_COLOR_TABLE"))
+        {
+            cap = GL_COLOR_TABLE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_CONVOLUTION_1D"))
+        {
+            cap = GL_CONVOLUTION_1D;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_CONVOLUTION_2D"))
+        {
+            cap = GL_CONVOLUTION_2D;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_CULL_FACE"))
+        {
+            cap = GL_CULL_FACE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_DEPTH_TEST"))
+        {
+            cap = GL_DEPTH_TEST;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_DITHER"))
+        {
+            cap = GL_DITHER;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_FOG"))
+        {
+            cap = GL_FOG;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_HISTOGRAM"))
+        {
+            cap = GL_HISTOGRAM;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_INDEX_LOGIC_OP"))
+        {
+            cap = GL_INDEX_LOGIC_OP;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_LIGHT0"))
+        {
+            cap = GL_LIGHT0;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_LIGHT1"))
+        {
+            cap = GL_LIGHT1;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_LIGHTING"))
+        {
+            cap = GL_LIGHTING;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_LINE_SMOOTH"))
+        {
+            cap = GL_LINE_SMOOTH;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_LINE_STIPPLE"))
+        {
+            cap = GL_LINE_STIPPLE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_COLOR_4"))
+        {
+            cap = GL_MAP1_COLOR_4;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_INDEX"))
+        {
+            cap = GL_MAP1_INDEX;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_NORMAL"))
+        {
+            cap = GL_MAP1_NORMAL;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_TEXTURE_COORD_1"))
+        {
+            cap = GL_MAP1_TEXTURE_COORD_1;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_TEXTURE_COORD_2"))
+        {
+            cap = GL_MAP1_TEXTURE_COORD_2;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_TEXTURE_COORD_3"))
+        {
+            cap = GL_MAP1_TEXTURE_COORD_3;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_TEXTURE_COORD_4"))
+        {
+            cap = GL_MAP1_TEXTURE_COORD_4;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_VERTEX_3"))
+        {
+            cap = GL_MAP1_VERTEX_3;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_VERTEX_4"))
+        {
+            cap = GL_MAP1_VERTEX_4;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_COLOR_4"))
+        {
+            cap = GL_MAP2_COLOR_4;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_INDEX"))
+        {
+            cap = GL_MAP2_INDEX;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_NORMAL"))
+        {
+            cap = GL_MAP2_NORMAL;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_TEXTURE_COORD_1"))
+        {
+            cap = GL_MAP2_TEXTURE_COORD_1;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_TEXTURE_COORD_2"))
+        {
+            cap = GL_MAP2_TEXTURE_COORD_2;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_TEXTURE_COORD_3"))
+        {
+            cap = GL_MAP2_TEXTURE_COORD_3;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_TEXTURE_COORD_4"))
+        {
+            cap = GL_MAP2_TEXTURE_COORD_4;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_VERTEX_3"))
+        {
+            cap = GL_MAP2_VERTEX_3;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_VERTEX_4"))
+        {
+            cap = GL_MAP2_VERTEX_4;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MINMAX"))
+        {
+            cap = GL_MINMAX;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_NORMALIZE"))
+        {
+            cap = GL_NORMALIZE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POINT_SMOOTH"))
+        {
+            cap = GL_POINT_SMOOTH;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POLYGON_OFFSET_FILL"))
+        {
+            cap = GL_POLYGON_OFFSET_FILL;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POLYGON_OFFSET_LINE"))
+        {
+            cap = GL_POLYGON_OFFSET_LINE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POLYGON_OFFSET_POINT"))
+        {
+            cap = GL_POLYGON_OFFSET_POINT;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POLYGON_SMOOTH"))
+        {
+            cap = GL_POLYGON_SMOOTH;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POLYGON_STIPPLE"))
+        {
+            cap = GL_POLYGON_STIPPLE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POST_COLOR_MATRIX_COLOR_TABLE"))
+        {
+            cap = GL_POST_COLOR_MATRIX_COLOR_TABLE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POST_CONVOLUTION_COLOR_TABLE"))
+        {
+            cap = GL_POST_CONVOLUTION_COLOR_TABLE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_RESCALE_NORMAL"))
+        {
+            cap = GL_RESCALE_NORMAL;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_SEPARABLE_2D"))
+        {
+            cap = GL_SEPARABLE_2D;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_SCISSOR_TEST"))
+        {
+            cap = GL_SCISSOR_TEST;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_STENCIL_TEST"))
+        {
+            cap = GL_STENCIL_TEST;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_1D"))
+        {
+            cap = GL_TEXTURE_1D;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_2D"))
+        {
+            cap = GL_TEXTURE_2D;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_3D"))
+        {
+            cap = GL_TEXTURE_3D;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_GEN_Q"))
+        {
+            cap = GL_TEXTURE_GEN_Q;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_GEN_R"))
+        {
+            cap = GL_TEXTURE_GEN_R;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_GEN_S"))
+        {
+            cap = GL_TEXTURE_GEN_S;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_GEN_T"))
+        {
+            cap = GL_TEXTURE_GEN_T;
+        }
+        else
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-glEnable': unknown capability '%s' as the first "
+                "argument.",
+                octaspire_dern_value_as_text_get_c_string(arg));
+        }
+
+        glEnable(cap);
+    }
+    else
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glEnable' expects symbol or string as the first "
+            "argument. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glEnable' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glDisable(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glDisable' expects one argument. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    GLenum cap;
+
+    octaspire_dern_value_t const * const arg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (octaspire_dern_value_is_text(arg))
+    {
+        if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_ALPHA_TEST"))
+        {
+            cap = GL_ALPHA_TEST;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_AUTO_NORMAL"))
+        {
+            cap = GL_AUTO_NORMAL;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_BLEND"))
+        {
+            cap = GL_BLEND;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_CLIP_PLANE0"))
+        {
+            cap = GL_CLIP_PLANE0;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_CLIP_PLANE1"))
+        {
+            cap = GL_CLIP_PLANE1;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_COLOR_LOGIC_OP"))
+        {
+            cap = GL_COLOR_LOGIC_OP;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_COLOR_MATERIAL"))
+        {
+            cap = GL_COLOR_MATERIAL;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_COLOR_TABLE"))
+        {
+            cap = GL_COLOR_TABLE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_CONVOLUTION_1D"))
+        {
+            cap = GL_CONVOLUTION_1D;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_CONVOLUTION_2D"))
+        {
+            cap = GL_CONVOLUTION_2D;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_CULL_FACE"))
+        {
+            cap = GL_CULL_FACE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_DEPTH_TEST"))
+        {
+            cap = GL_DEPTH_TEST;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_DITHER"))
+        {
+            cap = GL_DITHER;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_FOG"))
+        {
+            cap = GL_FOG;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_HISTOGRAM"))
+        {
+            cap = GL_HISTOGRAM;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_INDEX_LOGIC_OP"))
+        {
+            cap = GL_INDEX_LOGIC_OP;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_LIGHT0"))
+        {
+            cap = GL_LIGHT0;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_LIGHT1"))
+        {
+            cap = GL_LIGHT1;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_LIGHTING"))
+        {
+            cap = GL_LIGHTING;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_LINE_SMOOTH"))
+        {
+            cap = GL_LINE_SMOOTH;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_LINE_STIPPLE"))
+        {
+            cap = GL_LINE_STIPPLE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_COLOR_4"))
+        {
+            cap = GL_MAP1_COLOR_4;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_INDEX"))
+        {
+            cap = GL_MAP1_INDEX;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_NORMAL"))
+        {
+            cap = GL_MAP1_NORMAL;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_TEXTURE_COORD_1"))
+        {
+            cap = GL_MAP1_TEXTURE_COORD_1;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_TEXTURE_COORD_2"))
+        {
+            cap = GL_MAP1_TEXTURE_COORD_2;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_TEXTURE_COORD_3"))
+        {
+            cap = GL_MAP1_TEXTURE_COORD_3;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_TEXTURE_COORD_4"))
+        {
+            cap = GL_MAP1_TEXTURE_COORD_4;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_VERTEX_3"))
+        {
+            cap = GL_MAP1_VERTEX_3;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP1_VERTEX_4"))
+        {
+            cap = GL_MAP1_VERTEX_4;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_COLOR_4"))
+        {
+            cap = GL_MAP2_COLOR_4;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_INDEX"))
+        {
+            cap = GL_MAP2_INDEX;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_NORMAL"))
+        {
+            cap = GL_MAP2_NORMAL;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_TEXTURE_COORD_1"))
+        {
+            cap = GL_MAP2_TEXTURE_COORD_1;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_TEXTURE_COORD_2"))
+        {
+            cap = GL_MAP2_TEXTURE_COORD_2;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_TEXTURE_COORD_3"))
+        {
+            cap = GL_MAP2_TEXTURE_COORD_3;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_TEXTURE_COORD_4"))
+        {
+            cap = GL_MAP2_TEXTURE_COORD_4;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_VERTEX_3"))
+        {
+            cap = GL_MAP2_VERTEX_3;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MAP2_VERTEX_4"))
+        {
+            cap = GL_MAP2_VERTEX_4;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_MINMAX"))
+        {
+            cap = GL_MINMAX;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_NORMALIZE"))
+        {
+            cap = GL_NORMALIZE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POINT_SMOOTH"))
+        {
+            cap = GL_POINT_SMOOTH;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POLYGON_OFFSET_FILL"))
+        {
+            cap = GL_POLYGON_OFFSET_FILL;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POLYGON_OFFSET_LINE"))
+        {
+            cap = GL_POLYGON_OFFSET_LINE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POLYGON_OFFSET_POINT"))
+        {
+            cap = GL_POLYGON_OFFSET_POINT;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POLYGON_SMOOTH"))
+        {
+            cap = GL_POLYGON_SMOOTH;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POLYGON_STIPPLE"))
+        {
+            cap = GL_POLYGON_STIPPLE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POST_COLOR_MATRIX_COLOR_TABLE"))
+        {
+            cap = GL_POST_COLOR_MATRIX_COLOR_TABLE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_POST_CONVOLUTION_COLOR_TABLE"))
+        {
+            cap = GL_POST_CONVOLUTION_COLOR_TABLE;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_RESCALE_NORMAL"))
+        {
+            cap = GL_RESCALE_NORMAL;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_SEPARABLE_2D"))
+        {
+            cap = GL_SEPARABLE_2D;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_SCISSOR_TEST"))
+        {
+            cap = GL_SCISSOR_TEST;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_STENCIL_TEST"))
+        {
+            cap = GL_STENCIL_TEST;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_1D"))
+        {
+            cap = GL_TEXTURE_1D;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_2D"))
+        {
+            cap = GL_TEXTURE_2D;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_3D"))
+        {
+            cap = GL_TEXTURE_3D;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_GEN_Q"))
+        {
+            cap = GL_TEXTURE_GEN_Q;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_GEN_R"))
+        {
+            cap = GL_TEXTURE_GEN_R;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_GEN_S"))
+        {
+            cap = GL_TEXTURE_GEN_S;
+        }
+        else if (octaspire_dern_value_as_text_is_equal_to_c_string(arg, "GL_TEXTURE_GEN_T"))
+        {
+            cap = GL_TEXTURE_GEN_T;
+        }
+        else
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'sdl2-glDisable: unknown capability '%s' as the first "
+                "argument.",
+                octaspire_dern_value_as_text_get_c_string(arg));
+        }
+
+        glDisable(cap);
+    }
+    else
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glDisable' expects symbol or string as the first "
+            "argument. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+    }
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glDisable' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_glEnd(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-glEnd' expects no arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glEnd();
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-glEnd' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_load_texture_base64(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-load-texture-base64' expects two arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_boolean(firstArg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-load-texture-base64' expects boolean as "
+            "the first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(
+                firstArg->typeTag));
+    }
+
+    bool const isBlend = octaspire_dern_value_as_boolean_get_value(firstArg);
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_text(secondArg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-load-texture-base64' expects string or symbol "
+            "as the second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(
+                secondArg->typeTag));
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glEnable(GL_TEXTURE_2D);
+
+    GLenum error = GL_NO_ERROR;
+
+    octaspire_vector_t * vec = octaspire_helpers_base64_decode(
+        octaspire_dern_value_as_string_get_c_string(secondArg),
+        octaspire_dern_value_as_string_get_length_in_octets(secondArg),
+        octaspire_dern_vm_get_allocator(vm));
+
+    // TODO XXX check and report error.
+    octaspire_helpers_verify_not_null(vec);
+
+    int x = 0;
+    int y = 0;
+    int n = 0;
+
+    unsigned char * data = stbi_load_from_memory(
+        octaspire_vector_get_element_at_const(vec, 0),
+        octaspire_vector_get_length(vec),
+        &x,
+        &y,
+        &n,
+        isBlend ? 4 : 3);
+
+    octaspire_vector_release(vec);
+    vec = 0;
+
+    octaspire_helpers_verify_not_null(data);
+
+    glGenTextures(1, &dern_sdl2_private_gltextures[0]);
+
+    error = glGetError();
+
+    if (error != GL_NO_ERROR)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-load-texture-base64' failed to load texture for OpenGL."
+            "Error message is: '%s'.",
+            gluErrorString(error));
+    }
+
+    glBindTexture(GL_TEXTURE_2D, dern_sdl2_private_gltextures[0]);
+
+    error = glGetError();
+
+    if (error != GL_NO_ERROR)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-load-texture-base64' failed to load texture for OpenGL."
+            "Error message is: '%s'.",
+            gluErrorString(error));
+    }
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        isBlend ? GL_RGBA : GL_RGB,
+        x,
+        y,
+        0,
+        isBlend ? GL_RGBA : GL_RGB,
+        GL_UNSIGNED_BYTE,
+        data);
+
+    error = glGetError();
+
+    if (error != GL_NO_ERROR)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-load-texture-base64' failed to load texture for OpenGL."
+            "Error message is: '%s'.",
+            gluErrorString(error));
+    }
+
+    stbi_image_free(data);
+    data = 0;
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_from_c_string(
+        vm,
+        "Builtin 'sdl2-load-texture-base64' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.");
+#endif
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
@@ -5155,6 +7576,273 @@ bool dern_sdl2_init(
             dern_sdl2_RenderPresent,
             5,
             "(sdl2-RenderPresent renderer) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-GL-SwapWindow",
+            dern_sdl2_GL_SwapWindow,
+            1,
+            "(sdl2-GL-SwapWindow window) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glReadPixel",
+            dern_sdl2_glReadPixel,
+            2,
+            "(sdl2-glReadPixel x y) -> <4 element vector> or <error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glColor4ub",
+            dern_sdl2_glColor4ub,
+            4,
+            "(sdl2-glColor4ub r g b a) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glClearColor",
+            dern_sdl2_glClearColor,
+            4,
+            "(sdl2-glClearColor r g b a) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glClear",
+            dern_sdl2_glClear,
+            0,
+            "(sdl2-glClear) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glPushMatrix",
+            dern_sdl2_glPushMatrix,
+            0,
+            "(sdl2-glPushMatrix) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glPopMatrix",
+            dern_sdl2_glPopMatrix,
+            0,
+            "(sdl2-glPopMatrix) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glLoadIdentity",
+            dern_sdl2_glLoadIdentity,
+            0,
+            "(sdl2-glLoadIdentity) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glTranslatef",
+            dern_sdl2_glTranslatef,
+            3,
+            "(sdl2-glTranslatef x y z) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-gluLookAt",
+            dern_sdl2_gluLookAt,
+            3,
+            "(sdl2-gluLookAt eyeX    eyeY    eyeZ"
+            "                centerX centerY centerZ"
+            "                upX     upY     upZ)"
+                                      "-> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-gluPerspective",
+            dern_sdl2_gluPerspective,
+            3,
+            "(sdl2-gluPerspective fovy aspect zNear zFar) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glViewport",
+            dern_sdl2_glViewport,
+            4,
+            "(sdl2-glViewport x y w h) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glClearDepth",
+            dern_sdl2_glClearDepth,
+            1,
+            "(sdl2-glClearDepth depth) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glRotatef",
+            dern_sdl2_glRotatef,
+            3,
+            "(sdl2-glRotatef x y z) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glVertex3",
+            dern_sdl2_glVertex3,
+            3,
+            "(sdl2-glVertex3 x y z) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glTexCoord2f",
+            dern_sdl2_glTexCoord2f,
+            3,
+            "(sdl2-glTexCoord2f s t) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glMatrixMode",
+            dern_sdl2_glMatrixMode,
+            3,
+            "(sdl2-glMatrixMode mode) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glEnable",
+            dern_sdl2_glEnable,
+            1,
+            "(sdl2-glEnable cap) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glDisable",
+            dern_sdl2_glDisable,
+            1,
+            "(sdl2-glDisable cap) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glBegin",
+            dern_sdl2_glBegin,
+            3,
+            "(sdl2-glBegin mode) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-glEnd",
+            dern_sdl2_glEnd,
+            3,
+            "(sdl2-glEnd) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-load-texture-base64",
+            dern_sdl2_load_texture_base64,
+            3,
+            "(sdl2-load-texture-base64 isBlend base64Data) -> <true or error message>",
             true,
             targetEnv))
     {

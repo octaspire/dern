@@ -4983,7 +4983,23 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
                 vm,
                 (int32_t)(octaspire_dern_value_as_number_get_value(value)));
         }
-        else if (octaspire_dern_value_is_string(value))
+        else if (octaspire_dern_value_is_character(value))
+        {
+            octaspire_string_t const * const str =
+                value->value.character;
+
+            octaspire_helpers_verify_not_null(str);
+
+            if (octaspire_string_is_index_valid(str, 0))
+            {
+                return octaspire_dern_vm_create_new_value_integer(
+                    vm,
+                    (int32_t)(octaspire_string_get_ucs_character_at_index(str, 0)));
+            }
+
+            return octaspire_dern_vm_create_new_value_integer(vm, 0);
+        }
+        else if (octaspire_dern_value_is_text(value))
         {
             int32_t valueAsInt =
 #ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
@@ -4995,7 +5011,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
                 (int32_t)strtoimax(
     #endif
 #endif
-                octaspire_dern_value_as_string_get_c_string(value),
+                octaspire_dern_value_as_text_get_c_string(value),
                 0,
                 10);
 
