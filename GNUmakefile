@@ -18,7 +18,7 @@ UNAME=$(shell uname -s)
 CFLAGS=-std=c99 -Wall -Wextra -g -O2 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 
 TAGS_C_FILES := $(SRCDIR)*.c $(INCDIR)*.h $(CORDIR)octaspire-core-amalgamated.c
-TAGS_DERN_FILES := $(GAMESDIR)octaspire-lightboard.dern $(GAMESDIR)octaspire-maze.dern
+TAGS_DERN_FILES := $(GAMESDIR)octaspire-lightcube.dern $(GAMESDIR)octaspire-maze.dern
 
 DOCEXAMPLES := $(wildcard $(DEVDOCDIR)book/examples/dern/*.dern)
 DOCEXAMPLES += $(wildcard $(DEVDOCDIR)book/examples/sh/*.sh)
@@ -67,10 +67,9 @@ else ifeq ($(UNAME), OpenBSD)
     CURSESLDFLAGS      := -lncurses
     SOCKETLDFLAGS      :=
 
-    SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+    SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
-    SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
-
+    SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lGLU
     MAKE=gmake
 else ifeq ($(UNAME), FreeBSD)
     OS                 := "FreeBSD"
@@ -129,9 +128,9 @@ else ifeq ($(UNAME), Linux)
     DLFLAGS            := -shared
     CURSESLDFLAGS      := -lncursesw
     SOCKETLDFLAGS      :=
-    SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+    SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
-    SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+    SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lGLU
 endif
 
 .PHONY: oscheck development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push tag
@@ -238,12 +237,12 @@ perf-linux: octaspire-dern-unit-test-runner
 ####### Release part: build using amalgamation ################################
 ###############################################################################
 
-amalgamation: $(RELDIR)octaspire-dern-repl $(RELDIR)games/octaspire-lightboard.dern $(RELDIR)games/octaspire-maze.dern
+amalgamation: $(RELDIR)octaspire-dern-repl $(RELDIR)games/octaspire-lightcube.dern $(RELDIR)games/octaspire-maze.dern
 
 $(RELDIR)octaspire-dern-repl: $(CORDIR)LICENSE $(AMALGAMATION) $(PLUGINS)
 	@sh $(ETCDIR)build_amalgamation.sh
 
-$(RELDIR)games/octaspire-lightboard.dern: $(DEVGAMEDIR)lightboard/entities.png
+$(RELDIR)games/octaspire-lightcube.dern: $(DEVGAMEDIR)lightcube/entities.png
 	 @$(ETCDIR)base64_replace_image.sh $< $@
 
 $(RELDIR)games/octaspire-maze.dern: $(DEVGAMEDIR)maze/entities.png
