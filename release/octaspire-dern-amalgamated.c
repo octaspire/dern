@@ -25638,7 +25638,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "385"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "386"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -52616,11 +52616,10 @@ void main(int argc, char *argv[])
         octaspire_input_release(input);
         input = 0;
 
-        octaspire_input_t *input =
-            octaspire_input_new_from_path(
-                argv[userFilesStartIdx],
-                allocator,
-                stdio);
+        input = octaspire_input_new_from_path(
+            argv[userFilesStartIdx],
+            allocator,
+            stdio);
 
         octaspire_helpers_verify_not_null(input);
 

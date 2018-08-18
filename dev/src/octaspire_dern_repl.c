@@ -448,11 +448,10 @@ void main(int argc, char *argv[])
         octaspire_input_release(input);
         input = 0;
 
-        octaspire_input_t *input =
-            octaspire_input_new_from_path(
-                argv[userFilesStartIdx],
-                allocator,
-                stdio);
+        input = octaspire_input_new_from_path(
+            argv[userFilesStartIdx],
+            allocator,
+            stdio);
 
         octaspire_helpers_verify_not_null(input);
 

@@ -35,7 +35,13 @@ int const OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE = 32766;
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
 #include <SDL_opengl.h>
+
+#ifdef __APPLE__
+#include <OpenGL/glu.h>
+#else
 #include <GL/glu.h>
+#endif
+
 SDL_GLContext dernGlContext;
 #endif
 
