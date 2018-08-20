@@ -26,40 +26,2276 @@ limitations under the License.
 (define XX as {D+71} [cross])
 
 (define top-faces as (vector
-                         (vector RO RC RC
-                                 RO RO RC
-                                 RO RO RO)
-                         (vector RO RO RO
-                                 RO RO RO
-                                 RO RO RO)) [top faces])
+    (vector LO LH LH
+            LO LO LH
+            LO LO LO)
+    (vector RO RO RO
+            RO RO RO
+            RC RC RO)
+    (vector RO RC RO
+            RC RC RC
+            RO RO RO)
+    (vector RC RO RO
+            RO RC RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RC RO
+            RC RO RC)
+    (vector LO LH LH
+            LO LO LH
+            LO LO LO)
+    (vector RO RC RO
+            RO RC RC
+            RO RC RO)
+    (vector RO RO RO
+            RC XX RO
+            RC RC RO)
+    (vector RO RO RO
+            RC PC RO
+            PO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RC RC RC
+            XX RC RO
+            XX RC RC)
+    (vector LO LC LO
+            LC RO LC
+            LO LC LO)
+    (vector RO RC RO
+            RC RO RC
+            RO RC RO)
+    (vector RC RC RC
+            RC RO RC
+            RC RC RC)
+    (vector RC RC RC
+            RO RO RC
+            RO RO RC)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RC
+            RO RC RO
+            RC RO RO)
+    (vector RC RO RO
+            RC RO RO
+            RC RC RC)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PO RO
+            RO RO RO)
+    (vector LO LH LC
+            LC LC LH
+            LO LC LO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RC RO
+            RO RC RC
+            RO RO RO)
+    (vector RO RC RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO XX RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RC
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RC PC
+            RO RO RO
+            PC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            PO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO PO
+            RO RO RO
+            RC RO RO)
+    (vector RO RC RO
+            RC XX RC
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RC RC)
+    (vector RO RO RO
+            RO RC RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RC RO RO
+            RO PO RO
+            RO RO RO)
+    (vector RC RC RC
+            RC XX RC
+            RC RC RC)
+    (vector RO RO RO
+            RC RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RC)
+    (vector LO LC LH
+            LC LH LC
+            LO LC LO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RO RO RO
+            PC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector LC LC LC
+            LC LH LC
+            LC LC LC)
+    (vector RO RO RO
+            RO RC RO
+            XX RO RO)
+    (vector RO RO RO
+            RO RO RO
+            PC RO RO)
+    (vector LO LO LO
+            LH LC LH
+            LH LH LH)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RC)
+    (vector XX RO RO
+            RO RO XX
+            RO RO RO)
+    (vector RO RO RO
+            RO PO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RC RO RO)
+    (vector RO RO RC
+            RC RO RC
+            RC RO RC)
+    (vector RO RO RO
+            RO RC RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RC RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RO RO RO
+            PO RO RO)
+    (vector RC RO RC
+            RO RO RO
+            RC RO RC)
+    (vector RO RO RO
+            RO RO RO
+            RC RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RC)
+    (vector RO RO RO
+            RC RO RO
+            RO RC RO)
+    (vector LC LC LH
+            LH LC LO
+            LC LC LH)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RC RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO PC
+            RO RO RO
+            PC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RC RC)
+    (vector RO RO RO
+            RO RO RO
+            PC RO RO)
+    (vector RO RO RO
+            PO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            PC RO RO)
+    (vector RO RO RO
+            RO RC RO
+            RO RO RO)
+    (vector RO RO RO
+            RC RO RO
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RC RO)
+    (vector RC RC RC
+            RC XX RC
+            RO RC RC)
+    (vector RO RO PC
+            RO RO RO
+            PO RO RO)
+    (vector RC RC RC
+            RC RC RC
+            RC RC RC)
+    (vector RO RO RO
+            RO LH RO
+            RO LH RC)
+    (vector RO RO RO
+            RC XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RC RC RC
+            RO RO RO
+            RO RO RO)
+    (vector RO XX XX
+            RO RO XX
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RC RC RC
+            XX XX RC
+            XX XX RC)
+    (vector RC RO XX
+            RC RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RC XX
+            RC XX RC
+            XX RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO PC
+            RO RO RC
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RC RO RO
+            XX RC RO)
+    (vector RO RO RO
+            RO RO RC
+            XX XX XX)
+    (vector RO RO RO
+            RC PO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RC RO RO
+            RC RO RO
+            RC RC RO)
+    (vector RO XX XX
+            RO RO XX
+            RO RO RO)
+    (vector XX RO RO
+            RO RO RO
+            XX RO XX)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RC
+            RO XX RC
+            RC RC RC)
+    (vector RO RO RO
+            RO XX RO
+            RC RO RO)
+    (vector RC RC RC
+            RO PO RO
+            RO RO RO)
+    (vector RO RO PC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO PC RC)
+    (vector RO RC RO
+            RC XX RO
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RC RC RC
+            XX XX RC
+            XX XX RC)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO PO RO
+            RO RO RO)
+    (vector RC RC RO
+            XX XX RO
+            RC RC RO)
+    (vector RO RO RO
+            RC RO RO
+            RC RO RO)
+    (vector RO RC RO
+            RC XX RO
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PC RO
+            RO RO RO)
+    (vector RO RC RO
+            RO PC RO
+            RO RC RO)
+    (vector RC RO PC
+            RO RO RO
+            PO RO RO)
+    (vector RO RO RO
+            RC XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector XX RO RO
+            RC RO RO
+            RC RC XX)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RC RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RO RO RO
+            PO RO RC)
+    (vector RO RO RO
+            RO LH RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RC RC RO)
+    (vector RO RO RC
+            RO RO RC
+            RO RO RO)
+    (vector RO RC RO
+            RC XX RC
+            RO RC RO)
+    (vector RO RO RO
+            RO PC RO
+            RO RO RO)
+    (vector RO XX RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PO XX
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            PO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            XX RO XX
+            XX RC XX)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RC)
+    (vector RO RO RO
+            RC RO RO
+            PC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            PC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RC RO RO
+            RC RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO PC
+            RO RO RO
+            PC RO RO)
+    (vector RO RC RC
+            RO RO RC
+            RO RC RC)
+    (vector XX RO RO
+            RC RO RO
+            RO RC XX)
+    (vector LC LC LC
+            LC LH LC
+            LC LC LC)
+    (vector RC RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO PC RC)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RC RC RC
+            RO XX RC
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO PC RC
+            RO RO RO)
+    (vector LC LO LC
+            LO LH LH
+            LO LC LO)
+    (vector RO RO RO
+            RC XX RO
+            RO RO RO)
+    (vector RC RC RO
+            RC RC RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO PO RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RC RO)
+    (vector LH LC LC
+            LC LC LC
+            LC LC LH)
+    (vector RO RO RO
+            RC RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RC)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RC RC XX
+            RC RC RC
+            RC RC RC)
+    (vector LC LO LC
+            LH LH LH
+            LC LO LC)
+    (vector LC LC LC
+            LH LO LH
+            LH LH LH)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector LO LO LC
+            LO RC LH
+            LC LC LO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PC RO
+            RO RO RO)
+    (vector RO RO RO
+            XX XX RO
+            XX XX RO)
+    (vector XX RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RC XX RC
+            XX XX XX
+            RC XX RC)
+    (vector RO RO XX
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RC
+            RO RO RO
+            PC RO RC)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RC RC
+            RC XX RC
+            RC RC RC)
+    (vector RO RO RO
+            RO RO RO
+            RC RC RC)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RC RO RC
+            RO RO RO
+            RC RO RC)
+    (vector RC RC RO
+            RC LC RO
+            RC RC RC)
+    (vector RO RC RO
+            RC XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO PO RC)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RC RO RO
+            RC RC RO)
+    (vector RO RO RO
+            RO XX RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RC
+            RO RO RO)
+    (vector RO RO RO
+            RC RC RO
+            RC RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RC RC)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector LC LO LC
+            LH LH LC
+            LH LC LC)
+    (vector RO RO RO
+            RO PO RO
+            RO RO RO)
+    (vector RO RC RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RC RO RC
+            RO RO RO
+            RC RO RC)
+    (vector RO RC XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RC RO
+            RC LO RO
+            RO RO RO)
+    (vector LC LH LO
+            LH LH LH
+            LO LH LC)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RC RC RC
+            RC XX RC
+            RC RC RC)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RC RC RC
+            RC RC RC
+            RC RC RC)
+    (vector RO RC RO
+            RO XX RO
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector LC LH LC
+            LC LC LH
+            LO LC LC)
+    (vector RO RO RO
+            RO XX RO
+            RC RC RO)
+    (vector RO RC XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RC XX RO
+            RO RO RO)
+    (vector LH LC LO
+            LH RC LC
+            LH LC LO)
+    (vector LO LO LC
+            LH LH LH
+            LO LO LH)
+    (vector LH LC LC
+            LC LO LO
+            LO LC LC)
+    (vector LC LC LC
+            LC LC LH
+            LC LC LC)
+    (vector LH LH LC
+            LC LC LO
+            LO LO LO)) [top faces])
 
 (define left-faces as (vector
-                         (vector RO RO RO
-                                 RO RO RO
-                                 RO RO RO)
-                         (vector RO RO RO
-                                 RO RO RO
-                                 RO RO RO)) [left faces])
+    (vector LO LO LO
+            LO LO LO
+            LO LO LO)
+    (vector RO RO RO
+            RO RC RO
+            RO RC RC)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RC RO
+            RC RO RC)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector LO LO LO
+            LO LO LO
+            LO LO LO)
+    (vector RO RO RO
+            RO RC RO
+            RC RC RC)
+    (vector RO RO RO
+            RO XX RO
+            RC RO RO)
+    (vector RO RO RO
+            RO PO RO
+            PO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RC)
+    (vector RC RC RC
+            RC RC RC
+            XX XX RC)
+    (vector LO LC LO
+            LC RO LC
+            LO LC LO)
+    (vector RC RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RC RC RC
+            RO RC RC
+            RC RC RC)
+    (vector RO RO RO
+            RO RO RO
+            XX RC RC)
+    (vector XX RO RO
+            XX RO RO
+            XX RO RO)
+    (vector RO RO RC
+            RO RC RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RC XX)
+    (vector RC RO RO
+            RC RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RC XX RO
+            XX RC RO)
+    (vector RO RC RC
+            RO RO PO
+            RO RO RO)
+    (vector LO LC LC
+            LO LO LC
+            LO LO LO)
+    (vector RC RO RO
+            RC RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO RC
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RC
+            RO RO RO)
+    (vector RO XX RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO PC
+            RO RO RO)
+    (vector RO RC RO
+            RO PC RC
+            RO RO RO)
+    (vector RO RC RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO PO
+            RO RO RC
+            PC RO RO)
+    (vector RO RO PO
+            RO RO RC
+            RO RO PC)
+    (vector RO RC RO
+            RC PC RC
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO PO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PC RO
+            RO RO RO)
+    (vector RC RO RC
+            RC RO RC
+            XX XX XX)
+    (vector RO RO RO
+            RO RC RO
+            RO RO RO)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PO RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RC)
+    (vector RO RC XX
+            RO RO RO
+            RO RO RO)
+    (vector RC RO RO
+            RC RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX XX XX)
+    (vector LO LH LH
+            LH LO LH
+            LO LH LO)
+    (vector RO RO XX
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector XX RC RC
+            XX RO RO
+            XX RO RO)
+    (vector LC LC LO
+            LC LC LC
+            XX XX XX)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RC RO RO
+            PC RO RO)
+    (vector LH LH LO
+            LH LH LH
+            LH LH LO)
+    (vector RO RO RO
+            RO RO RO
+            XX XX XX)
+    (vector XX RC XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RC PC RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RC RC RC
+            RO RO RO
+            RC XX RO)
+    (vector RO RO RO
+            RO RC RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX XX RO)
+    (vector RO RO RO
+            RO XX RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RC
+            RO RO RO)
+    (vector RO RC RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RC RO)
+    (vector RO RO XX
+            RO RO RC
+            RO RO RO)
+    (vector RO RO PO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RC
+            XX XX XX)
+    (vector RO RO RO
+            RO RC RO
+            XX XX XX)
+    (vector RO RC RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector LC LC LO
+            LC LC LC
+            XX XX XX)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RC)
+    (vector RO RO RO
+            RO RC RO
+            RO RO RO)
+    (vector RC RC RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RC PC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            XX XX XX
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO PC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RC PC RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO RO
+            XX XX XX)
+    (vector RO RO RO
+            RO RO RO
+            RC RC RO)
+    (vector RC RC RC
+            RC XX RC
+            RC XX RC)
+    (vector RO RC PO
+            RO RO RO
+            RO RO RO)
+    (vector XX XX XX
+            RC RC RC
+            RC RC RC)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RC XX RO
+            RO RC RO)
+    (vector RO RO RO
+            RO PO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PC RO
+            RO RO RO)
+    (vector RC RC RC
+            RO RO RO
+            XX RC RC)
+    (vector RO XX XX
+            RO RO XX
+            RC RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RC RO RC
+            RC RC RC
+            RC RC RC)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            XX XX XX
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO PC)
+    (vector RO RO RO
+            RO XX RO
+            XX RC RO)
+    (vector RO RO XX
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            XX XX XX
+            RC RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RC RC RC
+            XX XX XX)
+    (vector RO XX XX
+            RO RO XX
+            RC RC RC)
+    (vector XX RO XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RC RO
+            RO RO RO)
+    (vector RC RC RC
+            RC XX RO
+            RC RO RO)
+    (vector RC RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RC)
+    (vector RO RC PC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO PC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RC RC RC
+            RO RO RC
+            RC RC RC)
+    (vector RO RO RO
+            RO XX RO
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO PC RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC XX RC)
+    (vector RO RO RO
+            RC RC RO
+            XX XX RO)
+    (vector RO RC RO
+            RO XX RO
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO PO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RC RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RC RC PC
+            RO RO RC
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RC RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RC RO RO
+            XX RC XX)
+    (vector RO RO RO
+            RO RO RC
+            RO RO RO)
+    (vector RO RO RO
+            RC RO RO
+            XX XX XX)
+    (vector RO RO XX
+            RO RO RO
+            RC RO RO)
+    (vector RO RO PO
+            RO RO RO
+            RO RO RO)
+    (vector RC RO RO
+            RO LH RO
+            RC RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RC RO RO)
+    (vector RO RO RO
+            RC RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO XX RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PC XX
+            RO RO RO)
+    (vector RO RC PC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RC PC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO PO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RC RC)
+    (vector RO RO RC
+            RO RO RO
+            XX XX XX)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO PO
+            RO RO RC
+            PC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX XX XX)
+    (vector RC RO RO
+            RO RO RO
+            XX RC XX)
+    (vector LH LC LO
+            LC LH LC
+            XX XX XX)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RC PC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            XX RO RO)
+    (vector RO RO RO
+            RO XX RC
+            RO RO RO)
+    (vector RO RO RC
+            RO RO RC
+            RO RO RC)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RO RO PC
+            RO RO RC)
+    (vector LH LO LO
+            LH LO LO
+            LO LO LH)
+    (vector RO RC RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RC XX RO
+            XX RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RC
+            RO RO PO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RC RO)
+    (vector RO RC XX
+            RO RC RC
+            RO RO RO)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RO)
+    (vector LC LC LH
+            LO LH LC
+            XX XX XX)
+    (vector RO RO RO
+            RC RO RO
+            XX RO RO)
+    (vector RO RC RC
+            RO RO RC
+            XX XX XX)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RC RO
+            RO XX RO
+            RO RC RC)
+    (vector RC RC XX
+            RC RC RC
+            RC RC RC)
+    (vector LH LC LC
+            LC LC LO
+            XX XX XX)
+    (vector LC LC LC
+            LH LC LH
+            XX XX XX)
+    (vector RO RO RO
+            RO RO RO
+            XX XX XX)
+    (vector LO LC LO
+            LH RC LO
+            LC LC LC)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RC
+            RO PO RO
+            RO RO RO)
+    (vector RC RC RC
+            RO RO RO
+            RO RO RO)
+    (vector XX RO RO
+            RO RO RO
+            RO RO RC)
+    (vector RC RC RC
+            RC RC RC
+            RC RC RC)
+    (vector RC RO XX
+            RC RO RO
+            RC RO RO)
+    (vector RO RO PC
+            RO RO RO
+            RO RO RC)
+    (vector RO RO RO
+            RO RO RC
+            RO RO RO)
+    (vector RO RC RO
+            RC XX RC
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO XX
+            RO RO RC
+            RO RO RC)
+    (vector RC RC RO
+            RC XX RC
+            RO RC RC)
+    (vector RO RC RO
+            RC RC RC
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RC
+            RO RO RO
+            XX XX XX)
+    (vector RO RO RC
+            RC LH RC
+            RC RC RC)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RC PC
+            RO RO RO
+            RO RO RC)
+    (vector RO RO RO
+            RC RC RO
+            RO RO RO)
+    (vector RC RO RO
+            RC RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO RC
+            RC RC RC)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO XX RC
+            RO RO RO
+            RO RO RO)
+    (vector RC RC RO
+            RO RO RO
+            RC RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RC)
+    (vector LO LO LC
+            LC LC LC
+            XX XX XX)
+    (vector RO RO RO
+            RC PC RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RC RC RC
+            RC XX RC
+            RC RC RC)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RC XX
+            RO RO RO
+            RO RO RO)
+    (vector RC RC RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RC RO
+            RC XX RO
+            RO RO RO)
+    (vector RO RC RO
+            RO LO RO
+            RO RO RO)
+    (vector LO LO LH
+            LC LC LC
+            XX XX XX)
+    (vector RC RC RC
+            RO RO RO
+            RO RO RO)
+    (vector RC RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RC RC RO
+            RO RC RO
+            RC RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RC RC RO
+            RO RO RO
+            RO RO RO)
+    (vector RC RC RC
+            RC XX RC
+            RC RC RC)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO XX)
+    (vector LO LH LO
+            LH LH LO
+            LO LO LC)
+    (vector RO RO RO
+            RO XX RO
+            RC RO RO)
+    (vector RO RC XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RC
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RC XX RO
+            RO RC RO)
+    (vector LO LH LC
+            LC LO LC
+            LH LO LH)
+    (vector LO LO LO
+            LH LC LO
+            LO LH LO)
+    (vector LO LO LH
+            LC LO LC
+            LC LH LO)
+    (vector LO LC LC
+            LH LC LC
+            LC LO LH)
+    (vector LO LO LO
+            LC LO LO
+            LO LO LO)) [left faces])
 
 (define right-faces as (vector
-                         (vector RO RO RO
-                                 RO RO RO
-                                 RO RO RO)
-                         (vector RO RO RO
-                                 RO RO RC
-                                 RO RC RC)) [right faces])
+    (vector LO LO LO
+            LO LO LO
+            LO LO LO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RC RO
+            RC RC RC)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RC RO
+            RC RO RC)
+    (vector LO LC LC
+            LO LO LC
+            LO LO LO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RC RO RO)
+    (vector RO RO RO
+            RO PC RO
+            PC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RC)
+    (vector RC RC RC
+            RC RC RC
+            XX RC RC)
+    (vector LO LO LH
+            LC RO LO
+            LO LC LO)
+    (vector RC RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RC RC RC
+            RO RC RC
+            RC RC RC)
+    (vector RO RO RO
+            RO RO RO
+            XX RC RC)
+    (vector XX RO RO
+            XX RO RO
+            XX RO RO)
+    (vector RO RO RC
+            RO RC RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC XX RC)
+    (vector RC RO RO
+            RC RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO PC
+            RO RO RO)
+    (vector LO LH LH
+            LO LO LH
+            LO LO LO)
+    (vector RC RO RO
+            RC RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RC RO
+            RO RO RO)
+    (vector RC XX RO
+            RO RC RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO PC
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RC RO
+            RO RO RO
+            RO RC RO)
+    (vector RO RC PO
+            RO RO RO
+            PC RO RO)
+    (vector RO RO PO
+            RO RO RC
+            RO RO PC)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO PO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PC RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX XX RC)
+    (vector RO RO RO
+            RO RC RO
+            RO RO RO)
+    (vector RO RO XX
+            RC RO RO
+            RO RO RO)
+    (vector RC RO RO
+            RO PO RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RC XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RC
+            XX XX XX)
+    (vector LO LC LH
+            LC LH LC
+            LO LC LO)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RO)
+    (vector RC RC RO
+            RO RO RO
+            RO RO RO)
+    (vector XX RC RO
+            XX RO RO
+            XX RO RO)
+    (vector LC LC LC
+            LC LC LC
+            XX XX XX)
+    (vector RO RO RO
+            RO RC RO
+            RO RO RO)
+    (vector RC RO RO
+            RC RC RO
+            PC RO RO)
+    (vector LH LC LH
+            LC LO LH
+            LH LH LO)
+    (vector RO RO RC
+            RO RO RC
+            XX XX XX)
+    (vector RO XX RO
+            RO RO RO
+            RO RO XX)
+    (vector RO RO RO
+            RC PC RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RC RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RC RC)
+    (vector RO RO RO
+            RO XX RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RC RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RC PC
+            RO RO RC
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX XX XX)
+    (vector RO RC RO
+            RO RC RO
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector LC LC LC
+            LC LC LC
+            XX XX XX)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RC RO
+            RO RO RO)
+    (vector RC RO RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RC PC
+            RO RO RC
+            RO RO RO)
+    (vector RC RO RO
+            XX XX XX
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RC RC)
+    (vector RO RO PC
+            RO RO RC
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RC RO RC
+            RO RO RO
+            RC RO RC)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RO RO XX
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX XX RO)
+    (vector RO RO RO
+            RC RO RO
+            RC RO RO)
+    (vector RC RC RC
+            RC XX RC
+            RC XX RC)
+    (vector RO RO PC
+            RO RO RC
+            RO RO RO)
+    (vector XX XX XX
+            RC RC RC
+            RC RC RC)
+    (vector RO RO RO
+            RO LO RO
+            RO LH RC)
+    (vector RO RO RO
+            RC XX RO
+            RO RO RO)
+    (vector RC RC RO
+            RC PC RO
+            RO RO RO)
+    (vector RO RC RO
+            RO XX RO
+            RO RO RO)
+    (vector RC RC RC
+            RO RO RC
+            XX RC RC)
+    (vector RO XX XX
+            RC RO XX
+            RC RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RC RC RC
+            RC RO RC
+            RC RC RC)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RC
+            XX XX XX
+            RC RO RO)
+    (vector RO RO PC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO XX
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            XX RO RO
+            XX RC RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX XX RO)
+    (vector RC XX XX
+            RC RO XX
+            RC RC RC)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RC)
+    (vector RO RO RO
+            RO RC RC
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RC RC RO
+            RC RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RC PC
+            RO RO RC
+            RO RO RO)
+    (vector RO RO RO
+            RO RO PC
+            RO RO RC)
+    (vector RO RC RO
+            RC XX RC
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RC RC RC
+            RO RO RC
+            RC RC RC)
+    (vector RO RO RO
+            RO XX RO
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PC RC
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX XX RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RC RO
+            RO PC RC
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RC RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RC RO PC
+            RO RO RC
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RC
+            XX RO XX
+            RO RO RO)
+    (vector RO RO RO
+            RC RO RO
+            XX RC XX)
+    (vector RO RO RO
+            RC RC RO
+            RO RO RO)
+    (vector RO RO RO
+            RC RO RO
+            XX XX XX)
+    (vector RO RO XX
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RC
+            RO RC PC)
+    (vector RO RO RO
+            RO LO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RC XX RO
+            RO RO RO)
+    (vector RO XX RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PC XX
+            RO RO RO)
+    (vector RO RO PO
+            RO RO RC
+            RO RO RO)
+    (vector RO RO RC
+            RO RC RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RC XX)
+    (vector RO RO RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO PO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO PC
+            RO RC RO
+            RO RO RO)
+    (vector RO RC RO
+            RO XX RC
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX XX RO)
+    (vector RO RC RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RC RO RO
+            RO RC RO)
+    (vector RO RO PO
+            RO RO RO
+            PC RO RO)
+    (vector RO RO RO
+            RC RC RC
+            XX XX RC)
+    (vector RC RO RO
+            RO RO RO
+            XX RC XX)
+    (vector LH LC LC
+            LO LC LC
+            XX XX XX)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO PO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO XX RC
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RO RC PC
+            RO RO RO)
+    (vector LC LH LO
+            LO LH LO
+            LH LH LO)
+    (vector RO RO RO
+            RO XX RO
+            RO RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO PO RO
+            RC RO RO)
+    (vector RO RO RC
+            RO RO PC
+            RO RO RO)
+    (vector RO RO RO
+            XX RO XX
+            RO RO RO)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RC
+            RO RO RO)
+    (vector LC LC LC
+            LC LO LC
+            XX XX XX)
+    (vector RO RO RO
+            RO RO RO
+            XX RC RO)
+    (vector RO RO RO
+            RO RO RO
+            XX XX RO)
+    (vector RO RO RO
+            XX RC RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO RO
+            RO RO RO)
+    (vector RC RO RC
+            RC RO RO
+            RC RC RC)
+    (vector RC RC XX
+            RC RC RC
+            RC RC RC)
+    (vector LH LH LH
+            LO LO LC
+            XX XX XX)
+    (vector LH LO LC
+            LC LC LC
+            XX XX XX)
+    (vector RO RO RO
+            RO RO RC
+            XX XX RC)
+    (vector LO LO LO
+            LH RC LO
+            LC LH LO)
+    (vector RO RO RO
+            RC RO RO
+            RO RC RO)
+    (vector RO RO RO
+            RO PC RO
+            RO RO RO)
+    (vector RC RC RC
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RC
+            RO RO XX)
+    (vector RC RC RC
+            RC RC RC
+            RC RC RC)
+    (vector RC RO XX
+            RC RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO PC)
+    (vector RO RO RO
+            RO RO RC
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RC)
+    (vector RO RO XX
+            RO RO RO
+            RO RO RO)
+    (vector RC RC RC
+            RO XX RC
+            RC RC RC)
+    (vector RO RO RO
+            RC RC RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX XX RO)
+    (vector RO RO RO
+            RC LC RO
+            RC RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO PO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RC RO RO
+            RC RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RC RO)
+    (vector RO RO RC
+            RO RO XX
+            RO RO RO)
+    (vector RC RC RO
+            RO RO RO
+            RC RC RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RC RC)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector LC LH LC
+            LC LO LO
+            XX XX XX)
+    (vector RO RO RO
+            RC PC RO
+            RO RO RO)
+    (vector RO RO RO
+            RC XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RO XX
+            RO RO RC
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            XX RO XX
+            RC RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RC RO
+            RC LO RO
+            RO RO RO)
+    (vector LH LH LC
+            LO LH LH
+            XX XX XX)
+    (vector RC RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RC
+            RO RO RO
+            RO RO RO)
+    (vector RC RO RO
+            RC RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RC RO RO)
+    (vector RO RO RO
+            RO RO RO
+            XX RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RO RO RO
+            RC XX RO)
+    (vector LO LO LC
+            LH LH LC
+            LO LO LC)
+    (vector RO RO RO
+            RO XX RO
+            RC RC RO)
+    (vector RO RC XX
+            RO RO RO
+            RO RO RO)
+    (vector RO RO RO
+            XX RO RC
+            RO RO RO)
+    (vector RO RO RO
+            RO XX RO
+            RO RO RO)
+    (vector RO RO RO
+            RC XX RO
+            RO RO RO)
+    (vector LO LO LC
+            LH LH LH
+            LO LO LO)
+    (vector LO LO LO
+            LH LC LO
+            LO LH LC)
+    (vector LO LO LH
+            LC LO LC
+            LC LH LO)
+    (vector LC LH LC
+            LO LC LH
+            LC LC LO)
+    (vector LO LH LO
+            LC LO LO
+            LC LC LC)) [right faces])
 
 (define levelnum   as {D-1}                   [current level number])
 (define top-face   as (ln@ top-faces   {D+0}) [current top   face])
 (define left-face  as (ln@ left-faces  {D+0}) [current left  face])
 (define right-face as (ln@ right-faces {D+0}) [current right face])
 
-(define load-next-level as (fn ()
-    (++ levelnum)
+(define load-level as (fn (num)
+    (= levelnum num)
+    (if (< levelnum {D+0}) (= levelnum (- (len top-faces) {D+1})))
     (if (>= levelnum (len top-faces)) (= levelnum {D+0}))
-    (= top-face (ln@ top-faces levelnum))
-    (= left-face (ln@ left-faces levelnum))
-    (= right-face (ln@ right-faces levelnum)))
+    (= top-face (cp@ top-faces levelnum))
+    (= left-face (cp@ left-faces levelnum))
+    (= right-face (cp@ right-faces levelnum)))
+  [load the previous level] '(num [level number]) howto-no)
+
+(define load-prev-level as (fn ()
+    (load-level (- levelnum {D+1})))
+  [load the previous level] '() howto-no)
+
+(define load-current-level as (fn ()
+    (load-level levelnum ))
+  [load the next level] '() howto-no)
+
+(define load-next-level as (fn ()
+    (load-level (+ levelnum {D+1})))
   [load the next level] '() howto-no)
 
 (define is-idx-passed as (fn (idx)
@@ -168,8 +2404,9 @@ limitations under the License.
             (sdl2-glTranslatef (+ {D-1.5} y) (+ {D-0.5} (* x {D-1})) {D+0})))
 
     (define fenv as (env-current) [local envinronment inside this function])
+    (define npick as (not pick) [negation of pick])
 
-    (if (not pick) (do
+    (if npick (do
         (define side as {D+0.0625} [width of frame inside texture] in fenv)
         (define s1 as (/ (mod (* {D+32} index) {D+256}) {D+512}) [s1] in fenv)
         (define t1 as (/ (* (to-integer (/ index {D+8})) {D+32}) {D+512}) [t1] in fenv)
@@ -180,19 +2417,19 @@ limitations under the License.
 
     (if pick (sdl2-glColor4ub (to-integer f) x y {X+FF}))
 
-    (if (not pick) (sdl2-glTexCoord2f s1 (if (== f |T|) t1 t2)))
+    (if npick (sdl2-glTexCoord2f s1 (if (== f |T|) t1 t2)))
     (sdl2-glVertex3 {D-0.5} {D-0.5} {D+0})
 
-    (if (not pick) (sdl2-glTexCoord2f s2 (if (== f |T|) t1 t2)))
+    (if npick (sdl2-glTexCoord2f s2 (if (== f |T|) t1 t2)))
     (sdl2-glVertex3 {D+0.5} {D-0.5} {D+0})
 
-    (if (not pick) (sdl2-glTexCoord2f s2 (if (== f |T|) t2 t1)))
+    (if npick (sdl2-glTexCoord2f s2 (if (== f |T|) t2 t1)))
     (sdl2-glVertex3 {D+0.5} {D+0.5} {D+0})
 
-    (if (not pick) (sdl2-glTexCoord2f s1 (if (== f |T|) t2 t1)))
+    (if npick (sdl2-glTexCoord2f s1 (if (== f |T|) t2 t1)))
     (sdl2-glVertex3 {D-0.5} {D+0.5} {D+0})
 
-    (if pick (sdl2-glColor4ub {X+FF} {X+FF} {X+FF} {X+FF}))
+    ;(if pick (sdl2-glColor4ub {X+FF} {X+FF} {X+FF} {X+FF}))
 
     (sdl2-glEnd)
     (sdl2-glPopMatrix))
@@ -208,6 +2445,7 @@ limitations under the License.
         (do (sdl2-glDisable 'GL_TEXTURE_2D)))
 
     (sdl2-glClear)
+    ;(sdl2-glColor4ub {X+FF} {X+FF} {X+FF} {X+FF})
 
     (for y from {D+0} to {D+2}
          (for x from {D+0} to {D+2}
@@ -224,6 +2462,7 @@ limitations under the License.
 
     (if pick (do
                  (sdl2-glEnable 'GL_TEXTURE_2D)
+                 (sdl2-glColor4ub {X+FF} {X+FF} {X+FF} {X+FF})
                  (return picked))))
 
   [Render the cube] '(index [animation frame index]
@@ -288,10 +2527,10 @@ limitations under the License.
             (== state [closed])                            (do (= top-face (+ x (* y {D+3})) (state2idx [open]))                 (if is-user-press (press-neighbors |T| x y)))
             (and (== state [popen])   (not is-user-press)) (do (= top-face (+ x (* y {D+3})) (state2idx [pclosed]))              (if is-user-press (press-neighbors |T| x y)))
             (and (== state [pclosed]) (not is-user-press)) (do (= top-face (+ x (* y {D+3})) (state2idx [popen]))                (if is-user-press (press-neighbors |T| x y)))
-            (== state [lopen])                             (do (= top-face (+ x (* y {D+3})) (state2idx [lhalfopenfromopen]))    (if is-user-press (press-neighbors |T| x y)))
+            (== state [lopen])                             (do (= top-face (+ x (* y {D+3})) (state2idx [lhopenfromopen]))    (if is-user-press (press-neighbors |T| x y)))
             (== state [lhopenfromopen])                    (do (= top-face (+ x (* y {D+3})) (state2idx [lclosed]))              (if is-user-press (press-neighbors |T| x y)))
             (== state [lhopenfromclosed])                  (do (= top-face (+ x (* y {D+3})) (state2idx [lopen]))                (if is-user-press (press-neighbors |T| x y)))
-            (== state [lclosed])                           (do (= top-face (+ x (* y {D+3})) (state2idx [lhalfopenfromclosed]))  (if is-user-press (press-neighbors |T| x y)))))
+            (== state [lclosed])                           (do (= top-face (+ x (* y {D+3})) (state2idx [lhopenfromclosed]))  (if is-user-press (press-neighbors |T| x y)))))
 
   [press the top face of the cube] '(x [x]
                                      y [y]
@@ -305,10 +2544,10 @@ limitations under the License.
             (== state [closed])                            (do (= left-face (+ x (* y {D+3})) (state2idx [open]))                 (if is-user-press (press-neighbors |L| x y)))
             (and (== state [popen])   (not is-user-press)) (do (= left-face (+ x (* y {D+3})) (state2idx [pclosed]))              (if is-user-press (press-neighbors |L| x y)))
             (and (== state [pclosed]) (not is-user-press)) (do (= left-face (+ x (* y {D+3})) (state2idx [popen]))                (if is-user-press (press-neighbors |L| x y)))
-            (== state [lopen])                             (do (= left-face (+ x (* y {D+3})) (state2idx [lhalfopenfromopen]))    (if is-user-press (press-neighbors |L| x y)))
+            (== state [lopen])                             (do (= left-face (+ x (* y {D+3})) (state2idx [lhopenfromopen]))    (if is-user-press (press-neighbors |L| x y)))
             (== state [lhopenfromopen])                    (do (= left-face (+ x (* y {D+3})) (state2idx [lclosed]))              (if is-user-press (press-neighbors |L| x y)))
             (== state [lhopenfromclosed])                  (do (= left-face (+ x (* y {D+3})) (state2idx [lopen]))                (if is-user-press (press-neighbors |L| x y)))
-            (== state [lclosed])                           (do (= left-face (+ x (* y {D+3})) (state2idx [lhalfopenfromclosed]))  (if is-user-press (press-neighbors |L| x y)))))
+            (== state [lclosed])                           (do (= left-face (+ x (* y {D+3})) (state2idx [lhopenfromclosed]))  (if is-user-press (press-neighbors |L| x y)))))
 
   [press the left face of the cube] '(x [x]
                                      y [y]
@@ -322,10 +2561,10 @@ limitations under the License.
             (== state [closed])                            (do (= right-face (+ x (* y {D+3})) (state2idx [open]))                 (if is-user-press (press-neighbors |R| x y)))
             (and (== state [popen])   (not is-user-press)) (do (= right-face (+ x (* y {D+3})) (state2idx [pclosed]))              (if is-user-press (press-neighbors |R| x y)))
             (and (== state [pclosed]) (not is-user-press)) (do (= right-face (+ x (* y {D+3})) (state2idx [popen]))                (if is-user-press (press-neighbors |R| x y)))
-            (== state [lopen])                             (do (= right-face (+ x (* y {D+3})) (state2idx [lhalfopenfromopen]))    (if is-user-press (press-neighbors |R| x y)))
+            (== state [lopen])                             (do (= right-face (+ x (* y {D+3})) (state2idx [lhopenfromopen]))    (if is-user-press (press-neighbors |R| x y)))
             (== state [lhopenfromopen])                    (do (= right-face (+ x (* y {D+3})) (state2idx [lclosed]))              (if is-user-press (press-neighbors |R| x y)))
             (== state [lhopenfromclosed])                  (do (= right-face (+ x (* y {D+3})) (state2idx [lopen]))                (if is-user-press (press-neighbors |R| x y)))
-            (== state [lclosed])                           (do (= right-face (+ x (* y {D+3})) (state2idx [lhalfopenfromclosed]))  (if is-user-press (press-neighbors |R| x y)))))
+            (== state [lclosed])                           (do (= right-face (+ x (* y {D+3})) (state2idx [lhopenfromclosed]))  (if is-user-press (press-neighbors |R| x y)))))
   [press the right face of the cube] '(x [x]
                                      y [y]
                                      is-user-press [was press initiated directly by the user]) howto-no)
@@ -364,7 +2603,12 @@ limitations under the License.
                (== type 'MOUSEBUTTONDOWN) (do
                                               (= mx (ln@ event {D+1}))
                                               (= my (- {D+640} (ln@ event {D+2})))
-                                              (press (render-cube idx mx my true) true)))
+                                            (press (render-cube idx mx my true) true))
+               (== type 'KEYDOWN)         (do
+                                              (if (== (ln@ event {D+1}) [q])     (= running false))
+                                              (if (== (ln@ event {D+1}) [r])     (load-current-level))
+                                              (if (== (ln@ event {D+1}) [LEFT])  (if (== (ln@ event {D+2}) [KMOD_LCTRL]) (load-prev-level)))
+                                              (if (== (ln@ event {D+1}) [RIGHT]) (if (== (ln@ event {D+2}) [KMOD_LCTRL]) (load-next-level)))))
 
        (update-cube)
        (render-cube idx mx my false)
