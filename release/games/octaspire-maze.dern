@@ -2472,7 +2472,7 @@
 
     ; 5. row
     (entity-new-wall                      {D-8} {D-1})
-    (for x from -4 to -2 (entity-new-wall  x {D-1}))
+    (for x from {D-4} to {D-2} (entity-new-wall  x {D-1}))
     (entity-new-turnstile-we               {D+1} {D-1})
     (entity-new-bomb                       {D+4} {D-1} {D+5})
     (entity-new-pass-counter               {D+5} {D-1} {D+2})
@@ -2700,6 +2700,7 @@
 (define level-next as (fn ()
     (level-reset)
     (define lnum as (+ level-current-number {D+1}) [level number])
+    (if (> lnum (number-of-levels)) (= lnum {D+1}))
     (level-load lnum))
   [next level] '() howto-no)
 
