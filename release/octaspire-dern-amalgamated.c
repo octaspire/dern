@@ -25638,8 +25638,8 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "387"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "388"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
     OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "." \
@@ -52274,7 +52274,7 @@ static void octaspire_dern_repl_print_message_c_str(
         }
     }
 
-    if (input)
+    if (input && (messageType != OCTASPIRE_DERN_REPL_MESSAGE_OUTPUT))
     {
         printf(
             "At line %zu, column %zu (character index %zu from the start of "
