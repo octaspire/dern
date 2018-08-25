@@ -52274,7 +52274,7 @@ static void octaspire_dern_repl_print_message_c_str(
         }
     }
 
-    if (input)
+    if (input && (messageType != OCTASPIRE_DERN_REPL_MESSAGE_OUTPUT))
     {
         printf(
             "At line %zu, column %zu (character index %zu from the start of "
