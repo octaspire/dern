@@ -3607,9 +3607,8 @@ octaspire_dern_value_t *dern_sdl2_GL_SwapWindow(
             octaspire_dern_c_data_get_payload_typename(cData));
     }
 
-    SDL_Window * const window = octaspire_dern_c_data_get_payload(cData);
-
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    SDL_Window * const window = octaspire_dern_c_data_get_payload(cData);
     SDL_GL_SwapWindow(window);
 #else
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
@@ -4509,7 +4508,7 @@ octaspire_dern_value_t *dern_sdl2_glViewport(
             octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
     }
 
-    width = octaspire_dern_value_as_number_get_value(arg);
+    height = octaspire_dern_value_as_number_get_value(arg);
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     glViewport(x, y, width, height);
@@ -5739,8 +5738,6 @@ octaspire_dern_value_t *dern_sdl2_load_texture_base64(
                 firstArg->typeTag));
     }
 
-    bool const isBlend = octaspire_dern_value_as_boolean_get_value(firstArg);
-
     octaspire_dern_value_t const * const secondArg =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
 
@@ -5761,6 +5758,8 @@ octaspire_dern_value_t *dern_sdl2_load_texture_base64(
     }
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    bool const isBlend = octaspire_dern_value_as_boolean_get_value(firstArg);
+
     glEnable(GL_TEXTURE_2D);
 
     GLenum error = GL_NO_ERROR;
