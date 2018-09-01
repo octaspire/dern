@@ -54,14 +54,14 @@
          'x                   {D+0}
          'y                   {D+0}
          'dir                 nil
-         'sx                  {D+0}
-         'sy                  {D+0}
-         'sw                  {D+0}
-         'sh                  {D+0}
-         'tx                  {D+0}
-         'ty                  {D+0}
-         'tw                  {D+0}
-         'th                  {D+0}
+         'sx                  (copy {D+0})
+         'sy                  (copy {D+0})
+         'sw                  (copy {D+0})
+         'sh                  (copy {D+0})
+         'tx                  (copy {D+0})
+         'ty                  (copy {D+0})
+         'tw                  (copy {D+0})
+         'th                  (copy {D+0})
          'count               {D+0}
          'bomb-original-count {D+0}
          'bomb-started        false
@@ -197,7 +197,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1312} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 2 east
         (and e (not n) (not s) (not w)) (do
@@ -213,7 +213,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1328} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 3 north
         (and (not e) n (not s) (not w)) (do
@@ -229,7 +229,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1344} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 4 east and north
         (and e n (not s) (not w)) (do
@@ -245,7 +245,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1360} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 5 south only
         (and (not e) (not n) s (not w)) (do
@@ -261,7 +261,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1376} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 6 es
         (and e (not n) s (not w)) (do
@@ -277,7 +277,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1392} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 7 ns
         (and (not e) n s (not w)) (do
@@ -293,7 +293,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1408} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 8 ens
         (and e n s (not w)) (do
@@ -309,7 +309,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1424} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 9 w
         (and (not e) (not n) (not s) w) (do
@@ -325,7 +325,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1440} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 10 ew
         (and e (not n) (not s) w) (do
@@ -341,7 +341,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1456} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 11 nw
         (and (not e) n (not s) w) (do
@@ -357,7 +357,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1472} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 12 enw
         (and e n (not s) w) (do
@@ -373,7 +373,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1488} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 13 sw
         (and (not e) (not n) s w) (do
@@ -389,7 +389,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1504} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 14 esw
         (and e (not n) s w) (do
@@ -405,7 +405,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1520} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 15 nsw
         (and (not e) n s w) (do
@@ -421,7 +421,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1536} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))
+            (animation-playing name true))
 
         ; 16 ensw
         (and e n s w) (do
@@ -437,7 +437,7 @@
                     []
                     {D+0}
                     '({D+0} {D+1552} {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-            (animation-playing id true))))
+            (animation-playing name true))))
 
   [...] '(name [name] x [x] y [y]) howto-no)
 
@@ -1562,7 +1562,8 @@
 
 (define entity-new-pass-counter as (fn (x y count)
      (define id as (string-format [pass-counter-{}-{}] x y) [id])
-     (define slot as (make-empty-slot) [slot at x y, the pass-counter to be])
+     (+= pass-counters id (make-empty-slot))
+     (define slot as (ln@ pass-counters id 'hash) [slot])
      (= slot 'count count)
      (= slot 'name id)
      (= slot 'x    x)
@@ -1579,8 +1580,7 @@
                     []
                     {D+0}
                     (vector {D+0} (+ {D+528} (* count {D+16})) {D+16} {D+16}   {D+0} {D+0} {D+16} {D+16} {D+0.2}))
-     (animation-playing id true)
-     (+= pass-counters id slot))
+     (animation-playing id true))
   [entity-new-pass-counter]
   '(x [x-coordinate] y [y-coordinate] count [current count]) howto-no)
 

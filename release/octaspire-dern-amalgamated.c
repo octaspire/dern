@@ -25638,7 +25638,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "390"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "391"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -42414,9 +42414,32 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_copy(
             abort();
         }
 
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        {
+            if (numArgs == 1)
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_integer(
+                    vm,
+                    octaspire_dern_value_as_integer_get_value(collectionVal));
+            }
+            else
+            {
+                octaspire_helpers_verify_true(stackLength ==
+                        octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'copy' expects one argument when used with integer. "
+                    "%zu arguments was given.",
+                    numArgs);
+            }
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
-        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
