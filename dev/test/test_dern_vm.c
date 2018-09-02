@@ -13478,6 +13478,14 @@ TEST octaspire_dern_vm_copy_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
     ASSERT_STR_EQ("[b]", octaspire_dern_value_as_string_get_c_string(evaluatedValue));
 
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(copy {D+123})");
+
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(123, octaspire_dern_value_as_integer_get_value(evaluatedValue));
+
     octaspire_dern_vm_release(vm);
     vm = 0;
 
