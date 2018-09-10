@@ -20,6 +20,10 @@ CFLAGS=-std=c99 -Wall -Wextra -g -O2 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 TAGS_C_FILES := $(SRCDIR)*.c $(INCDIR)*.h $(CORDIR)octaspire-core-amalgamated.c
 TAGS_DERN_FILES := $(GAMESDIR)octaspire-lightcube.dern $(GAMESDIR)octaspire-maze.dern
 
+CHIPMUNK_SRCS := $(wildcard release/plugins/external/chipmunk/src/*.c)
+CHIPMUNK_OBJS := $(patsubst %.c, %.o, $(CHIPMUNK_SRCS))
+CHIPMUNK_PATH := $(PLUGINDIR)external/chipmunk/src/
+
 DOCEXAMPLES := $(wildcard $(DEVDOCDIR)book/examples/dern/*.dern)
 DOCEXAMPLES += $(wildcard $(DEVDOCDIR)book/examples/sh/*.sh)
 DOCEXAMPLES += $(wildcard $(DEVDOCDIR)book/examples/c/*.c)
@@ -209,20 +213,24 @@ libdern_sdl2$(DLSUFFIX): $(PLUGINDIR)dern_sdl2.c $(AMALGAMATION)
 	@$(CC) $(CFLAGS) -I release $(SDL2CONFIG_CFLAGS) $(SDL2FLAGS) $(LIBCFLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(SDL2CONFIG_LDFLAGS)
 
 libsqlite3$(DLSUFFIX): $(PLUGINDIR)external/sqlite3/sqlite3.c
-	$(info PC  $<)
+	$(info EC   $<)
 	@$(CC) $(LIBCFLAGS) -c -o $@ $< $(SQLITE3_LDFLAGS)
 
 libdern_sqlite3$(DLSUFFIX): $(PLUGINDIR)dern_sqlite3.c $(AMALGAMATION) libsqlite3$(DLSUFFIX)
 	$(info PC  $<)
 	@$(CC) $(CFLAGS) -I release -I $(PLUGINDIR)external/sqlite3 $(LIBCFLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(SQLITE3_LDFLAGS)  -L . -lsqlite3
 
-libchipmunk$(DLSUFFIX): $(PLUGINDIR)external/chipmunk/src/*.c
-	$(info PC  $<)
-	@$(CC) $(LIBCFLAGS) -I $(PLUGINDIR)external/chipmunk/include -c -o $@ $< $(CHIPMUNK_LDFLAGS)
+$(CHIPMUNK_PATH)%.o: $(CHIPMUNK_PATH)%.c
+	$(info CC  $<)
+	$(CC) $(LIBCFLAGS) -o $@ -I $(PLUGINDIR)external/chipmunk/include -I $(PLUGINDIR)external/chipmunk/include/chipmunk -c $< $(CHIPMUNK_LDFLAGS)
+
+libchipmunk$(DLSUFFIX): $(CHIPMUNK_OBJS)
+	$(info EC  chipmunk)
+	@$(CC) $(LIBCFLAGS) -c -o $@ $< $(CHIPMUNK_LDFLAGS)
 
 libdern_chipmunk$(DLSUFFIX): $(PLUGINDIR)dern_chipmunk.c $(AMALGAMATION) libchipmunk$(DLSUFFIX)
 	$(info PC  $<)
-	@$(CC) $(CFLAGS) -I release -I $(PLUGINDIR)external/chipmunk/include $(LIBCFLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(SQLITE3_LDFLAGS)  -L . -lsqlite3
+	@$(CC) $(CFLAGS) -I release -I $(PLUGINDIR)external/chipmunk/include/ -I $(PLUGINDIR)external/chipmunk/include/chipmunk $(LIBCFLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(CHIPMUNK_LDFLAGS)  -L . -lchipmunk
 
 
 perf-linux: octaspire-dern-unit-test-runner

@@ -48,7 +48,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
 
     cpSpace *space = cpSpaceNew();
 
-    if (!space
+    if (!space)
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
 
@@ -86,7 +86,7 @@ bool dern_chipmunk_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
-            "chipmunk-cpSpace",
+            "chipmunk-cpSpaceNew",
             dern_chipmunk_cpSpaceNew,
             0,
             "NAME\n"
