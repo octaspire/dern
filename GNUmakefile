@@ -62,6 +62,7 @@ ifeq ($(UNAME), Darwin)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags) -framework OpenGL
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+    CHIPMUNK_LDFLAGS   := -lm
 else ifeq ($(UNAME), OpenBSD)
     OS                 := "OpenBSD"
     LDFLAGS            := -lm
@@ -74,6 +75,7 @@ else ifeq ($(UNAME), OpenBSD)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lGLU
+    CHIPMUNK_LDFLAGS   := -lm -lpthread
     MAKE=gmake
 else ifeq ($(UNAME), FreeBSD)
     OS                 := "FreeBSD"
@@ -87,6 +89,7 @@ else ifeq ($(UNAME), FreeBSD)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+    CHIPMUNK_LDFLAGS   := -lm
 else ifeq ($(UNAME), NetBSD)
     OS                 := "NetBSD"
     LDFLAGS            := -lm
@@ -111,6 +114,7 @@ else ifeq ($(UNAME)$(MACHINE), Haikux86_64)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+    CHIPMUNK_LDFLAGS   := -lm
 else ifeq ($(UNAME)$(MACHINE), HaikuBePC)
     CC                 := gcc-x86
     OS                 := "Haiku"
@@ -124,6 +128,7 @@ else ifeq ($(UNAME)$(MACHINE), HaikuBePC)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+    CHIPMUNK_LDFLAGS   := -lm
 else ifeq ($(UNAME), Linux)
     OS                 := "GNU/Linux"
     LDFLAGS            := -lm -Wl,-export-dynamic -ldl
@@ -135,6 +140,7 @@ else ifeq ($(UNAME), Linux)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lGLU
+    CHIPMUNK_LDFLAGS   := -lm
 endif
 
 .PHONY: oscheck development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push tag
@@ -222,11 +228,11 @@ libdern_sqlite3$(DLSUFFIX): $(PLUGINDIR)dern_sqlite3.c $(AMALGAMATION) libsqlite
 
 $(CHIPMUNK_PATH)%.o: $(CHIPMUNK_PATH)%.c
 	$(info CC  $<)
-	$(CC) $(LIBCFLAGS) -o $@ -I $(PLUGINDIR)external/chipmunk/include -I $(PLUGINDIR)external/chipmunk/include/chipmunk -c $< $(CHIPMUNK_LDFLAGS)
+	@$(CC) $(LIBCFLAGS) -I $(PLUGINDIR)external/chipmunk/include -I $(PLUGINDIR)external/chipmunk/include/chipmunk -c $< -o $@
 
 libchipmunk$(DLSUFFIX): $(CHIPMUNK_OBJS)
 	$(info EC  chipmunk)
-	@$(CC) $(LIBCFLAGS) -c -o $@ $< $(CHIPMUNK_LDFLAGS)
+	@$(CC) $(DLFLAGS) -o $@ $^ $(CHIPMUNK_LDFLAGS)
 
 libdern_chipmunk$(DLSUFFIX): $(PLUGINDIR)dern_chipmunk.c $(AMALGAMATION) libchipmunk$(DLSUFFIX)
 	$(info PC  $<)
@@ -360,6 +366,7 @@ clean:
                 $(RELDIR)coverage.info                                                \
                 $(RELDIR)octaspire-dern-amalgamated.gcda                              \
                 $(RELDIR)octaspire-dern-amalgamated.gcno                              \
+                $(PLUGINDIR)external/chipmunk/src/*.o                                 \
                 coverage                                                              \
                 $(SRCDIR)*.o                                                          \
                 $(TESTDR)*.o                                                          \
