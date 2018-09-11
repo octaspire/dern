@@ -19,6 +19,13 @@ limitations under the License.
 
 static char const * const DERN_CHIPMUNK_PLUGIN_NAME = "dern_chipmunk";
 
+typedef struct dern_chipmunk_allocation_context_t
+{
+    octaspire_dern_vm_t       *vm;
+    void                      *payload;
+}
+dern_chipmunk_allocation_context_t;
+
 void dern_chipmunk_cpSpace_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
@@ -28,7 +35,15 @@ void dern_chipmunk_cpSpace_clean_up_callback(void *payload)
 void dern_chipmunk_cpVect_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
-    octaspire_allocator_free((cpVect*)payload);
+    dern_chipmunk_allocation_context_t * const context = payload;
+    octaspire_helpers_verify_not_null(context->vm);
+    octaspire_helpers_verify_not_null(context->payload);
+
+    octaspire_allocator_t * const allocator =
+        octaspire_dern_vm_get_allocator(context->vm);
+
+    octaspire_allocator_free(allocator, (cpVect*)(context->payload));
+    octaspire_allocator_free(allocator, context);
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
@@ -151,6 +166,24 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
             "Builtin 'chipmunk-cpv' failed to allocate memory.");
     }
 
+    dern_chipmunk_allocation_context_t * const context = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(vm),
+        sizeof(dern_chipmunk_allocation_context_t));
+
+    if (!context)
+    {
+        octaspire_allocator_free(octaspire_dern_vm_get_allocator(vm), vect);
+        vect = 0;
+
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'chipmunk-cpv' failed to allocate memory for a cpVect context.");
+    }
+
+    context->vm      = vm;
+    context->payload = vect;
+
     octaspire_dern_value_t * const result =
         octaspire_dern_vm_create_new_value_c_data(
         vm,
@@ -161,7 +194,7 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
         "",
         "",
         false,
-        vect);
+        context);
 
     return result;
 }
