@@ -19,10 +19,31 @@ limitations under the License.
 
 static char const * const DERN_CHIPMUNK_PLUGIN_NAME = "dern_chipmunk";
 
+typedef struct dern_chipmunk_allocation_context_t
+{
+    octaspire_dern_vm_t       *vm;
+    void                      *payload;
+}
+dern_chipmunk_allocation_context_t;
+
 void dern_chipmunk_cpSpace_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
     cpSpaceFree((cpSpace*)payload);
+}
+
+void dern_chipmunk_cpVect_clean_up_callback(void *payload)
+{
+    octaspire_helpers_verify_not_null(payload);
+    dern_chipmunk_allocation_context_t * const context = payload;
+    octaspire_helpers_verify_not_null(context->vm);
+    octaspire_helpers_verify_not_null(context->payload);
+
+    octaspire_allocator_t * const allocator =
+        octaspire_dern_vm_get_allocator(context->vm);
+
+    octaspire_allocator_free(allocator, (cpVect*)(context->payload));
+    octaspire_allocator_free(allocator, context);
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
@@ -78,6 +99,109 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
     return result;
 }
 
+octaspire_dern_value_t *dern_chipmunk_cpv(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_string_format(
+            vm,
+            "Builtin 'chipmunk-cpv' expects two arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    // X
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_number(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'chipmunk-cpv' expects number as the first argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    // Y
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_number(secondArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'chipmunk-cpv' expects number as the second argument. "
+            "Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    cpVect *vect = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(vm),
+        sizeof(cpVect));
+
+    if (!vect)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'chipmunk-cpv' failed to allocate memory.");
+    }
+
+    vect->x = octaspire_dern_value_as_number_get_value(firstArg);
+    vect->y = octaspire_dern_value_as_number_get_value(secondArg);
+
+    dern_chipmunk_allocation_context_t * const context = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(vm),
+        sizeof(dern_chipmunk_allocation_context_t));
+
+    if (!context)
+    {
+        octaspire_allocator_free(octaspire_dern_vm_get_allocator(vm), vect);
+        vect = 0;
+
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'chipmunk-cpv' failed to allocate memory for a cpVect context.");
+    }
+
+    context->vm      = vm;
+    context->payload = vect;
+
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_CHIPMUNK_PLUGIN_NAME,
+        "cpVect",
+        "dern_chipmunk_cpVect_clean_up_callback",
+        "",
+        "",
+        "",
+        false,
+        context);
+
+    return result;
+}
+
 bool dern_chipmunk_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv)
@@ -105,6 +229,37 @@ bool dern_chipmunk_init(
             "RETURN VALUE\n"
             "\tcpSpace to be used with those functions of this library that\n"
             "\texpect cpSpace argument.\n"
+            "\n"
+            "SEE ALSO\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpv",
+            dern_chipmunk_cpv,
+            2,
+            "NAME\n"
+            "\tchipmunk-cpv\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpv) -> cpVect or error message\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tCreates and returns a new Chipmunk 2D vector cpVect.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tx           the x coordinate component\n"
+            "\ty           the y coordinate component\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tcpVect to be used with those functions of this library that\n"
+            "\texpect cpVect argument.\n"
             "\n"
             "SEE ALSO\n",
             false,

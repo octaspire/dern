@@ -1,0 +1,5 @@
+(require 'dern_chipmunk)
+(define space   as (chipmunk-cpSpaceNew)        [Chipmunk space])
+(define gravity as (chipmunk-cpv {D+0} {D-100}) [Gravity vector])
+(println space)
+(println gravity)
