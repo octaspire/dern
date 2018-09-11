@@ -166,6 +166,9 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
             "Builtin 'chipmunk-cpv' failed to allocate memory.");
     }
 
+    vect->x = octaspire_dern_value_as_number_get_value(firstArg);
+    vect->y = octaspire_dern_value_as_number_get_value(secondArg);
+
     dern_chipmunk_allocation_context_t * const context = octaspire_allocator_malloc(
         octaspire_dern_vm_get_allocator(vm),
         sizeof(dern_chipmunk_allocation_context_t));
