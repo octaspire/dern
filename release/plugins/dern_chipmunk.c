@@ -99,6 +99,124 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
     return result;
 }
 
+octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_string_format(
+            vm,
+            "Builtin 'chipmunk-cpSpaceSetGravity' expects two arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    // cpSpace
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_c_data(firstArg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'chipmunk-cpSpaceSetGravity' expects cpSpace as "
+            "first argument. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(
+                firstArg->typeTag));
+    }
+
+    octaspire_dern_c_data_t * cData = firstArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            "cpSpace"))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'chipmunk-cpSpaceSetGravity' "
+            "expects '%s' and 'cpSpace' as "
+            "plugin name and payload type name for the C data of the first "
+            "argument. Names '%s' and '%s' were given.",
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+    }
+
+    cpSpace * const space = octaspire_dern_c_data_get_payload(cData);
+
+    // cpVect
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_c_data(secondArg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'chipmunk-cpSpaceSetGravity' expects cpVect as "
+            "second argument. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(
+                secondArg->typeTag));
+    }
+
+    cData = secondArg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            "cpVect"))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'chipmunk-cpSpaceSetGravity' "
+            "expects '%s' and 'cpVect' as "
+            "plugin name and payload type name for the C data of the first "
+            "argument. Names '%s' and '%s' were given.",
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+    }
+
+    cpVect * const vect = octaspire_dern_c_data_get_payload(cData);
+
+    cpSpaceSetGravity(space, *vect);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
 octaspire_dern_value_t *dern_chipmunk_cpv(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -231,6 +349,37 @@ bool dern_chipmunk_init(
             "\texpect cpSpace argument.\n"
             "\n"
             "SEE ALSO\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpSpaceSetGravity",
+            dern_chipmunk_cpSpaceSetGravity,
+            2,
+            "NAME\n"
+            "\tchipmunk-cpSpaceSetGravity\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpSpaceSetGravity) -> true or error message\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tSets the gravity vector of a cpSpace.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tspace       the cpSpace where gravity is to be set\n"
+            "\tgravity     the cpVect of the gravity to be set\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue or error message.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpSpaceNew\n",
             false,
             targetEnv))
     {
