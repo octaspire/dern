@@ -590,6 +590,21 @@ octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_cons
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
 
+typedef struct octaspire_dern_c_data_or_unpushed_error_t
+{
+    void                   * cData;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_c_data_or_unpushed_error_t;
+
+octaspire_dern_c_data_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    char const * const cDataName,
+    char const * const pluginName);
+
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_tag_t const typeTag,
