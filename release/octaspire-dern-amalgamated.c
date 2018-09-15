@@ -25638,7 +25638,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "396"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "397"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -26580,6 +26580,21 @@ octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at(
 octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_const(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
+
+typedef struct octaspire_dern_c_data_or_unpushed_error_t
+{
+    void                   * cData;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_c_data_or_unpushed_error_t;
+
+octaspire_dern_c_data_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    char const * const cDataName,
+    char const * const pluginName);
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
     octaspire_dern_value_t * const self,
@@ -46069,6 +46084,73 @@ octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_cons
     return octaspire_vector_get_element_at_const(
         self->value.vector,
         possiblyNegativeIndex);
+}
+
+octaspire_dern_c_data_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    char const * const cDataName,
+    char const * const pluginName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_c_data_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t const * const arg =
+        octaspire_dern_value_as_vector_get_element_at_const(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_c_data(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects C data '%s' as "
+            "first argument. Type '%s' was given.",
+            dernFuncName,
+            cDataName,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    octaspire_dern_c_data_t * cData = arg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            pluginName,
+            cDataName))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' "
+            "expects '%s' and '%s' as "
+            "plugin name and payload type name for the C data of the first "
+            "argument. Names '%s' and '%s' were given.",
+            dernFuncName,
+            pluginName,
+            cDataName,
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.cData = octaspire_dern_c_data_get_payload(cData);
+    return result;
 }
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
