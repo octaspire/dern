@@ -208,6 +208,7 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const stdLibLenCallbackName,
     char const * const stdLibLinkAtCallbackName,
     char const * const stdLibCopyAtCallbackName,
+    char const * const stdLibToStringCallbackName,
     bool const copyingAllowed,
     void * const payload);
 
@@ -369,6 +370,10 @@ bool octaspire_dern_vm_has_library(
 
 octaspire_dern_lib_t *octaspire_dern_vm_get_library(
     octaspire_dern_vm_t * const self,
+    char const * const name);
+
+octaspire_dern_lib_t const * octaspire_dern_vm_get_library_const(
+    octaspire_dern_vm_t const * const self,
     char const * const name);
 
 bool octaspire_dern_vm_add_command_line_argument(

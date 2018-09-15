@@ -37,6 +37,7 @@ limitations under the License.
 #include <stdint.h>
 
 static char const * const DERN_SOCKET_PLUGIN_NAME = "dern_socket";
+static octaspire_string_t * dern_socket_plugin_private_lib_name = 0;
 
 #ifdef _WIN32
 static char const *dern_socket_private_format_win32_error_message(void)
@@ -225,6 +226,7 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
         "",
         "",
         "",
+        "",
         false,
         (void*)s);
 
@@ -311,6 +313,7 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
         DERN_SOCKET_PLUGIN_NAME,
         "socketFileDescriptor",
         "dern_socket_socket_clean_up_callback",
+        "",
         "",
         "",
         "",
@@ -490,6 +493,7 @@ octaspire_dern_value_t *dern_socket_accept(
         "",
         "",
         "",
+        "",
         false,
         (void*)result);
 #else
@@ -519,6 +523,7 @@ octaspire_dern_value_t *dern_socket_accept(
         DERN_SOCKET_PLUGIN_NAME,
         "socketFileDescriptor",
         "dern_socket_socket_clean_up_callback",
+        "",
         "",
         "",
         "",
@@ -867,11 +872,18 @@ octaspire_dern_value_t *dern_socket_send(
 
 bool dern_socket_init(
     octaspire_dern_vm_t * const vm,
-    octaspire_dern_environment_t * const targetEnv)
+    octaspire_dern_environment_t * const targetEnv,
+    char const * const libName)
 {
     setlocale(LC_ALL, "");
 
-    octaspire_helpers_verify_true(vm && targetEnv);
+    octaspire_helpers_verify_true(vm && targetEnv && libName);
+
+    dern_socket_plugin_private_lib_name = octaspire_string_new(
+        libName,
+        octaspire_dern_vm_get_allocator(vm));
+
+    octaspire_helpers_verify_not_null(dern_socket_plugin_private_lib_name);
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
@@ -1030,3 +1042,15 @@ bool dern_socket_init(
     return true;
 }
 
+bool dern_socket_clean(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_environment_t * const targetEnv)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(vm);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(targetEnv);
+
+    octaspire_helpers_verify_not_null(dern_socket_plugin_private_lib_name);
+    octaspire_string_release(dern_socket_plugin_private_lib_name);
+    dern_socket_plugin_private_lib_name = 0;
+    return true;
+}

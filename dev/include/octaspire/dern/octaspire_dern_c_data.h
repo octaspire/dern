@@ -31,6 +31,7 @@ extern "C"       {
 #endif
 
 typedef struct octaspire_dern_c_data_t octaspire_dern_c_data_t;
+struct octaspire_dern_vm_t;
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const pluginName,
@@ -40,7 +41,9 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const stdLibLenCallbackName,
     char const * const stdLibLinkAtCallbackName,
     char const * const stdLibCopyAtCallbackName,
+    char const * const stdLibToStringCallbackName,
     bool const copyingAllowed,
+    struct octaspire_dern_vm_t * const vm,
     octaspire_allocator_t *allocator);
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
@@ -76,6 +79,12 @@ void *octaspire_dern_c_data_get_payload(
     octaspire_dern_c_data_t const * const self);
 
 bool octaspire_dern_c_data_is_copying_allowed(
+    octaspire_dern_c_data_t const * const self);
+
+struct octaspire_dern_vm_t * octaspire_dern_c_data_get_vm(
+    octaspire_dern_c_data_t * const self);
+
+struct octaspire_dern_vm_t const * octaspire_dern_c_data_get_vm_const(
     octaspire_dern_c_data_t const * const self);
 
 #ifdef __cplusplus

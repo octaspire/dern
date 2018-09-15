@@ -3007,6 +3007,15 @@ bool octaspire_dern_value_as_string_is_index_valid(
         possiblyNegativeIndex);
 }
 
+bool octaspire_dern_value_as_string_is_empty(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_true(
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
+
+    return octaspire_string_is_empty(self->value.string);
+}
+
 octaspire_semver_t const *octaspire_dern_value_as_semver_const(
     octaspire_dern_value_t const * const self)
 {

@@ -18,6 +18,7 @@ limitations under the License.
 #include "chipmunk.h"
 
 static char const * const DERN_CHIPMUNK_PLUGIN_NAME = "dern_chipmunk";
+static octaspire_string_t * dern_chipmunk_private_lib_name = 0;
 
 typedef struct dern_chipmunk_allocation_context_t
 {
@@ -93,6 +94,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
         "",
         "",
         "",
+        "dern_chipmunk_to_string",
         false,
         space);
 
@@ -268,6 +270,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceGetGravity(
         "",
         "",
         "",
+        "dern_chipmunk_to_string",
         false,
         context);
 
@@ -371,6 +374,7 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
         "",
         "",
         "",
+        "dern_chipmunk_to_string",
         false,
         context);
 
@@ -379,9 +383,19 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
 
 bool dern_chipmunk_init(
     octaspire_dern_vm_t * const vm,
-    octaspire_dern_environment_t * const targetEnv)
+    octaspire_dern_environment_t * const targetEnv,
+    char const * const libName)
 {
-    octaspire_helpers_verify_true(vm && targetEnv);
+    octaspire_helpers_verify_true(vm && targetEnv && libName);
+
+    dern_chipmunk_private_lib_name = octaspire_string_new(
+        libName,
+        octaspire_dern_vm_get_allocator(vm));
+
+    if (!dern_chipmunk_private_lib_name)
+    {
+        return false;
+    }
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
@@ -508,3 +522,56 @@ bool dern_chipmunk_init(
     return true;
 }
 
+void * dern_chipmunk_to_string(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_environment_t * const targetEnv,
+    octaspire_dern_c_data_t * const cData)
+{
+    if (octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            "cpVect"))
+    {
+        dern_chipmunk_allocation_context_t const * const context =
+            cData->payload;
+
+        octaspire_helpers_verify_not_null(context);
+
+        cpVect const * const vect = context->payload;
+
+        octaspire_helpers_verify_not_null(vect);
+
+        return octaspire_string_new_format(
+            octaspire_dern_vm_get_allocator(vm),
+            "(%f, %f)",
+            vect->x,
+            vect->y);
+    }
+    else if (octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            "cpSpace"))
+    {
+        return octaspire_string_new(
+            "TODO XXX",
+            octaspire_dern_vm_get_allocator(vm));
+    }
+    else
+    {
+        return octaspire_string_new(
+            "Dern_chipmunk: not chipmunk C data.",
+            octaspire_dern_vm_get_allocator(vm));
+    }
+}
+
+bool dern_chipmunk_clean(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_environment_t * const targetEnv)
+{
+    octaspire_helpers_verify_true(vm && targetEnv);
+
+    octaspire_string_release(dern_chipmunk_private_lib_name);
+    dern_chipmunk_private_lib_name = 0;
+
+    return true;
+}

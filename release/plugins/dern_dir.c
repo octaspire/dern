@@ -219,7 +219,8 @@ octaspire_dern_value_t *dern_dir_get_listing(
 
 bool dern_dir_init(
     octaspire_dern_vm_t * const vm,
-    octaspire_dern_environment_t * const targetEnv)
+    octaspire_dern_environment_t * const targetEnv,
+    char const * const libName)
 {
     setlocale(LC_ALL, "");
 

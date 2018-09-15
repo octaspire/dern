@@ -15,6 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ******************************************************************************/
 #include "octaspire/dern/octaspire_dern_c_data.h"
+#include "octaspire/dern/octaspire_dern_vm.h"
 
 #ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
     #include "octaspire-core-amalgamated.c"
@@ -37,6 +38,8 @@ struct octaspire_dern_c_data_t
     octaspire_string_t    *stdLibLenCallbackName;
     octaspire_string_t    *stdLibLinkAtCallbackName;
     octaspire_string_t    *stdLibCopyAtCallbackName;
+    octaspire_string_t    *stdLibToStringCallbackName;
+    octaspire_dern_vm_t   *vm;
     octaspire_allocator_t *allocator;
     bool                   copyingAllowed;
     char                   padding[7];
@@ -50,7 +53,9 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const stdLibLenCallbackName,
     char const * const stdLibLinkAtCallbackName,
     char const * const stdLibCopyAtCallbackName,
+    char const * const stdLibToStringCallbackName,
     bool const copyingAllowed,
+    octaspire_dern_vm_t * const vm,
     octaspire_allocator_t *allocator)
 {
     octaspire_dern_c_data_t *self =
@@ -62,6 +67,7 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     }
 
     self->allocator = allocator;
+    self->vm        = vm;
 
     self->pluginName = octaspire_string_new(
         pluginName,
@@ -89,6 +95,10 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
         stdLibCopyAtCallbackName,
         self->allocator);
 
+    self->stdLibToStringCallbackName = octaspire_string_new(
+        stdLibToStringCallbackName,
+        self->allocator);
+
     self->copyingAllowed = copyingAllowed;
 
     return self;
@@ -106,7 +116,9 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
         octaspire_string_get_c_string(other->stdLibLenCallbackName),
         octaspire_string_get_c_string(other->stdLibLinkAtCallbackName),
         octaspire_string_get_c_string(other->stdLibCopyAtCallbackName),
+        octaspire_string_get_c_string(other->stdLibToStringCallbackName),
         other->copyingAllowed,
+        other->vm,
         allocator);
 }
 
@@ -129,6 +141,9 @@ void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
     octaspire_string_release(self->stdLibCopyAtCallbackName);
     self->stdLibCopyAtCallbackName = 0;
 
+    octaspire_string_release(self->stdLibToStringCallbackName);
+    self->stdLibToStringCallbackName = 0;
+
     octaspire_string_release(self->pluginName);
     self->pluginName = 0;
 
@@ -142,17 +157,36 @@ octaspire_string_t *octaspire_dern_c_data_to_string(
     octaspire_dern_c_data_t const * const self,
     octaspire_allocator_t * const allocator)
 {
-    return octaspire_string_new_format(
-        allocator,
-        "C data (%s : %s) payload=%p cleanUpCallbackName=%s stdLibLenCallbackName=%s "
-        "stdLibLinkAtCallbackName=%s stdLibCopyAtCallbackName=%s",
-        octaspire_string_get_c_string(self->pluginName),
-        octaspire_string_get_c_string(self->typeNameForPayload),
-        (void*)self->payload,
-        octaspire_string_get_c_string(self->cleanUpCallbackName),
-        octaspire_string_get_c_string(self->stdLibLenCallbackName),
-        octaspire_string_get_c_string(self->stdLibLinkAtCallbackName),
-        octaspire_string_get_c_string(self->stdLibCopyAtCallbackName));
+    if (octaspire_string_is_empty(self->stdLibToStringCallbackName))
+    {
+        return octaspire_string_new_format(
+            allocator,
+            "C data (%s : %s) payload=%p cleanUpCallbackName=%s stdLibLenCallbackName=%s "
+            "stdLibLinkAtCallbackName=%s stdLibCopyAtCallbackName=%s "
+            "stdLibCopyAtCallbackName=%s",
+            octaspire_string_get_c_string(self->pluginName),
+            octaspire_string_get_c_string(self->typeNameForPayload),
+            (void*)self->payload,
+            octaspire_string_get_c_string(self->cleanUpCallbackName),
+            octaspire_string_get_c_string(self->stdLibLenCallbackName),
+            octaspire_string_get_c_string(self->stdLibLinkAtCallbackName),
+            octaspire_string_get_c_string(self->stdLibCopyAtCallbackName),
+            octaspire_string_get_c_string(self->stdLibToStringCallbackName));
+    }
+
+    octaspire_dern_lib_t const * const lib = octaspire_dern_vm_get_library_const(
+        octaspire_dern_c_data_get_vm_const(self),
+        octaspire_dern_c_data_get_plugin_name(self));
+
+    if (!lib)
+    {
+        return 0;
+    }
+
+    return octaspire_dern_lib_dycall(
+        (octaspire_dern_lib_t * const)lib,
+        octaspire_string_get_c_string(self->stdLibToStringCallbackName),
+        (octaspire_dern_c_data_t * const)self);
 }
 
 bool octaspire_dern_c_data_is_equal(
@@ -258,3 +292,14 @@ bool octaspire_dern_c_data_is_copying_allowed(
     return self->copyingAllowed;
 }
 
+octaspire_dern_vm_t * octaspire_dern_c_data_get_vm(
+    octaspire_dern_c_data_t * const self)
+{
+    return self->vm;
+}
+
+octaspire_dern_vm_t const * octaspire_dern_c_data_get_vm_const(
+    octaspire_dern_c_data_t const * const self)
+{
+    return self->vm;
+}
