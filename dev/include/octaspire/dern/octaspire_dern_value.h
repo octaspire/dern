@@ -522,6 +522,9 @@ bool octaspire_dern_value_as_string_is_index_valid(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
 
+bool octaspire_dern_value_as_string_is_empty(
+    octaspire_dern_value_t const * const self);
+
 octaspire_semver_t const *octaspire_dern_value_as_semver_const(
     octaspire_dern_value_t const * const self);
 

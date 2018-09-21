@@ -42,6 +42,7 @@ octaspire_dern_lib_tag_t;
 
 typedef struct octaspire_dern_lib_t octaspire_dern_lib_t;
 struct octaspire_dern_vm_t;
+struct octaspire_dern_c_data_t;
 
 octaspire_dern_lib_t *octaspire_dern_lib_new_source(
     char const * const name,
@@ -55,6 +56,11 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
     struct octaspire_dern_vm_t *vm,
     octaspire_allocator_t *allocator);
 
+void * octaspire_dern_lib_dycall(
+    octaspire_dern_lib_t * const self,
+    char const * const funcName,
+    struct octaspire_dern_c_data_t * const cData);
+
 void octaspire_dern_lib_release(octaspire_dern_lib_t *self);
 
 bool octaspire_dern_lib_is_good(octaspire_dern_lib_t const * const self);
@@ -64,6 +70,8 @@ char const *octaspire_dern_lib_get_error_message(octaspire_dern_lib_t const * co
 bool octaspire_dern_lib_mark_all(octaspire_dern_lib_t * const self);
 
 void *octaspire_dern_lib_get_handle(octaspire_dern_lib_t * const self);
+
+struct octaspire_dern_vm_t * octaspire_dern_lib_get_vm(octaspire_dern_lib_t * const self);
 
 #ifdef __cplusplus
 /* extern "C" */ }

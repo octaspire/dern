@@ -49,6 +49,8 @@ SDL_GLContext dernGlContext;
 static GLuint dern_sdl2_private_gltextures[1] = {0};
 #endif
 
+static octaspire_string_t * dern_sdl2_private_lib_name = 0;
+
 /////////////////////////////// timer //////////////////////////////////////////
 typedef struct octaspire_sdl2_timer_t
 {
@@ -1872,6 +1874,7 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
         "",
         "",
         "",
+        "",
         false,
         (void*)dern_sdl2_private_next_free_texture_uid);
 }
@@ -2227,6 +2230,7 @@ octaspire_dern_value_t *dern_sdl2_CreateTextureFromFontAndText(
         "",
         "",
         "",
+        "",
         false,
         (void*)dern_sdl2_private_next_free_texture_uid);
 #else
@@ -2365,6 +2369,7 @@ octaspire_dern_value_t *dern_sdl2_CreateSound(
         DERN_SDL2_PLUGIN_NAME,
         "sound",
         "dern_sdl2_sound_clean_up_callback",
+        "",
         "",
         "",
         "",
@@ -2507,6 +2512,7 @@ octaspire_dern_value_t *dern_sdl2_CreateMusic(
         DERN_SDL2_PLUGIN_NAME,
         "music",
         "dern_sdl2_music_clean_up_callback",
+        "",
         "",
         "",
         "",
@@ -3111,6 +3117,7 @@ octaspire_dern_value_t *dern_sdl2_CreateWindow(
         "",
         "",
         "",
+        "",
         true,
         window);
 }
@@ -3261,6 +3268,7 @@ octaspire_dern_value_t *dern_sdl2_CreateFont(
         DERN_SDL2_PLUGIN_NAME,
         "font",
         "dern_sdl2_font_clean_up_callback",
+        "",
         "",
         "",
         "",
@@ -3421,6 +3429,7 @@ octaspire_dern_value_t *dern_sdl2_CreateRenderer(
         DERN_SDL2_PLUGIN_NAME,
         "renderer",
         "dern_sdl2_renderer_clean_up_callback",
+        "",
         "",
         "",
         "",
@@ -6793,6 +6802,7 @@ octaspire_dern_value_t *dern_sdl2_GetWindowSurface(
         "",
         "",
         "",
+        "",
         true,
         surface);
 }
@@ -6857,6 +6867,7 @@ octaspire_dern_value_t *dern_sdl2_GetPixelFormat(
         vm,
         DERN_SDL2_PLUGIN_NAME,
         "pixelFormat",
+        "",
         "",
         "",
         "",
@@ -7365,9 +7376,19 @@ octaspire_dern_value_t *dern_sdl2_has_ttf(
 
 bool dern_sdl2_init(
     octaspire_dern_vm_t * const vm,
-    octaspire_dern_environment_t * const targetEnv)
+    octaspire_dern_environment_t * const targetEnv,
+    char const * const libName)
 {
-    octaspire_helpers_verify_true(vm && targetEnv);
+    octaspire_helpers_verify_true(vm && targetEnv && libName);
+
+    dern_sdl2_private_lib_name = octaspire_string_new(
+        libName,
+        octaspire_dern_vm_get_allocator(vm));
+
+    if (!dern_sdl2_private_lib_name)
+    {
+        return false;
+    }
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
@@ -8081,6 +8102,9 @@ bool dern_sdl2_clean(
     octaspire_map_release(dern_sdl2_private_music);
     dern_sdl2_private_music = 0;
 #endif
+
+    octaspire_string_release(dern_sdl2_private_lib_name);
+    dern_sdl2_private_lib_name = 0;
 
     return true;
 }

@@ -2492,6 +2492,7 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const stdLibLenCallbackName,
     char const * const stdLibLinkAtCallbackName,
     char const * const stdLibCopyAtCallbackName,
+    char const * const stdLibToStringCallbackName,
     bool const copyingAllowed,
     void * const payload)
 {
@@ -2508,7 +2509,9 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
         stdLibLenCallbackName,
         stdLibLinkAtCallbackName,
         stdLibCopyAtCallbackName,
+        stdLibToStringCallbackName,
         copyingAllowed,
+        self,
         self->allocator);
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
@@ -4655,6 +4658,32 @@ octaspire_dern_lib_t *octaspire_dern_vm_get_library(
     }
 
     return octaspire_map_element_get_value(element);
+}
+
+octaspire_dern_lib_t const * octaspire_dern_vm_get_library_const(
+    octaspire_dern_vm_t const * const self,
+    char const * const name)
+{
+    octaspire_string_t *str = octaspire_string_new(
+        name,
+        self->allocator);
+
+    octaspire_helpers_verify_not_null(str);
+
+    octaspire_map_element_t const * const element = octaspire_map_get_const(
+        self->libraries,
+        octaspire_string_get_hash(str),
+        &str);
+
+    octaspire_string_release(str);
+    str = 0;
+
+    if (!element)
+    {
+        return 0;
+    }
+
+    return octaspire_map_element_get_value_const(element);
 }
 
 octaspire_stdio_t *octaspire_dern_vm_get_stdio(octaspire_dern_vm_t * const self)

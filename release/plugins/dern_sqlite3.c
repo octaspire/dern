@@ -157,6 +157,7 @@ octaspire_dern_value_t *dern_sqlite3_open(
         "",
         "",
         "",
+        "",
         false,
         db);
 
@@ -381,7 +382,8 @@ octaspire_dern_value_t *dern_sqlite3_exec(
 
 bool dern_sqlite3_init(
     octaspire_dern_vm_t * const vm,
-    octaspire_dern_environment_t * const targetEnv)
+    octaspire_dern_environment_t * const targetEnv,
+    char const * const libName)
 {
     octaspire_helpers_verify_true(vm && targetEnv);
 
