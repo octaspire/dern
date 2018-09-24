@@ -16,6 +16,7 @@ limitations under the License.
 ******************************************************************************/
 #include "octaspire-dern-amalgamated.c"
 #include "chipmunk.h"
+#include "chipmunk_structs.h"
 
 static char const * const DERN_CHIPMUNK_PLUGIN_NAME = "dern_chipmunk";
 static octaspire_string_t * dern_chipmunk_private_lib_name = 0;
@@ -131,7 +132,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
 
     // cpSpace
 
-    octaspire_dern_c_data_or_unpushed_error_t spaceOrError =
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             0,
@@ -139,19 +140,19 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
             cpSpaceName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (spaceOrError.unpushedError)
+    if (cDataOrError.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return spaceOrError.unpushedError;
+        return cDataOrError.unpushedError;
     }
 
-    cpSpace * const space = spaceOrError.cData;
+    cpSpace * const space = cDataOrError.cData;
 
     // cpVect
 
-    spaceOrError =
+    cDataOrError =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             1,
@@ -159,15 +160,20 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
             cpVectName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (spaceOrError.unpushedError)
+    if (cDataOrError.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return spaceOrError.unpushedError;
+        return cDataOrError.unpushedError;
     }
 
-    cpVect * const vect = spaceOrError.cData;
+    dern_chipmunk_allocation_context_t const * const context =
+        cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(context);
+
+    cpVect const * const vect = context->payload;
 
     cpSpaceSetGravity(space, *vect);
 
@@ -206,7 +212,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceGetGravity(
 
     // cpSpace
 
-    octaspire_dern_c_data_or_unpushed_error_t spaceOrError =
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             0,
@@ -214,15 +220,15 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceGetGravity(
             cpSpaceName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (spaceOrError.unpushedError)
+    if (cDataOrError.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return spaceOrError.unpushedError;
+        return cDataOrError.unpushedError;
     }
 
-    cpSpace * const space = spaceOrError.cData;
+    cpSpace * const space = cDataOrError.cData;
 
     cpVect const gravity = cpSpaceGetGravity(space);
 
@@ -527,6 +533,8 @@ void * dern_chipmunk_to_string(
     octaspire_dern_environment_t * const targetEnv,
     octaspire_dern_c_data_t * const cData)
 {
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(targetEnv);
+
     if (octaspire_dern_c_data_is_plugin_and_payload_type_name(
             cData,
             DERN_CHIPMUNK_PLUGIN_NAME,
@@ -552,9 +560,16 @@ void * dern_chipmunk_to_string(
             DERN_CHIPMUNK_PLUGIN_NAME,
             "cpSpace"))
     {
-        return octaspire_string_new(
-            "TODO XXX",
-            octaspire_dern_vm_get_allocator(vm));
+        cpSpace const * const space = cData->payload;
+
+        octaspire_helpers_verify_not_null(space);
+
+        return octaspire_string_new_format(
+            octaspire_dern_vm_get_allocator(vm),
+            "cpSpace gravity: (%f, %f) damping: %f",
+            space->gravity.x,
+            space->gravity.y,
+            space->damping);
     }
     else
     {
