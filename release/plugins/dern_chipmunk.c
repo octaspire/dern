@@ -68,7 +68,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
     if (numArgs != 0)
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_string_format(
+        return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'chipmunk-cpSpaceNew' expects no arguments. "
             "%zu arguments were given.",
@@ -122,7 +122,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyNew(
     if (numArgs != 2)
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_string_format(
+        return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'chipmunk-cpBodyNew' expects two arguments. "
             "%zu arguments were given.",
@@ -201,7 +201,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return octaspire_dern_vm_create_new_value_string_format(
+        return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin '%s' expects two arguments. "
             "%zu arguments were given.",
@@ -281,7 +281,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceGetGravity(
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return octaspire_dern_vm_create_new_value_string_format(
+        return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin '%s' expects one argument. "
             "%zu arguments were given.",
@@ -381,7 +381,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceStep(
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return octaspire_dern_vm_create_new_value_string_format(
+        return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin '%s' expects two arguments. "
             "%zu arguments were given.",
@@ -452,7 +452,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddBody(
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return octaspire_dern_vm_create_new_value_string_format(
+        return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin '%s' expects two arguments. "
             "%zu arguments were given.",
@@ -505,6 +505,79 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddBody(
     return cDataOrError.cData;
 }
 
+octaspire_dern_value_t *dern_chipmunk_cpSpaceContainsBody(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpSpaceContainsBody";
+    char   const * const cpSpaceName  = "cpSpace";
+    char   const * const cpBodyName   = "cpBody";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects two arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpSpace
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpSpaceName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpSpace * const space = cDataOrError.cData;
+
+    // cpBody
+
+    cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName,
+            cpBodyName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpBody * const body = cDataOrError.cData;
+
+    return octaspire_dern_vm_create_new_value_boolean(
+        vm,
+        cpSpaceContainsBody(space, body));
+}
+
 octaspire_dern_value_t *dern_chipmunk_cpv(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -519,7 +592,7 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
     if (numArgs != 2)
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_string_format(
+        return octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin 'chipmunk-cpv' expects two arguments. "
             "%zu arguments were given.",
@@ -807,6 +880,40 @@ bool dern_chipmunk_init(
             "\tchipmunk-cpSpaceNew\n"
             "\tchipmunk-cpSpaceStep\n"
             "\tchipmunk-cpSpaceSetGravity\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpSpaceContainsBody",
+            dern_chipmunk_cpSpaceContainsBody,
+            1,
+            "NAME\n"
+            "\tchipmunk-cpSpaceContainsBody\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpSpaceContainsBody cpSpace cpBody) -> true, false or error message\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tTest if a rigid body cpBody has been added into the chipmunk space cpSpace.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tcpSpace       the cpSpace where to look for the body\n"
+            "\tcpBody        the cpBody to be looked for.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue if it is added, false if not, or an error message on error\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpSpaceNew\n"
+            "\tchipmunk-cpSpaceAddBody\n"
+            "\tchipmunk-cpSpaceSetGravity\n"
+            "\tchipmunk-cpSpaceStep\n",
             false,
             targetEnv))
     {

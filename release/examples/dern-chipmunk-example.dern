@@ -5,7 +5,9 @@
 (println space)
 (println gravity)
 (define body as (chipmunk-cpBodyNew {D+100} {D+0.1}) [a body])
+(println [body is in the space before addition? {}] (chipmunk-cpSpaceContainsBody space body))
 (chipmunk-cpSpaceAddBody space body)
+(println [body is in the space after addition?  {}] (chipmunk-cpSpaceContainsBody space body))
 
 (for i from {D+0} to {D+50}
      (chipmunk-cpSpaceStep space {D+0.01})
