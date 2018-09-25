@@ -1,7 +1,12 @@
 (require 'dern_chipmunk)
 (define space   as (chipmunk-cpSpaceNew)        [Chipmunk space])
-(define gravity as (chipmunk-cpv {D+0} {D-100}) [Gravity vector])
+(define gravity as (chipmunk-cpv {D+0} {D-10}) [Gravity vector])
 (chipmunk-cpSpaceSetGravity space gravity)
 (println space)
 (println gravity)
-(println (chipmunk-cpBodyNew {D+100} {D+0}))
+(define body as (chipmunk-cpBodyNew {D+100} {D+0.1}) [a body])
+(chipmunk-cpSpaceAddBody space body)
+
+(for i from {D+0} to {D+50}
+     (chipmunk-cpSpaceStep space {D+0.01})
+     (println body))
