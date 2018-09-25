@@ -34,6 +34,12 @@ void dern_chipmunk_cpSpace_clean_up_callback(void *payload)
     cpSpaceFree((cpSpace*)payload);
 }
 
+void dern_chipmunk_cpBody_clean_up_callback(void *payload)
+{
+    octaspire_helpers_verify_not_null(payload);
+    cpBodyDestroy((cpBody*)payload);
+}
+
 void dern_chipmunk_cpVect_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
@@ -98,6 +104,79 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
         "dern_chipmunk_to_string",
         false,
         space);
+
+    return result;
+}
+
+octaspire_dern_value_t *dern_chipmunk_cpBodyNew(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_string_format(
+            vm,
+            "Builtin 'chipmunk-cpBodyNew' expects two arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const firstArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+    octaspire_helpers_verify_not_null(firstArg);
+
+    if (!octaspire_dern_value_is_number(firstArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'chipmunk-cpBodyNew' expects number for the mass of "
+            "the new body  as the first argument. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+    }
+
+    float const mass = octaspire_dern_value_as_number_get_value(firstArg);
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_number(secondArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'chipmunk-cpBodyNew' expects number for the moment of "
+            "the new body  as the second argument. Type '%s' was given.",
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    float const moment = octaspire_dern_value_as_number_get_value(secondArg);
+
+    cpBody * const body = cpBodyNew(mass, moment);
+
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_CHIPMUNK_PLUGIN_NAME,
+        "cpBody",
+        "dern_chipmunk_cpBody_clean_up_callback",
+        "",
+        "",
+        "",
+        "dern_chipmunk_to_string",
+        false,
+        body);
 
     return result;
 }
@@ -434,6 +513,38 @@ bool dern_chipmunk_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
+            "chipmunk-cpBodyNew",
+            dern_chipmunk_cpBodyNew,
+            0,
+            "NAME\n"
+            "\tchipmunk-cpBodyNew\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpBodyNew) -> cpBody or error message\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tCreates and returns a new cpBody.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tmass     the scalar mass of the new body\n"
+            "\tmoment   the scalar moment of the new body\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tcpBody to be used with those functions of this library that\n"
+            "\texpect cpBody argument.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpSpaceNew\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
             "chipmunk-cpSpaceSetGravity",
             dern_chipmunk_cpSpaceSetGravity,
             2,
@@ -570,6 +681,23 @@ void * dern_chipmunk_to_string(
             space->gravity.x,
             space->gravity.y,
             space->damping);
+    }
+    else if (octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            "cpBody"))
+    {
+        cpBody const * const body = cData->payload;
+
+        octaspire_helpers_verify_not_null(body);
+
+        cpVect const pos = cpBodyGetPosition(body);
+
+        return octaspire_string_new_format(
+            octaspire_dern_vm_get_allocator(vm),
+            "cpBody at: (%f, %f)",
+            pos.x,
+            pos.y);
     }
     else
     {

@@ -4,3 +4,4 @@
 (chipmunk-cpSpaceSetGravity space gravity)
 (println space)
 (println gravity)
+(println (chipmunk-cpBodyNew {D+100} {D+0}))
