@@ -5,6 +5,9 @@
 (println space)
 (println gravity)
 (define body as (chipmunk-cpBodyNew {D+100} {D+0.1}) [a body])
+(define shape as (chipmunk-cpCircleShapeNew body {D+1} (chipmunk-cpv {D+0} {D+0})) [circle collision shape])
+(println shape)
+
 (println [body is in the space before addition? {}] (chipmunk-cpSpaceContainsBody space body))
 (chipmunk-cpSpaceAddBody space body)
 (println [body is in the space after addition?  {}] (chipmunk-cpSpaceContainsBody space body))
