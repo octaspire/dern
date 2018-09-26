@@ -12,3 +12,6 @@
 (for i from {D+0} to {D+50}
      (chipmunk-cpSpaceStep space {D+0.01})
      (println body))
+
+(chipmunk-cpSpaceRemoveBody space body)
+(println [body is in the space after removal?  {}] (chipmunk-cpSpaceContainsBody space body))

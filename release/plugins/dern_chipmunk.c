@@ -505,6 +505,79 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddBody(
     return cDataOrError.cData;
 }
 
+octaspire_dern_value_t *dern_chipmunk_cpSpaceRemoveBody(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpSpaceRemoveBody";
+    char   const * const cpSpaceName  = "cpSpace";
+    char   const * const cpBodyName   = "cpBody";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects two arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpSpace
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpSpaceName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpSpace * const space = cDataOrError.cData;
+
+    // cpBody
+
+    cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName,
+            cpBodyName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpBody * const body = cDataOrError.cData;
+
+    cpSpaceRemoveBody(space, body);
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
 octaspire_dern_value_t *dern_chipmunk_cpSpaceContainsBody(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -880,6 +953,37 @@ bool dern_chipmunk_init(
             "\tchipmunk-cpSpaceNew\n"
             "\tchipmunk-cpSpaceStep\n"
             "\tchipmunk-cpSpaceSetGravity\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpSpaceRemoveBody",
+            dern_chipmunk_cpSpaceRemoveBody,
+            1,
+            "NAME\n"
+            "\tchipmunk-cpSpaceRemoveBody\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpSpaceRemoveBody cpSpace cpBody) -> true or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tRemove a rigid body cpBody from the simulation.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tcpSpace       the cpSpace where the body is to be removed.\n"
+            "\tcpBody        the cpBody to be removed from the simulation.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue or an error\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpSpaceAddBody\n",
             false,
             targetEnv))
     {
