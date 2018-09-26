@@ -181,6 +181,88 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyNew(
     return result;
 }
 
+octaspire_dern_value_t *dern_chipmunk_cpBodyNewStatic(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'chipmunk-cpBodyNewStatic' expects no arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    cpBody * const body = cpBodyNewStatic();
+
+    octaspire_helpers_verify_not_null(body);
+
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_CHIPMUNK_PLUGIN_NAME,
+        "cpBody",
+        "dern_chipmunk_cpBody_clean_up_callback",
+        "",
+        "",
+        "",
+        "dern_chipmunk_to_string",
+        false,
+        body);
+
+    return result;
+}
+
+octaspire_dern_value_t *dern_chipmunk_cpBodyNewKinematic(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'chipmunk-cpBodyNewKinematic' expects no arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    cpBody * const body = cpBodyNewKinematic();
+
+    octaspire_helpers_verify_not_null(body);
+
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_CHIPMUNK_PLUGIN_NAME,
+        "cpBody",
+        "dern_chipmunk_cpBody_clean_up_callback",
+        "",
+        "",
+        "",
+        "dern_chipmunk_to_string",
+        false,
+        body);
+
+    return result;
+}
+
 octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -804,14 +886,14 @@ bool dern_chipmunk_init(
             vm,
             "chipmunk-cpBodyNew",
             dern_chipmunk_cpBodyNew,
-            0,
+            2,
             "NAME\n"
             "\tchipmunk-cpBodyNew\n"
             "\n"
             "SYNOPSIS\n"
             "\t(require 'dern_chipmunk)\n"
             "\n"
-            "\t(chipmunk-cpBodyNew) -> cpBody or error message\n"
+            "\t(chipmunk-cpBodyNew mass moment) -> cpBody or error message\n"
             "\n"
             "DESCRIPTION\n"
             "\tCreates and returns a new cpBody.\n"
@@ -826,6 +908,68 @@ bool dern_chipmunk_init(
             "\n"
             "SEE ALSO\n"
             "\tchipmunk-cpSpaceNew\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpBodyNewStatic",
+            dern_chipmunk_cpBodyNewStatic,
+            0,
+            "NAME\n"
+            "\tchipmunk-cpBodyNewStatic\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpBodyNewStatic) -> cpBody or error message\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tCreates and returns a new static cpBody.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tcpBody to be used with those functions of this library that\n"
+            "\texpect cpBody argument.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpBodyNew\n"
+            "\tchipmunk-cpBodyNewKinematic\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpBodyNewKinematic",
+            dern_chipmunk_cpBodyNewKinematic,
+            0,
+            "NAME\n"
+            "\tchipmunk-cpBodyNewKinematic\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpBodyNewKinematic) -> cpBody or error message\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tCreates and returns a new kinematic cpBody.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tcpBody to be used with those functions of this library that\n"
+            "\texpect cpBody argument.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpBodyNew\n"
+            "\tchipmunk-cpBodyNewStatic\n",
             false,
             targetEnv))
     {
