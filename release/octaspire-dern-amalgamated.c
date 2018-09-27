@@ -25638,7 +25638,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "406"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "407"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -50586,6 +50586,8 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                             self,
                             arguments,
                             environment);
+
+                        octaspire_helpers_verify_not_null(result);
 
                         // TODO XXX add this error annotation to other places too
                         // (for example builtin and function calls)

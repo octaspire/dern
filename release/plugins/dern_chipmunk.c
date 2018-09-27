@@ -444,7 +444,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBoxShapeNew(
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return numberOrError.unpushedError;
     }
 
     float const width = numberOrError.number;
@@ -462,7 +462,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBoxShapeNew(
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return numberOrError.unpushedError;
     }
 
     float const height = numberOrError.number;
@@ -480,7 +480,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBoxShapeNew(
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return numberOrError.unpushedError;
     }
 
     float const radius = numberOrError.number;

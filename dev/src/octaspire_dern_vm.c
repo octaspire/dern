@@ -3498,6 +3498,8 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                             arguments,
                             environment);
 
+                        octaspire_helpers_verify_not_null(result);
+
                         // TODO XXX add this error annotation to other places too
                         // (for example builtin and function calls)
                         if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
