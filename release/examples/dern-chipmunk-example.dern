@@ -5,8 +5,10 @@
 (println space)
 (println gravity)
 (define body as (chipmunk-cpBodyNew {D+100} {D+0.1}) [a body])
-(define shape as (chipmunk-cpCircleShapeNew body {D+1} (chipmunk-cpv {D+0} {D+0})) [circle collision shape])
-(println shape)
+(define circleShape as (chipmunk-cpCircleShapeNew body {D+1} (chipmunk-cpv {D+0} {D+0})) [circle collision shape])
+(define boxShape    as (chipmunk-cpBoxShapeNew body {D+1} {D+1} {D+0.1}) [box shaped polygon collision shape])
+(println circleShape)
+(println boxShape)
 
 (println [body is in the space before addition? {}] (chipmunk-cpSpaceContainsBody space body))
 (chipmunk-cpSpaceAddBody space body)

@@ -600,6 +600,13 @@ typedef struct octaspire_dern_c_data_or_unpushed_error_t
 }
 octaspire_dern_c_data_or_unpushed_error_t;
 
+typedef struct octaspire_dern_number_or_unpushed_error_t
+{
+    float                    number;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_number_or_unpushed_error_t;
+
 octaspire_dern_c_data_or_unpushed_error_t
 octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
     octaspire_dern_value_t const * const self,
@@ -607,6 +614,12 @@ octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
     char const * const dernFuncName,
     char const * const cDataName,
     char const * const pluginName);
+
+octaspire_dern_number_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName);
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
     octaspire_dern_value_t * const self,

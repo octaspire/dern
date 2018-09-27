@@ -384,6 +384,129 @@ octaspire_dern_value_t *dern_chipmunk_cpCircleShapeNew(
     return result;
 }
 
+octaspire_dern_value_t *dern_chipmunk_cpBoxShapeNew(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpBoxShapeNew";
+    char   const * const cpBodyName   = "cpBody";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 4)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects four arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpBody
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpBodyName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpBody * const body = cDataOrError.cData;
+
+    // width
+
+    octaspire_dern_number_or_unpushed_error_t numberOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName);
+
+    if (numberOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    float const width = numberOrError.number;
+
+    // height
+
+    numberOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+            arguments,
+            2,
+            dernFuncName);
+
+    if (numberOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    float const height = numberOrError.number;
+
+    // (bevel) radius
+
+    numberOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+            arguments,
+            3,
+            dernFuncName);
+
+    if (numberOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    float const radius = numberOrError.number;
+
+    // Create the shape.
+
+    cpShape * const shape = cpBoxShapeNew(body, width, height, radius);
+
+    octaspire_helpers_verify_not_null(shape);
+
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_CHIPMUNK_PLUGIN_NAME,
+        "cpShape",
+        "dern_chipmunk_cpShape_clean_up_callback",
+        "",
+        "",
+        "",
+        "dern_chipmunk_to_string",
+        false,
+        shape);
+
+    return result;
+}
+
 octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1124,6 +1247,40 @@ bool dern_chipmunk_init(
             "\n"
             "SEE ALSO\n"
             "\tchipmunk-cpBodyNew\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpBoxShapeNew",
+            dern_chipmunk_cpBoxShapeNew,
+            4,
+            "NAME\n"
+            "\tchipmunk-cpBoxShapeNew\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpBoxShapeNew cpBody width height radius) -> cpShape or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tCreates, attaches and returns a new box shaped polygon collision shape.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tcpBody shape is attached into this body at the center of gravity\n"
+            "\twidth  width  of the box shape.\n"
+            "\theight height of the box shape.\n"
+            "\tradius radius to bevel the corners of the box.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tcpShape to be used with those functions of this library that\n"
+            "\texpect cpShape argument.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpCircleShapeNew\n",
             false,
             targetEnv))
     {

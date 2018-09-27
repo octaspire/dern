@@ -25638,7 +25638,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "405"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "406"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -26600,6 +26600,13 @@ typedef struct octaspire_dern_c_data_or_unpushed_error_t
 }
 octaspire_dern_c_data_or_unpushed_error_t;
 
+typedef struct octaspire_dern_number_or_unpushed_error_t
+{
+    float                    number;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_number_or_unpushed_error_t;
+
 octaspire_dern_c_data_or_unpushed_error_t
 octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
     octaspire_dern_value_t const * const self,
@@ -26607,6 +26614,12 @@ octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
     char const * const dernFuncName,
     char const * const cDataName,
     char const * const pluginName);
+
+octaspire_dern_number_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName);
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
     octaspire_dern_value_t * const self,
@@ -46280,9 +46293,10 @@ octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
         result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
             vm,
             "Builtin '%s' expects C data '%s' as "
-            "first argument. Type '%s' was given.",
+            "%i. argument. Type '%s' was given.",
             dernFuncName,
             cDataName,
+            possiblyNegativeIndex,
             octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
 
         octaspire_helpers_verify_true(
@@ -46302,11 +46316,12 @@ octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             vm,
             "Builtin '%s' "
             "expects '%s' and '%s' as "
-            "plugin name and payload type name for the C data of the first "
+            "plugin name and payload type name for the C data of the %d. "
             "argument. Names '%s' and '%s' were given.",
             dernFuncName,
             pluginName,
             cDataName,
+            possiblyNegativeIndex,
             octaspire_dern_c_data_get_plugin_name(cData),
             octaspire_dern_c_data_get_payload_typename(cData));
 
@@ -46317,6 +46332,46 @@ octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
     }
 
     result.cData = octaspire_dern_c_data_get_payload(cData);
+    return result;
+}
+
+octaspire_dern_number_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_number_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t const * const arg =
+        octaspire_dern_value_as_vector_get_element_at_const(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects number as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.number = octaspire_dern_value_as_number_get_value(arg);
     return result;
 }
 
