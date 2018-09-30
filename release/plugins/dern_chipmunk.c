@@ -688,6 +688,86 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceGetGravity(
     return result;
 }
 
+octaspire_dern_value_t *dern_chipmunk_cpBodySetVelocity(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpBodySetVelocity";
+    char   const * const cpBodyName   = "cpBody";
+    char   const * const cpVectName   = "cpVect";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects two arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpBody
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpBodyName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpBody * const body = cDataOrError.cData;
+
+    // cpVect
+
+    cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName,
+            cpVectName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    dern_chipmunk_allocation_context_t const * const context =
+        cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(context);
+
+    cpVect const * const velocity = context->payload;
+
+    // Set the velocity of the body.
+
+    cpBodySetVelocity(body, *velocity);
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
 octaspire_dern_value_t *dern_chipmunk_cpSpaceStep(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1343,6 +1423,39 @@ bool dern_chipmunk_init(
             "SEE ALSO\n"
             "\tchipmunk-cpSpaceNew\n"
             "\tchipmunk-cpSpaceSetGravity\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpBodySetVelocity",
+            dern_chipmunk_cpBodySetVelocity,
+            2,
+            "NAME\n"
+            "\tchipmunk-cpBodySetVelocity\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpBodySetVelocity body velocity) -> true or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tSets the velocity of the given cpBody. Note, that usually\n"
+            "\twhen dealing with dynamic bodies, you should use impulses\n"
+            "and not set the velocity of the body directly.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tbody       the target cpBody\n"
+            "\tvelocity   the cpVect velocity 2D vector\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue or error if something went wrong\n"
+            "\n"
+            "SEE ALSO\n"
+            "",
             false,
             targetEnv))
     {
