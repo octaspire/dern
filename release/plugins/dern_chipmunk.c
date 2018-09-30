@@ -1445,7 +1445,7 @@ bool dern_chipmunk_init(
             "DESCRIPTION\n"
             "\tSets the velocity of the given cpBody. Note, that usually\n"
             "\twhen dealing with dynamic bodies, you should use impulses\n"
-            "and not set the velocity of the body directly.\n"
+            "\tand not set the velocity of the body directly.\n"
             "\n"
             "ARGUMENTS\n"
             "\tbody       the target cpBody\n"
