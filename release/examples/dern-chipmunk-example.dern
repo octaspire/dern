@@ -7,11 +7,14 @@
 (define body as (chipmunk-cpBodyNew {D+100} {D+0.1}) [a body])
 (define kinematic as (chipmunk-cpBodyNewKinematic) [a kinematic body])
 (chipmunk-cpSpaceAddBody space kinematic)
-(chipmunk-cpBodySetVelocity kinematic (chipmunk-cpv {D+0.1} {D+0}))
 (define circleShape as (chipmunk-cpCircleShapeNew body {D+1} (chipmunk-cpv {D+0} {D+0})) [circle collision shape])
 (define boxShape    as (chipmunk-cpBoxShapeNew body {D+1} {D+1} {D+0.1}) [box shaped polygon collision shape])
 (println circleShape)
 (println boxShape)
+
+(chipmunk-cpBodySetVelocity kinematic (chipmunk-cpv {D+0.1} {D+0}))
+(chipmunk-cpBodyApplyForceAtLocalPoint   body (chipmunk-cpv {D+1}   {D+1}) (chipmunk-cpv {D+0} {D+0}))
+(chipmunk-cpBodyApplyImpulseAtLocalPoint body (chipmunk-cpv {D+0.1} {D+0}) (chipmunk-cpv {D+0} {D+0}))
 
 (println [body is in the space before addition? {}] (chipmunk-cpSpaceContainsBody space body))
 (chipmunk-cpSpaceAddBody space body)
