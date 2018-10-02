@@ -2079,6 +2079,39 @@ bool dern_chipmunk_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
+            "chipmunk-cpSpaceAddWildCardHandler",
+            dern_chipmunk_cpSpaceAddWildCardHandler,
+            1,
+            "NAME\n"
+            "\tchipmunk-cpSpaceAddWildCardHandler\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpSpaceAddWildCardHandler cpSpace collisionType postSolveFun separateFun) -> true or an error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tAdd collision callbacks for collisions of collisionType with anything.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tcpSpace       the cpSpace where the callbacks are added.\n"
+            "\tcollisionType the type that collides with something.\n"
+            "\tpostSolveFun  the postSolve callback function.\n"
+            "\tseparateFun   the separate  callback function.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue or an error.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\t\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
             "chipmunk-cpSpaceRemoveBody",
             dern_chipmunk_cpSpaceRemoveBody,
             1,
