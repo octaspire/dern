@@ -16,6 +16,9 @@
 (chipmunk-cpBodyApplyForceAtLocalPoint   body (chipmunk-cpv {D+1}   {D+1}) (chipmunk-cpv {D+0} {D+0}))
 (chipmunk-cpBodyApplyImpulseAtLocalPoint body (chipmunk-cpv {D+0.1} {D+0}) (chipmunk-cpv {D+0} {D+0}))
 
+(chipmunk-cpBodyApplyForceAtWorldPoint   body (chipmunk-cpv {D+1}   {D+1}) (chipmunk-cpv {D+0} {D+0}))
+(chipmunk-cpBodyApplyImpulseAtWorldPoint body (chipmunk-cpv {D+1}   {D+1}) (chipmunk-cpv {D+0} {D+0}))
+
 (println [body is in the space before addition? {}] (chipmunk-cpSpaceContainsBody space body))
 (chipmunk-cpSpaceAddBody space body)
 (println [body is in the space after addition?  {}] (chipmunk-cpSpaceContainsBody space body))

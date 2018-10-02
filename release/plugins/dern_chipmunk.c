@@ -872,6 +872,110 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtLocalPoint(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtWorldPoint(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpBodyApplyImpulseAtWorldPoint";
+    char   const * const cpBodyName   = "cpBody";
+    char   const * const cpVectName   = "cpVect";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 3)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects three arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpBody
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpBodyName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpBody * const body = cDataOrError.cData;
+
+    // cpVect for the impulse
+
+    cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName,
+            cpVectName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    dern_chipmunk_allocation_context_t const * context =
+        cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(context);
+
+    cpVect const * const impulse = context->payload;
+
+    // cpVect for the point
+
+    cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            2,
+            dernFuncName,
+            cpVectName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    context = cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(context);
+
+    cpVect const * const point = context->payload;
+
+    // Apply the impulse
+
+    cpBodyApplyImpulseAtWorldPoint(body, *impulse, *point);
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
 octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtLocalPoint(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -972,6 +1076,110 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtLocalPoint(
     // Apply the force
 
     cpBodyApplyForceAtLocalPoint(body, *force, *point);
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtWorldPoint(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpBodyApplyForceAtWorldPoint";
+    char   const * const cpBodyName   = "cpBody";
+    char   const * const cpVectName   = "cpVect";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 3)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects three arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpBody
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpBodyName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpBody * const body = cDataOrError.cData;
+
+    // cpVect for the force
+
+    cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName,
+            cpVectName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    dern_chipmunk_allocation_context_t const * context =
+        cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(context);
+
+    cpVect const * const force = context->payload;
+
+    // cpVect for the point
+
+    cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            2,
+            dernFuncName,
+            cpVectName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    context = cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(context);
+
+    cpVect const * const point = context->payload;
+
+    // Apply the force
+
+    cpBodyApplyForceAtWorldPoint(body, *force, *point);
 
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
@@ -1652,8 +1860,8 @@ bool dern_chipmunk_init(
             "\n"
             "DESCRIPTION\n"
             "\tSets the velocity of the given cpBody. Note, that usually\n"
-            "\twhen dealing with dynamic bodies, you should use impulses\n"
-            "\tand not set the velocity of the body directly.\n"
+            "\twhen dealing with dynamic bodies, you should use forces or\n"
+            "\timpulses and not set the velocity of the body directly.\n"
             "\n"
             "ARGUMENTS\n"
             "\tbody       the target cpBody\n"
@@ -1705,6 +1913,40 @@ bool dern_chipmunk_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
+            "chipmunk-cpBodyApplyImpulseAtWorldPoint",
+            dern_chipmunk_cpBodyApplyImpulseAtWorldPoint,
+            3,
+            "NAME\n"
+            "\tchipmunk-cpBodyApplyImpulseAtWorldPoint\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpBodyApplyImpulseAtWorldPoint body impulse point) -> true or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tApply impulse to body as if applied from world position point.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tbody       the target cpBody\n"
+            "\timpulse    the cpVect impulse to apply\n"
+            "\tpoint      the cpVect world point from which the impulse is applied\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue or error if something went wrong\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpBodyApplyForceAtLocalPoint\n"
+            "\tchipmunk-cpBodyApplyForceAtWorldPoint\n"
+            "\tchipmunk-cpBodySetVelocity\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
             "chipmunk-cpBodyApplyForceAtLocalPoint",
             dern_chipmunk_cpBodyApplyForceAtLocalPoint,
             3,
@@ -1729,6 +1971,40 @@ bool dern_chipmunk_init(
             "\n"
             "SEE ALSO\n"
             "\tchipmunk-cpBodyApplyImpulseAtLocalPoint\n"
+            "\tchipmunk-cpBodySetVelocity\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpBodyApplyForceAtWorldPoint",
+            dern_chipmunk_cpBodyApplyForceAtWorldPoint,
+            3,
+            "NAME\n"
+            "\tchipmunk-cpBodyApplyForceAtWorldPoint\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpBodyApplyForceAtWorldPoint body force point) -> true or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tApply force to body as if applied from world point point.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tbody       the target cpBody\n"
+            "\tforce      the cpVect force to apply\n"
+            "\tpoint      the cpVect world point from which the force is applied\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue or error if something went wrong\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpBodyApplyImpulseAtLocalPoint\n"
+            "\tchipmunk-cpBodyApplyForceAtLocalPoint\n"
             "\tchipmunk-cpBodySetVelocity\n",
             false,
             targetEnv))
