@@ -1327,6 +1327,116 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddBody(
     return cDataOrError.cData;
 }
 
+octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpSpaceAddWildCardHandler";
+    char   const * const cpSpaceName  = "cpSpace";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 4)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects two arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpSpace
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpSpaceName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpSpace * const space = cDataOrError.cData;
+
+    // Collision type
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_number(secondArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects number for the collision type "
+            "as the second argument. Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    cpCollisionType const collisionType =
+        octaspire_dern_value_as_number_get_value(secondArg);
+
+    // (Lambda) function for postSolve callback
+
+    octaspire_dern_value_t const * const thirdArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+
+    octaspire_helpers_verify_not_null(thirdArg);
+
+    if (!octaspire_dern_value_is_function(thirdArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects function for the postSolve callback"
+            "as the third argument. Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(thirdArg->typeTag));
+    }
+
+    // (Lambda) function for separate callback
+
+    octaspire_dern_value_t const * const fourthArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 3);
+
+    octaspire_helpers_verify_not_null(fourthArg);
+
+    if (!octaspire_dern_value_is_function(fourthArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects function for the separate callback"
+            "as the fourth argument. Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(fourthArg->typeTag));
+    }
+
+    // TODO XXX continue from here. Save dern (lambda) callback functions
+    // into a wildcards-map using collisionType as a key.
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
 octaspire_dern_value_t *dern_chipmunk_cpSpaceRemoveBody(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2289,6 +2399,39 @@ void * dern_chipmunk_to_string(
             "Dern_chipmunk: not chipmunk C data.",
             octaspire_dern_vm_get_allocator(vm));
     }
+}
+
+bool dern_chipmunk_mark_all(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_environment_t * const targetEnv)
+{
+    octaspire_helpers_verify_true(vm && targetEnv);
+
+    // TODO XXX implement.
+    octaspire_map_element_iterator_t iterator =
+        octaspire_map_element_iterator_init(dern_animation_private_animations);
+
+    while (iterator.element)
+    {
+        octaspire_dern_animation_t * const animation =
+            (octaspire_dern_animation_t * const)octaspire_map_element_get_value(
+                iterator.element);
+
+        octaspire_helpers_verify_not_null(animation);
+
+        octaspire_dern_value_mark(animation->targetValueSrcX);
+        octaspire_dern_value_mark(animation->targetValueSrcY);
+        octaspire_dern_value_mark(animation->targetValueSrcW);
+        octaspire_dern_value_mark(animation->targetValueSrcH);
+        octaspire_dern_value_mark(animation->targetValueDstX);
+        octaspire_dern_value_mark(animation->targetValueDstY);
+        octaspire_dern_value_mark(animation->targetValueDstW);
+        octaspire_dern_value_mark(animation->targetValueDstH);
+
+        octaspire_map_element_iterator_next(&iterator);
+    }
+
+    return true;
 }
 
 bool dern_chipmunk_clean(
