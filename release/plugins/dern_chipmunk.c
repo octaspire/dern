@@ -28,6 +28,60 @@ typedef struct dern_chipmunk_allocation_context_t
 }
 dern_chipmunk_allocation_context_t;
 
+
+
+typedef struct dern_chipmunk_collision_wildcard_context_t
+{
+    octaspire_allocator_t  *allocator;
+    octaspire_dern_vm_t    *vm;
+    octaspire_dern_value_t *postSolveCallback;
+    octaspire_dern_value_t *separateCallback;
+    cpCollisionType         collisionType;
+}
+dern_chipmunk_collision_wildcard_context_t;
+
+dern_chipmunk_collision_wildcard_context_t *
+dern_chipmunk_collision_wildcard_context_new(
+    octaspire_dern_vm_t    * const vm,
+    octaspire_dern_value_t * const postSolveCallback,
+    octaspire_dern_value_t * const separateCallback,
+    cpCollisionType          const collisionType,
+    octaspire_allocator_t  * const allocator)
+{
+    dern_chipmunk_collision_wildcard_context_t * self =
+        octaspire_allocator_malloc(
+            allocator,
+            sizeof(dern_chipmunk_collision_wildcard_context_t));
+
+    if (!self)
+    {
+        return 0;
+    }
+
+    self->allocator         = allocator;
+    self->vm                = vm;
+    self->postSolveCallback = postSolveCallback;
+    self->separateCallback  = separateCallback;
+    self->collisionType     = collisionType;
+
+    return self;
+}
+
+void dern_chipmunk_collision_wildcard_context_release(
+    dern_chipmunk_collision_wildcard_context_t * self)
+{
+    if (!self)
+    {
+        return;
+    }
+
+    octaspire_allocator_free(self->allocator, self);
+}
+
+static octaspire_map_t * dern_chipmunk_private_collision_wildcard_contexts = 0;
+
+
+
 void dern_chipmunk_cpSpace_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
@@ -1700,6 +1754,21 @@ bool dern_chipmunk_init(
 
     if (!dern_chipmunk_private_lib_name)
     {
+        return false;
+    }
+
+    dern_chipmunk_private_collision_wildcard_contexts =
+        octaspire_map_new_with_size_t_keys(
+            sizeof(dern_chipmunk_collision_wildcard_context_t*),
+            true,
+            (octaspire_map_element_callback_t)
+                dern_chipmunk_collision_wildcard_context_release,
+            octaspire_dern_vm_get_allocator(vm));
+
+    if (!dern_chipmunk_private_collision_wildcard_contexts)
+    {
+        octaspire_string_release(dern_chipmunk_private_lib_name);
+        dern_chipmunk_private_lib_name = 0;
         return false;
     }
 
