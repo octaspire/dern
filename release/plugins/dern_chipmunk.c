@@ -1381,11 +1381,20 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddBody(
     return cDataOrError.cData;
 }
 
-static void dern_chipmunk_private_wildcard_handler(
+static void dern_chipmunk_private_wildcard_post_solve_handler(
     cpArbiter * arb,
     cpSpace   * space,
     void      * data)
 {
+    octaspire_helpers_verify_not_null(data);
+
+    dern_chipmunk_collision_wildcard_context_t * const context = data;
+    octaspire_dern_value_t * const value = context->postSolveCallback;
+
+    octaspire_helpers_verify_not_null(value);
+    octaspire_helpers_verify_true(octaspire_dern_value_is_function(value));
+
+    // TODO Call dern function.
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
@@ -1499,7 +1508,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
 
     octaspire_helpers_verify_not_null(handler);
 
-    handler->postSolveFunc = dern_chipmunk_private_wildcard_handler;
+    handler->postSolveFunc = dern_chipmunk_private_wildcard_post_solve_handler;
 
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
