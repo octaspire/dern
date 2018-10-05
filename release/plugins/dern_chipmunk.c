@@ -1381,6 +1381,13 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddBody(
     return cDataOrError.cData;
 }
 
+static void dern_chipmunk_private_wildcard_handler(
+    cpArbiter * arb,
+    cpSpace   * space,
+    void      * data)
+{
+}
+
 octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1487,6 +1494,12 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
 
     // TODO XXX continue from here. Save dern (lambda) callback functions
     // into a wildcards-map using collisionType as a key.
+    cpCollisionHandler * const handler =
+        cpSpaceAddWildcardHandler(space, collisionType);
+
+    octaspire_helpers_verify_not_null(handler);
+
+    handler->postSolveFunc = dern_chipmunk_private_wildcard_handler;
 
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
@@ -2478,24 +2491,20 @@ bool dern_chipmunk_mark_all(
 
     // TODO XXX implement.
     octaspire_map_element_iterator_t iterator =
-        octaspire_map_element_iterator_init(dern_animation_private_animations);
+        octaspire_map_element_iterator_init(
+            dern_chipmunk_private_collision_wildcard_contexts);
 
     while (iterator.element)
     {
-        octaspire_dern_animation_t * const animation =
-            (octaspire_dern_animation_t * const)octaspire_map_element_get_value(
+        dern_chipmunk_collision_wildcard_context_t * const wildcard =
+            (dern_chipmunk_collision_wildcard_context_t * const)
+            octaspire_map_element_get_value(
                 iterator.element);
 
-        octaspire_helpers_verify_not_null(animation);
+        octaspire_helpers_verify_not_null(wildcard);
 
-        octaspire_dern_value_mark(animation->targetValueSrcX);
-        octaspire_dern_value_mark(animation->targetValueSrcY);
-        octaspire_dern_value_mark(animation->targetValueSrcW);
-        octaspire_dern_value_mark(animation->targetValueSrcH);
-        octaspire_dern_value_mark(animation->targetValueDstX);
-        octaspire_dern_value_mark(animation->targetValueDstY);
-        octaspire_dern_value_mark(animation->targetValueDstW);
-        octaspire_dern_value_mark(animation->targetValueDstH);
+        octaspire_dern_value_mark(wildcard->postSolveCallback);
+        octaspire_dern_value_mark(wildcard->separateCallback);
 
         octaspire_map_element_iterator_next(&iterator);
     }
@@ -2508,6 +2517,9 @@ bool dern_chipmunk_clean(
     octaspire_dern_environment_t * const targetEnv)
 {
     octaspire_helpers_verify_true(vm && targetEnv);
+
+    octaspire_map_release(dern_chipmunk_private_collision_wildcard_contexts);
+    dern_chipmunk_private_collision_wildcard_contexts = 0;
 
     octaspire_string_release(dern_chipmunk_private_lib_name);
     dern_chipmunk_private_lib_name = 0;
