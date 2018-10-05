@@ -22,8 +22,8 @@
 (chipmunk-cpSpaceAddWildCardHandler
  space
  {D+0}
- (fn (todo) (println [kissa])[todo])
- (fn (todo) (println [kissa])[todo]))
+ (fn (todo) (println todo)[todo])
+ (fn (todo) (println todo)[todo]))
 
 (println [body is in the space before addition? {}] (chipmunk-cpSpaceContainsBody space body))
 (chipmunk-cpSpaceAddBody space body)
