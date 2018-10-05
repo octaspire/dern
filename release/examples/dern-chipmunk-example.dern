@@ -19,6 +19,12 @@
 (chipmunk-cpBodyApplyForceAtWorldPoint   body (chipmunk-cpv {D+1}   {D+1}) (chipmunk-cpv {D+0} {D+0}))
 (chipmunk-cpBodyApplyImpulseAtWorldPoint body (chipmunk-cpv {D+1}   {D+1}) (chipmunk-cpv {D+0} {D+0}))
 
+(chipmunk-cpSpaceAddWildCardHandler
+ space
+ {D+0}
+ (fn (todo) (println [kissa])[todo])
+ (fn (todo) (println [kissa])[todo]))
+
 (println [body is in the space before addition? {}] (chipmunk-cpSpaceContainsBody space body))
 (chipmunk-cpSpaceAddBody space body)
 (println [body is in the space after addition?  {}] (chipmunk-cpSpaceContainsBody space body))

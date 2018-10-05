@@ -34,6 +34,7 @@ typedef struct dern_chipmunk_collision_wildcard_context_t
 {
     octaspire_allocator_t  *allocator;
     octaspire_dern_vm_t    *vm;
+    octaspire_dern_value_t *environment;
     octaspire_dern_value_t *postSolveCallback;
     octaspire_dern_value_t *separateCallback;
     cpCollisionType         collisionType;
@@ -43,6 +44,7 @@ dern_chipmunk_collision_wildcard_context_t;
 dern_chipmunk_collision_wildcard_context_t *
 dern_chipmunk_collision_wildcard_context_new(
     octaspire_dern_vm_t    * const vm,
+    octaspire_dern_value_t * const environment,
     octaspire_dern_value_t * const postSolveCallback,
     octaspire_dern_value_t * const separateCallback,
     cpCollisionType          const collisionType,
@@ -60,6 +62,7 @@ dern_chipmunk_collision_wildcard_context_new(
 
     self->allocator         = allocator;
     self->vm                = vm;
+    self->environment       = environment;
     self->postSolveCallback = postSolveCallback;
     self->separateCallback  = separateCallback;
     self->collisionType     = collisionType;
@@ -1389,12 +1392,38 @@ static void dern_chipmunk_private_wildcard_post_solve_handler(
     octaspire_helpers_verify_not_null(data);
 
     dern_chipmunk_collision_wildcard_context_t * const context = data;
-    octaspire_dern_value_t * const value = context->postSolveCallback;
 
-    octaspire_helpers_verify_not_null(value);
-    octaspire_helpers_verify_true(octaspire_dern_value_is_function(value));
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(context->vm);
 
-    // TODO Call dern function.
+    octaspire_dern_value_t * const callbackValue = context->postSolveCallback;
+
+    octaspire_helpers_verify_not_null(callbackValue);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_value_is_function(callbackValue));
+
+    octaspire_dern_value_t * const arguments =
+        octaspire_dern_vm_create_new_value_vector(context->vm);
+
+    octaspire_dern_vm_push_value(context->vm, arguments);
+
+    octaspire_dern_value_t * const argument =
+        octaspire_dern_vm_create_new_value_string_from_c_string(
+            context->vm,
+            "TODO XXX return Dern bodies or shapes");
+
+    octaspire_dern_value_as_vector_push_back_element(argument, &argument);
+
+    octaspire_dern_vm_call_lambda(
+        context->vm,
+        octaspire_dern_value_as_function(callbackValue),
+        arguments,
+        context->environment);
+
+    octaspire_dern_vm_pop_value(context->vm, arguments);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(context->vm));
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
