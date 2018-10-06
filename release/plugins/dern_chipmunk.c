@@ -139,6 +139,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
     }
 
     cpSpace *space = cpSpaceNew();
+    cpSpaceSetIterations(space, 10);
 
     if (!space)
     {
@@ -548,6 +549,8 @@ octaspire_dern_value_t *dern_chipmunk_cpBoxShapeNew(
 
     octaspire_helpers_verify_not_null(shape);
 
+    cpShapeSetCollisionType(shape, 0); // TODO set from argument?
+
     octaspire_dern_value_t * const result =
         octaspire_dern_vm_create_new_value_c_data(
         vm,
@@ -821,6 +824,86 @@ octaspire_dern_value_t *dern_chipmunk_cpBodySetVelocity(
     // Set the velocity of the body.
 
     cpBodySetVelocity(body, *velocity);
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_chipmunk_cpBodySetPosition(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpBodySetPosition";
+    char   const * const cpBodyName   = "cpBody";
+    char   const * const cpVectName   = "cpVect";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects two arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpBody
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpBodyName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpBody * const body = cDataOrError.cData;
+
+    // cpVect
+
+    cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName,
+            cpVectName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    dern_chipmunk_allocation_context_t const * const context =
+        cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(context);
+
+    cpVect const * const position = context->payload;
+
+    // Set the position of the body.
+
+    cpBodySetPosition(body, *position);
 
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
@@ -2102,6 +2185,37 @@ bool dern_chipmunk_init(
             "\n"
             "SEE ALSO\n"
             "",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpBodySetPosition",
+            dern_chipmunk_cpBodySetPosition,
+            2,
+            "NAME\n"
+            "\tchipmunk-cpBodySetPosition\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpBodySetPosition body position) -> true or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tSets the position of the given cpBody.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tbody       the target cpBody\n"
+            "\tposition   the cpVect position 2D vector\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue or error if something went wrong\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpBodySetVelocity\n",
             false,
             targetEnv))
     {

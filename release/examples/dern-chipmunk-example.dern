@@ -1,50 +1,35 @@
 (require 'dern_chipmunk)
+
 (define space   as (chipmunk-cpSpaceNew)        [Chipmunk space])
 (define gravity as (chipmunk-cpv {D+0} {D-10}) [Gravity vector])
 (chipmunk-cpSpaceSetGravity space gravity)
-(println space)
-(println gravity)
-(define body as (chipmunk-cpBodyNew {D+100} {D+0.1}) [a body])
-(define kinematic as (chipmunk-cpBodyNewKinematic) [a kinematic body])
-(chipmunk-cpSpaceAddBody space kinematic)
-(define circleShape as (chipmunk-cpCircleShapeNew body {D+1} (chipmunk-cpv {D+0} {D+0})) [circle collision shape])
-(define boxShape    as (chipmunk-cpBoxShapeNew body {D+1} {D+1} {D+0.1}) [box shaped polygon collision shape])
-(println circleShape)
-(println boxShape)
 
-(chipmunk-cpBodySetVelocity kinematic (chipmunk-cpv {D+0.1} {D+0}))
-(chipmunk-cpBodyApplyForceAtLocalPoint   body (chipmunk-cpv {D+1}   {D+1}) (chipmunk-cpv {D+0} {D+0}))
-(chipmunk-cpBodyApplyImpulseAtLocalPoint body (chipmunk-cpv {D+0.1} {D+0}) (chipmunk-cpv {D+0} {D+0}))
+(define box    as (chipmunk-cpBodyNew       {D+100} {D+0.1}) [a body])
+(define ground as (chipmunk-cpBodyNewKinematic) [a body])
 
-(chipmunk-cpBodyApplyForceAtWorldPoint   body (chipmunk-cpv {D+1}   {D+1}) (chipmunk-cpv {D+0} {D+0}))
-(chipmunk-cpBodyApplyImpulseAtWorldPoint body (chipmunk-cpv {D+1}   {D+1}) (chipmunk-cpv {D+0} {D+0}))
+(chipmunk-cpBodySetPosition box (chipmunk-cpv {D+0} {D+10}))
 
+(define boxShape as
+  (chipmunk-cpBoxShapeNew box {D+0.25} {D+0.25} {D+0})
+  [box shaped polygon collision shape])
+
+(chipmunk-cpBodySetPosition ground (chipmunk-cpv {D+0} {D+0}))
+
+(define groundShape as
+  (chipmunk-cpBoxShapeNew ground {D+5} {D+5} {D+0})
+  [box shaped polygon collision shape])
+
+#!
 (chipmunk-cpSpaceAddWildCardHandler
  space
  {D+0}
  (fn (todo) (println todo)[todo])
  (fn (todo) (println todo)[todo]))
+!#
 
-(println [body is in the space before addition? {}] (chipmunk-cpSpaceContainsBody space body))
-(chipmunk-cpSpaceAddBody space body)
-(println [body is in the space after addition?  {}] (chipmunk-cpSpaceContainsBody space body))
+(chipmunk-cpSpaceAddBody space ground)
+(chipmunk-cpSpaceAddBody space box)
 
-(for i from {D+0} to {D+10}
-     (chipmunk-cpSpaceStep space {D+0.01})
-     (println [dynamic: {}  kinematic: {}] body kinematic))
-
-(chipmunk-cpSpaceRemoveBody space body)
-(println [body is in the space after removal?  {}] (chipmunk-cpSpaceContainsBody space body))
-(define body as (chipmunk-cpBodyNewStatic) [a static body])
-(chipmunk-cpSpaceAddBody space body)
-(for i from {D+0} to {D+10}
-     (chipmunk-cpSpaceStep space {D+0.01})
-     (println [dynamic: {}  kinematic: {}] body kinematic))
-
-(chipmunk-cpSpaceRemoveBody space body)
-(println [body is in the space after removal?  {}] (chipmunk-cpSpaceContainsBody space body))
-(define body as (chipmunk-cpBodyNewKinematic) [a kinematic body])
-(chipmunk-cpSpaceAddBody space body)
-(for i from {D+0} to {D+10}
-     (chipmunk-cpSpaceStep space {D+0.01})
-     (println [dynamic: {}  kinematic: {}] body kinematic))
+(for i from {D+0} to {D+500}
+     (chipmunk-cpSpaceStep space {D+0.005})
+     (println [box: {}  ground: {}] box ground))
