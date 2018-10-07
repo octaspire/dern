@@ -12,20 +12,19 @@
   [box shaped polygon collision shape])
 
 (define groundShape as
-  (chipmunk-cpBoxShapeNew ground {D+40} {D+1} {D+0})
+  (chipmunk-cpSegmentShapeNew ground (chipmunk-cpv {D-40} {D-10}) (chipmunk-cpv {D+40} {D-10}) {D+0})
   [box shaped polygon collision shape])
 
-#!
 (chipmunk-cpSpaceAddWildCardHandler
  space
  {D+0}
  (fn (todo) (println todo)[todo])
  (fn (todo) (println todo)[todo]))
-!#
 
 (chipmunk-cpSpaceAddBody space box)
 
-(chipmunk-cpBodySetPosition box (chipmunk-cpv {D+0} {D+15}))
+(chipmunk-cpBodySetPosition box    (chipmunk-cpv {D+10}  {D+125}))
+(chipmunk-cpBodySetPosition ground (chipmunk-cpv {D+0} {D-10}))
 
 (chipmunk-cpSpaceReindexStatic space)
 
