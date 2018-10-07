@@ -549,7 +549,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBoxShapeNew(
 
     octaspire_helpers_verify_not_null(shape);
 
-    cpShapeSetCollisionType(shape, 0); // TODO set from argument?
+    cpShapeSetCollisionType(shape, 1); // TODO set from argument?
 
     octaspire_dern_value_t * const result =
         octaspire_dern_vm_create_new_value_c_data(
@@ -641,6 +641,61 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
     cpVect const * const vect = context->payload;
 
     cpSpaceSetGravity(space, *vect);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_chipmunk_cpSpaceReindexStatic(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpSpaceReindexStatic";
+    char   const * const cpSpaceName  = "cpSpace";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects two arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpSpace
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpSpaceName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpSpace * const space = cDataOrError.cData;
+
+    cpSpaceReindexStatic(space);
 
     octaspire_helpers_verify_true(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
@@ -2115,6 +2170,37 @@ bool dern_chipmunk_init(
             "ARGUMENTS\n"
             "\tspace       the cpSpace where gravity is to be set\n"
             "\tgravity     the cpVect of the gravity to be set\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue or error message.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpSpaceNew\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpSpaceReindexStatic",
+            dern_chipmunk_cpSpaceReindexStatic,
+            1,
+            "NAME\n"
+            "\tchipmunk-cpSpaceReindexStatic\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpSpaceReindexStatic space) -> true or error message\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tUpdate the collision detection info for the static\n"
+            "\tshapes in the cpSpace.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tspace       the cpSpace where updates are done.\n"
             "\n"
             "RETURN VALUE\n"
             "\ttrue or error message.\n"
