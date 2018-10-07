@@ -154,10 +154,10 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
         return result;
     }
 
-    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-    octaspire_dern_value_t * const result =
-        octaspire_dern_vm_create_new_value_c_data(
+    return octaspire_dern_vm_create_new_value_c_data(
         vm,
         DERN_CHIPMUNK_PLUGIN_NAME,
         "cpSpace",
@@ -168,8 +168,6 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
         "dern_chipmunk_to_string",
         false,
         space);
-
-    return result;
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpBodyNew(
@@ -229,8 +227,10 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyNew(
 
     cpBody * const body = cpBodyNew(mass, moment);
 
-    octaspire_dern_value_t * const result =
-        octaspire_dern_vm_create_new_value_c_data(
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_c_data(
         vm,
         DERN_CHIPMUNK_PLUGIN_NAME,
         "cpBody",
@@ -241,8 +241,6 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyNew(
         "dern_chipmunk_to_string",
         false,
         body);
-
-    return result;
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpBodyNewStatic(
@@ -270,8 +268,10 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyNewStatic(
 
     octaspire_helpers_verify_not_null(body);
 
-    octaspire_dern_value_t * const result =
-        octaspire_dern_vm_create_new_value_c_data(
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_c_data(
         vm,
         DERN_CHIPMUNK_PLUGIN_NAME,
         "cpBody",
@@ -282,8 +282,6 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyNewStatic(
         "dern_chipmunk_to_string",
         false,
         body);
-
-    return result;
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpBodyNewKinematic(
@@ -311,8 +309,10 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyNewKinematic(
 
     octaspire_helpers_verify_not_null(body);
 
-    octaspire_dern_value_t * const result =
-        octaspire_dern_vm_create_new_value_c_data(
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_c_data(
         vm,
         DERN_CHIPMUNK_PLUGIN_NAME,
         "cpBody",
@@ -323,8 +323,6 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyNewKinematic(
         "dern_chipmunk_to_string",
         false,
         body);
-
-    return result;
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpCircleShapeNew(
@@ -426,8 +424,10 @@ octaspire_dern_value_t *dern_chipmunk_cpCircleShapeNew(
 
     octaspire_helpers_verify_not_null(shape);
 
-    octaspire_dern_value_t * const result =
-        octaspire_dern_vm_create_new_value_c_data(
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_c_data(
         vm,
         DERN_CHIPMUNK_PLUGIN_NAME,
         "cpShape",
@@ -438,8 +438,6 @@ octaspire_dern_value_t *dern_chipmunk_cpCircleShapeNew(
         "dern_chipmunk_to_string",
         false,
         shape);
-
-    return result;
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpBoxShapeNew(
@@ -551,8 +549,10 @@ octaspire_dern_value_t *dern_chipmunk_cpBoxShapeNew(
 
     cpShapeSetCollisionType(shape, 1); // TODO set from argument?
 
-    octaspire_dern_value_t * const result =
-        octaspire_dern_vm_create_new_value_c_data(
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_c_data(
         vm,
         DERN_CHIPMUNK_PLUGIN_NAME,
         "cpShape",
@@ -563,8 +563,144 @@ octaspire_dern_value_t *dern_chipmunk_cpBoxShapeNew(
         "dern_chipmunk_to_string",
         false,
         shape);
+}
 
-    return result;
+octaspire_dern_value_t *dern_chipmunk_cpSegmentShapeNew(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpSegmentShapeNew";
+    char   const * const cpBodyName   = "cpBody";
+    char   const * const cpVectName   = "cpVect";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 4)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects four arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpBody
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpBodyName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpBody * const body = cDataOrError.cData;
+
+    // cpVect for a
+
+    cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName,
+            cpVectName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    dern_chipmunk_allocation_context_t const * context =
+        cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(context);
+
+    cpVect const * const a = context->payload;
+
+    // cpVect for b
+
+    cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            2,
+            dernFuncName,
+            cpVectName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    context = cDataOrError.cData;
+    octaspire_helpers_verify_not_null(context);
+
+    cpVect const * const b = context->payload;
+
+    // Radius
+
+    octaspire_dern_number_or_unpushed_error_t numberOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+            arguments,
+            3,
+            dernFuncName);
+
+    if (numberOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return numberOrError.unpushedError;
+    }
+
+    float const radius = numberOrError.number;
+
+    // Create the shape.
+
+    cpShape * const shape = cpSegmentShapeNew(body, *a, *b, radius);
+
+    octaspire_helpers_verify_not_null(shape);
+
+    cpShapeSetCollisionType(shape, 1); // TODO set from argument?
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_CHIPMUNK_PLUGIN_NAME,
+        "cpShape",
+        "dern_chipmunk_cpShape_clean_up_callback",
+        "",
+        "",
+        "",
+        "dern_chipmunk_to_string",
+        false,
+        shape);
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
@@ -787,8 +923,10 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceGetGravity(
     context->vm      = vm;
     context->payload = vect;
 
-    octaspire_dern_value_t * const result =
-        octaspire_dern_vm_create_new_value_c_data(
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_c_data(
         vm,
         DERN_CHIPMUNK_PLUGIN_NAME,
         "cpVect",
@@ -799,8 +937,71 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceGetGravity(
         "dern_chipmunk_to_string",
         false,
         context);
+}
 
-    return result;
+octaspire_dern_value_t *dern_chipmunk_cpSpaceGetStaticBody(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpSpaceGetStaticBody";
+    char   const * const cpSpaceName  = "cpSpace";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects one argument. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpSpace
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpSpaceName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpSpace * const space = cDataOrError.cData;
+
+    octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    // Return the space provided static body.
+
+    return octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_CHIPMUNK_PLUGIN_NAME,
+        "cpBody",
+        "dern_chipmunk_cpBody_clean_up_callback",
+        "",
+        "",
+        "",
+        "dern_chipmunk_to_string",
+        false,
+        cpSpaceGetStaticBody(space));
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpBodySetVelocity(
@@ -1914,8 +2115,10 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
     context->vm      = vm;
     context->payload = vect;
 
-    octaspire_dern_value_t * const result =
-        octaspire_dern_vm_create_new_value_c_data(
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_c_data(
         vm,
         DERN_CHIPMUNK_PLUGIN_NAME,
         "cpVect",
@@ -1926,8 +2129,6 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
         "dern_chipmunk_to_string",
         false,
         context);
-
-    return result;
 }
 
 bool dern_chipmunk_init(
@@ -2153,6 +2354,41 @@ bool dern_chipmunk_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
+            "chipmunk-cpSegmentShapeNew",
+            dern_chipmunk_cpSegmentShapeNew,
+            4,
+            "NAME\n"
+            "\tchipmunk-cpSegmentShapeNew\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpSegmentShapeNew body a b radius) -> cpShape or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tCreates, attaches and returns a new segment collision shape.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tbody     shape is attached into this cpBody.\n"
+            "\ta        first endpoint of the shape.\n"
+            "\tb        second endpoint of the shape.\n"
+            "\tradius   radius.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tcpShape to be used with those functions of this library that\n"
+            "\texpect cpShape argument.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpBoxShapeNew\n"
+            "\tchipmunk-cpCircleShapeNew\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
             "chipmunk-cpSpaceSetGravity",
             dern_chipmunk_cpSpaceSetGravity,
             2,
@@ -2238,6 +2474,36 @@ bool dern_chipmunk_init(
             "SEE ALSO\n"
             "\tchipmunk-cpSpaceNew\n"
             "\tchipmunk-cpSpaceSetGravity\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpSpaceGetStaticBody",
+            dern_chipmunk_cpSpaceGetStaticBody,
+            1,
+            "NAME\n"
+            "\tchipmunk-cpSpaceGetStaticBody\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpSpaceGetStaticBody space) -> cpBody or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tGet the space provided static body of the given cpSpace.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tspace       the cpSpace where to get the static body from\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tthe space provided static body or error\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpSpaceNew\n",
             false,
             targetEnv))
     {

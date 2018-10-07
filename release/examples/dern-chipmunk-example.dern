@@ -1,18 +1,18 @@
 (require 'dern_chipmunk)
 
 (define space   as (chipmunk-cpSpaceNew)        [Chipmunk space])
-(define gravity as (chipmunk-cpv {D+0} {D-10}) [Gravity vector])
+(define gravity as (chipmunk-cpv {D+0} {D-100}) [Gravity vector])
 (chipmunk-cpSpaceSetGravity space gravity)
 
-(define box    as (chipmunk-cpBodyNew {D+100} {D+9999.1}) [a body])
-(define ground as (chipmunk-cpBodyNewStatic) [a body])
+(define box    as (chipmunk-cpBodyNew {D+1} {D+1})      [a body])
+(define ground as (chipmunk-cpSpaceGetStaticBody space) [the ground])
 
 (define boxShape as
   (chipmunk-cpBoxShapeNew box {D+0.25} {D+0.25} {D+0})
   [box shaped polygon collision shape])
 
 (define groundShape as
-  (chipmunk-cpBoxShapeNew ground {D+10} {D+1} {D+0})
+  (chipmunk-cpBoxShapeNew ground {D+40} {D+1} {D+0})
   [box shaped polygon collision shape])
 
 #!
@@ -23,14 +23,12 @@
  (fn (todo) (println todo)[todo]))
 !#
 
-(chipmunk-cpSpaceAddBody space ground)
 (chipmunk-cpSpaceAddBody space box)
 
-(chipmunk-cpBodySetPosition ground (chipmunk-cpv {D+0} {D+0}))
-(chipmunk-cpBodySetPosition box (chipmunk-cpv {D+0} {D+10}))
+(chipmunk-cpBodySetPosition box (chipmunk-cpv {D+0} {D+15}))
 
 (chipmunk-cpSpaceReindexStatic space)
 
 (for i from {D+0} to {D+500}
-     (chipmunk-cpSpaceStep space {D+0.005})
-     (println [box: {}  ground: {}] box ground))
+     (println [box: {}  ground: {}] box ground)
+     (chipmunk-cpSpaceStep space {D+0.005}))
