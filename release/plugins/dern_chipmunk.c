@@ -2029,6 +2029,14 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
 
     handler->postSolveFunc = dern_chipmunk_private_wildcard_post_solve_handler;
 
+    size_t const collisionTypeAsSizeT = (size_t)collisionType;
+
+    octaspire_map_put(
+        dern_chipmunk_private_collision_wildcard_contexts,
+        octaspire_map_helper_size_t_get_hash(collisionTypeAsSizeT),
+        &collisionTypeAsSizeT,
+        &handler);
+
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
@@ -2992,7 +3000,7 @@ bool dern_chipmunk_init(
             vm,
             "chipmunk-cpSpaceAddWildCardHandler",
             dern_chipmunk_cpSpaceAddWildCardHandler,
-            1,
+            4,
             "NAME\n"
             "\tchipmunk-cpSpaceAddWildCardHandler\n"
             "\n"
