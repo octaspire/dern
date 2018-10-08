@@ -228,7 +228,7 @@ libdern_sqlite3$(DLSUFFIX): $(PLUGINDIR)dern_sqlite3.c $(AMALGAMATION) libsqlite
 
 $(CHIPMUNK_PATH)%.o: $(CHIPMUNK_PATH)%.c
 	$(info CC  $<)
-	@$(CC) $(LIBCFLAGS) -I $(PLUGINDIR)external/chipmunk/include -I $(PLUGINDIR)external/chipmunk/include/chipmunk -c $< -o $@
+	@$(CC) $(CFLAGS) $(LIBCFLAGS) -I $(PLUGINDIR)external/chipmunk/include -I $(PLUGINDIR)external/chipmunk/include/chipmunk -c $< -o $@
 
 libchipmunk$(DLSUFFIX): $(CHIPMUNK_OBJS)
 	$(info EC  chipmunk)

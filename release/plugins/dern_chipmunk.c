@@ -88,6 +88,7 @@ static octaspire_map_t * dern_chipmunk_private_collision_wildcard_contexts = 0;
 void dern_chipmunk_cpSpace_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
+    printf("\n\n ---- SPACE %p CLEANED ----\n\n", (void*)payload);
     cpSpaceFree((cpSpace*)payload);
 }
 
@@ -1874,19 +1875,22 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddShape(
     return cDataOrError.cData;
 }
 
-static void dern_chipmunk_private_wildcard_post_solve_handler(
+void dern_chipmunk_private_wildcard_post_solve_handler(
     cpArbiter * arb,
     cpSpace   * space,
     void      * data)
 {
+    printf("\n\n post solve handler !!!\n");
+    octaspire_helpers_verify_not_null(arb);
+    octaspire_helpers_verify_not_null(space);
     octaspire_helpers_verify_not_null(data);
-
+    printf("A\n");
     dern_chipmunk_collision_wildcard_context_t * const context = data;
 
     size_t const stackLength = octaspire_dern_vm_get_stack_length(context->vm);
 
     octaspire_dern_value_t * const callbackValue = context->postSolveCallback;
-
+    printf("B\n");
     octaspire_helpers_verify_not_null(callbackValue);
 
     octaspire_helpers_verify_true(
@@ -1894,22 +1898,22 @@ static void dern_chipmunk_private_wildcard_post_solve_handler(
 
     octaspire_dern_value_t * const arguments =
         octaspire_dern_vm_create_new_value_vector(context->vm);
-
+    printf("C\n");
     octaspire_dern_vm_push_value(context->vm, arguments);
-
+    printf("D\n");
     octaspire_dern_value_t * const argument =
         octaspire_dern_vm_create_new_value_string_from_c_string(
             context->vm,
             "TODO XXX return Dern bodies or shapes");
-
-    octaspire_dern_value_as_vector_push_back_element(argument, &argument);
-
+    printf("E\n");
+    octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
+    printf("F\n");
     octaspire_dern_vm_call_lambda(
         context->vm,
         octaspire_dern_value_as_function(callbackValue),
         arguments,
         context->environment);
-
+    printf("G\n");
     octaspire_dern_vm_pop_value(context->vm, arguments);
 
     octaspire_helpers_verify_true(
@@ -2028,14 +2032,28 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
     octaspire_helpers_verify_not_null(handler);
 
     handler->postSolveFunc = dern_chipmunk_private_wildcard_post_solve_handler;
+    handler->separateFunc  = 0;
 
     size_t const collisionTypeAsSizeT = (size_t)collisionType;
+
+    dern_chipmunk_collision_wildcard_context_t * const wildcardContext =
+        dern_chipmunk_collision_wildcard_context_new(
+            vm,
+            environment,
+            thirdArg,
+            fourthArg,
+            collisionType,
+            octaspire_dern_vm_get_allocator(vm));
+
+    octaspire_helpers_verify_not_null(wildcardContext);
+
+    handler->userData = wildcardContext;
 
     octaspire_map_put(
         dern_chipmunk_private_collision_wildcard_contexts,
         octaspire_map_helper_size_t_get_hash(collisionTypeAsSizeT),
         &collisionTypeAsSizeT,
-        &handler);
+        &wildcardContext);
 
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
@@ -3214,6 +3232,7 @@ bool dern_chipmunk_mark_all(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv)
 {
+    printf("\n\n===mark====\n\n");
     octaspire_helpers_verify_true(vm && targetEnv);
 
     // TODO XXX implement.
