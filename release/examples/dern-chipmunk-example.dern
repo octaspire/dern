@@ -5,26 +5,24 @@
 (chipmunk-cpSpaceSetGravity space gravity)
 
 (define box    as (chipmunk-cpBodyNew {D+1} {D+1})      [a body])
-(define ground as (chipmunk-cpSpaceGetStaticBody space) [the ground])
-
 (define boxShape as
   (chipmunk-cpBoxShapeNew box {D+0.25} {D+0.25} {D+0})
   [box shaped polygon collision shape])
+(chipmunk-cpSpaceAddBody space box)
+(chipmunk-cpBodySetPosition box    (chipmunk-cpv {D+0}  {D+15}))
 
+(define ground as (chipmunk-cpSpaceGetStaticBody space) [the ground])
 (define groundShape as
-  (chipmunk-cpSegmentShapeNew ground (chipmunk-cpv {D-40} {D-10}) (chipmunk-cpv {D+40} {D-10}) {D+0})
+  (chipmunk-cpSegmentShapeNew ground (chipmunk-cpv {D-20} {D+5}) (chipmunk-cpv {D+20} {D-5}) {D+0})
   [box shaped polygon collision shape])
+(chipmunk-cpSpaceAddShape space groundShape)
+(chipmunk-cpShapeSetFriction groundShape {D+1})
 
 (chipmunk-cpSpaceAddWildCardHandler
  space
  {D+0}
  (fn (todo) (println todo)[todo])
  (fn (todo) (println todo)[todo]))
-
-(chipmunk-cpSpaceAddBody space box)
-
-(chipmunk-cpBodySetPosition box    (chipmunk-cpv {D+10}  {D+125}))
-(chipmunk-cpBodySetPosition ground (chipmunk-cpv {D+0} {D-10}))
 
 (chipmunk-cpSpaceReindexStatic space)
 
