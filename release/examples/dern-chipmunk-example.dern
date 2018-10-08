@@ -19,13 +19,11 @@
 (chipmunk-cpShapeSetFriction groundShape {D+1})
 (chipmunk-cpSpaceAddShape space groundShape)
 
-#!(chipmunk-cpSpaceAddWildCardHandler
+(chipmunk-cpSpaceAddWildCardHandler
  space
- {D+0}
+ {D+1}
  (fn (todo) (println todo)[todo])
  (fn (todo) (println todo)[todo]))
-!#
-;(chipmunk-cpSpaceReindexStatic space)
 
 (for i from {D+0} to {D+500}
      (println [box: {}  ground: {}] box ground)

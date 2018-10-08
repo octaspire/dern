@@ -1703,6 +1703,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceStep(
     }
 
     cpSpace * const space = cDataOrError.cData;
+    octaspire_helpers_verify_not_null(space);
 
     octaspire_dern_value_t const * const secondArg =
         octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
