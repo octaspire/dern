@@ -1243,6 +1243,157 @@ octaspire_dern_value_t *dern_chipmunk_cpBodySetPosition(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+octaspire_dern_value_t *dern_chipmunk_cpBodyGetAngle(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpBodyGetAngle";
+    char   const * const cpBodyName   = "cpBody";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects two arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpBody
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpBodyName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpBody * const body = cDataOrError.cData;
+
+    float const angle = cpBodyGetAngle(body);
+
+    return octaspire_dern_vm_create_new_value_real(vm, angle);
+}
+
+octaspire_dern_value_t *dern_chipmunk_cpBodyGetPosition(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpBodyGetPosition";
+    char   const * const cpBodyName   = "cpBody";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects two arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpBody
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpBodyName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpBody * const body = cDataOrError.cData;
+
+    cpVect const position = cpBodyGetPosition(body);
+
+    cpVect *vect = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(vm),
+        sizeof(cpVect));
+
+    if (!vect)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'chipmunk-cpv' failed to allocate memory.");
+    }
+
+    vect->x = position.x;
+    vect->y = position.y;
+
+    dern_chipmunk_allocation_context_t * const context = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(vm),
+        sizeof(dern_chipmunk_allocation_context_t));
+
+    if (!context)
+    {
+        octaspire_allocator_free(octaspire_dern_vm_get_allocator(vm), vect);
+        vect = 0;
+
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' failed to allocate memory for a cpVect context.",
+            dernFuncName);
+    }
+
+    context->vm      = vm;
+    context->payload = vect;
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_CHIPMUNK_PLUGIN_NAME,
+        "cpVect",
+        "dern_chipmunk_cpVect_clean_up_callback",
+        "",
+        "",
+        "",
+        "dern_chipmunk_to_string",
+        false,
+        context);
+}
+
 octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtLocalPoint(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2828,6 +2979,66 @@ bool dern_chipmunk_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
+            "chipmunk-cpBodyGetAngle",
+            dern_chipmunk_cpBodyGetAngle,
+            1,
+            "NAME\n"
+            "\tchipmunk-cpBodyGetAngle\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpBodyGetAngle body) -> angle or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tGets the angle of the given cpBody.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tbody       the cpBody\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tangle or error if something went wrong\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpBodyGetPosition\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpBodyGetPosition",
+            dern_chipmunk_cpBodyGetPosition,
+            1,
+            "NAME\n"
+            "\tchipmunk-cpBodyGetPosition\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpBodyGetPosition body) -> position or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tGets the 2D position vector of the given cpBody.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tbody       the cpBody\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tposition vector or error if something went wrong\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpBodyGetAngle\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
             "chipmunk-cpBodyApplyImpulseAtLocalPoint",
             dern_chipmunk_cpBodyApplyImpulseAtLocalPoint,
             3,
@@ -3240,13 +3451,15 @@ void * dern_chipmunk_to_string(
 
         octaspire_helpers_verify_not_null(body);
 
-        cpVect const pos = cpBodyGetPosition(body);
+        cpVect const pos   = cpBodyGetPosition(body);
+        float  const angle = cpBodyGetAngle(body);
 
         return octaspire_string_new_format(
             octaspire_dern_vm_get_allocator(vm),
-            "cpBody at: (%f, %f)",
+            "cpBody at: (%f, %f) angle: %f",
             pos.x,
-            pos.y);
+            pos.y,
+            angle);
     }
     else if (octaspire_dern_c_data_is_plugin_and_payload_type_name(
             cData,

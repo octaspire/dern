@@ -10,6 +10,7 @@
 (define ballShape as
   (chipmunk-cpCircleShapeNew ball {D+0.25} (chipmunk-cpv {D+0} {D+0}))
   [ball collision shape])
+(chipmunk-cpShapeSetFriction ballShape {D+1})
 (chipmunk-cpSpaceAddShape space ballShape)
 
 (define ground as (chipmunk-cpSpaceGetStaticBody space) [the ground])
@@ -28,3 +29,7 @@
 (for i from {D+0} to {D+500}
      (println [ball: {}  ground: {}] ball ground)
      (chipmunk-cpSpaceStep space {D+0.005}))
+
+(println [===============|newline|ball position is {} and angle is {}]
+         (chipmunk-cpBodyGetPosition ball)
+         (chipmunk-cpBodyGetAngle ball))
