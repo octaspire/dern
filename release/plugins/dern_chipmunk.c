@@ -2501,6 +2501,122 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
         context);
 }
 
+octaspire_dern_value_t *dern_chipmunk_cpv_get_x(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpv-get-x";
+    char   const * const cpVectName   = "cpVect";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects one arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpVect
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpVectName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    dern_chipmunk_allocation_context_t const * const context =
+        cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(context);
+
+    cpVect const * const vect = context->payload;
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_real(vm, vect->x);
+}
+
+octaspire_dern_value_t *dern_chipmunk_cpv_get_y(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpv-get-y";
+    char   const * const cpVectName   = "cpVect";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects one arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpVect
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpVectName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    dern_chipmunk_allocation_context_t const * const context =
+        cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(context);
+
+    cpVect const * const vect = context->payload;
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_real(vm, vect->y);
+}
+
 bool dern_chipmunk_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv,
@@ -3390,6 +3506,68 @@ bool dern_chipmunk_init(
             "\texpect cpVect argument.\n"
             "\n"
             "SEE ALSO\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpv-get-x",
+            dern_chipmunk_cpv_get_x,
+            1,
+            "NAME\n"
+            "\tchipmunk-cpv-get-x\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpv-get-x vect) -> number or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tReturns the X component of a Chipmunk 2D vector cpVect.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tvect          the cpVect.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tthe x component or error if something went wrong.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpv\n"
+            "\tchipmunk-cpv-get-y\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpv-get-y",
+            dern_chipmunk_cpv_get_y,
+            1,
+            "NAME\n"
+            "\tchipmunk-cpv-get-y\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpv-get-y vect) -> number or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tReturns the Y component of a Chipmunk 2D vector cpVect.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tvect          the cpVect.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tthe y component or error if something went wrong.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpv\n"
+            "\tchipmunk-cpv-get-x\n",
             false,
             targetEnv))
     {
