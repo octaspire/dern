@@ -338,6 +338,7 @@ cpSpaceArbiterSetFilter(cpArbiter *arb, cpSpace *space)
  void
 cpShapeUpdateFunc(cpShape *shape, void *unused)
 {
+	CP_HELPERS_UNUSED_PARAMETER(unused);
 	cpShapeCacheBB(shape);
 }
 

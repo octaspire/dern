@@ -51,11 +51,15 @@ preStep(cpDampedRotarySpring *spring, cpFloat dt)
 	b->w += j_spring*b->i_inv;
 }
 
-static void applyCachedImpulse(cpDampedRotarySpring *spring, cpFloat dt_coef){}
+static void applyCachedImpulse(cpDampedRotarySpring *spring, cpFloat dt_coef)
+{
+	CP_HELPERS_UNUSED_PARAMETER(dt_coef);
+}
 
 static void
 applyImpulse(cpDampedRotarySpring *spring, cpFloat dt)
 {
+	CP_HELPERS_UNUSED_PARAMETER(dt);
 	cpBody *a = spring->constraint.a;
 	cpBody *b = spring->constraint.b;
 	

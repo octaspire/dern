@@ -177,6 +177,7 @@ cpSweep1DReindexObject(cpSweep1D *sweep, void *obj, cpHashValue hashid)
 static void
 cpSweep1DReindex(cpSweep1D *sweep)
 {
+	CP_HELPERS_UNUSED_PARAMETER(sweep);
 	// Nothing to do here
 	// Could perform a sort, but queries are not accelerated anyway.
 }

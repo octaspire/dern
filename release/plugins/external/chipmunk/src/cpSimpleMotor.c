@@ -28,6 +28,7 @@
 static void
 preStep(cpSimpleMotor *joint, cpFloat dt)
 {
+	CP_HELPERS_UNUSED_PARAMETER(dt);
 	cpBody *a = joint->constraint.a;
 	cpBody *b = joint->constraint.b;
 	

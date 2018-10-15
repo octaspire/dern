@@ -56,7 +56,11 @@ preStep(cpDampedSpring *spring, cpFloat dt)
 	apply_impulses(a, b, spring->r1, spring->r2, cpvmult(spring->n, j_spring));
 }
 
-static void applyCachedImpulse(cpDampedSpring *spring, cpFloat dt_coef){}
+static void applyCachedImpulse(cpDampedSpring *spring, cpFloat dt_coef)
+{
+	CP_HELPERS_UNUSED_PARAMETER(spring);
+	CP_HELPERS_UNUSED_PARAMETER(dt_coef);
+}
 
 static void
 applyImpulse(cpDampedSpring *spring, cpFloat dt)

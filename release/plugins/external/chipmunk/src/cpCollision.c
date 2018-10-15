@@ -685,6 +685,9 @@ CircleToPoly(const cpCircleShape *circle, const cpPolyShape *poly, struct cpColl
 static void
 CollisionError(const cpShape *circle, const cpShape *poly, struct cpCollisionInfo *info)
 {
+	CP_HELPERS_UNUSED_PARAMETER(circle);
+	CP_HELPERS_UNUSED_PARAMETER(poly);
+	CP_HELPERS_UNUSED_PARAMETER(info);
 	cpAssertHard(cpFalse, "Internal Error: Shape types are not sorted.");
 }
 

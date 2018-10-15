@@ -35,6 +35,7 @@
 void
 cpMessage(const char *condition, const char *file, int line, int isError, int isHardError, const char *message, ...)
 {
+	CP_HELPERS_UNUSED_PARAMETER(isHardError);
 	fprintf(stderr, (isError ? "Aborting due to Chipmunk error: " : "Chipmunk warning: "));
 	
 	va_list vargs;

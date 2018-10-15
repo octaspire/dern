@@ -27,7 +27,10 @@
 
 // TODO: Comment me!
 
-void cpConstraintDestroy(cpConstraint *constraint){}
+void cpConstraintDestroy(cpConstraint *constraint)
+{
+	CP_HELPERS_UNUSED_PARAMETER(constraint);
+}
 
 void
 cpConstraintFree(cpConstraint *constraint)

@@ -76,6 +76,7 @@ DefaultBegin(cpArbiter *arb, cpSpace *space, void *data){
 
 static cpBool
 DefaultPreSolve(cpArbiter *arb, cpSpace *space, void *data){
+	CP_HELPERS_UNUSED_PARAMETER(data);
 	cpBool retA = cpArbiterCallWildcardPreSolveA(arb, space);
 	cpBool retB = cpArbiterCallWildcardPreSolveB(arb, space);
 	return retA && retB;
@@ -83,12 +84,14 @@ DefaultPreSolve(cpArbiter *arb, cpSpace *space, void *data){
 
 static void
 DefaultPostSolve(cpArbiter *arb, cpSpace *space, void *data){
+	CP_HELPERS_UNUSED_PARAMETER(data);
 	cpArbiterCallWildcardPostSolveA(arb, space);
 	cpArbiterCallWildcardPostSolveB(arb, space);
 }
 
 static void
 DefaultSeparate(cpArbiter *arb, cpSpace *space, void *data){
+	CP_HELPERS_UNUSED_PARAMETER(data);
 	cpArbiterCallWildcardSeparateA(arb, space);
 	cpArbiterCallWildcardSeparateB(arb, space);
 }

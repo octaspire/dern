@@ -488,6 +488,7 @@ MarkSubtree(Node *subtree, MarkContext *context)
 static Node *
 LeafNew(cpBBTree *tree, void *obj, cpBB bb)
 {
+	CP_HELPERS_UNUSED_PARAMETER(bb);
 	Node *node = NodeFromPool(tree);
 	node->obj = obj;
 	node->bb = GetBB(tree, obj);
@@ -520,7 +521,13 @@ LeafUpdate(Node *leaf, cpBBTree *tree)
 	}
 }
 
-static cpCollisionID VoidQueryFunc(void *obj1, void *obj2, cpCollisionID id, void *data){return id;}
+static cpCollisionID VoidQueryFunc(void *obj1, void *obj2, cpCollisionID id, void *data)
+{
+    CP_HELPERS_UNUSED_PARAMETER(obj1);
+    CP_HELPERS_UNUSED_PARAMETER(obj2);
+    CP_HELPERS_UNUSED_PARAMETER(data);
+    return id;
+}
 
 static void
 LeafAddPairs(Node *leaf, cpBBTree *tree)
