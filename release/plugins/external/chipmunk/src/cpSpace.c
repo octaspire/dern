@@ -68,6 +68,7 @@ handlerSetTrans(cpCollisionHandler *handler, void *unused)
 
 static cpBool
 DefaultBegin(cpArbiter *arb, cpSpace *space, void *data){
+	CP_HELPERS_UNUSED_PARAMETER(data);
 	cpBool retA = cpArbiterCallWildcardBeginA(arb, space);
 	cpBool retB = cpArbiterCallWildcardBeginB(arb, space);
 	return retA && retB;

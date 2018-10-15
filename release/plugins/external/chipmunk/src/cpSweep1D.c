@@ -125,7 +125,7 @@ cpSweep1DEach(cpSweep1D *sweep, cpSpatialIndexIteratorFunc func, void *data)
 static int
 cpSweep1DContains(cpSweep1D *sweep, void *obj, cpHashValue hashid)
 {
-    	CP_HELPERS_UNUSED_PARAMETER(hashid);
+	CP_HELPERS_UNUSED_PARAMETER(hashid);
 	TableCell *table = sweep->table;
 	for(int i=0, count=sweep->num; i<count; i++){
 		if(table[i].obj == obj) return cpTrue;
@@ -139,6 +139,7 @@ cpSweep1DContains(cpSweep1D *sweep, void *obj, cpHashValue hashid)
 static void
 cpSweep1DInsert(cpSweep1D *sweep, void *obj, cpHashValue hashid)
 {
+	CP_HELPERS_UNUSED_PARAMETER(hashid);
 	if(sweep->num == sweep->max) ResizeTable(sweep, sweep->max*2);
 	
 	sweep->table[sweep->num] = MakeTableCell(sweep, obj);
@@ -148,6 +149,7 @@ cpSweep1DInsert(cpSweep1D *sweep, void *obj, cpHashValue hashid)
 static void
 cpSweep1DRemove(cpSweep1D *sweep, void *obj, cpHashValue hashid)
 {
+	CP_HELPERS_UNUSED_PARAMETER(hashid);
 	TableCell *table = sweep->table;
 	for(int i=0, count=sweep->num; i<count; i++){
 		if(table[i].obj == obj){
@@ -166,6 +168,9 @@ cpSweep1DRemove(cpSweep1D *sweep, void *obj, cpHashValue hashid)
 static void
 cpSweep1DReindexObject(cpSweep1D *sweep, void *obj, cpHashValue hashid)
 {
+	CP_HELPERS_UNUSED_PARAMETER(sweep);
+	CP_HELPERS_UNUSED_PARAMETER(obj);
+	CP_HELPERS_UNUSED_PARAMETER(hashid);
 	// Nothing to do here
 }
 
@@ -196,6 +201,7 @@ cpSweep1DQuery(cpSweep1D *sweep, void *obj, cpBB bb, cpSpatialIndexQueryFunc fun
 static void
 cpSweep1DSegmentQuery(cpSweep1D *sweep, void *obj, cpVect a, cpVect b, cpFloat t_exit, cpSpatialIndexSegmentQueryFunc func, void *data)
 {
+	CP_HELPERS_UNUSED_PARAMETER(t_exit);
 	cpBB bb = cpBBExpand(cpBBNew(a.x, a.y, a.x, a.y), b);
 	Bounds bounds = BBToBounds(sweep, bb);
 	
