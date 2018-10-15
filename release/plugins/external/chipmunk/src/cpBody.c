@@ -93,7 +93,10 @@ cpBodyNewStatic()
 	return body;
 }
 
-void cpBodyDestroy(cpBody *body){}
+void cpBodyDestroy(cpBody *body)
+{
+	CP_HELPERS_UNUSED_PARAMETER(body);
+}
 
 void
 cpBodyFree(cpBody *body)

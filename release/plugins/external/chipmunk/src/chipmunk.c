@@ -96,6 +96,7 @@ cpAreaForSegment(cpVect a, cpVect b, cpFloat r)
 cpFloat
 cpMomentForPoly(cpFloat m, const int count, const cpVect *verts, cpVect offset, cpFloat r)
 {
+	CP_HELPERS_UNUSED_PARAMETER(r);
 	// TODO account for radius.
 	if(count == 2) return cpMomentForSegment(m, verts[0], verts[1], 0.0f);
 	

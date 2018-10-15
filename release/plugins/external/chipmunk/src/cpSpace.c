@@ -56,6 +56,7 @@ handlerSetEql(cpCollisionHandler *check, cpCollisionHandler *pair)
 static void *
 handlerSetTrans(cpCollisionHandler *handler, void *unused)
 {
+	CP_HELPERS_UNUSED_PARAMETER(unused);
 	cpCollisionHandler *copy = (cpCollisionHandler *)cpcalloc(1, sizeof(cpCollisionHandler));
 	memcpy(copy, handler, sizeof(cpCollisionHandler));
 	
@@ -102,8 +103,19 @@ static cpCollisionHandler cpCollisionHandlerDefault = {
 	DefaultBegin, DefaultPreSolve, DefaultPostSolve, DefaultSeparate, NULL
 };
 
-static cpBool AlwaysCollide(cpArbiter *arb, cpSpace *space, void *data){return cpTrue;}
-static void DoNothing(cpArbiter *arb, cpSpace *space, void *data){}
+static cpBool AlwaysCollide(cpArbiter *arb, cpSpace *space, void *data)
+{
+    CP_HELPERS_UNUSED_PARAMETER(arb);
+    CP_HELPERS_UNUSED_PARAMETER(space);
+    CP_HELPERS_UNUSED_PARAMETER(data);
+    return cpTrue;
+}
+static void DoNothing(cpArbiter *arb, cpSpace *space, void *data)
+{
+	CP_HELPERS_UNUSED_PARAMETER(arb);
+	CP_HELPERS_UNUSED_PARAMETER(space);
+	CP_HELPERS_UNUSED_PARAMETER(data);
+}
 
 cpCollisionHandler cpCollisionHandlerDoNothing = {
 	CP_WILDCARD_COLLISION_TYPE, CP_WILDCARD_COLLISION_TYPE,
@@ -191,7 +203,11 @@ cpSpaceNew(void)
 	return cpSpaceInit(cpSpaceAlloc());
 }
 
-static void cpBodyActivateWrap(cpBody *body, void *unused){cpBodyActivate(body);}
+static void cpBodyActivateWrap(cpBody *body, void *unused)
+{
+    CP_HELPERS_UNUSED_PARAMETER(unused);
+    cpBodyActivate(body);
+}
 
 void
 cpSpaceDestroy(cpSpace *space)

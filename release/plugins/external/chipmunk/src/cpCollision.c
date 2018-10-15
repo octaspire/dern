@@ -99,6 +99,7 @@ typedef struct SupportPoint (*SupportPointFunc)(const cpShape *shape, const cpVe
 static inline struct SupportPoint
 CircleSupportPoint(const cpCircleShape *circle, const cpVect n)
 {
+	CP_HELPERS_UNUSED_PARAMETER(n);
 	return SupportPointNew(circle->tc, 0);
 }
 

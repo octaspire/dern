@@ -53,6 +53,7 @@ preStep(cpDampedRotarySpring *spring, cpFloat dt)
 
 static void applyCachedImpulse(cpDampedRotarySpring *spring, cpFloat dt_coef)
 {
+	CP_HELPERS_UNUSED_PARAMETER(spring);
 	CP_HELPERS_UNUSED_PARAMETER(dt_coef);
 }
 
