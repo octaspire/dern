@@ -1,4 +1,8 @@
-/* Copyright (c) 2013 Scott Lembcke and Howling Moon Software
+/* This is modified version, NOT the original. Modifications are
+ * copyright 2018 by octaspire and are released under the same license
+ * as the original.
+ *
+ * Copyright (c) 2013 Scott Lembcke and Howling Moon Software
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,6 +56,7 @@ BoundsOverlap(Bounds a, Bounds b)
 static inline Bounds
 BBToBounds(cpSweep1D *sweep, cpBB bb)
 {
+	CP_HELPERS_UNUSED_PARAMETER(sweep);
 	Bounds bounds = {bb.l, bb.r};
 	return bounds;
 }
@@ -120,6 +125,7 @@ cpSweep1DEach(cpSweep1D *sweep, cpSpatialIndexIteratorFunc func, void *data)
 static int
 cpSweep1DContains(cpSweep1D *sweep, void *obj, cpHashValue hashid)
 {
+    	CP_HELPERS_UNUSED_PARAMETER(hashid);
 	TableCell *table = sweep->table;
 	for(int i=0, count=sweep->num; i<count; i++){
 		if(table[i].obj == obj) return cpTrue;

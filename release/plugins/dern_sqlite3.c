@@ -385,6 +385,8 @@ bool dern_sqlite3_init(
     octaspire_dern_environment_t * const targetEnv,
     char const * const libName)
 {
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(libname);
+
     octaspire_helpers_verify_true(vm && targetEnv);
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
