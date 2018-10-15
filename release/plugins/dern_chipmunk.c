@@ -2185,8 +2185,8 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
 
     // (Lambda) function for postSolve callback
 
-    octaspire_dern_value_t const * const thirdArg =
-        octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
+    octaspire_dern_value_t * const thirdArg =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 2);
 
     octaspire_helpers_verify_not_null(thirdArg);
 
@@ -2203,8 +2203,8 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
 
     // (Lambda) function for separate callback
 
-    octaspire_dern_value_t const * const fourthArg =
-        octaspire_dern_value_as_vector_get_element_at_const(arguments, 3);
+    octaspire_dern_value_t * const fourthArg =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 3);
 
     octaspire_helpers_verify_not_null(fourthArg);
 

@@ -1,3 +1,7 @@
+// This is modified version, NOT the original. Modifications are
+// copyright 2018 by octaspire and are released under the same license
+// as the original.
+//
 // Copyright 2013 Howling Moon Software. All rights reserved.
 // See http://chipmunk2d.net/legal.php for more information.
 
@@ -465,6 +469,7 @@ RunWorkers(cpHastySpace *hasty, cpHastySpaceWorkFunction func)
 static void
 Solver(cpSpace *space, unsigned long worker, unsigned long worker_count)
 {
+	CP_HELPERS_UNUSED_PARAMETER(worker);
 	cpArray *constraints = space->constraints;
 	cpArray *arbiters = space->arbiters;
 	

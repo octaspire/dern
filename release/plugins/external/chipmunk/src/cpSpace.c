@@ -1,4 +1,8 @@
-/* Copyright (c) 2013 Scott Lembcke and Howling Moon Software
+/* This is modified version, NOT the original. Modifications are
+ * copyright 2018 by octaspire and are released under the same license
+ * as the original.
+ *
+ * Copyright (c) 2013 Scott Lembcke and Howling Moon Software
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,6 +56,7 @@ handlerSetEql(cpCollisionHandler *check, cpCollisionHandler *pair)
 static void *
 handlerSetTrans(cpCollisionHandler *handler, void *unused)
 {
+	CP_HELPERS_UNUSED_PARAMETER(unused);
 	cpCollisionHandler *copy = (cpCollisionHandler *)cpcalloc(1, sizeof(cpCollisionHandler));
 	memcpy(copy, handler, sizeof(cpCollisionHandler));
 	
@@ -64,6 +69,7 @@ handlerSetTrans(cpCollisionHandler *handler, void *unused)
 
 static cpBool
 DefaultBegin(cpArbiter *arb, cpSpace *space, void *data){
+	CP_HELPERS_UNUSED_PARAMETER(data);
 	cpBool retA = cpArbiterCallWildcardBeginA(arb, space);
 	cpBool retB = cpArbiterCallWildcardBeginB(arb, space);
 	return retA && retB;
@@ -71,6 +77,7 @@ DefaultBegin(cpArbiter *arb, cpSpace *space, void *data){
 
 static cpBool
 DefaultPreSolve(cpArbiter *arb, cpSpace *space, void *data){
+	CP_HELPERS_UNUSED_PARAMETER(data);
 	cpBool retA = cpArbiterCallWildcardPreSolveA(arb, space);
 	cpBool retB = cpArbiterCallWildcardPreSolveB(arb, space);
 	return retA && retB;
@@ -78,12 +85,14 @@ DefaultPreSolve(cpArbiter *arb, cpSpace *space, void *data){
 
 static void
 DefaultPostSolve(cpArbiter *arb, cpSpace *space, void *data){
+	CP_HELPERS_UNUSED_PARAMETER(data);
 	cpArbiterCallWildcardPostSolveA(arb, space);
 	cpArbiterCallWildcardPostSolveB(arb, space);
 }
 
 static void
 DefaultSeparate(cpArbiter *arb, cpSpace *space, void *data){
+	CP_HELPERS_UNUSED_PARAMETER(data);
 	cpArbiterCallWildcardSeparateA(arb, space);
 	cpArbiterCallWildcardSeparateB(arb, space);
 }
@@ -94,8 +103,19 @@ static cpCollisionHandler cpCollisionHandlerDefault = {
 	DefaultBegin, DefaultPreSolve, DefaultPostSolve, DefaultSeparate, NULL
 };
 
-static cpBool AlwaysCollide(cpArbiter *arb, cpSpace *space, void *data){return cpTrue;}
-static void DoNothing(cpArbiter *arb, cpSpace *space, void *data){}
+static cpBool AlwaysCollide(cpArbiter *arb, cpSpace *space, void *data)
+{
+    CP_HELPERS_UNUSED_PARAMETER(arb);
+    CP_HELPERS_UNUSED_PARAMETER(space);
+    CP_HELPERS_UNUSED_PARAMETER(data);
+    return cpTrue;
+}
+static void DoNothing(cpArbiter *arb, cpSpace *space, void *data)
+{
+	CP_HELPERS_UNUSED_PARAMETER(arb);
+	CP_HELPERS_UNUSED_PARAMETER(space);
+	CP_HELPERS_UNUSED_PARAMETER(data);
+}
 
 cpCollisionHandler cpCollisionHandlerDoNothing = {
 	CP_WILDCARD_COLLISION_TYPE, CP_WILDCARD_COLLISION_TYPE,
@@ -106,7 +126,11 @@ cpCollisionHandler cpCollisionHandlerDoNothing = {
 static cpVect ShapeVelocityFunc(cpShape *shape){return shape->body->v;}
 
 // Used for disposing of collision handlers.
-static void FreeWrap(void *ptr, void *unused){cpfree(ptr);}
+static void FreeWrap(void *ptr, void *unused)
+{
+    CP_HELPERS_UNUSED_PARAMETER(unused);
+    cpfree(ptr);
+}
 
 //MARK: Memory Management Functions
 
@@ -183,7 +207,11 @@ cpSpaceNew(void)
 	return cpSpaceInit(cpSpaceAlloc());
 }
 
-static void cpBodyActivateWrap(cpBody *body, void *unused){cpBodyActivate(body);}
+static void cpBodyActivateWrap(cpBody *body, void *unused)
+{
+    CP_HELPERS_UNUSED_PARAMETER(unused);
+    cpBodyActivate(body);
+}
 
 void
 cpSpaceDestroy(cpSpace *space)

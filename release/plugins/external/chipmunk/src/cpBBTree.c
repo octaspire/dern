@@ -1,4 +1,8 @@
-/* Copyright (c) 2013 Scott Lembcke and Howling Moon Software
+/* This is modified version, NOT the original. Modifications are
+ * copyright 2018 by octaspire and are released under the same license
+ * as the original.
+ *
+ * Copyright (c) 2013 Scott Lembcke and Howling Moon Software
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -484,6 +488,7 @@ MarkSubtree(Node *subtree, MarkContext *context)
 static Node *
 LeafNew(cpBBTree *tree, void *obj, cpBB bb)
 {
+	CP_HELPERS_UNUSED_PARAMETER(bb);
 	Node *node = NodeFromPool(tree);
 	node->obj = obj;
 	node->bb = GetBB(tree, obj);
@@ -516,7 +521,13 @@ LeafUpdate(Node *leaf, cpBBTree *tree)
 	}
 }
 
-static cpCollisionID VoidQueryFunc(void *obj1, void *obj2, cpCollisionID id, void *data){return id;}
+static cpCollisionID VoidQueryFunc(void *obj1, void *obj2, cpCollisionID id, void *data)
+{
+    CP_HELPERS_UNUSED_PARAMETER(obj1);
+    CP_HELPERS_UNUSED_PARAMETER(obj2);
+    CP_HELPERS_UNUSED_PARAMETER(data);
+    return id;
+}
 
 static void
 LeafAddPairs(Node *leaf, cpBBTree *tree)

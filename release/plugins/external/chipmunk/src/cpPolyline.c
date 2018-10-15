@@ -1,3 +1,7 @@
+// This is modified version, NOT the original. Modifications are
+// copyright 2018 by octaspire and are released under the same license
+// as the original.
+//
 // Copyright 2013 Howling Moon Software. All rights reserved.
 // See http://chipmunk2d.net/legal.php for more information.
 
@@ -561,6 +565,7 @@ FindSteiner(int count, cpVect *verts, struct Notch notch)
 static struct Notch
 DeepestNotch(int count, cpVect *verts, int hullCount, cpVect *hullVerts, int first, cpFloat tol)
 {
+	CP_HELPERS_UNUSED_PARAMETER(tol);
 	struct Notch notch = {};
 	int j = Next(first, count);
 	

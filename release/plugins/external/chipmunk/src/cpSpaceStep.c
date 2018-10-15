@@ -1,4 +1,8 @@
-/* Copyright (c) 2013 Scott Lembcke and Howling Moon Software
+/* This is modified version, NOT the original. Modifications are
+ * copyright 2018 by octaspire and are released under the same license
+ * as the original.
+ *
+ * Copyright (c) 2013 Scott Lembcke and Howling Moon Software
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +39,12 @@ cpSpaceGetPostStepCallback(cpSpace *space, void *key)
 	return NULL;
 }
 
-static void PostStepDoNothing(cpSpace *space, void *obj, void *data){}
+static void PostStepDoNothing(cpSpace *space, void *obj, void *data)
+{
+	CP_HELPERS_UNUSED_PARAMETER(space);
+	CP_HELPERS_UNUSED_PARAMETER(obj);
+	CP_HELPERS_UNUSED_PARAMETER(data);
+}
 
 cpBool
 cpSpaceAddPostStepCallback(cpSpace *space, cpPostStepFunc func, void *key, void *data)
@@ -329,6 +338,7 @@ cpSpaceArbiterSetFilter(cpArbiter *arb, cpSpace *space)
  void
 cpShapeUpdateFunc(cpShape *shape, void *unused)
 {
+	CP_HELPERS_UNUSED_PARAMETER(unused);
 	cpShapeCacheBB(shape);
 }
 

@@ -1,4 +1,8 @@
-/* Copyright (c) 2013 Scott Lembcke and Howling Moon Software
+/* This is modified version, NOT the original. Modifications are
+ * copyright 2018 by octaspire and are released under the same license
+ * as the original.
+ *
+ * Copyright (c) 2013 Scott Lembcke and Howling Moon Software
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +28,7 @@
 static void
 preStep(cpSimpleMotor *joint, cpFloat dt)
 {
+	CP_HELPERS_UNUSED_PARAMETER(dt);
 	cpBody *a = joint->constraint.a;
 	cpBody *b = joint->constraint.b;
 	

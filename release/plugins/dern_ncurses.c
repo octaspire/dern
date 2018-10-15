@@ -1915,6 +1915,7 @@ bool dern_ncurses_init(
     octaspire_dern_environment_t * const targetEnv,
     char const * const libName)
 {
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(libName);
     setlocale(LC_ALL, "");
 
     octaspire_helpers_verify_true(vm && targetEnv);

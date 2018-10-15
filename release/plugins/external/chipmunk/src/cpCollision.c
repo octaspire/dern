@@ -1,4 +1,8 @@
-/* Copyright (c) 2013 Scott Lembcke and Howling Moon Software
+/* This is modified version, NOT the original. Modifications are
+ * copyright 2018 by octaspire and are released under the same license
+ * as the original.
+ *
+ * Copyright (c) 2013 Scott Lembcke and Howling Moon Software
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -95,6 +99,7 @@ typedef struct SupportPoint (*SupportPointFunc)(const cpShape *shape, const cpVe
 static inline struct SupportPoint
 CircleSupportPoint(const cpCircleShape *circle, const cpVect n)
 {
+	CP_HELPERS_UNUSED_PARAMETER(n);
 	return SupportPointNew(circle->tc, 0);
 }
 
@@ -681,6 +686,9 @@ CircleToPoly(const cpCircleShape *circle, const cpPolyShape *poly, struct cpColl
 static void
 CollisionError(const cpShape *circle, const cpShape *poly, struct cpCollisionInfo *info)
 {
+	CP_HELPERS_UNUSED_PARAMETER(circle);
+	CP_HELPERS_UNUSED_PARAMETER(poly);
+	CP_HELPERS_UNUSED_PARAMETER(info);
 	cpAssertHard(cpFalse, "Internal Error: Shape types are not sorted.");
 }
 

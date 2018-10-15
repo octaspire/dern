@@ -1,4 +1,8 @@
-/* Copyright (c) 2013 Scott Lembcke and Howling Moon Software
+/* This is modified version, NOT the original. Modifications are
+ * copyright 2018 by octaspire and are released under the same license
+ * as the original.
+ *
+ * Copyright (c) 2013 Scott Lembcke and Howling Moon Software
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +35,7 @@
 void
 cpMessage(const char *condition, const char *file, int line, int isError, int isHardError, const char *message, ...)
 {
+	CP_HELPERS_UNUSED_PARAMETER(isHardError);
 	fprintf(stderr, (isError ? "Aborting due to Chipmunk error: " : "Chipmunk warning: "));
 	
 	va_list vargs;
@@ -91,6 +96,7 @@ cpAreaForSegment(cpVect a, cpVect b, cpFloat r)
 cpFloat
 cpMomentForPoly(cpFloat m, const int count, const cpVect *verts, cpVect offset, cpFloat r)
 {
+	CP_HELPERS_UNUSED_PARAMETER(r);
 	// TODO account for radius.
 	if(count == 2) return cpMomentForSegment(m, verts[0], verts[1], 0.0f);
 	

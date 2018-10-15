@@ -1,4 +1,8 @@
-/* Copyright (c) 2013 Scott Lembcke and Howling Moon Software
+/* This is modified version, NOT the original. Modifications are
+ * copyright 2018 by octaspire and are released under the same license
+ * as the original.
+ *
+ * Copyright (c) 2013 Scott Lembcke and Howling Moon Software
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,11 +51,16 @@ preStep(cpDampedRotarySpring *spring, cpFloat dt)
 	b->w += j_spring*b->i_inv;
 }
 
-static void applyCachedImpulse(cpDampedRotarySpring *spring, cpFloat dt_coef){}
+static void applyCachedImpulse(cpDampedRotarySpring *spring, cpFloat dt_coef)
+{
+	CP_HELPERS_UNUSED_PARAMETER(spring);
+	CP_HELPERS_UNUSED_PARAMETER(dt_coef);
+}
 
 static void
 applyImpulse(cpDampedRotarySpring *spring, cpFloat dt)
 {
+	CP_HELPERS_UNUSED_PARAMETER(dt);
 	cpBody *a = spring->constraint.a;
 	cpBody *b = spring->constraint.b;
 	
