@@ -219,7 +219,7 @@ libdern_sdl2$(DLSUFFIX): $(PLUGINDIR)dern_sdl2.c $(AMALGAMATION)
 	@$(CC) $(CFLAGS) -I release $(SDL2CONFIG_CFLAGS) $(SDL2FLAGS) $(LIBCFLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(SDL2CONFIG_LDFLAGS)
 
 libsqlite3$(DLSUFFIX): $(PLUGINDIR)external/sqlite3/sqlite3.c
-	$(info EC   $<)
+	$(info EC  sqlite3)
 	@$(CC) $(LIBCFLAGS) -c -o $@ $< $(SQLITE3_LDFLAGS)
 
 libdern_sqlite3$(DLSUFFIX): $(PLUGINDIR)dern_sqlite3.c $(AMALGAMATION) libsqlite3$(DLSUFFIX)

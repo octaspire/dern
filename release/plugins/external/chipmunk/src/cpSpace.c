@@ -126,7 +126,11 @@ cpCollisionHandler cpCollisionHandlerDoNothing = {
 static cpVect ShapeVelocityFunc(cpShape *shape){return shape->body->v;}
 
 // Used for disposing of collision handlers.
-static void FreeWrap(void *ptr, void *unused){cpfree(ptr);}
+static void FreeWrap(void *ptr, void *unused)
+{
+    CP_HELPERS_UNUSED_PARAMETER(unused);
+    cpfree(ptr);
+}
 
 //MARK: Memory Management Functions
 
