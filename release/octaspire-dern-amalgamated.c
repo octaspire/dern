@@ -25639,7 +25639,7 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "414"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
     OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "." \
@@ -31791,6 +31791,9 @@ void * octaspire_dern_lib_dycall(
                 cData);
         }
 #endif
+#else
+        OCTASPIRE_HELPERS_UNUSED_PARAMETER(funcName);
+        OCTASPIRE_HELPERS_UNUSED_PARAMETER(cData);
 #endif
 
         return result;

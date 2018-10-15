@@ -421,6 +421,9 @@ void * octaspire_dern_lib_dycall(
                 cData);
         }
 #endif
+#else
+        OCTASPIRE_HELPERS_UNUSED_PARAMETER(funcName);
+        OCTASPIRE_HELPERS_UNUSED_PARAMETER(cData);
 #endif
 
         return result;
