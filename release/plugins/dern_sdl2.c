@@ -48,6 +48,41 @@ SDL_GLContext dernGlContext;
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
 static GLuint dern_sdl2_private_gltextures[1] = {0};
+
+static char const * dern_sdl2_glError_to_cstr_impl(
+    GLenum const error,
+    int const lineNum)
+{
+    static char  buffer[128] = {'\0'};
+    int  const   buflen = (sizeof(buffer) / sizeof(buffer[0])) - 1;
+    char const * errStr = "";
+
+    switch (error)
+    {
+        case GL_INVALID_OPERATION:             errStr = "INVALID OPERATION";             break;
+        case GL_INVALID_ENUM:                  errStr = "INVALID ENUM";                  break;
+        case GL_INVALID_VALUE:                 errStr = "INVALID VALUE";                 break;
+        case GL_OUT_OF_MEMORY:                 errStr = "OUT OF MEMORY";                 break;
+        case GL_INVALID_FRAMEBUFFER_OPERATION: errStr = "INVALID FRAMEBUFFER OPERATION"; break;
+        default:                               errStr = "UNKNOWN ERROR";                 break;
+    }
+
+    int const result = snprintf(
+        buffer,
+        buflen,
+        "OpenGL error at line %d: %s",
+        lineNum,
+        errStr);
+
+    if (result < 0 || result >= buflen)
+    {
+        buffer[0] = '\0';
+    }
+
+    return buffer;
+}
+
+#define dern_sdl2_glError_to_cstr(error) dern_sdl2_glError_to_cstr_impl((error), __LINE__)
 #endif
 
 static octaspire_string_t * dern_sdl2_private_lib_name = 0;
@@ -3077,7 +3112,7 @@ octaspire_dern_value_t *dern_sdl2_CreateWindow(
             vm,
             "Builtin 'sdl2-create-window' failed to set projection matrix for OpenGL."
             "Error message is: '%s'.",
-            gluErrorString(error));
+            dern_sdl2_glError_to_cstr(error));
     }
 
     glMatrixMode(GL_MODELVIEW);
@@ -3092,7 +3127,7 @@ octaspire_dern_value_t *dern_sdl2_CreateWindow(
             vm,
             "Builtin 'sdl2-create-window' failed to set modelview matrix for OpenGL."
             "Error message is: '%s'.",
-            gluErrorString(error));
+            dern_sdl2_glError_to_cstr(error));
     }
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -3105,7 +3140,7 @@ octaspire_dern_value_t *dern_sdl2_CreateWindow(
             vm,
             "Builtin 'sdl2-create-window' failed to set clear color for OpenGL."
             "Error message is: '%s'.",
-            gluErrorString(error));
+            dern_sdl2_glError_to_cstr(error));
     }
 #endif
 
@@ -6148,7 +6183,7 @@ octaspire_dern_value_t *dern_sdl2_load_texture_base64(
             vm,
             "Builtin 'sdl2-load-texture-base64' failed to load texture for OpenGL."
             "Error message is: '%s'.",
-            gluErrorString(error));
+            dern_sdl2_glError_to_cstr(error));
     }
 
     glBindTexture(GL_TEXTURE_2D, dern_sdl2_private_gltextures[0]);
@@ -6162,7 +6197,7 @@ octaspire_dern_value_t *dern_sdl2_load_texture_base64(
             vm,
             "Builtin 'sdl2-load-texture-base64' failed to load texture for OpenGL."
             "Error message is: '%s'.",
-            gluErrorString(error));
+            dern_sdl2_glError_to_cstr(error));
     }
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -6188,7 +6223,7 @@ octaspire_dern_value_t *dern_sdl2_load_texture_base64(
             vm,
             "Builtin 'sdl2-load-texture-base64' failed to load texture for OpenGL."
             "Error message is: '%s'.",
-            gluErrorString(error));
+            dern_sdl2_glError_to_cstr(error));
     }
 
     stbi_image_free(data);

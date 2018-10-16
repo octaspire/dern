@@ -298,7 +298,11 @@ void cpSpaceEachConstraint_b(cpSpace *space, void (^block)(cpConstraint *constra
 	cpSpaceEachConstraint(space, (cpSpaceConstraintIteratorFunc)IteratorFunc, block);
 }
 
-static void BodyIteratorFunc(cpBody *body, void *ptr, void (^block)(void *ptr)){block(ptr);}
+static void BodyIteratorFunc(cpBody *body, void *ptr, void (^block)(void *ptr))
+{
+    CP_HELPERS_UNUSED_PARAMETER(body);
+    block(ptr);
+}
 
 void cpBodyEachShape_b(cpBody *body, void (^block)(cpShape *shape)){
 	cpBodyEachShape(body, (cpBodyShapeIteratorFunc)BodyIteratorFunc, block);
