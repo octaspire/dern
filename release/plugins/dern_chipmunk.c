@@ -2096,10 +2096,14 @@ void dern_chipmunk_private_wildcard_post_solve_handler(
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(context->vm));
 
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
-            // 
+        octaspire_dern_value_as_vector_clear(arguments);
+
+        argument = octaspire_dern_vm_create_new_value_error_from_c_string(
             context->vm,
             "Builtin 'chipmunk-cpv' failed to allocate memory for a cpVect context.");
+
+        octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
+
         octaspire_dern_vm_call_lambda(
             context->vm,
             octaspire_dern_value_as_function(callbackValue),
@@ -2108,11 +2112,21 @@ void dern_chipmunk_private_wildcard_post_solve_handler(
     }
     else
     {
-        cpVectContext->vm      = vm;
+        cpVect *vect = octaspire_allocator_malloc(
+            octaspire_dern_vm_get_allocator(context->vm),
+            sizeof(cpVect));
+
+        octaspire_helpers_verify_not_null(vect);
+
+        cpVect const normalVect = cpArbiterGetNormal(arb);
+        vect->x = normalVect.x;
+        vect->y = normalVect.y;
+
+        cpVectContext->vm      = context->vm;
         cpVectContext->payload = vect;
 
         argument = octaspire_dern_vm_create_new_value_c_data(
-            context->vm,
+            cpVectContext->vm,
             DERN_CHIPMUNK_PLUGIN_NAME,
             "cpVect",
             "dern_chipmunk_cpVect_clean_up_callback",

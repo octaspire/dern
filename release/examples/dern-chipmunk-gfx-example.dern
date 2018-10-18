@@ -32,8 +32,8 @@
 (chipmunk-cpSpaceAddWildCardHandler
  space
  {D+1}
- (fn (bodyA bodyB) (println [-bodyA: {} -bodyB: {} -] bodyA bodyB) [todo])
- (fn (bodyA bodyB) (println [-bodyA: {} -bodyB: {} -] bodyA bodyB) [todo]))
+ (fn (bodyA bodyB normal) (println [-bodyA: {} -bodyB: {} -normal {}] bodyA bodyB normal) [todo])
+ (fn (bodyA bodyB normal) (println [-bodyA: {} -bodyB: {} -normal {}] bodyA bodyB normal) [todo]))
 
 (define running             as true                  [is running or not])
 (define targetFPS           as {D+100}                [target FPS])
