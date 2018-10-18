@@ -2139,6 +2139,14 @@ void dern_chipmunk_private_wildcard_post_solve_handler(
 
         octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
 
+        argument = octaspire_dern_vm_create_new_value_boolean(
+            context->vm,
+            cpArbiterIsFirstContact(arb));
+
+        octaspire_helpers_verify_not_null(argument);
+
+        octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
+
         octaspire_dern_vm_call_lambda(
             context->vm,
             octaspire_dern_value_as_function(callbackValue),
