@@ -2027,6 +2027,144 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddShape(
     return cDataOrError.cData;
 }
 
+void dern_chipmunk_private_do_wildcard_callback(
+    cpArbiter              *       arb,
+    cpSpace                *       space,
+    void                   *       data,
+    octaspire_dern_value_t * const callbackValue)
+{
+    octaspire_helpers_verify_not_null(arb);
+    octaspire_helpers_verify_not_null(space);
+    octaspire_helpers_verify_not_null(data);
+    octaspire_helpers_verify_not_null(callbackValue);
+
+    dern_chipmunk_collision_wildcard_context_t * const context = data;
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(context->vm);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_value_is_function(callbackValue));
+
+    octaspire_dern_value_t * const arguments =
+        octaspire_dern_vm_create_new_value_vector(context->vm);
+
+    octaspire_dern_vm_push_value(context->vm, arguments);
+
+    cpBody * bodyA = 0;
+    cpBody * bodyB = 0;
+
+    cpArbiterGetBodies(arb, &bodyA, &bodyB);
+
+    octaspire_dern_value_t * argument =
+        octaspire_dern_vm_create_new_value_c_data(
+            context->vm,
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            "cpBody",
+            "dern_chipmunk_cpBody_clean_up_callback",
+            "",
+            "",
+            "",
+            "dern_chipmunk_to_string",
+            false,
+            bodyA);
+
+    octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
+
+    argument =
+        octaspire_dern_vm_create_new_value_c_data(
+            context->vm,
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            "cpBody",
+            "dern_chipmunk_cpBody_clean_up_callback",
+            "",
+            "",
+            "",
+            "dern_chipmunk_to_string",
+            false,
+            bodyB);
+
+    octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
+
+    dern_chipmunk_allocation_context_t * const cpVectContext = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(context->vm),
+        sizeof(dern_chipmunk_allocation_context_t));
+
+    if (!cpVectContext)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(context->vm));
+
+        octaspire_dern_value_as_vector_clear(arguments);
+
+        argument = octaspire_dern_vm_create_new_value_error_from_c_string(
+            context->vm,
+            "Builtin 'chipmunk-cpv' failed to allocate memory for a cpVect context.");
+
+        octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
+
+        octaspire_dern_vm_call_lambda(
+            context->vm,
+            octaspire_dern_value_as_function(callbackValue),
+            arguments,
+            context->environment);
+    }
+    else
+    {
+        cpVect *vect = octaspire_allocator_malloc(
+            octaspire_dern_vm_get_allocator(context->vm),
+            sizeof(cpVect));
+
+        octaspire_helpers_verify_not_null(vect);
+
+        cpVect const normalVect = cpArbiterGetNormal(arb);
+        vect->x = normalVect.x;
+        vect->y = normalVect.y;
+
+        cpVectContext->vm      = context->vm;
+        cpVectContext->payload = vect;
+
+        argument = octaspire_dern_vm_create_new_value_c_data(
+            cpVectContext->vm,
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            "cpVect",
+            "dern_chipmunk_cpVect_clean_up_callback",
+            "",
+            "",
+            "",
+            "dern_chipmunk_to_string",
+            false,
+            cpVectContext);
+
+        octaspire_helpers_verify_not_null(argument);
+        octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
+
+        argument = octaspire_dern_vm_create_new_value_boolean(
+            context->vm,
+            cpArbiterIsFirstContact(arb));
+
+        octaspire_helpers_verify_not_null(argument);
+        octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
+
+        argument = octaspire_dern_vm_create_new_value_real(
+            context->vm,
+            cpArbiterTotalKE(arb));
+
+        octaspire_helpers_verify_not_null(argument);
+        octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
+
+        octaspire_dern_vm_call_lambda(
+            context->vm,
+            octaspire_dern_value_as_function(callbackValue),
+            arguments,
+            context->environment);
+    }
+
+    octaspire_dern_vm_pop_value(context->vm, arguments);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(context->vm));
+}
+
 void dern_chipmunk_private_wildcard_post_solve_handler(
     cpArbiter * arb,
     cpSpace   * space,
@@ -2037,35 +2175,10 @@ void dern_chipmunk_private_wildcard_post_solve_handler(
     octaspire_helpers_verify_not_null(data);
 
     dern_chipmunk_collision_wildcard_context_t * const context = data;
-
     size_t const stackLength = octaspire_dern_vm_get_stack_length(context->vm);
-
     octaspire_dern_value_t * const callbackValue = context->postSolveCallback;
-
     octaspire_helpers_verify_not_null(callbackValue);
-
-    octaspire_helpers_verify_true(
-        octaspire_dern_value_is_function(callbackValue));
-
-    octaspire_dern_value_t * const arguments =
-        octaspire_dern_vm_create_new_value_vector(context->vm);
-
-    octaspire_dern_vm_push_value(context->vm, arguments);
-
-    octaspire_dern_value_t * const argument =
-        octaspire_dern_vm_create_new_value_string_from_c_string(
-            context->vm,
-            "TODO XXX return Dern bodies or shapes");
-
-    octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
-
-    octaspire_dern_vm_call_lambda(
-        context->vm,
-        octaspire_dern_value_as_function(callbackValue),
-        arguments,
-        context->environment);
-
-    octaspire_dern_vm_pop_value(context->vm, arguments);
+    dern_chipmunk_private_do_wildcard_callback(arb, space, data, callbackValue);
 
     octaspire_helpers_verify_true(
         stackLength == octaspire_dern_vm_get_stack_length(context->vm));
@@ -2081,35 +2194,10 @@ void dern_chipmunk_private_wildcard_separate_handler(
     octaspire_helpers_verify_not_null(data);
 
     dern_chipmunk_collision_wildcard_context_t * const context = data;
-
     size_t const stackLength = octaspire_dern_vm_get_stack_length(context->vm);
-
     octaspire_dern_value_t * const callbackValue = context->separateCallback;
-
     octaspire_helpers_verify_not_null(callbackValue);
-
-    octaspire_helpers_verify_true(
-        octaspire_dern_value_is_function(callbackValue));
-
-    octaspire_dern_value_t * const arguments =
-        octaspire_dern_vm_create_new_value_vector(context->vm);
-
-    octaspire_dern_vm_push_value(context->vm, arguments);
-
-    octaspire_dern_value_t * const argument =
-        octaspire_dern_vm_create_new_value_string_from_c_string(
-            context->vm,
-            "TODO XXX return Dern bodies or shapes");
-
-    octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
-
-    octaspire_dern_vm_call_lambda(
-        context->vm,
-        octaspire_dern_value_as_function(callbackValue),
-        arguments,
-        context->environment);
-
-    octaspire_dern_vm_pop_value(context->vm, arguments);
+    dern_chipmunk_private_do_wildcard_callback(arb, space, data, callbackValue);
 
     octaspire_helpers_verify_true(
         stackLength == octaspire_dern_vm_get_stack_length(context->vm));

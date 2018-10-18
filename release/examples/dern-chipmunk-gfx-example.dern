@@ -32,8 +32,8 @@
 (chipmunk-cpSpaceAddWildCardHandler
  space
  {D+1}
- (fn (todo) (println todo)[todo])
- (fn (todo) (println todo)[todo]))
+ (fn (bodyA bodyB normal firstContact totalKE) (println [postSolve: -bodyA: {} -bodyB: {} -normal: {} -firstContact: {} -totalKE: {}] bodyA bodyB normal firstContact totalKE) [todo])
+ (fn (bodyA bodyB normal firstContact totalKE) (println [separate:  -bodyA: {} -bodyB: {} -normal: {} -firstContact: {} -totalKE: {}] bodyA bodyB normal firstContact totalKE) [todo]))
 
 (define running             as true                  [is running or not])
 (define targetFPS           as {D+100}                [target FPS])

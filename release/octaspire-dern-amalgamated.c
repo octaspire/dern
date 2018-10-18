@@ -25638,8 +25638,8 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "415"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "416"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
     OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "." \
@@ -26580,6 +26580,9 @@ bool octaspire_dern_value_as_vector_push_back_element(
 bool octaspire_dern_value_as_vector_remove_element_at(
     octaspire_dern_value_t *self,
     ptrdiff_t const possiblyNegativeIndex);
+
+bool octaspire_dern_value_as_vector_clear(
+    octaspire_dern_value_t * const self);
 
 bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *self);
 
@@ -46231,6 +46234,15 @@ bool octaspire_dern_value_as_vector_remove_element_at(
     return octaspire_vector_remove_element_at(
         self->value.vector,
         possiblyNegativeIndex);
+}
+
+bool octaspire_dern_value_as_vector_clear(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    return octaspire_vector_clear(self->value.vector);
 }
 
 bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *self)

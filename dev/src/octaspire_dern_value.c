@@ -3285,6 +3285,15 @@ bool octaspire_dern_value_as_vector_remove_element_at(
         possiblyNegativeIndex);
 }
 
+bool octaspire_dern_value_as_vector_clear(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    return octaspire_vector_clear(self->value.vector);
+}
+
 bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *self)
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
