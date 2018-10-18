@@ -2137,6 +2137,7 @@ void dern_chipmunk_private_wildcard_post_solve_handler(
             false,
             cpVectContext);
 
+        octaspire_helpers_verify_not_null(argument);
         octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
 
         argument = octaspire_dern_vm_create_new_value_boolean(
@@ -2144,7 +2145,13 @@ void dern_chipmunk_private_wildcard_post_solve_handler(
             cpArbiterIsFirstContact(arb));
 
         octaspire_helpers_verify_not_null(argument);
+        octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
 
+        argument = octaspire_dern_vm_create_new_value_real(
+            context->vm,
+            cpArbiterTotalKE(arb));
+
+        octaspire_helpers_verify_not_null(argument);
         octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
 
         octaspire_dern_vm_call_lambda(
