@@ -2052,18 +2052,85 @@ void dern_chipmunk_private_wildcard_post_solve_handler(
 
     octaspire_dern_vm_push_value(context->vm, arguments);
 
-    octaspire_dern_value_t * const argument =
-        octaspire_dern_vm_create_new_value_string_from_c_string(
+    cpBody * bodyA = 0;
+    cpBody * bodyB = 0;
+
+    cpArbiterGetBodies(arb, &bodyA, &bodyB);
+
+    octaspire_dern_value_t * argument =
+        octaspire_dern_vm_create_new_value_c_data(
             context->vm,
-            "TODO XXX return Dern bodies or shapes");
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            "cpBody",
+            "dern_chipmunk_cpBody_clean_up_callback",
+            "",
+            "",
+            "",
+            "dern_chipmunk_to_string",
+            false,
+            bodyA);
 
     octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
 
-    octaspire_dern_vm_call_lambda(
-        context->vm,
-        octaspire_dern_value_as_function(callbackValue),
-        arguments,
-        context->environment);
+    argument =
+        octaspire_dern_vm_create_new_value_c_data(
+            context->vm,
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            "cpBody",
+            "dern_chipmunk_cpBody_clean_up_callback",
+            "",
+            "",
+            "",
+            "dern_chipmunk_to_string",
+            false,
+            bodyB);
+
+    octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
+
+    dern_chipmunk_allocation_context_t * const cpVectContext = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(context->vm),
+        sizeof(dern_chipmunk_allocation_context_t));
+
+    if (!cpVectContext)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(context->vm));
+
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            // 
+            context->vm,
+            "Builtin 'chipmunk-cpv' failed to allocate memory for a cpVect context.");
+        octaspire_dern_vm_call_lambda(
+            context->vm,
+            octaspire_dern_value_as_function(callbackValue),
+            arguments,
+            context->environment);
+    }
+    else
+    {
+        cpVectContext->vm      = vm;
+        cpVectContext->payload = vect;
+
+        argument = octaspire_dern_vm_create_new_value_c_data(
+            context->vm,
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            "cpVect",
+            "dern_chipmunk_cpVect_clean_up_callback",
+            "",
+            "",
+            "",
+            "dern_chipmunk_to_string",
+            false,
+            cpVectContext);
+
+        octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
+
+        octaspire_dern_vm_call_lambda(
+            context->vm,
+            octaspire_dern_value_as_function(callbackValue),
+            arguments,
+            context->environment);
+    }
 
     octaspire_dern_vm_pop_value(context->vm, arguments);
 
@@ -2096,10 +2163,38 @@ void dern_chipmunk_private_wildcard_separate_handler(
 
     octaspire_dern_vm_push_value(context->vm, arguments);
 
-    octaspire_dern_value_t * const argument =
-        octaspire_dern_vm_create_new_value_string_from_c_string(
+    cpBody * bodyA = 0;
+    cpBody * bodyB = 0;
+
+    cpArbiterGetBodies(arb, &bodyA, &bodyB);
+
+    octaspire_dern_value_t * argument =
+        octaspire_dern_vm_create_new_value_c_data(
             context->vm,
-            "TODO XXX return Dern bodies or shapes");
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            "cpBody",
+            "dern_chipmunk_cpBody_clean_up_callback",
+            "",
+            "",
+            "",
+            "dern_chipmunk_to_string",
+            false,
+            bodyA);
+
+    octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
+
+    argument =
+        octaspire_dern_vm_create_new_value_c_data(
+            context->vm,
+            DERN_CHIPMUNK_PLUGIN_NAME,
+            "cpBody",
+            "dern_chipmunk_cpBody_clean_up_callback",
+            "",
+            "",
+            "",
+            "dern_chipmunk_to_string",
+            false,
+            bodyB);
 
     octaspire_dern_value_as_vector_push_back_element(arguments, &argument);
 
