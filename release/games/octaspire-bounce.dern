@@ -38,9 +38,9 @@
 
 (define paddle    as (chipmunk-cpBodyNewKinematic) [a body])
 (chipmunk-cpSpaceAddBody space paddle)
-(chipmunk-cpBodySetPosition paddle (chipmunk-cpv {D+0} {D-30}))
+(chipmunk-cpBodySetPosition paddle (chipmunk-cpv {D+0} {D-25}))
 (define paddleShape as
-  (chipmunk-cpSegmentShapeNew paddle (chipmunk-cpv {D-1} {D-30}) (chipmunk-cpv {D+1} {D-30}) {D+0})
+  (chipmunk-cpSegmentShapeNew paddle (chipmunk-cpv {D-5} {D+0}) (chipmunk-cpv {D+5} {D+0}) {D+0})
   [ball collision shape])
 (chipmunk-cpShapeSetFriction paddleShape {D+1})
 (chipmunk-cpSpaceAddShape space paddleShape)
@@ -77,11 +77,13 @@
            (+ {D+320} (* {D+10} {D+10}))
            (+ {D+320} (* {D+10} {D-30})))
         ; paddle
+        (define paddlepos as (chipmunk-cpBodyGetPosition paddle) [position of the ball])
+        (define paddlex   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x paddlepos))) [x component])
+        (define paddley   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y paddlepos))) [y component])
+        (println [{} {}] paddlex paddley)
         (sdl2-gl-ortho-line
-           (+ {D+320} (* {D-1}  {//TODO XXXD-10}))
-           (+ {D+320} (* {D-30} {D+30}))
-           (+ {D+320} (* {D+1}  {D-10}))
-           (+ {D+320} (* {D+10} {D-30})))
+           (- paddlex {D+50}) paddley
+           (+ paddlex {D+50}) paddley)
         (sdl2-GL-SwapWindow window))
     [render]
     '()
