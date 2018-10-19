@@ -2496,49 +2496,57 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
 
     size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
 
-    if (numArgs != 2)
+    if (numArgs != 2 && numArgs != 0)
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Builtin 'chipmunk-cpv' expects two arguments. "
+            "Builtin 'chipmunk-cpv' expects two or zero arguments. "
             "%zu arguments were given.",
             numArgs);
     }
 
-    // X
-    octaspire_dern_value_t const * const firstArg =
-        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+    float x = 0;
+    float y = 0;
 
-    octaspire_helpers_verify_not_null(firstArg);
-
-    if (!octaspire_dern_value_is_number(firstArg))
+    if (numArgs == 2)
     {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Builtin 'chipmunk-cpv' expects number as the first argument. "
-            "Type '%s' was given.",
-            octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+        // X
+        octaspire_dern_value_t const * const firstArg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
+
+        octaspire_helpers_verify_not_null(firstArg);
+
+        if (!octaspire_dern_value_is_number(firstArg))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'chipmunk-cpv' expects number as the first argument. "
+                "Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(firstArg->typeTag));
+        }
+
+        x = octaspire_dern_value_as_number_get_value(firstArg);
+
+        // Y
+        octaspire_dern_value_t const * const secondArg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+        octaspire_helpers_verify_not_null(secondArg);
+
+        if (!octaspire_dern_value_is_number(secondArg))
+        {
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin 'chipmunk-cpv' expects number as the second argument. "
+                "Type '%s' was given.",
+                octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+        }
+
+        y = octaspire_dern_value_as_number_get_value(secondArg);
     }
-
-    // Y
-    octaspire_dern_value_t const * const secondArg =
-        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
-
-    octaspire_helpers_verify_not_null(secondArg);
-
-    if (!octaspire_dern_value_is_number(secondArg))
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Builtin 'chipmunk-cpv' expects number as the second argument. "
-            "Type '%s' was given.",
-            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
-    }
-
-    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
 
     cpVect *vect = octaspire_allocator_malloc(
         octaspire_dern_vm_get_allocator(vm),
@@ -2552,8 +2560,8 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
             "Builtin 'chipmunk-cpv' failed to allocate memory.");
     }
 
-    vect->x = octaspire_dern_value_as_number_get_value(firstArg);
-    vect->y = octaspire_dern_value_as_number_get_value(secondArg);
+    vect->x = x;
+    vect->y = y;
 
     dern_chipmunk_allocation_context_t * const context = octaspire_allocator_malloc(
         octaspire_dern_vm_get_allocator(vm),
@@ -3580,10 +3588,11 @@ bool dern_chipmunk_init(
             "SYNOPSIS\n"
             "\t(require 'dern_chipmunk)\n"
             "\n"
-            "\t(chipmunk-cpv) -> cpVect or error message\n"
+            "\t(chipmunk-cpv tx ty) -> cpVect or error\n"
             "\n"
             "DESCRIPTION\n"
             "\tCreates and returns a new Chipmunk 2D vector cpVect.\n"
+            "\tIf called without arguments, returns a zero vector.\n"
             "\n"
             "ARGUMENTS\n"
             "\tx           the x coordinate component\n"

@@ -100,7 +100,7 @@
        (define type  as nil [type of event])
        (if (and (!= event nil) (> (len event) {D+0})) (= type (ln@ event {D+0})))
        (select (== type 'QUIT)    (= running false)
-               (== type 'KEYDOWN) ((chipmunk-cpBodyApplyImpulseAtLocalPoint ball (chipmunk-cpv {D+0} {D+100}) (chipmunk-cpv {D+0} {D+0}))))
+               (== type 'KEYDOWN) (chipmunk-cpBodyApplyImpulseAtLocalPoint ball (chipmunk-cpv {D+0} {D+100}) (chipmunk-cpv)))
 
        (chipmunk-cpSpaceStep space {D+0.01})
 
