@@ -99,11 +99,9 @@
        (define event as (sdl2-PollEvent) [event from sdl2])
        (define type  as nil [type of event])
        (if (and (!= event nil) (> (len event) {D+0})) (= type (ln@ event {D+0})))
-       (select (== type 'QUIT)          (= running false)
-               ;(== type 'KEYDOWN)       (do (println [key down]) (chipmunk-cpBodySetVelocity paddle (chipmunk-cpv {D+5} {D+0}))))
-               (== type 'KEYDOWN)        (do (println [key down]) (chipmunk-cpBodyApplyImpulseAtLocalPoint ball (chipmunk-cpv {D+0} {D+100}) (chipmunk-cpv {D+0} {D+0}))))
+       (select (== type 'QUIT)    (= running false)
+               (== type 'KEYDOWN) ((chipmunk-cpBodyApplyImpulseAtLocalPoint ball (chipmunk-cpv {D+0} {D+100}) (chipmunk-cpv {D+0} {D+0}))))
 
-       ;(chipmunk-cpSpaceStep space targetFrameDuration)
        (chipmunk-cpSpaceStep space {D+0.01})
 
        (sdl2-TimerUpdate)
@@ -115,7 +113,3 @@
                    (sdl2-Delay delayInSeconds)))))
 
 (sdl2-Quit)
-
-(println [===============|newline|ball position is {} and angle is {}]
-         (chipmunk-cpBodyGetPosition ball)
-         (chipmunk-cpBodyGetAngle ball))
