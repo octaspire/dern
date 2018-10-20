@@ -2065,8 +2065,6 @@ void dern_chipmunk_private_do_wildcard_callback(
 
     cpArbiterGetBodies(arb, &bodyA, &bodyB);
 
-    printf("\n????????????????????? bodyA is %p   and   bodyB is %p\n\n", bodyA, bodyB);
-
     octaspire_dern_value_t * argument1 =
         octaspire_dern_vm_create_new_value_c_data(
             context->vm,
@@ -3829,7 +3827,6 @@ void * dern_chipmunk_compare(
         cpBody const * const body2 = cData2->payload;
         octaspire_helpers_verify_not_null(body2);
 
-        printf("\n --- body1 %p   body2 %p ---\n", body1, body2);
         if (body1 == body2)
         {
             return &result_0;

@@ -63,8 +63,8 @@
 (chipmunk-cpSpaceAddWildCardHandler
  space
  {D+1}
- (fn (bodyA bodyB normal firstContact totalKE) (if (ball-paddle-collision? bodyA bodyB) (== ballOnPaddle true))  [todo])
- (fn (bodyA bodyB normal firstContact totalKE) (if (ball-paddle-collision? bodyA bodyB) (== ballOnPaddle false)) [todo]))
+ (fn (bodyA bodyB normal firstContact totalKE) (if (ball-paddle-collision? bodyA bodyB) (= ballOnPaddle true))  [todo])
+ (fn (bodyA bodyB normal firstContact totalKE) (if (ball-paddle-collision? bodyA bodyB) (= ballOnPaddle false)) [todo]))
 
 
 (define running             as true                  [is running or not])
@@ -114,11 +114,10 @@
        (define type  as nil [type of event])
        (if (and (!= event nil) (> (len event) {D+0})) (= type (ln@ event {D+0})))
        (select (== type 'QUIT)    (= running false)
-               (== type 'KEYDOWN) (chipmunk-cpBodyApplyImpulseAtLocalPoint ball (chipmunk-cpv {D+0} {D+100}) (chipmunk-cpv)))
+               (== type 'KEYDOWN) (if ballOnPaddle
+                                      (chipmunk-cpBodyApplyImpulseAtLocalPoint ball(chipmunk-cpv {D+0} {D+100}) (chipmunk-cpv))))
 
        (chipmunk-cpSpaceStep space {D+0.01})
-
-       (println [{}] ballOnPaddle)
 
        (sdl2-TimerUpdate)
        (define currentFrameDuration as (sdl2-TimerGetSeconds) [current frame duration])
