@@ -42,6 +42,7 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const stdLibLinkAtCallbackName,
     char const * const stdLibCopyAtCallbackName,
     char const * const stdLibToStringCallbackName,
+    char const * const stdLibCompareCallbackName,
     bool const copyingAllowed,
     struct octaspire_dern_vm_t * const vm,
     octaspire_allocator_t *allocator);

@@ -1911,6 +1911,7 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
         "",
         "",
         "",
+        "",
         false,
         (void*)dern_sdl2_private_next_free_texture_uid);
 }
@@ -2267,6 +2268,7 @@ octaspire_dern_value_t *dern_sdl2_CreateTextureFromFontAndText(
         "",
         "",
         "",
+        "",
         false,
         (void*)dern_sdl2_private_next_free_texture_uid);
 #else
@@ -2405,6 +2407,7 @@ octaspire_dern_value_t *dern_sdl2_CreateSound(
         DERN_SDL2_PLUGIN_NAME,
         "sound",
         "dern_sdl2_sound_clean_up_callback",
+        "",
         "",
         "",
         "",
@@ -2548,6 +2551,7 @@ octaspire_dern_value_t *dern_sdl2_CreateMusic(
         DERN_SDL2_PLUGIN_NAME,
         "music",
         "dern_sdl2_music_clean_up_callback",
+        "",
         "",
         "",
         "",
@@ -3154,6 +3158,7 @@ octaspire_dern_value_t *dern_sdl2_CreateWindow(
         "",
         "",
         "",
+        "",
         true,
         window);
 }
@@ -3304,6 +3309,7 @@ octaspire_dern_value_t *dern_sdl2_CreateFont(
         DERN_SDL2_PLUGIN_NAME,
         "font",
         "dern_sdl2_font_clean_up_callback",
+        "",
         "",
         "",
         "",
@@ -3465,6 +3471,7 @@ octaspire_dern_value_t *dern_sdl2_CreateRenderer(
         DERN_SDL2_PLUGIN_NAME,
         "renderer",
         "dern_sdl2_renderer_clean_up_callback",
+        "",
         "",
         "",
         "",
@@ -7177,6 +7184,7 @@ octaspire_dern_value_t *dern_sdl2_GetWindowSurface(
         "",
         "",
         "",
+        "",
         true,
         surface);
 }
@@ -7241,6 +7249,7 @@ octaspire_dern_value_t *dern_sdl2_GetPixelFormat(
         vm,
         DERN_SDL2_PLUGIN_NAME,
         "pixelFormat",
+        "",
         "",
         "",
         "",

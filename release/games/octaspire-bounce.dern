@@ -53,6 +53,20 @@
  (fn (bodyA bodyB normal firstContact totalKE) (println [separate:  -bodyA: {} -bodyB: {} -normal: {} -firstContact: {} -totalKE: {}] bodyA bodyB normal firstContact totalKE) [todo]))
 !#
 
+(define ballOnPaddle as false [is ball in contact with the paddle])
+
+(define ball-paddle-collision? as (fn (bodyA bodyB)
+    (if (and (!= paddle bodyA) (!= paddle bodyB)) return false)
+    (if (and (!= ball   bodyA) (!= ball   bodyB)) return false)
+    (return true)) [todo] '(bodyA [todo] bodyB [bodyB]) howto-no)
+
+(chipmunk-cpSpaceAddWildCardHandler
+ space
+ {D+1}
+ (fn (bodyA bodyB normal firstContact totalKE) (if (ball-paddle-collision? bodyA bodyB) (= ballOnPaddle true))  [todo])
+ (fn (bodyA bodyB normal firstContact totalKE) (if (ball-paddle-collision? bodyA bodyB) (= ballOnPaddle false)) [todo]))
+
+
 (define running             as true                  [is running or not])
 (define targetFPS           as {D+100}                [target FPS])
 (define targetFrameDuration as (/ {D+1.0} targetFPS) [time for a frame to last])
@@ -100,7 +114,8 @@
        (define type  as nil [type of event])
        (if (and (!= event nil) (> (len event) {D+0})) (= type (ln@ event {D+0})))
        (select (== type 'QUIT)    (= running false)
-               (== type 'KEYDOWN) (chipmunk-cpBodyApplyImpulseAtLocalPoint ball (chipmunk-cpv {D+0} {D+100}) (chipmunk-cpv)))
+               (== type 'KEYDOWN) (if ballOnPaddle
+                                      (chipmunk-cpBodyApplyImpulseAtLocalPoint ball(chipmunk-cpv {D+0} {D+100}) (chipmunk-cpv))))
 
        (chipmunk-cpSpaceStep space {D+0.01})
 

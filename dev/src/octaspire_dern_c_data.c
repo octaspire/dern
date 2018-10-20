@@ -39,6 +39,7 @@ struct octaspire_dern_c_data_t
     octaspire_string_t    *stdLibLinkAtCallbackName;
     octaspire_string_t    *stdLibCopyAtCallbackName;
     octaspire_string_t    *stdLibToStringCallbackName;
+    octaspire_string_t    *stdLibCompareCallbackName;
     octaspire_dern_vm_t   *vm;
     octaspire_allocator_t *allocator;
     bool                   copyingAllowed;
@@ -54,6 +55,7 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const stdLibLinkAtCallbackName,
     char const * const stdLibCopyAtCallbackName,
     char const * const stdLibToStringCallbackName,
+    char const * const stdLibCompareCallbackName,
     bool const copyingAllowed,
     octaspire_dern_vm_t * const vm,
     octaspire_allocator_t *allocator)
@@ -99,6 +101,10 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
         stdLibToStringCallbackName,
         self->allocator);
 
+    self->stdLibCompareCallbackName = octaspire_string_new(
+        stdLibCompareCallbackName,
+        self->allocator);
+
     self->copyingAllowed = copyingAllowed;
 
     return self;
@@ -117,6 +123,7 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
         octaspire_string_get_c_string(other->stdLibLinkAtCallbackName),
         octaspire_string_get_c_string(other->stdLibCopyAtCallbackName),
         octaspire_string_get_c_string(other->stdLibToStringCallbackName),
+        octaspire_string_get_c_string(other->stdLibCompareCallbackName),
         other->copyingAllowed,
         other->vm,
         allocator);
@@ -144,6 +151,9 @@ void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
     octaspire_string_release(self->stdLibToStringCallbackName);
     self->stdLibToStringCallbackName = 0;
 
+    octaspire_string_release(self->stdLibCompareCallbackName);
+    self->stdLibCompareCallbackName = 0;
+
     octaspire_string_release(self->pluginName);
     self->pluginName = 0;
 
@@ -163,7 +173,7 @@ octaspire_string_t *octaspire_dern_c_data_to_string(
             allocator,
             "C data (%s : %s) payload=%p cleanUpCallbackName=%s stdLibLenCallbackName=%s "
             "stdLibLinkAtCallbackName=%s stdLibCopyAtCallbackName=%s "
-            "stdLibCopyAtCallbackName=%s",
+            "stdLibCopyAtCallbackName=%s stdLibCompareCallbackName=%s",
             octaspire_string_get_c_string(self->pluginName),
             octaspire_string_get_c_string(self->typeNameForPayload),
             (void*)self->payload,
@@ -171,7 +181,8 @@ octaspire_string_t *octaspire_dern_c_data_to_string(
             octaspire_string_get_c_string(self->stdLibLenCallbackName),
             octaspire_string_get_c_string(self->stdLibLinkAtCallbackName),
             octaspire_string_get_c_string(self->stdLibCopyAtCallbackName),
-            octaspire_string_get_c_string(self->stdLibToStringCallbackName));
+            octaspire_string_get_c_string(self->stdLibToStringCallbackName),
+            octaspire_string_get_c_string(self->stdLibCompareCallbackName));
     }
 
     octaspire_dern_lib_t const * const lib = octaspire_dern_vm_get_library_const(
@@ -232,6 +243,31 @@ int octaspire_dern_c_data_compare(
     {
         return tmp;
     }
+
+    // If available, use comparator from the binary library.
+    if (!octaspire_string_is_empty(self->stdLibCompareCallbackName))
+    {
+        octaspire_dern_lib_t const * const lib = octaspire_dern_vm_get_library_const(
+            octaspire_dern_c_data_get_vm_const(self),
+            octaspire_dern_c_data_get_plugin_name(self));
+
+        if (!lib)
+        {
+            return 0;
+        }
+
+        int const * const result = octaspire_dern_lib_dycall_2_const(
+            (octaspire_dern_lib_t * const)lib,
+            octaspire_string_get_c_string(self->stdLibCompareCallbackName),
+            self,
+            other);
+
+        octaspire_helpers_verify_not_null(result);
+
+        return *result;
+    }
+
+    // Library comparator was not available, so compare just pointers.
 
     ptrdiff_t const diff = self - other;
 

@@ -14010,6 +14010,7 @@ octaspire_dern_value_t *octaspire_dern_test_dern_vm_create_new_user_data(
             "",
             "",
             "",
+            "",
             true,
             (void*)octaspireDernVmTestCreateNewUserDataTestPayload);
 }
