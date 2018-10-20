@@ -181,7 +181,7 @@ octaspire_string_t *octaspire_dern_c_data_to_string(
             octaspire_string_get_c_string(self->stdLibLenCallbackName),
             octaspire_string_get_c_string(self->stdLibLinkAtCallbackName),
             octaspire_string_get_c_string(self->stdLibCopyAtCallbackName),
-            octaspire_string_get_c_string(self->stdLibToStringCallbackName)
+            octaspire_string_get_c_string(self->stdLibToStringCallbackName),
             octaspire_string_get_c_string(self->stdLibCompareCallbackName));
     }
 
@@ -245,7 +245,7 @@ int octaspire_dern_c_data_compare(
     }
 
     // If available, use comparator from the binary library.
-    if (!octaspire_string_is_empty(self->stdLibToCompareCallbackName))
+    if (!octaspire_string_is_empty(self->stdLibCompareCallbackName))
     {
         octaspire_dern_lib_t const * const lib = octaspire_dern_vm_get_library_const(
             octaspire_dern_c_data_get_vm_const(self),
@@ -256,11 +256,15 @@ int octaspire_dern_c_data_compare(
             return 0;
         }
 
-        return octaspire_dern_lib_dycall(
+        int const * const result = octaspire_dern_lib_dycall_2_const(
             (octaspire_dern_lib_t * const)lib,
             octaspire_string_get_c_string(self->stdLibCompareCallbackName),
             self,
             other);
+
+        octaspire_helpers_verify_not_null(result);
+
+        return *result;
     }
 
     // Library comparator was not available, so compare just pointers.

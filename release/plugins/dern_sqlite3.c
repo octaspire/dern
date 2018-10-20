@@ -158,6 +158,7 @@ octaspire_dern_value_t *dern_sqlite3_open(
         "",
         "",
         "",
+        "",
         false,
         db);
 

@@ -227,6 +227,7 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
         "",
         "",
         "",
+        "",
         false,
         (void*)s);
 
@@ -313,6 +314,7 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
         DERN_SOCKET_PLUGIN_NAME,
         "socketFileDescriptor",
         "dern_socket_socket_clean_up_callback",
+        "",
         "",
         "",
         "",
@@ -494,6 +496,7 @@ octaspire_dern_value_t *dern_socket_accept(
         "",
         "",
         "",
+        "",
         false,
         (void*)result);
 #else
@@ -523,6 +526,7 @@ octaspire_dern_value_t *dern_socket_accept(
         DERN_SOCKET_PLUGIN_NAME,
         "socketFileDescriptor",
         "dern_socket_socket_clean_up_callback",
+        "",
         "",
         "",
         "",

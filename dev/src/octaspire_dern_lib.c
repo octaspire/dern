@@ -429,6 +429,88 @@ void * octaspire_dern_lib_dycall(
         return result;
 }
 
+void * octaspire_dern_lib_dycall_2_const(
+    octaspire_dern_lib_t * const self,
+    char const * const funcName,
+    octaspire_dern_c_data_t const * const cData1,
+    octaspire_dern_c_data_t const * const cData2)
+{
+    if (self->typeTag != OCTASPIRE_DERN_LIB_TAG_BINARY)
+    {
+        return 0;
+    }
+
+    void * result = 0;
+
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+#ifdef _WIN32
+        if (self->binaryLibHandle)
+        {
+            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const);
+
+            libDycallFunc =
+                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const))
+                    GetProcAddress(
+                        self->binaryLibHandle,
+                        funcName);
+
+            if (!libDycallFunc)
+            {
+                return octaspire_string_new_format(
+                    self->allocator,
+                    "Binary library (name='%s'):\n"
+                    "GetProcAddress failed on the dycall_2_const function for the library.",
+                    octaspire_string_get_c_string(self->name));
+            }
+
+            return (*libDycallFunc)(
+                self->vm,
+                octaspire_dern_vm_get_global_environment(self->vm)->value.environment,
+                cData1,
+                cData2);
+        }
+#else
+        if (self->binaryLibHandle)
+        {
+            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const);
+
+            // Clear any old errors
+            dlerror();
+
+            libDycallFunc =
+                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const))dlsym(
+                    self->binaryLibHandle,
+                    funcName);
+
+            char *error = dlerror();
+
+            if (error)
+            {
+                return octaspire_string_new_format(
+                    self->allocator,
+                    "Binary library (name='%s'):\n"
+                    "dlsym failed on the dycall_2_const %s function for the library. dlerror is: %s",
+                    octaspire_string_get_c_string(self->name),
+                    funcName,
+                    error);
+            }
+
+            return (*libDycallFunc)(
+                self->vm,
+                octaspire_dern_vm_get_global_environment(self->vm)->value.environment,
+                cData1,
+                cData2);
+        }
+#endif
+#else
+        OCTASPIRE_HELPERS_UNUSED_PARAMETER(funcName);
+        OCTASPIRE_HELPERS_UNUSED_PARAMETER(cData1);
+        OCTASPIRE_HELPERS_UNUSED_PARAMETER(cData2);
+#endif
+
+        return result;
+}
+
 void octaspire_dern_lib_release(octaspire_dern_lib_t *self)
 {
     if (!self)

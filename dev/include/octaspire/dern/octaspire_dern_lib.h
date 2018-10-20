@@ -61,6 +61,12 @@ void * octaspire_dern_lib_dycall(
     char const * const funcName,
     struct octaspire_dern_c_data_t * const cData);
 
+void * octaspire_dern_lib_dycall_2_const(
+    octaspire_dern_lib_t * const self,
+    char const * const funcName,
+    struct octaspire_dern_c_data_t const * const cData1,
+    struct octaspire_dern_c_data_t const * const cData2);
+
 void octaspire_dern_lib_release(octaspire_dern_lib_t *self);
 
 bool octaspire_dern_lib_is_good(octaspire_dern_lib_t const * const self);
