@@ -2107,6 +2107,7 @@ void dern_chipmunk_private_do_wildcard_callback(
 
     if (!cpVectContext)
     {
+        abort();
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(context->vm));
 
@@ -2139,7 +2140,7 @@ void dern_chipmunk_private_do_wildcard_callback(
         cpVectContext->vm      = context->vm;
         cpVectContext->payload = vect;
 
-        octaspire_dern_value_t * argument2 =
+        octaspire_dern_value_t * argument3 =
             octaspire_dern_vm_create_new_value_c_data(
                 cpVectContext->vm,
                 DERN_CHIPMUNK_PLUGIN_NAME,
@@ -2153,24 +2154,24 @@ void dern_chipmunk_private_do_wildcard_callback(
                 false,
                 cpVectContext);
 
-        octaspire_helpers_verify_not_null(argument2);
-        octaspire_dern_value_as_vector_push_back_element(arguments, &argument2);
+        octaspire_helpers_verify_not_null(argument3);
+        octaspire_dern_value_as_vector_push_back_element(arguments, &argument3);
 
-        octaspire_dern_value_t * argument3 =
+        octaspire_dern_value_t * argument4 =
             octaspire_dern_vm_create_new_value_boolean(
                 context->vm,
                 cpArbiterIsFirstContact(arb));
 
-        octaspire_helpers_verify_not_null(argument2);
-        octaspire_dern_value_as_vector_push_back_element(arguments, &argument3);
+        octaspire_helpers_verify_not_null(argument4);
+        octaspire_dern_value_as_vector_push_back_element(arguments, &argument4);
 
-        octaspire_dern_value_t * argument4 =
+        octaspire_dern_value_t * argument5 =
             octaspire_dern_vm_create_new_value_real(
                 context->vm,
                 cpArbiterTotalKE(arb));
 
-        octaspire_helpers_verify_not_null(argument4);
-        octaspire_dern_value_as_vector_push_back_element(arguments, &argument4);
+        octaspire_helpers_verify_not_null(argument5);
+        octaspire_dern_value_as_vector_push_back_element(arguments, &argument5);
 
         octaspire_dern_vm_call_lambda(
             context->vm,
@@ -3828,7 +3829,7 @@ void * dern_chipmunk_compare(
         cpBody const * const body2 = cData2->payload;
         octaspire_helpers_verify_not_null(body2);
 
-        printf("\n --- body1 %p   body2 %p ---\n");
+        printf("\n --- body1 %p   body2 %p ---\n", body1, body2);
         if (body1 == body2)
         {
             return &result_0;
