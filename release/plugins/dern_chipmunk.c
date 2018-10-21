@@ -1169,6 +1169,84 @@ octaspire_dern_value_t *dern_chipmunk_cpBodySetVelocity(
 
     cpBodySetVelocity(body, *velocity);
 
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_chipmunk_cpBodySetAngularVelocity(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpBodySetAngularVelocity";
+    char   const * const cpBodyName   = "cpBody";
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects two arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // cpBody
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpBodyName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpBody * const body = cDataOrError.cData;
+
+    // Scalar angular velocity
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_number(secondArg))
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects number for the angular velocity "
+            "as the second argument. Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    float const velocity = octaspire_dern_value_as_number_get_value(secondArg);
+
+    cpBodySetAngularVelocity(body, velocity);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
@@ -3171,7 +3249,40 @@ bool dern_chipmunk_init(
             "\ttrue or error if something went wrong\n"
             "\n"
             "SEE ALSO\n"
-            "",
+            "\tchipmunk-cpBodySetAngularVelocity\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpBodySetAngularVelocity",
+            dern_chipmunk_cpBodySetAngularVelocity,
+            2,
+            "NAME\n"
+            "\tchipmunk-cpBodySetAngularVelocity\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpBodySetAngularVelocity body velocity) -> true or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tSets the scalar angular velocity of the given cpBody. Note, that\n"
+            "\tusually when dealing with dynamic bodies, you should use forces or\n"
+            "\timpulses and not set the velocity of the body directly.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tbody       the target cpBody\n"
+            "\tvelocity   the scalar angular velocity in radians per second.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue or error if something went wrong\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpBodySetVelocity\n",
             false,
             targetEnv))
     {
