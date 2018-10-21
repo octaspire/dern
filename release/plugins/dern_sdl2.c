@@ -1627,6 +1627,46 @@ octaspire_dern_value_t *dern_sdl2_PollEvent(
 
                 octaspire_helpers_verify_not_null(modValue);
                 octaspire_dern_value_as_vector_push_back_element(result, &modValue);
+
+                octaspire_dern_value_t * timeStampValue =
+                    octaspire_dern_vm_create_new_value_integer(
+                        vm,
+                        event.key.timestamp);
+
+                octaspire_helpers_verify_not_null(timeStampValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &timeStampValue);
+            }
+            break;
+
+            case SDL_KEYUP:
+            {
+                typeValue = octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEYUP");
+                octaspire_helpers_verify_not_null(typeValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &typeValue);
+
+                octaspire_dern_value_t * keyValue =
+                    octaspire_dern_vm_create_new_value_string_from_c_string(
+                        vm,
+                        dern_sdl2_private_helper_sdl_keycode_to_c_string(event.key.keysym.sym));
+
+                octaspire_helpers_verify_not_null(keyValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &keyValue);
+
+                octaspire_dern_value_t * modValue =
+                    octaspire_dern_vm_create_new_value_string_from_c_string(
+                        vm,
+                        dern_sdl2_private_helper_sdl_keymodcode_to_c_string(event.key.keysym.mod));
+
+                octaspire_helpers_verify_not_null(modValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &modValue);
+
+                octaspire_dern_value_t * timeStampValue =
+                    octaspire_dern_vm_create_new_value_integer(
+                        vm,
+                        event.key.timestamp);
+
+                octaspire_helpers_verify_not_null(timeStampValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &timeStampValue);
             }
             break;
 
