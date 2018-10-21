@@ -122,7 +122,7 @@
                                       (do
                                           (= keyDownDuration (- (ln@ event {D+3}) keyDownDuration))
                                           (println [keyDownDuration is {}] keyDownDuration)
-                                          (chipmunk-cpBodyApplyImpulseAtLocalPoint ball(chipmunk-cpv {D+0} keyDownDuration) (chipmunk-cpv)))))
+                                          (chipmunk-cpBodyApplyImpulseAtLocalPoint ball(chipmunk-cpv {D+0} (* {D+0.25} keyDownDuration)) (chipmunk-cpv)))))
 
        (chipmunk-cpSpaceStep space {D+0.01})
 
