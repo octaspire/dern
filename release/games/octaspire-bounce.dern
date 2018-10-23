@@ -31,7 +31,7 @@
 
 (define rightWall as (chipmunk-cpSpaceGetStaticBody space) [the rightWall])
 (define rightWallShape as
-  (chipmunk-cpSegmentShapeNew rightWall (chipmunk-cpv {D-10} {D+30}) (chipmunk-cpv {D-10} {D-30}) {D+0})
+  (chipmunk-cpSegmentShapeNew rightWall (chipmunk-cpv {D+10} {D+30}) (chipmunk-cpv {D+10} {D-30}) {D+0})
   [collision shape for the ground])
 (chipmunk-cpShapeSetFriction rightWallShape {D+1})
 (chipmunk-cpSpaceAddShape space rightWallShape)
@@ -45,13 +45,14 @@
 (chipmunk-cpShapeSetFriction paddleShape {D+1})
 (chipmunk-cpSpaceAddShape space paddleShape)
 
-#!
-(chipmunk-cpSpaceAddWildCardHandler
- space
- {D+1}
- (fn (bodyA bodyB normal firstContact totalKE) (println [postSolve: -bodyA: {} -bodyB: {} -normal: {} -firstContact: {} -totalKE: {}] bodyA bodyB normal firstContact totalKE) [todo])
- (fn (bodyA bodyB normal firstContact totalKE) (println [separate:  -bodyA: {} -bodyB: {} -normal: {} -firstContact: {} -totalKE: {}] bodyA bodyB normal firstContact totalKE) [todo]))
-!#
+(define platform as (chipmunk-cpBodyNewKinematic) [a body])
+(chipmunk-cpSpaceAddBody space platform)
+(chipmunk-cpBodySetPosition platform (chipmunk-cpv {D+0} {D+0}))
+(define platformShape as
+  (chipmunk-cpSegmentShapeNew platform (chipmunk-cpv {D-1} {D+0}) (chipmunk-cpv {D+1} {D+0}) {D+0})
+  [platform collision shape])
+(chipmunk-cpShapeSetFriction platformShape {D+1})
+(chipmunk-cpSpaceAddShape space platformShape)
 
 (define ballOnPaddle as false [is ball in contact with the paddle])
 
@@ -68,10 +69,22 @@
 
 
 (define running             as true                  [is running or not])
-(define targetFPS           as {D+100}                [target FPS])
+(define targetFPS           as {D+100}               [target FPS])
 (define targetFrameDuration as (/ {D+1.0} targetFPS) [time for a frame to last])
 (define origoX              as {D+256}               [X-coordinate of center for drawing])
 (define origoY              as {D+256}               [Y-coordinate of center for drawing])
+
+(define keyDownDuration     as {D+0}   [duration of keypress])
+(define pressure            as {D+0}   [current pressure])
+(define pressureDeltaVel    as {D+0.1} [velocity of pressure change])
+(define maxPressure         as {D+1}   [max pressure that is tolerated])
+(define minPressure         as {D+0}   [smallest possible pressure])
+
+(define game-over as (fn ()
+      (chipmunk-cpBodySetPosition        ball (chipmunk-cpv {D+0}  {D+15}))
+      (chipmunk-cpBodySetVelocity        ball (chipmunk-cpv))
+      (chipmunk-cpBodySetAngularVelocity ball {D+0}))
+  [game over] '() howto-no)
 
 (define render as (fn ()
         (define ballpos as (chipmunk-cpBodyGetPosition ball) [position of the ball])
@@ -96,16 +109,26 @@
         (define paddlepos as (chipmunk-cpBodyGetPosition paddle) [position of the ball])
         (define paddlex   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x paddlepos))) [x component])
         (define paddley   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y paddlepos))) [y component])
-        ;(println [{} {}] paddlex paddley)
         (sdl2-gl-ortho-line
            (- paddlex {D+50}) paddley
            (+ paddlex {D+50}) paddley)
+        ; pressure bar
+        (sdl2-gl-ortho-line
+           (- paddlex (* pressure {D+50})) (+ paddley {D-2})
+           (+ paddlex (* pressure {D+50})) (+ paddley {D-2}))
+        ; platform
+        (define platformpos as (chipmunk-cpBodyGetPosition platform) [position of a platform])
+        (define platformx   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x platformpos))) [x component])
+        (define platformy   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y platformpos))) [y component])
+        (sdl2-gl-ortho-line
+           (- platformx {D+10}) platformy
+           (+ platformx {D+10}) platformy)
         (sdl2-GL-SwapWindow window))
     [render]
     '()
     howto-ok)
 
-(define keyDownDuration as {D+0} [duration of keypress])
+(chipmunk-cpBodySetVelocity platform (chipmunk-cpv {D+30} {D+0}))
 
 (while running
        (sdl2-TimerUpdate)
@@ -121,8 +144,23 @@
                (== type 'KEYUP)   (if ballOnPaddle
                                       (do
                                           (= keyDownDuration (- (ln@ event {D+3}) keyDownDuration))
-                                          (println [keyDownDuration is {}] keyDownDuration)
-                                          (chipmunk-cpBodyApplyImpulseAtLocalPoint ball(chipmunk-cpv {D+0} (* {D+0.25} keyDownDuration)) (chipmunk-cpv)))))
+                                          (chipmunk-cpBodyApplyImpulseAtWorldPoint ball (chipmunk-cpv {D+0} (* {D+0.25} keyDownDuration)) (chipmunk-cpv)))))
+
+       (define pressureDelta as (* dt pressureDeltaVel) [change in pressure])
+       (if ballOnPaddle (+= pressure pressureDelta) (-= pressure pressureDelta))
+       (if (> pressure maxPressure) (game-over))
+       (if (< pressure minPressure) (= pressure minPressure))
+
+       (define ballpos as (chipmunk-cpBodyGetPosition ball) [position of the ball])
+       (define bally   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y ballpos))) [y component])
+       (if (< bally {D-500}) (game-over))
+
+       (define platformpos as (chipmunk-cpBodyGetPosition platform) [position of a platform])
+       (define platformx   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x platformpos))) [x component])
+
+       ;(println platformx)
+       (if (>= platformx {D+400}) (chipmunk-cpBodySetVelocity platform (chipmunk-cpv {D-30} {D+0})))
+       (if (<= platformx {D+240}) (chipmunk-cpBodySetVelocity platform (chipmunk-cpv {D+30} {D+0})))
 
        (chipmunk-cpSpaceStep space {D+0.01})
 
