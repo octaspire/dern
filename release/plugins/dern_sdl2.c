@@ -4970,7 +4970,7 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_enter(
 
     size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
     char   const * const dernFuncName = "sdl2-gl-ortho-enter";
-    size_t const         numArgsExpected = 2;
+    size_t const         numArgsExpected = 4;
 
     size_t const numArgs =
         octaspire_dern_value_as_vector_get_length(arguments);
@@ -4989,54 +4989,37 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_enter(
             numArgs);
     }
 
-    int width  = 0;
-    int height = 0;
+    // Left, right, bottom, top
+    float args[4] = {0};
 
-    // Width
-    octaspire_dern_value_t const * arg =
-        octaspire_dern_value_as_vector_get_element_at_const(arguments, 0);
-
-    octaspire_helpers_verify_not_null(arg);
-
-    if (!octaspire_dern_value_is_number(arg))
+    for (size_t i = 0; i < 4; ++i)
     {
-        octaspire_helpers_verify_true(
-            stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_dern_value_t const * arg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
 
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Builtin '%s' expects number (width) as first argument. "
-            "Type '%s' was given.",
-            dernFuncName,
-            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+        octaspire_helpers_verify_not_null(arg);
+
+        if (!octaspire_dern_value_is_number(arg))
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin '%s' expects number as %zu. argument. "
+                "Type '%s' was given.",
+                dernFuncName,
+                i,
+                octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+        }
+
+        args[i] = octaspire_dern_value_as_number_get_value(arg);
     }
-
-    width = octaspire_dern_value_as_number_get_value(arg);
-
-    // Height
-    arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
-
-    octaspire_helpers_verify_not_null(arg);
-
-    if (!octaspire_dern_value_is_number(arg))
-    {
-        octaspire_helpers_verify_true(
-            stackLength == octaspire_dern_vm_get_stack_length(vm));
-
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Builtin '%s' expects number (height) as second argument. "
-            "Type '%s' was given.",
-            dernFuncName,
-            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
-    }
-
-    height = octaspire_dern_value_as_number_get_value(arg);
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, width, 0, height, -1, 1);
+    glOrtho(args[0], args[1], args[2], args[3], -1, 1);
     glMatrixMode(GL_MODELVIEW);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
@@ -8230,8 +8213,8 @@ bool dern_sdl2_init(
             vm,
             "sdl2-gl-ortho-enter",
             dern_sdl2_gl_ortho_enter,
-            2,
-            "(sdl2-gl-ortho-enter w h) -> true or error",
+            4,
+            "(sdl2-gl-ortho-enter left right bottom top) -> true or error",
             true,
             targetEnv))
     {

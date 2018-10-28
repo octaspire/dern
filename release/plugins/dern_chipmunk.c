@@ -1092,6 +1092,110 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceGetStaticBody(
         cpSpaceGetStaticBody(space));
 }
 
+octaspire_dern_value_t *dern_chipmunk_cpBodyGetVelocity(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength     = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName    = "chipmunk-cpBodyGetVelocity";
+    char   const * const cpBodyName      = "cpBody";
+    char   const * const cpVectName      = "cpVect";
+    size_t const         numExpectedArgs = 1;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    // cpBody
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpBodyName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpBody * const body = cDataOrError.cData;
+
+    cpVect const velocity = cpBodyGetVelocity(body);
+
+    cpVect *vect = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(vm),
+        sizeof(cpVect));
+
+    if (!vect)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' failed to allocate memory.",
+            dernFuncName);
+    }
+
+    vect->x = velocity.x;
+    vect->y = velocity.y;
+
+    dern_chipmunk_allocation_context_t * const context = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(vm),
+        sizeof(dern_chipmunk_allocation_context_t));
+
+    if (!context)
+    {
+        octaspire_allocator_free(octaspire_dern_vm_get_allocator(vm), vect);
+        vect = 0;
+
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' failed to allocate memory for a cpVect context.",
+            dernFuncName);
+    }
+
+    context->vm      = vm;
+    context->payload = vect;
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_CHIPMUNK_PLUGIN_NAME,
+        cpVectName,
+        "dern_chipmunk_cpVect_clean_up_callback",
+        "",
+        "",
+        "",
+        "dern_chipmunk_to_string",
+        "dern_chipmunk_compare",
+        false,
+        context);
+}
+
 octaspire_dern_value_t *dern_chipmunk_cpBodySetVelocity(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -3217,6 +3321,36 @@ bool dern_chipmunk_init(
             "\n"
             "SEE ALSO\n"
             "\tchipmunk-cpSpaceNew\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-cpBodyGetVelocity",
+            dern_chipmunk_cpBodyGetVelocity,
+            1,
+            "NAME\n"
+            "\tchipmunk-cpBodyGetVelocity\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpBodyGetVelocity body) -> velocity or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tReturns the velocity of the given cpBody.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tbody       the target cpBody\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tcpVect or error if something went wrong\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tchipmunk-cpBodySetVelocity\n",
             false,
             targetEnv))
     {

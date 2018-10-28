@@ -3,11 +3,111 @@
 
 (sdl2-Init 'VIDEO)
 
-(define window   as (sdl2-CreateWindow [octaspire-maze] 'CENTERED 'CENTERED {D+640} {D+640}) [window])
-(define renderer as (sdl2-CreateRenderer window {D-1} 'SOFTWARE) [renderer])
+(define window-width  as {D+800} [window width])
+(define window-height as {D+600} [window width])
+(define window-zoom   as {D+0.1} [window zoom factor])
+(define window        as (sdl2-CreateWindow [octaspire-maze] 'CENTERED 'CENTERED window-width window-height) [window])
+(define renderer      as (sdl2-CreateRenderer window {D-1} 'SOFTWARE) [renderer])
 
 (sdl2-glClearColor {D+0} {D+0} {D+0} {D+1})
-(sdl2-gl-ortho-enter {D+640} {D+640})
+
+(define enter-ortho as (fn (zoom)
+  (define width  as (/ (* {D+4} window-width)  (* {D+2} zoom)) [target width])
+  (define height as (/ (* {D+4} window-height) (* {D+2} zoom)) [target width])
+  (sdl2-gl-ortho-enter (- width) width (- height) height))
+  [enter ortho] '(zoom [zoom factor]) howto-no)
+
+(enter-ortho window-zoom)
+
+(define make-empty-slot as (fn ()
+    (hash-map
+         'body                nil
+         'x1                  {D+0}
+         'y1                  {D+0}
+         'x2                  {D+0}
+         'y2                  {D+0}
+         'hw                  {D+0}))
+  [make empty slot] '() howto-no)
+
+(define walls     as '() [all walls in the level])
+(define platforms as '() [all platforms in the level])
+
+(define wall-add as (fn (x1 y1 x2 y2)
+    (define slot as (make-empty-slot) [slot for the wall])
+    (define wall as (chipmunk-cpSpaceGetStaticBody space) [new wall])
+    (define wallShape as
+        (chipmunk-cpSegmentShapeNew wall (chipmunk-cpv x1 y1) (chipmunk-cpv x2 y2) {D+0})
+        [collision shape for the wall])
+    (chipmunk-cpShapeSetFriction wallShape {D+1})
+    (chipmunk-cpSpaceAddShape space wallShape)
+    (= slot 'body wall)
+    (= slot 'x1   x1)
+    (= slot 'y1   y1)
+    (= slot 'x2   x2)
+    (= slot 'y2   y2)
+    (+= walls slot))
+    [add new wall in the level] '(x1 [x1] y1 [y1] x2 [x2] y2 [y2]) howto-no)
+
+(define wall-draw as (fn (slot)
+    (define wall as (ln@ slot 'body 'hash) [body of the wall])
+    (define pos  as (chipmunk-cpBodyGetPosition wall) [position of the wall])
+    (define x1   as (ln@ slot 'x1 'hash) [x1 component])
+    (define y1   as (ln@ slot 'y1 'hash) [y1 component])
+    (define x2   as (ln@ slot 'x2 'hash) [x2 component])
+    (define y2   as (ln@ slot 'y2 'hash) [y2 component])
+
+    (sdl2-gl-ortho-line
+        (+ {D+320} (* {D+10} x1))
+        (+ {D+320} (* {D+10} y1))
+        (+ {D+320} (* {D+10} x2))
+        (+ {D+320} (* {D+10} y2))))
+  [draw a wall] '(slot [slot containing the wall]) howto-no)
+
+(define platform-add as (fn (x y w vel max)
+    (define hw   as (* {D+0.5} w) [half width])
+    (define slot as (make-empty-slot) [slot for the platform])
+    (define body as (chipmunk-cpBodyNewKinematic) [a body])
+    (chipmunk-cpSpaceAddBody space body)
+    (chipmunk-cpBodySetPosition body (chipmunk-cpv x y))
+    (define shape as
+      (chipmunk-cpSegmentShapeNew body (chipmunk-cpv (- x hw) y) (chipmunk-cpv (+ x hw) y) {D+0})
+      [platform collision shape])
+    (chipmunk-cpShapeSetFriction shape {D+1})
+    (chipmunk-cpSpaceAddShape space shape)
+    (chipmunk-cpBodySetVelocity body vel)
+    (= slot 'body body)
+    (= slot 'x1  x)
+    (= slot 'y1  y)
+    (= slot 'hw  hw)
+    (= slot 'vel vel)
+    (= slot 'max max)
+    (+= platforms slot))
+    [add new platform in the level] '(x [center x] y [center y] w [w] vel [velocity] max [max delta]) howto-no)
+
+(define platform-draw as (fn (slot)
+    (define body as (ln@ slot 'body 'hash) [body of the platform])
+    (define pos  as (chipmunk-cpBodyGetPosition body) [position of the platform])
+    (define x    as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x pos))) [x component])
+    (define y    as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y pos))) [y component])
+    (define hw   as (ln@ slot 'hw 'hash) [half width])
+    (sdl2-gl-ortho-line
+        (- x (* {D+10} hw)) y
+        (+ x (* {D+10} hw)) y))
+    [draw a platform] '(slot [slot containing the platform]) howto-no)
+
+(define platform-update as (fn (slot)
+    (define body as (ln@ slot 'body 'hash) [body of the platform])
+    (define pos  as (chipmunk-cpBodyGetPosition body) [position of the platform])
+    (define vel  as (chipmunk-cpBodyGetVelocity body) [velocity of the platform])
+    (define x    as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x pos))) [x component])
+    (define y    as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y pos))) [y component])
+    (define x1   as (ln@ slot 'x1 'hash) [original x])
+    (define y1   as (ln@ slot 'y1 'hash) [original y])
+    (define max  as (ln@ slot 'max 'hash) [max delta])
+
+    (if (>= (distance (chipmunk-cpv-get-x pos) x1) (chipmunk-cpv-get-x max)) (chipmunk-cpBodySetVelocity body (chipmunk-cpv (- (chipmunk-cpv-get-x vel)) (chipmunk-cpv-get-y vel))))
+    (if (>= (distance (chipmunk-cpv-get-y pos) y1) (chipmunk-cpv-get-y max)) (chipmunk-cpBodySetVelocity body (chipmunk-cpv (chipmunk-cpv-get-x vel) (- (chipmunk-cpv-get-y vel))))))
+    [update a platform] '(slot [slot containing the platform]) howto-no)
 
 (define space   as (chipmunk-cpSpaceNew)        [Chipmunk space])
 (define gravity as (chipmunk-cpv {D+0} {D-100}) [Gravity vector])
@@ -22,19 +122,10 @@
 (chipmunk-cpShapeSetFriction ballShape {D+1})
 (chipmunk-cpSpaceAddShape space ballShape)
 
-(define leftWall as (chipmunk-cpSpaceGetStaticBody space) [the leftWall])
-(define leftWallShape as
-  (chipmunk-cpSegmentShapeNew leftWall (chipmunk-cpv {D-10} {D+30}) (chipmunk-cpv {D-10} {D-30}) {D+0})
-  [collision shape for the ground])
-(chipmunk-cpShapeSetFriction leftWallShape {D+1})
-(chipmunk-cpSpaceAddShape space leftWallShape)
+(wall-add {D-10} {D+30} {D-10} {D-30}) ; left wall
+(wall-add {D+10} {D+30} {D+10} {D-30}) ; right wall
 
-(define rightWall as (chipmunk-cpSpaceGetStaticBody space) [the rightWall])
-(define rightWallShape as
-  (chipmunk-cpSegmentShapeNew rightWall (chipmunk-cpv {D+10} {D+30}) (chipmunk-cpv {D+10} {D-30}) {D+0})
-  [collision shape for the ground])
-(chipmunk-cpShapeSetFriction rightWallShape {D+1})
-(chipmunk-cpSpaceAddShape space rightWallShape)
+(platform-add {D+0} {D+0} {D+2} (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+30}))
 
 (define paddle    as (chipmunk-cpBodyNewKinematic) [a body])
 (chipmunk-cpSpaceAddBody space paddle)
@@ -44,15 +135,6 @@
   [ball collision shape])
 (chipmunk-cpShapeSetFriction paddleShape {D+1})
 (chipmunk-cpSpaceAddShape space paddleShape)
-
-(define platform as (chipmunk-cpBodyNewKinematic) [a body])
-(chipmunk-cpSpaceAddBody space platform)
-(chipmunk-cpBodySetPosition platform (chipmunk-cpv {D+0} {D+0}))
-(define platformShape as
-  (chipmunk-cpSegmentShapeNew platform (chipmunk-cpv {D-1} {D+0}) (chipmunk-cpv {D+1} {D+0}) {D+0})
-  [platform collision shape])
-(chipmunk-cpShapeSetFriction platformShape {D+1})
-(chipmunk-cpSpaceAddShape space platformShape)
 
 (define ballOnPaddle as false [is ball in contact with the paddle])
 
@@ -90,21 +172,13 @@
         (define ballpos as (chipmunk-cpBodyGetPosition ball) [position of the ball])
         (define ballx   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x ballpos))) [x component])
         (define bally   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y ballpos))) [y component])
+        (enter-ortho window-zoom)
         (sdl2-glClear)
         ; ball
         (sdl2-gl-ortho-circle-rotated ballx bally {D+10} {D+32} (chipmunk-cpBodyGetAngle ball))
-        ; left wall
-        (sdl2-gl-ortho-line
-           (+ {D+320} (* {D+10} {D-10}))
-           (+ {D+320} (* {D+10} {D+30}))
-           (+ {D+320} (* {D+10} {D-10}))
-           (+ {D+320} (* {D+10} {D-30})))
-        ; right wall
-        (sdl2-gl-ortho-line
-           (+ {D+320} (* {D+10} {D+10}))
-           (+ {D+320} (* {D+10} {D+30}))
-           (+ {D+320} (* {D+10} {D+10}))
-           (+ {D+320} (* {D+10} {D-30})))
+        ; All walls
+        (for i in walls
+             (wall-draw i))
         ; paddle
         (define paddlepos as (chipmunk-cpBodyGetPosition paddle) [position of the ball])
         (define paddlex   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x paddlepos))) [x component])
@@ -116,25 +190,20 @@
         (sdl2-gl-ortho-line
            (- paddlex (* pressure {D+50})) (+ paddley {D-2})
            (+ paddlex (* pressure {D+50})) (+ paddley {D-2}))
-        ; platform
-        (define platformpos as (chipmunk-cpBodyGetPosition platform) [position of a platform])
-        (define platformx   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x platformpos))) [x component])
-        (define platformy   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y platformpos))) [y component])
-        (sdl2-gl-ortho-line
-           (- platformx {D+10}) platformy
-           (+ platformx {D+10}) platformy)
+        ; platforms
+        (for i in platforms
+             (platform-draw i))
         (sdl2-GL-SwapWindow window))
     [render]
     '()
     howto-ok)
-
-(chipmunk-cpBodySetVelocity platform (chipmunk-cpv {D+30} {D+0}))
 
 (while running
        (sdl2-TimerUpdate)
        (define dt as (sdl2-TimerGetSeconds) [dt])
        (sdl2-TimerReset)
        (render)
+       (if (< window-zoom {D+1}) (+= window-zoom {D+0.05}))
        (define event as (sdl2-PollEvent) [event from sdl2])
        (define type  as nil [type of event])
        (if (and (!= event nil) (> (len event) {D+0})) (= type (ln@ event {D+0})))
@@ -146,6 +215,9 @@
                                           (= keyDownDuration (- (ln@ event {D+3}) keyDownDuration))
                                           (chipmunk-cpBodyApplyImpulseAtWorldPoint ball (chipmunk-cpv {D+0} (* {D+0.25} keyDownDuration)) (chipmunk-cpv)))))
 
+       (for i in platforms
+            (platform-update i))
+
        (define pressureDelta as (* dt pressureDeltaVel) [change in pressure])
        (if ballOnPaddle (+= pressure pressureDelta) (-= pressure pressureDelta))
        (if (> pressure maxPressure) (game-over))
@@ -154,13 +226,6 @@
        (define ballpos as (chipmunk-cpBodyGetPosition ball) [position of the ball])
        (define bally   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y ballpos))) [y component])
        (if (< bally {D-500}) (game-over))
-
-       (define platformpos as (chipmunk-cpBodyGetPosition platform) [position of a platform])
-       (define platformx   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x platformpos))) [x component])
-
-       ;(println platformx)
-       (if (>= platformx {D+400}) (chipmunk-cpBodySetVelocity platform (chipmunk-cpv {D-30} {D+0})))
-       (if (<= platformx {D+240}) (chipmunk-cpBodySetVelocity platform (chipmunk-cpv {D+30} {D+0})))
 
        (chipmunk-cpSpaceStep space {D+0.01})
 

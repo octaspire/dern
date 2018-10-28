@@ -27555,6 +27555,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_pop_front(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
@@ -33303,6 +33308,7 @@ static octaspire_dern_value_t *octaspire_dern_vm_special_private_define_var_in_e
 
     return octaspire_dern_vm_create_new_value_boolean(vm, status);
 }
+
 static octaspire_dern_value_t *octaspire_dern_vm_special_private_define_var_no_env(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *firstArg,
@@ -38806,6 +38812,82 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_pop_front(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
     return firstArg;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "distance";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects two arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // TODO XXX support also non-numeric arguments. For example,
+    // for strings this function could calculate and return
+    // the Levenshtein distance of the two strings.
+
+    octaspire_dern_value_t * const firstArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    if (!octaspire_dern_value_is_number(firstArgVal))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The first argument to builtin '%s' must be number. "
+            "Type %s was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(firstArgVal->typeTag));
+    }
+
+    octaspire_dern_value_t * const secondArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 1);
+
+    if (!octaspire_dern_value_is_number(firstArgVal))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The second argument to builtin '%s' must be number. "
+            "Type %s was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(secondArgVal->typeTag));
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    // TODO maybe return integer if both arguments were integers, and so on.
+    return octaspire_dern_vm_create_new_value_real(
+        vm,
+        fabs(
+            octaspire_dern_value_as_number_get_value(firstArgVal) -
+            octaspire_dern_value_as_number_get_value(secondArgVal)));
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
@@ -48048,6 +48130,19 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_pop_front,
         1,
         "Remove the first value from supported collection.",
+        false,
+        env))
+    {
+        abort();
+    }
+
+    // distance
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "distance",
+        octaspire_dern_vm_builtin_distance,
+        2,
+        "Return non-negative distance of the arguments",
         false,
         env))
     {
