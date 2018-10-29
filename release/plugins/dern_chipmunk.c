@@ -117,6 +117,80 @@ void dern_chipmunk_cpVect_clean_up_callback(void *payload)
     octaspire_allocator_free(allocator, context);
 }
 
+octaspire_dern_c_data_or_unpushed_error_t
+dern_chipmunk_new_cpVect_c_data_or_unpushed_error(
+    octaspire_dern_vm_t       * const vm,
+    cpVect              const * const sourceVector,
+    char                const * const dernFuncName)
+{
+    octaspire_helpers_verify_not_null(vm);
+    octaspire_helpers_verify_not_null(sourceVector);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_c_data_or_unpushed_error_t result = {0, 0};
+
+    cpVect *vect = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(vm),
+        sizeof(cpVect));
+
+    if (!vect)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' failed to allocate memory.",
+            dernFuncName);
+
+        return result;
+    }
+
+    vect->x = sourceVector->x;
+    vect->y = sourceVector->y;
+
+    dern_chipmunk_allocation_context_t * const context = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(vm),
+        sizeof(dern_chipmunk_allocation_context_t));
+
+    if (!context)
+    {
+        octaspire_allocator_free(octaspire_dern_vm_get_allocator(vm), vect);
+        vect = 0;
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' failed to allocate memory for a cpVect context.",
+            dernFuncName);
+
+        return result;
+    }
+
+    context->vm      = vm;
+    context->payload = vect;
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    result.cData = octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_CHIPMUNK_PLUGIN_NAME,
+        "cpVect",
+        "dern_chipmunk_cpVect_clean_up_callback",
+        "",
+        "",
+        "",
+        "dern_chipmunk_to_string",
+        "dern_chipmunk_compare",
+        false,
+        context);
+
+    return result;
+}
+
 octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -974,56 +1048,22 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceGetGravity(
 
     cpVect const gravity = cpSpaceGetGravity(space);
 
-    cpVect *vect = octaspire_allocator_malloc(
-        octaspire_dern_vm_get_allocator(vm),
-        sizeof(cpVect));
-
-    if (!vect)
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
+    octaspire_dern_c_data_or_unpushed_error_t result =
+        dern_chipmunk_new_cpVect_c_data_or_unpushed_error(
             vm,
-            "Builtin '%s' failed to allocate memory.",
+            &gravity,
             dernFuncName);
-    }
-
-    vect->x = gravity.x;
-    vect->y = gravity.y;
-
-    dern_chipmunk_allocation_context_t * const context = octaspire_allocator_malloc(
-        octaspire_dern_vm_get_allocator(vm),
-        sizeof(dern_chipmunk_allocation_context_t));
-
-    if (!context)
-    {
-        octaspire_allocator_free(octaspire_dern_vm_get_allocator(vm), vect);
-        vect = 0;
-
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Builtin '%s' failed to allocate memory for a cpVect context.",
-            dernFuncName);
-    }
-
-    context->vm      = vm;
-    context->payload = vect;
 
     octaspire_helpers_verify_true(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-    return octaspire_dern_vm_create_new_value_c_data(
-        vm,
-        DERN_CHIPMUNK_PLUGIN_NAME,
-        "cpVect",
-        "dern_chipmunk_cpVect_clean_up_callback",
-        "",
-        "",
-        "",
-        "dern_chipmunk_to_string",
-        "dern_chipmunk_compare",
-        false,
-        context);
+    if (result.unpushedError)
+    {
+        return result.unpushedError;
+    }
+
+    octaspire_helpers_verify_not_null(result.cData);
+    return result.cData;
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpSpaceGetStaticBody(
@@ -1102,7 +1142,6 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetVelocity(
     size_t const         stackLength     = octaspire_dern_vm_get_stack_length(vm);
     char   const * const dernFuncName    = "chipmunk-cpBodyGetVelocity";
     char   const * const cpBodyName      = "cpBody";
-    char   const * const cpVectName      = "cpVect";
     size_t const         numExpectedArgs = 1;
 
     size_t const numArgs =
@@ -1144,56 +1183,22 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetVelocity(
 
     cpVect const velocity = cpBodyGetVelocity(body);
 
-    cpVect *vect = octaspire_allocator_malloc(
-        octaspire_dern_vm_get_allocator(vm),
-        sizeof(cpVect));
-
-    if (!vect)
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
+    octaspire_dern_c_data_or_unpushed_error_t result =
+        dern_chipmunk_new_cpVect_c_data_or_unpushed_error(
             vm,
-            "Builtin '%s' failed to allocate memory.",
+            &velocity,
             dernFuncName);
-    }
-
-    vect->x = velocity.x;
-    vect->y = velocity.y;
-
-    dern_chipmunk_allocation_context_t * const context = octaspire_allocator_malloc(
-        octaspire_dern_vm_get_allocator(vm),
-        sizeof(dern_chipmunk_allocation_context_t));
-
-    if (!context)
-    {
-        octaspire_allocator_free(octaspire_dern_vm_get_allocator(vm), vect);
-        vect = 0;
-
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Builtin '%s' failed to allocate memory for a cpVect context.",
-            dernFuncName);
-    }
-
-    context->vm      = vm;
-    context->payload = vect;
 
     octaspire_helpers_verify_true(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-    return octaspire_dern_vm_create_new_value_c_data(
-        vm,
-        DERN_CHIPMUNK_PLUGIN_NAME,
-        cpVectName,
-        "dern_chipmunk_cpVect_clean_up_callback",
-        "",
-        "",
-        "",
-        "dern_chipmunk_to_string",
-        "dern_chipmunk_compare",
-        false,
-        context);
+    if (result.unpushedError)
+    {
+        return result.unpushedError;
+    }
+
+    octaspire_helpers_verify_not_null(result.cData);
+    return result.cData;
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpBodySetVelocity(
@@ -1535,55 +1540,22 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetPosition(
 
     cpVect const position = cpBodyGetPosition(body);
 
-    cpVect *vect = octaspire_allocator_malloc(
-        octaspire_dern_vm_get_allocator(vm),
-        sizeof(cpVect));
-
-    if (!vect)
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
+    octaspire_dern_c_data_or_unpushed_error_t result =
+        dern_chipmunk_new_cpVect_c_data_or_unpushed_error(
             vm,
-            "Builtin 'chipmunk-cpv' failed to allocate memory.");
-    }
-
-    vect->x = position.x;
-    vect->y = position.y;
-
-    dern_chipmunk_allocation_context_t * const context = octaspire_allocator_malloc(
-        octaspire_dern_vm_get_allocator(vm),
-        sizeof(dern_chipmunk_allocation_context_t));
-
-    if (!context)
-    {
-        octaspire_allocator_free(octaspire_dern_vm_get_allocator(vm), vect);
-        vect = 0;
-
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Builtin '%s' failed to allocate memory for a cpVect context.",
+            &position,
             dernFuncName);
-    }
-
-    context->vm      = vm;
-    context->payload = vect;
 
     octaspire_helpers_verify_true(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-    return octaspire_dern_vm_create_new_value_c_data(
-        vm,
-        DERN_CHIPMUNK_PLUGIN_NAME,
-        "cpVect",
-        "dern_chipmunk_cpVect_clean_up_callback",
-        "",
-        "",
-        "",
-        "dern_chipmunk_to_string",
-        "dern_chipmunk_compare",
-        false,
-        context);
+    if (result.unpushedError)
+    {
+        return result.unpushedError;
+    }
+
+    octaspire_helpers_verify_not_null(result.cData);
+    return result.cData;
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtLocalPoint(
@@ -2694,6 +2666,7 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
     OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
 
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "chipmunk-cpv";
 
     size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
 
@@ -2749,54 +2722,26 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
         y = octaspire_dern_value_as_number_get_value(secondArg);
     }
 
-    cpVect *vect = octaspire_allocator_malloc(
-        octaspire_dern_vm_get_allocator(vm),
-        sizeof(cpVect));
+    cpVect tmpVec;
+    tmpVec.x = x;
+    tmpVec.y = y;
 
-    if (!vect)
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
+    octaspire_dern_c_data_or_unpushed_error_t result =
+        dern_chipmunk_new_cpVect_c_data_or_unpushed_error(
             vm,
-            "Builtin 'chipmunk-cpv' failed to allocate memory.");
-    }
-
-    vect->x = x;
-    vect->y = y;
-
-    dern_chipmunk_allocation_context_t * const context = octaspire_allocator_malloc(
-        octaspire_dern_vm_get_allocator(vm),
-        sizeof(dern_chipmunk_allocation_context_t));
-
-    if (!context)
-    {
-        octaspire_allocator_free(octaspire_dern_vm_get_allocator(vm), vect);
-        vect = 0;
-
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
-            vm,
-            "Builtin 'chipmunk-cpv' failed to allocate memory for a cpVect context.");
-    }
-
-    context->vm      = vm;
-    context->payload = vect;
+            &tmpVec,
+            dernFuncName);
 
     octaspire_helpers_verify_true(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-    return octaspire_dern_vm_create_new_value_c_data(
-        vm,
-        DERN_CHIPMUNK_PLUGIN_NAME,
-        "cpVect",
-        "dern_chipmunk_cpVect_clean_up_callback",
-        "",
-        "",
-        "",
-        "dern_chipmunk_to_string",
-        "dern_chipmunk_compare",
-        false,
-        context);
+    if (result.unpushedError)
+    {
+        return result.unpushedError;
+    }
+
+    octaspire_helpers_verify_not_null(result.cData);
+    return result.cData;
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpv_get_x(
