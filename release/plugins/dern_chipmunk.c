@@ -1574,55 +1574,22 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetPosition(
 
     cpVect const position = cpBodyGetPosition(body);
 
-    cpVect *vect = octaspire_allocator_malloc(
-        octaspire_dern_vm_get_allocator(vm),
-        sizeof(cpVect));
-
-    if (!vect)
-    {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_from_c_string(
+    octaspire_dern_c_data_or_unpushed_error_t result =
+        dern_chipmunk_new_cpVect_c_data_or_unpushed_error(
             vm,
-            "Builtin 'chipmunk-cpv' failed to allocate memory.");
-    }
-
-    vect->x = position.x;
-    vect->y = position.y;
-
-    dern_chipmunk_allocation_context_t * const context = octaspire_allocator_malloc(
-        octaspire_dern_vm_get_allocator(vm),
-        sizeof(dern_chipmunk_allocation_context_t));
-
-    if (!context)
-    {
-        octaspire_allocator_free(octaspire_dern_vm_get_allocator(vm), vect);
-        vect = 0;
-
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
-        return octaspire_dern_vm_create_new_value_error_format(
-            vm,
-            "Builtin '%s' failed to allocate memory for a cpVect context.",
+            &position,
             dernFuncName);
-    }
-
-    context->vm      = vm;
-    context->payload = vect;
 
     octaspire_helpers_verify_true(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-    return octaspire_dern_vm_create_new_value_c_data(
-        vm,
-        DERN_CHIPMUNK_PLUGIN_NAME,
-        "cpVect",
-        "dern_chipmunk_cpVect_clean_up_callback",
-        "",
-        "",
-        "",
-        "dern_chipmunk_to_string",
-        "dern_chipmunk_compare",
-        false,
-        context);
+    if (result.unpushedError)
+    {
+        return result.unpushedError;
+    }
+
+    octaspire_helpers_verify_not_null(result.cData);
+    return result.cData;
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtLocalPoint(
