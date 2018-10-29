@@ -207,6 +207,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_pop_front(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

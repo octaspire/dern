@@ -824,6 +824,19 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // distance
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "distance",
+        octaspire_dern_vm_builtin_distance,
+        2,
+        "Return non-negative distance of the arguments",
+        false,
+        env))
+    {
+        abort();
+    }
+
     // +=
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
