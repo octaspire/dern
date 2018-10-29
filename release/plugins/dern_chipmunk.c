@@ -1096,9 +1096,7 @@ octaspire_dern_c_data_or_unpushed_error_t
 dern_chipmunk_new_cpVect_c_data_or_unpushed_error(
     octaspire_dern_vm_t       * const vm,
     cpVect              const * const sourceVector,
-    char                const * const dernFuncName,
-    char                const * const cDataName,
-    char                const * const pluginName)
+    char                const * const dernFuncName)
 {
     octaspire_helpers_verify_not_null(vm);
     octaspire_helpers_verify_not_null(sourceVector);
@@ -1155,7 +1153,7 @@ dern_chipmunk_new_cpVect_c_data_or_unpushed_error(
     result.cData = octaspire_dern_vm_create_new_value_c_data(
         vm,
         DERN_CHIPMUNK_PLUGIN_NAME,
-        cpVectName,
+        "cpVect",
         "dern_chipmunk_cpVect_clean_up_callback",
         "",
         "",
@@ -1178,7 +1176,6 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetVelocity(
     size_t const         stackLength     = octaspire_dern_vm_get_stack_length(vm);
     char   const * const dernFuncName    = "chipmunk-cpBodyGetVelocity";
     char   const * const cpBodyName      = "cpBody";
-    char   const * const cpVectName      = "cpVect";
     size_t const         numExpectedArgs = 1;
 
     size_t const numArgs =
@@ -1224,9 +1221,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetVelocity(
         dern_chipmunk_new_cpVect_c_data_or_unpushed_error(
             vm,
             &velocity,
-            dernFuncName,
-            cpVectName,
-            DERN_CHIPMUNK_PLUGIN_NAME);
+            dernFuncName);
 
     octaspire_helpers_verify_true(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
