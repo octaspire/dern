@@ -109,49 +109,82 @@
     (if (>= (distance (chipmunk-cpv-get-y pos) y1) (chipmunk-cpv-get-y max)) (chipmunk-cpBodySetVelocity body (chipmunk-cpv (chipmunk-cpv-get-x vel) (- (chipmunk-cpv-get-y vel))))))
     [update a platform] '(slot [slot containing the platform]) howto-no)
 
-(define space   as (chipmunk-cpSpaceNew)        [Chipmunk space])
-(define gravity as (chipmunk-cpv {D+0} {D-100}) [Gravity vector])
-(chipmunk-cpSpaceSetGravity space gravity)
+(define space as nil [chipmunk space])
+(define ball  as nil [the ball])
 
-(define ball    as (chipmunk-cpBodyNew {D+1} {D+1})      [a body])
-(chipmunk-cpSpaceAddBody space ball)
-(chipmunk-cpBodySetPosition ball    (chipmunk-cpv {D+0}  {D+15}))
-(define ballShape as
-  (chipmunk-cpCircleShapeNew ball {D+1.0} (chipmunk-cpv {D+0} {D+0}))
-  [ball collision shape])
-(chipmunk-cpShapeSetFriction ballShape {D+1})
-(chipmunk-cpSpaceAddShape space ballShape)
+(define space-create as (fn ()
+    ; TODO FIXME remove the need to call this
+    (chipmunk-removeWildCardHandlers)
+    (= ball      nil)
+    (= walls     '())
+    (= platforms '())
+    (define space as (chipmunk-cpSpaceNew) [chipmunk space] in (env-global))
+    (define gravity as (chipmunk-cpv {D+0} {D-100}) [Gravity vector])
+    (chipmunk-cpSpaceSetGravity space gravity)
+    (chipmunk-cpSpaceAddWildCardHandler
+        space
+        {D+1}
+        (fn (bodyA bodyB normal firstContact totalKE) (if (ball-platform-collision? bodyA bodyB) (= ballOnPlatform true))  [todo])
+        (fn (bodyA bodyB normal firstContact totalKE) (if (ball-platform-collision? bodyA bodyB) (= ballOnPlatform false)) [todo])))
+  [create a new space] '() howto-no)
 
-(wall-add {D-10} {D+30} {D-10} {D-30}) ; left wall
-(wall-add {D+10} {D+30} {D+10} {D-30}) ; right wall
+(define ball-add as (fn (x y)
+    (define ball as (chipmunk-cpBodyNew {D+1} {D+1}) [the ball body] in (env-global))
+    (chipmunk-cpSpaceAddBody space ball)
+    (define ballShape as
+        (chipmunk-cpCircleShapeNew ball {D+1.0} (chipmunk-cpv {D+0} {D+0}))
+        [ball collision shape])
+    (chipmunk-cpShapeSetFriction ballShape {D+1})
+    (chipmunk-cpSpaceAddShape space ballShape)
+    (chipmunk-cpBodySetPosition        ball (chipmunk-cpv x y))
+    (chipmunk-cpBodySetVelocity        ball (chipmunk-cpv))
+    (chipmunk-cpBodySetAngularVelocity ball {D+0}))
+  [stop and position the ball] '(x [new x] y [new y]) howto-no)
 
-(platform-add {D+0} {D+0} {D+2} (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+30}))
+(define level-load as (fn (index)
+    (space-create)
 
-(define paddle    as (chipmunk-cpBodyNewKinematic) [a body])
-(chipmunk-cpSpaceAddBody space paddle)
-(chipmunk-cpBodySetPosition paddle (chipmunk-cpv {D+0} {D-25}))
-(define paddleShape as
-  (chipmunk-cpSegmentShapeNew paddle (chipmunk-cpv {D-5} {D+0}) (chipmunk-cpv {D+5} {D+0}) {D+0})
-  [ball collision shape])
-(chipmunk-cpShapeSetFriction paddleShape {D+1})
-(chipmunk-cpSpaceAddShape space paddleShape)
+    (if (== index {D+0}) (do
+        (wall-add {D-10} {D+70} {D+10}  {D+80}) ; top ramp
+        (wall-add {D-10} {D+30} {D-10}  {D-30}) ; left wall
+        (wall-add {D+10} {D+30} {D+10}  {D-30}) ; right wall
+        (wall-add {D+17} {D+50} {D+110} {D+47}) ; ramp to exit
+        (platform-add {D+0} {D+0} {D+2} (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+30}))
+        (ball-add {D+0} {D+15})
+        (return)))
 
-(define ballOnPaddle as false [is ball in contact with the paddle])
+    (if (== index {D+1}) (do
+        (wall-add {D+10} {D+30} {D+10} {D-30}) ; right wall
+        (wall-add {D-10} {D+70} {D+10} {D+80}) ; top ramp
+        (platform-add {D+0} {D+0} {D+2} (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+30}))
+        (ball-add {D+0} {D+15})
+        (return)))
+    )
+  [load level having the given index] '(index [index]) howto-no)
 
-(define ball-paddle-collision? as (fn (bodyA bodyB)
-    (if (and (!= paddle bodyA) (!= paddle bodyB)) return false)
-    (if (and (!= ball   bodyA) (!= ball   bodyB)) return false)
-    (return true)) [todo] '(bodyA [todo] bodyB [bodyB]) howto-no)
+(define level-index as {D+0} [current level index])
+(define level-count as {D+2} [total number of levels])
 
-(chipmunk-cpSpaceAddWildCardHandler
- space
- {D+1}
- (fn (bodyA bodyB normal firstContact totalKE) (if (ball-paddle-collision? bodyA bodyB) (= ballOnPaddle true))  [todo])
- (fn (bodyA bodyB normal firstContact totalKE) (if (ball-paddle-collision? bodyA bodyB) (= ballOnPaddle false)) [todo]))
+(define level-next as (fn ()
+  (++ level-index)
+  (= level-index (mod level-index level-count))
+  (println [next level {}] level-index)
+  (level-load level-index))
+  [load next level or the first all passed] '() howto-no)
 
+(define ballOnPlatform as false [is ball in contact with a platform])
+
+(define ball-platform-collision? as (fn (bodyA bodyB)
+   (define typeA as (chipmunk-cpBodyGetType bodyA) [type of bodyA])
+   (define typeB as (chipmunk-cpBodyGetType bodyB) [type of bodyB])
+
+   (if (and (!= typeA 'KINEMATIC) (!= typeB 'KINEMATIC)) return false)
+
+   (if (and (!= ball   bodyA) (!= ball   bodyB)) return false)
+   (return true)) [todo] '(bodyA [todo] bodyB [bodyB]) howto-no)
 
 (define running             as true                  [is running or not])
-(define targetFPS           as {D+100}               [target FPS])
+(define targetFPS           as {D+300}               [target FPS])
 (define targetFrameDuration as (/ {D+1.0} targetFPS) [time for a frame to last])
 (define origoX              as {D+256}               [X-coordinate of center for drawing])
 (define origoY              as {D+256}               [Y-coordinate of center for drawing])
@@ -163,9 +196,7 @@
 (define minPressure         as {D+0}   [smallest possible pressure])
 
 (define game-over as (fn ()
-      (chipmunk-cpBodySetPosition        ball (chipmunk-cpv {D+0}  {D+15}))
-      (chipmunk-cpBodySetVelocity        ball (chipmunk-cpv))
-      (chipmunk-cpBodySetAngularVelocity ball {D+0}))
+      (level-load level-index))
   [game over] '() howto-no)
 
 (define render as (fn ()
@@ -179,17 +210,6 @@
         ; All walls
         (for i in walls
              (wall-draw i))
-        ; paddle
-        (define paddlepos as (chipmunk-cpBodyGetPosition paddle) [position of the ball])
-        (define paddlex   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x paddlepos))) [x component])
-        (define paddley   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y paddlepos))) [y component])
-        (sdl2-gl-ortho-line
-           (- paddlex {D+50}) paddley
-           (+ paddlex {D+50}) paddley)
-        ; pressure bar
-        (sdl2-gl-ortho-line
-           (- paddlex (* pressure {D+50})) (+ paddley {D-2})
-           (+ paddlex (* pressure {D+50})) (+ paddley {D-2}))
         ; platforms
         (for i in platforms
              (platform-draw i))
@@ -197,6 +217,8 @@
     [render]
     '()
     howto-ok)
+
+(level-load level-index)
 
 (while running
        (sdl2-TimerUpdate)
@@ -208,26 +230,23 @@
        (define type  as nil [type of event])
        (if (and (!= event nil) (> (len event) {D+0})) (= type (ln@ event {D+0})))
        (select (== type 'QUIT)    (= running false)
-               (== type 'KEYDOWN) (if ballOnPaddle
+               (== type 'KEYDOWN) (if ballOnPlatform
                                       (= keyDownDuration (ln@ event {D+3})))
-               (== type 'KEYUP)   (if ballOnPaddle
+               (== type 'KEYUP)   (if ballOnPlatform
                                       (do
                                           (= keyDownDuration (- (ln@ event {D+3}) keyDownDuration))
-                                          (chipmunk-cpBodyApplyImpulseAtWorldPoint ball (chipmunk-cpv {D+0} (* {D+0.25} keyDownDuration)) (chipmunk-cpv)))))
+                                          (chipmunk-cpBodyApplyImpulseAtWorldPoint ball (chipmunk-cpv {D+0} keyDownDuration) (chipmunk-cpv)))))
 
        (for i in platforms
             (platform-update i))
 
-       (define pressureDelta as (* dt pressureDeltaVel) [change in pressure])
-       (if ballOnPaddle (+= pressure pressureDelta) (-= pressure pressureDelta))
-       (if (> pressure maxPressure) (game-over))
-       (if (< pressure minPressure) (= pressure minPressure))
+       (chipmunk-cpSpaceStep space {D+0.0035})
 
        (define ballpos as (chipmunk-cpBodyGetPosition ball) [position of the ball])
+       (define ballx   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x ballpos))) [x component])
        (define bally   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y ballpos))) [y component])
-       (if (< bally {D-500}) (game-over))
-
-       (chipmunk-cpSpaceStep space {D+0.01})
+       (if (< bally {D-1600}) (game-over))
+       (if (and (> ballx {D+1300}) (> bally {D+700})) (level-next))
 
        (sdl2-TimerUpdate)
        (define currentFrameDuration as (sdl2-TimerGetSeconds) [current frame duration])
