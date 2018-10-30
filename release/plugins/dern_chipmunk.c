@@ -88,6 +88,12 @@ static octaspire_map_t * dern_chipmunk_private_collision_wildcard_contexts = 0;
 void dern_chipmunk_cpSpace_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
+
+    // TODO destroy only those wild card handlers
+    // that are for the released space.
+    octaspire_helpers_verify_true(octaspire_map_clear(
+        dern_chipmunk_private_collision_wildcard_contexts));
+
     cpSpaceFree((cpSpace*)payload);
 }
 
@@ -1199,6 +1205,85 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetVelocity(
 
     octaspire_helpers_verify_not_null(result.cData);
     return result.cData;
+}
+
+octaspire_dern_value_t *dern_chipmunk_cpBodyGetType(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength     = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName    = "chipmunk-cpBodyGetType";
+    char   const * const cpBodyName      = "cpBody";
+    size_t const         numExpectedArgs = 1;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    // cpBody
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            cpBodyName,
+            DERN_CHIPMUNK_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    cpBody * const body = cDataOrError.cData;
+
+    cpBodyType const bodyType = cpBodyGetType(body);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    switch (bodyType)
+    {
+        case CP_BODY_TYPE_STATIC:
+        {
+            return octaspire_dern_vm_create_new_value_symbol_from_c_string(
+                vm,
+                "STATIC");
+        }
+
+        case CP_BODY_TYPE_KINEMATIC:
+        {
+            return octaspire_dern_vm_create_new_value_symbol_from_c_string(
+                vm,
+                "KINEMATIC");
+        }
+
+        case CP_BODY_TYPE_DYNAMIC:
+        {
+            return octaspire_dern_vm_create_new_value_symbol_from_c_string(
+                vm,
+                "DYNAMIC");
+        }
+    }
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpBodySetVelocity(
@@ -2509,7 +2594,47 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
         &collisionTypeAsSizeT,
         &wildcardContext);
 
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_chipmunk_removeWildCardHandlers(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength     = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName    = "chipmunk-removeWildCardHandlers";
+    size_t const         numExpectedArgs = 0;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(
+        vm,
+        octaspire_map_clear(
+            dern_chipmunk_private_collision_wildcard_contexts));
 }
 
 octaspire_dern_value_t *dern_chipmunk_cpSpaceRemoveBody(
@@ -2582,6 +2707,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceRemoveBody(
 
     cpSpaceRemoveBody(space, body);
 
+    octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
@@ -2652,6 +2780,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceContainsBody(
     }
 
     cpBody * const body = cDataOrError.cData;
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
 
     return octaspire_dern_vm_create_new_value_boolean(
         vm,
@@ -3274,6 +3405,36 @@ bool dern_chipmunk_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
+            "chipmunk-cpBodyGetType",
+            dern_chipmunk_cpBodyGetType,
+            1,
+            "NAME\n"
+            "\tchipmunk-cpBodyGetType\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-cpBodyGetType body) -> type or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tReturns symbol for the type (DYNAMIC, STATIC or KINEMATIC)\n"
+            "\tof the given cpBody.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tbody       the cpBody\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tsymbol for the type or error if something went wrong\n"
+            "\n"
+            "SEE ALSO\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
             "chipmunk-cpBodyGetVelocity",
             dern_chipmunk_cpBodyGetVelocity,
             1,
@@ -3710,6 +3871,35 @@ bool dern_chipmunk_init(
             "\tcollisionType the type that collides with something.\n"
             "\tpostSolveFun  the postSolve callback function.\n"
             "\tseparateFun   the separate  callback function.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue or an error.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\t\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "chipmunk-removeWildCardHandlers",
+            dern_chipmunk_removeWildCardHandlers,
+            0,
+            "NAME\n"
+            "\tchipmunk-removeWildCardHandlers\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_chipmunk)\n"
+            "\n"
+            "\t(chipmunk-removeWildCardHandlers) -> true or an error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tRemove all wild card handlers.\n"
+            "\n"
+            "ARGUMENTS\n"
             "\n"
             "RETURN VALUE\n"
             "\ttrue or an error.\n"
