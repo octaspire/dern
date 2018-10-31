@@ -837,6 +837,32 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // max
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "max",
+        octaspire_dern_vm_builtin_max,
+        2,
+        "Return maximum value of the arguments",
+        false,
+        env))
+    {
+        abort();
+    }
+
+    // min
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "min",
+        octaspire_dern_vm_builtin_min,
+        2,
+        "Return minimum value of the arguments",
+        false,
+        env))
+    {
+        abort();
+    }
+
     // +=
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
