@@ -235,7 +235,7 @@
                (== type 'KEYUP)   (if ballOnPlatform
                                       (do
                                           (= keyDownDuration (- (ln@ event {D+3}) keyDownDuration))
-                                          (chipmunk-cpBodyApplyImpulseAtWorldPoint ball (chipmunk-cpv {D+0} keyDownDuration) (chipmunk-cpv)))))
+                                          (chipmunk-cpBodyApplyImpulseAtWorldPoint ball (chipmunk-cpv {D+0} (min keyDownDuration {D+5000})) (chipmunk-cpv)))))
 
        (for i in platforms
             (platform-update i))

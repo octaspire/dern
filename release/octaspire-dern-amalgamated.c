@@ -25638,7 +25638,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "423"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "424"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -27556,6 +27556,16 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_pop_front(
     octaspire_dern_value_t *environment);
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_max(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_min(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
@@ -38890,6 +38900,116 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
             octaspire_dern_value_as_number_get_value(secondArgVal)));
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_max(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "max";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+    size_t const numExpectedArgs = 2;
+
+    if (numArgs < numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects at least %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    octaspire_dern_value_t * largestArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(largestArgVal);
+
+    for (size_t i = 1; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t * const nextArgVal =
+            octaspire_dern_value_as_vector_get_element_at(arguments, i);
+
+        octaspire_helpers_verify_not_null(nextArgVal);
+
+        if (octaspire_dern_value_is_greater_than(nextArgVal, largestArgVal))
+        {
+            largestArgVal = nextArgVal;
+        }
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return largestArgVal;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_min(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "min";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+    size_t const numExpectedArgs = 2;
+
+    if (numArgs < numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects at least %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    octaspire_dern_value_t * smallestArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(smallestArgVal);
+
+    for (size_t i = 1; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t * const nextArgVal =
+            octaspire_dern_value_as_vector_get_element_at(arguments, i);
+
+        octaspire_helpers_verify_not_null(nextArgVal);
+
+        if (octaspire_dern_value_is_less_than(nextArgVal, smallestArgVal))
+        {
+            smallestArgVal = nextArgVal;
+        }
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return smallestArgVal;
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
@@ -48143,6 +48263,32 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_distance,
         2,
         "Return non-negative distance of the arguments",
+        false,
+        env))
+    {
+        abort();
+    }
+
+    // max
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "max",
+        octaspire_dern_vm_builtin_max,
+        2,
+        "Return maximum value of the arguments",
+        false,
+        env))
+    {
+        abort();
+    }
+
+    // min
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "min",
+        octaspire_dern_vm_builtin_min,
+        2,
+        "Return minimum value of the arguments",
         false,
         env))
     {
@@ -58300,6 +58446,395 @@ TEST octaspire_dern_vm_special_quote_called_without_arguments_failure_test(void)
         "Special 'quote' expects one argument. 0 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(quote)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_max_integers_0_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(max {D+0})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'max' expects at least 2 arguments. "
+        "1 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(max {D+0})<<<<<<<<<<\n",
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_max_integers_0_1_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(max {D+0} {D+1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(1,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_max_integers_10_11_12_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(max {D+10} {D+11} {D+12})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(12,                               evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_max_integers_12_11_10_minus_100_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(max {D+12} {D+10} {D+11} {D-100})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(12,                               evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_max_strings_abc_abd_abe_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(max [abc] [abd] [abe])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "abe",
+        octaspire_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_max_strings_abe_abd_abc_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(max [abe] [abd] [abc])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "abe",
+        octaspire_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_min_integers_0_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(min {D+0})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'min' expects at least 2 arguments. "
+        "1 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(min {D+0})<<<<<<<<<<\n",
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_min_integers_0_1_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(min {D+0} {D+1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_min_integers_10_11_12_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(min {D+10} {D+11} {D+12})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(10,                               evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_min_integers_12_11_10_minus_100_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(min {D+12} {D+10} {D+11} {D-100})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(-100,                             evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_min_strings_abc_abd_abe_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(min [abc] [abd] [abe])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "abc",
+        octaspire_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_min_strings_abe_abd_abc_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(min [abe] [abd] [abc])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "abc",
+        octaspire_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_distance_integers_0_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(distance {D+0})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'distance' expects two arguments. "
+        "1 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(distance {D+0})<<<<<<<<<<\n",
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_distance_integers_0_1_2_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(distance {D+0} {D+1} {D+2})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'distance' expects two arguments. "
+        "3 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(distance {D+0} {D+1} {D+2})<<<<<<<<<<\n",
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_distance_integers_0_1_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(distance {D+0} {D+1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_REAL, evaluatedValue->typeTag);
+    ASSERT_IN_RANGE(1, evaluatedValue->value.real, 0.000001);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_distance_reals_0dot1_3dot14_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(distance {D+0.1} {D+3.14})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_REAL, evaluatedValue->typeTag);
+    ASSERT_IN_RANGE(3.04, evaluatedValue->value.real, 0.000001);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_distance_10_0dot1_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(distance {D+10} {D+0.1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_REAL, evaluatedValue->typeTag);
+    ASSERT_IN_RANGE(9.9, evaluatedValue->value.real, 0.000001);
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -72781,6 +73316,26 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_docstring_failure_test);
 
     RUN_TEST(octaspire_dern_vm_special_quote_called_without_arguments_failure_test);
+
+    RUN_TEST(octaspire_dern_vm_builtin_max_integers_0_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_max_integers_0_1_test);
+    RUN_TEST(octaspire_dern_vm_builtin_max_integers_10_11_12_test);
+    RUN_TEST(octaspire_dern_vm_builtin_max_integers_12_11_10_minus_100_test);
+    RUN_TEST(octaspire_dern_vm_builtin_max_strings_abc_abd_abe_test);
+    RUN_TEST(octaspire_dern_vm_builtin_max_strings_abe_abd_abc_test);
+
+    RUN_TEST(octaspire_dern_vm_builtin_min_integers_0_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_min_integers_0_1_test);
+    RUN_TEST(octaspire_dern_vm_builtin_min_integers_10_11_12_test);
+    RUN_TEST(octaspire_dern_vm_builtin_min_integers_12_11_10_minus_100_test);
+    RUN_TEST(octaspire_dern_vm_builtin_min_strings_abc_abd_abe_test);
+    RUN_TEST(octaspire_dern_vm_builtin_min_strings_abe_abd_abc_test);
+
+    RUN_TEST(octaspire_dern_vm_builtin_distance_integers_0_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_distance_integers_0_1_2_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_distance_integers_0_1_test);
+    RUN_TEST(octaspire_dern_vm_builtin_distance_reals_0dot1_3dot14_test);
+    RUN_TEST(octaspire_dern_vm_builtin_distance_10_0dot1_test);
 
     RUN_TEST(octaspire_dern_vm_builtin_plus_plus_integer_value_test);
     RUN_TEST(octaspire_dern_vm_builtin_doc_for_integer_value_test);

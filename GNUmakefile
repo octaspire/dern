@@ -353,6 +353,8 @@ $(RELDOCDIR)dern-manual.html: $(DEVDOCDIR)book/dern-manual.htm $(DOCEXAMPLES)
 	@cp $(RELDIR)tool-support/source-highlight/dern.lang .
 	@cp $(DEVDOCDIR)book/lang.map .
 	@python2 $(DEVDOCDIR)book/build_book.py $< > $@
+	$(info Cleaning temp html files ...)
+	@find $(DEVDOCDIR)book/examples/ -name '*.html' -delete
 
 clean:
 	@rm -rf $(AMALGAMATION) $(RELDIR)embedding-example $(RELDIR)*.so              \
