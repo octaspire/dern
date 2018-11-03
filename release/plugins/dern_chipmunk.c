@@ -1278,6 +1278,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetType(
         }
 
         case CP_BODY_TYPE_DYNAMIC:
+        default:
         {
             return octaspire_dern_vm_create_new_value_symbol_from_c_string(
                 vm,
