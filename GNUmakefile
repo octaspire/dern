@@ -20,6 +20,10 @@ CFLAGS=-std=c99 -Wall -Wextra -g -O2 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 TAGS_C_FILES := $(SRCDIR)*.c $(INCDIR)*.h $(CORDIR)octaspire-core-amalgamated.c
 TAGS_DERN_FILES := $(GAMESDIR)octaspire-lightcube.dern $(GAMESDIR)octaspire-maze.dern
 
+CHIPMUNK_SRCS := $(wildcard release/plugins/external/chipmunk/src/*.c)
+CHIPMUNK_OBJS := $(patsubst %.c, %.o, $(CHIPMUNK_SRCS))
+CHIPMUNK_PATH := $(PLUGINDIR)external/chipmunk/src/
+
 DOCEXAMPLES := $(wildcard $(DEVDOCDIR)book/examples/dern/*.dern)
 DOCEXAMPLES += $(wildcard $(DEVDOCDIR)book/examples/sh/*.sh)
 DOCEXAMPLES += $(wildcard $(DEVDOCDIR)book/examples/c/*.c)
@@ -58,6 +62,7 @@ ifeq ($(UNAME), Darwin)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags) -framework OpenGL
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+    CHIPMUNK_LDFLAGS   := -lm
 else ifeq ($(UNAME), OpenBSD)
     OS                 := "OpenBSD"
     LDFLAGS            := -lm
@@ -70,6 +75,7 @@ else ifeq ($(UNAME), OpenBSD)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lGLU
+    CHIPMUNK_LDFLAGS   := -lm -lpthread
     MAKE=gmake
 else ifeq ($(UNAME), FreeBSD)
     OS                 := "FreeBSD"
@@ -83,6 +89,7 @@ else ifeq ($(UNAME), FreeBSD)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+    CHIPMUNK_LDFLAGS   := -lm
 else ifeq ($(UNAME), NetBSD)
     OS                 := "NetBSD"
     LDFLAGS            := -lm
@@ -107,6 +114,7 @@ else ifeq ($(UNAME)$(MACHINE), Haikux86_64)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+    CHIPMUNK_LDFLAGS   := -lm
 else ifeq ($(UNAME)$(MACHINE), HaikuBePC)
     CC                 := gcc-x86
     OS                 := "Haiku"
@@ -120,6 +128,7 @@ else ifeq ($(UNAME)$(MACHINE), HaikuBePC)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+    CHIPMUNK_LDFLAGS   := -lm
 else ifeq ($(UNAME), Linux)
     OS                 := "GNU/Linux"
     LDFLAGS            := -lm -Wl,-export-dynamic -ldl
@@ -131,6 +140,7 @@ else ifeq ($(UNAME), Linux)
     SDL2FLAGS          := -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lGLU
+    CHIPMUNK_LDFLAGS   := -lm
 endif
 
 .PHONY: oscheck development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push tag
@@ -158,7 +168,7 @@ endif
 ####### Development part: build using separate implementation files ###########
 ###############################################################################
 
-development: oscheck submodulecheck octaspire-dern-repl octaspire-dern-unit-test-runner libdern_socket$(DLSUFFIX) libdern_dir$(DLSUFFIX) libdern_easing$(DLSUFFIX) libdern_animation$(DLSUFFIX) libdern_ncurses$(DLSUFFIX) libdern_sdl2$(DLSUFFIX) libdern_sqlite3$(DLSUFFIX)
+development: oscheck submodulecheck octaspire-dern-repl octaspire-dern-unit-test-runner libdern_socket$(DLSUFFIX) libdern_dir$(DLSUFFIX) libdern_easing$(DLSUFFIX) libdern_animation$(DLSUFFIX) libdern_ncurses$(DLSUFFIX) libdern_sdl2$(DLSUFFIX) libdern_sqlite3$(DLSUFFIX) libdern_chipmunk$(DLSUFFIX)
 
 octaspire-dern-repl: $(SRCDIR)octaspire_dern_repl.o $(DEVOBJS)
 	$(info LD  $@)
@@ -208,13 +218,26 @@ libdern_sdl2$(DLSUFFIX): $(PLUGINDIR)dern_sdl2.c $(AMALGAMATION)
 	$(info PC  $<)
 	@$(CC) $(CFLAGS) -I release $(SDL2CONFIG_CFLAGS) $(SDL2FLAGS) $(LIBCFLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(SDL2CONFIG_LDFLAGS)
 
-libsqlite3$(DLSUFFIX): $(PLUGINDIR)external/sqlite3.c
-	$(info PC  $<)
+libsqlite3$(DLSUFFIX): $(PLUGINDIR)external/sqlite3/sqlite3.c
+	$(info EC  sqlite3)
 	@$(CC) $(LIBCFLAGS) -c -o $@ $< $(SQLITE3_LDFLAGS)
 
 libdern_sqlite3$(DLSUFFIX): $(PLUGINDIR)dern_sqlite3.c $(AMALGAMATION) libsqlite3$(DLSUFFIX)
 	$(info PC  $<)
-	@$(CC) $(CFLAGS) -I release -I $(PLUGINDIR)external $(LIBCFLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(SQLITE3_LDFLAGS)  -L . -lsqlite3
+	@$(CC) $(CFLAGS) -I release -I $(PLUGINDIR)external/sqlite3 $(LIBCFLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(SQLITE3_LDFLAGS)  -L . -lsqlite3
+
+$(CHIPMUNK_PATH)%.o: $(CHIPMUNK_PATH)%.c
+	$(info CC  $<)
+	@$(CC) $(CFLAGS) $(LIBCFLAGS) -I $(PLUGINDIR)external/chipmunk/include -I $(PLUGINDIR)external/chipmunk/include/chipmunk -c $< -o $@
+
+libchipmunk$(DLSUFFIX): $(CHIPMUNK_OBJS)
+	$(info EC  chipmunk)
+	@$(CC) $(DLFLAGS) -o $@ $^ $(CHIPMUNK_LDFLAGS)
+
+libdern_chipmunk$(DLSUFFIX): $(PLUGINDIR)dern_chipmunk.c $(AMALGAMATION) libchipmunk$(DLSUFFIX)
+	$(info PC  $<)
+	@$(CC) $(CFLAGS) -I release -I $(PLUGINDIR)external/chipmunk/include/ -I $(PLUGINDIR)external/chipmunk/include/chipmunk $(LIBCFLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(CHIPMUNK_LDFLAGS)  -L . -lchipmunk
+
 
 perf-linux: octaspire-dern-unit-test-runner
 	@echo "+---------------------------------------------------------------------+"
@@ -330,6 +353,8 @@ $(RELDOCDIR)dern-manual.html: $(DEVDOCDIR)book/dern-manual.htm $(DOCEXAMPLES)
 	@cp $(RELDIR)tool-support/source-highlight/dern.lang .
 	@cp $(DEVDOCDIR)book/lang.map .
 	@python2 $(DEVDOCDIR)book/build_book.py $< > $@
+	$(info Cleaning temp html files ...)
+	@find $(DEVDOCDIR)book/examples/ -name '*.html' -delete
 
 clean:
 	@rm -rf $(AMALGAMATION) $(RELDIR)embedding-example $(RELDIR)*.so              \
@@ -343,6 +368,7 @@ clean:
                 $(RELDIR)coverage.info                                                \
                 $(RELDIR)octaspire-dern-amalgamated.gcda                              \
                 $(RELDIR)octaspire-dern-amalgamated.gcno                              \
+                $(PLUGINDIR)external/chipmunk/src/*.o                                 \
                 coverage                                                              \
                 $(SRCDIR)*.o                                                          \
                 $(TESTDR)*.o                                                          \

@@ -522,6 +522,9 @@ bool octaspire_dern_value_as_string_is_index_valid(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
 
+bool octaspire_dern_value_as_string_is_empty(
+    octaspire_dern_value_t const * const self);
+
 octaspire_semver_t const *octaspire_dern_value_as_semver_const(
     octaspire_dern_value_t const * const self);
 
@@ -578,6 +581,9 @@ bool octaspire_dern_value_as_vector_remove_element_at(
     octaspire_dern_value_t *self,
     ptrdiff_t const possiblyNegativeIndex);
 
+bool octaspire_dern_value_as_vector_clear(
+    octaspire_dern_value_t * const self);
+
 bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *self);
 
 bool octaspire_dern_value_as_vector_pop_front_element(octaspire_dern_value_t *self);
@@ -589,6 +595,34 @@ octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at(
 octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_const(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
+
+typedef struct octaspire_dern_c_data_or_unpushed_error_t
+{
+    void                   * cData;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_c_data_or_unpushed_error_t;
+
+typedef struct octaspire_dern_number_or_unpushed_error_t
+{
+    float                    number;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_number_or_unpushed_error_t;
+
+octaspire_dern_c_data_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    char const * const cDataName,
+    char const * const pluginName);
+
+octaspire_dern_number_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName);
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
     octaspire_dern_value_t * const self,

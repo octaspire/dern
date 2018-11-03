@@ -2563,8 +2563,11 @@ octaspire_dern_value_t *dern_easing_has_any(
 
 bool dern_easing_init(
     octaspire_dern_vm_t * const vm,
-    octaspire_dern_environment_t * const targetEnv)
+    octaspire_dern_environment_t * const targetEnv,
+    char const * const libName)
 {
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(libName);
+
     octaspire_helpers_verify_true(vm && targetEnv);
 
     dern_easing_private_easings = octaspire_vector_new(
