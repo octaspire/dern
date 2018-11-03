@@ -25638,7 +25638,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "392"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "425"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -25839,6 +25839,7 @@ extern "C"       {
 #endif
 
 typedef struct octaspire_dern_c_data_t octaspire_dern_c_data_t;
+struct octaspire_dern_vm_t;
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const pluginName,
@@ -25848,7 +25849,10 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const stdLibLenCallbackName,
     char const * const stdLibLinkAtCallbackName,
     char const * const stdLibCopyAtCallbackName,
+    char const * const stdLibToStringCallbackName,
+    char const * const stdLibCompareCallbackName,
     bool const copyingAllowed,
+    struct octaspire_dern_vm_t * const vm,
     octaspire_allocator_t *allocator);
 
 octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
@@ -25884,6 +25888,12 @@ void *octaspire_dern_c_data_get_payload(
     octaspire_dern_c_data_t const * const self);
 
 bool octaspire_dern_c_data_is_copying_allowed(
+    octaspire_dern_c_data_t const * const self);
+
+struct octaspire_dern_vm_t * octaspire_dern_c_data_get_vm(
+    octaspire_dern_c_data_t * const self);
+
+struct octaspire_dern_vm_t const * octaspire_dern_c_data_get_vm_const(
     octaspire_dern_c_data_t const * const self);
 
 #ifdef __cplusplus
@@ -26513,6 +26523,9 @@ bool octaspire_dern_value_as_string_is_index_valid(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
 
+bool octaspire_dern_value_as_string_is_empty(
+    octaspire_dern_value_t const * const self);
+
 octaspire_semver_t const *octaspire_dern_value_as_semver_const(
     octaspire_dern_value_t const * const self);
 
@@ -26569,6 +26582,9 @@ bool octaspire_dern_value_as_vector_remove_element_at(
     octaspire_dern_value_t *self,
     ptrdiff_t const possiblyNegativeIndex);
 
+bool octaspire_dern_value_as_vector_clear(
+    octaspire_dern_value_t * const self);
+
 bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *self);
 
 bool octaspire_dern_value_as_vector_pop_front_element(octaspire_dern_value_t *self);
@@ -26580,6 +26596,34 @@ octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at(
 octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_const(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
+
+typedef struct octaspire_dern_c_data_or_unpushed_error_t
+{
+    void                   * cData;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_c_data_or_unpushed_error_t;
+
+typedef struct octaspire_dern_number_or_unpushed_error_t
+{
+    float                    number;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_number_or_unpushed_error_t;
+
+octaspire_dern_c_data_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    char const * const cDataName,
+    char const * const pluginName);
+
+octaspire_dern_number_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName);
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
     octaspire_dern_value_t * const self,
@@ -26843,6 +26887,7 @@ octaspire_dern_lib_tag_t;
 
 typedef struct octaspire_dern_lib_t octaspire_dern_lib_t;
 struct octaspire_dern_vm_t;
+struct octaspire_dern_c_data_t;
 
 octaspire_dern_lib_t *octaspire_dern_lib_new_source(
     char const * const name,
@@ -26856,6 +26901,17 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
     struct octaspire_dern_vm_t *vm,
     octaspire_allocator_t *allocator);
 
+void * octaspire_dern_lib_dycall(
+    octaspire_dern_lib_t * const self,
+    char const * const funcName,
+    struct octaspire_dern_c_data_t * const cData);
+
+void * octaspire_dern_lib_dycall_2_const(
+    octaspire_dern_lib_t * const self,
+    char const * const funcName,
+    struct octaspire_dern_c_data_t const * const cData1,
+    struct octaspire_dern_c_data_t const * const cData2);
+
 void octaspire_dern_lib_release(octaspire_dern_lib_t *self);
 
 bool octaspire_dern_lib_is_good(octaspire_dern_lib_t const * const self);
@@ -26865,6 +26921,8 @@ char const *octaspire_dern_lib_get_error_message(octaspire_dern_lib_t const * co
 bool octaspire_dern_lib_mark_all(octaspire_dern_lib_t * const self);
 
 void *octaspire_dern_lib_get_handle(octaspire_dern_lib_t * const self);
+
+struct octaspire_dern_vm_t * octaspire_dern_lib_get_vm(octaspire_dern_lib_t * const self);
 
 #ifdef __cplusplus
 /* extern "C" */ }
@@ -27077,6 +27135,8 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const stdLibLenCallbackName,
     char const * const stdLibLinkAtCallbackName,
     char const * const stdLibCopyAtCallbackName,
+    char const * const stdLibToStringCallbackName,
+    char const * const stdLibCompareCallbackName,
     bool const copyingAllowed,
     void * const payload);
 
@@ -27238,6 +27298,10 @@ bool octaspire_dern_vm_has_library(
 
 octaspire_dern_lib_t *octaspire_dern_vm_get_library(
     octaspire_dern_vm_t * const self,
+    char const * const name);
+
+octaspire_dern_lib_t const * octaspire_dern_vm_get_library_const(
+    octaspire_dern_vm_t const * const self,
     char const * const name);
 
 bool octaspire_dern_vm_add_command_line_argument(
@@ -27487,6 +27551,21 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_pop_back(
     octaspire_dern_value_t *environment);
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_pop_front(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_max(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_min(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
@@ -31478,14 +31557,18 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
     }
     else
     {
-        bool (*libInitFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const);
+        bool (*libInitFunc)(octaspire_dern_vm_t * const,
+                            octaspire_dern_environment_t * const,
+                            char const * const libName);
 
         octaspire_string_t *libInitFuncName =
             octaspire_string_new_format(self->allocator, "%s_init", name);
 
         octaspire_helpers_verify_not_null(libInitFuncName);
 
-        libInitFunc = (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))
+        libInitFunc = (bool (*)(octaspire_dern_vm_t * const,
+                                octaspire_dern_environment_t * const,
+                                char const * const libName))
             GetProcAddress(
                 self->binaryLibHandle,
                 octaspire_string_get_c_string(libInitFuncName));
@@ -31509,7 +31592,8 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
         {
             if (!(*libInitFunc)(
                     vm,
-                    octaspire_dern_vm_get_global_environment(vm)->value.environment))
+                    octaspire_dern_vm_get_global_environment(vm)->value.environment,
+                    octaspire_string_get_c_string(self->name)))
             {
                 self->errorMessage =
                     octaspire_string_new_format(
@@ -31560,7 +31644,9 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
         }
         else
         {
-            bool (*libInitFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const);
+            bool (*libInitFunc)(octaspire_dern_vm_t * const,
+                                octaspire_dern_environment_t * const,
+                                char const * const libName);
 
             octaspire_string_t *libInitFuncName =
                 octaspire_string_new_format(self->allocator, "%s_init", name);
@@ -31568,7 +31654,9 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
             octaspire_helpers_verify_not_null(libInitFuncName);
 
             libInitFunc =
-                (bool (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const))dlsym(
+                (bool (*)(octaspire_dern_vm_t * const,
+                          octaspire_dern_environment_t * const,
+                          char const * const libName))dlsym(
                     self->binaryLibHandle,
                     octaspire_string_get_c_string(libInitFuncName));
 
@@ -31597,7 +31685,8 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
             {
                 if (!(*libInitFunc)(
                         vm,
-                        octaspire_dern_vm_get_global_environment(vm)->value.environment))
+                        octaspire_dern_vm_get_global_environment(vm)->value.environment,
+                        octaspire_string_get_c_string(self->name)))
                 {
                     self->errorMessage =
                         octaspire_string_new_format(
@@ -31656,6 +31745,166 @@ octaspire_dern_lib_t *octaspire_dern_lib_new_binary(
 #endif
 
         return self;
+}
+
+void * octaspire_dern_lib_dycall(
+    octaspire_dern_lib_t * const self,
+    char const * const funcName,
+    octaspire_dern_c_data_t * const cData)
+{
+    if (self->typeTag != OCTASPIRE_DERN_LIB_TAG_BINARY)
+    {
+        return 0;
+    }
+
+    void * result = 0;
+
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+#ifdef _WIN32
+        if (self->binaryLibHandle)
+        {
+            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t * const);
+
+            libDycallFunc =
+                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t * const))
+                    GetProcAddress(
+                        self->binaryLibHandle,
+                        funcName);
+
+            if (!libDycallFunc)
+            {
+                return octaspire_string_new_format(
+                    self->allocator,
+                    "Binary library (name='%s'):\n"
+                    "GetProcAddress failed on the dycall function for the library.",
+                    octaspire_string_get_c_string(self->name));
+            }
+
+            return (*libDycallFunc)(
+                self->vm,
+                octaspire_dern_vm_get_global_environment(self->vm)->value.environment,
+                cData);
+        }
+#else
+        if (self->binaryLibHandle)
+        {
+            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t * const);
+
+            // Clear any old errors
+            dlerror();
+
+            libDycallFunc =
+                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t * const))dlsym(
+                    self->binaryLibHandle,
+                    funcName);
+
+            char *error = dlerror();
+
+            if (error)
+            {
+                return octaspire_string_new_format(
+                    self->allocator,
+                    "Binary library (name='%s'):\n"
+                    "dlsym failed on the dycall %s function for the library. dlerror is: %s",
+                    octaspire_string_get_c_string(self->name),
+                    funcName,
+                    error);
+            }
+
+            return (*libDycallFunc)(
+                self->vm,
+                octaspire_dern_vm_get_global_environment(self->vm)->value.environment,
+                cData);
+        }
+#endif
+#else
+        OCTASPIRE_HELPERS_UNUSED_PARAMETER(funcName);
+        OCTASPIRE_HELPERS_UNUSED_PARAMETER(cData);
+#endif
+
+        return result;
+}
+
+void * octaspire_dern_lib_dycall_2_const(
+    octaspire_dern_lib_t * const self,
+    char const * const funcName,
+    octaspire_dern_c_data_t const * const cData1,
+    octaspire_dern_c_data_t const * const cData2)
+{
+    if (self->typeTag != OCTASPIRE_DERN_LIB_TAG_BINARY)
+    {
+        return 0;
+    }
+
+    void * result = 0;
+
+#ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+#ifdef _WIN32
+        if (self->binaryLibHandle)
+        {
+            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const);
+
+            libDycallFunc =
+                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const))
+                    GetProcAddress(
+                        self->binaryLibHandle,
+                        funcName);
+
+            if (!libDycallFunc)
+            {
+                return octaspire_string_new_format(
+                    self->allocator,
+                    "Binary library (name='%s'):\n"
+                    "GetProcAddress failed on the dycall_2_const function for the library.",
+                    octaspire_string_get_c_string(self->name));
+            }
+
+            return (*libDycallFunc)(
+                self->vm,
+                octaspire_dern_vm_get_global_environment(self->vm)->value.environment,
+                cData1,
+                cData2);
+        }
+#else
+        if (self->binaryLibHandle)
+        {
+            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const);
+
+            // Clear any old errors
+            dlerror();
+
+            libDycallFunc =
+                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const))dlsym(
+                    self->binaryLibHandle,
+                    funcName);
+
+            char *error = dlerror();
+
+            if (error)
+            {
+                return octaspire_string_new_format(
+                    self->allocator,
+                    "Binary library (name='%s'):\n"
+                    "dlsym failed on the dycall_2_const %s function for the library. dlerror is: %s",
+                    octaspire_string_get_c_string(self->name),
+                    funcName,
+                    error);
+            }
+
+            return (*libDycallFunc)(
+                self->vm,
+                octaspire_dern_vm_get_global_environment(self->vm)->value.environment,
+                cData1,
+                cData2);
+        }
+#endif
+#else
+        OCTASPIRE_HELPERS_UNUSED_PARAMETER(funcName);
+        OCTASPIRE_HELPERS_UNUSED_PARAMETER(cData1);
+        OCTASPIRE_HELPERS_UNUSED_PARAMETER(cData2);
+#endif
+
+        return result;
 }
 
 void octaspire_dern_lib_release(octaspire_dern_lib_t *self)
@@ -31853,6 +32102,10 @@ void *octaspire_dern_lib_get_handle(octaspire_dern_lib_t * const self)
 #endif
 }
 
+octaspire_dern_vm_t * octaspire_dern_lib_get_vm(octaspire_dern_lib_t * const self)
+{
+    return self->vm;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          dev/src/octaspire_dern_lib.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31892,6 +32145,9 @@ struct octaspire_dern_c_data_t
     octaspire_string_t    *stdLibLenCallbackName;
     octaspire_string_t    *stdLibLinkAtCallbackName;
     octaspire_string_t    *stdLibCopyAtCallbackName;
+    octaspire_string_t    *stdLibToStringCallbackName;
+    octaspire_string_t    *stdLibCompareCallbackName;
+    octaspire_dern_vm_t   *vm;
     octaspire_allocator_t *allocator;
     bool                   copyingAllowed;
     char                   padding[7];
@@ -31905,7 +32161,10 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     char const * const stdLibLenCallbackName,
     char const * const stdLibLinkAtCallbackName,
     char const * const stdLibCopyAtCallbackName,
+    char const * const stdLibToStringCallbackName,
+    char const * const stdLibCompareCallbackName,
     bool const copyingAllowed,
+    octaspire_dern_vm_t * const vm,
     octaspire_allocator_t *allocator)
 {
     octaspire_dern_c_data_t *self =
@@ -31917,6 +32176,7 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
     }
 
     self->allocator = allocator;
+    self->vm        = vm;
 
     self->pluginName = octaspire_string_new(
         pluginName,
@@ -31944,6 +32204,14 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new(
         stdLibCopyAtCallbackName,
         self->allocator);
 
+    self->stdLibToStringCallbackName = octaspire_string_new(
+        stdLibToStringCallbackName,
+        self->allocator);
+
+    self->stdLibCompareCallbackName = octaspire_string_new(
+        stdLibCompareCallbackName,
+        self->allocator);
+
     self->copyingAllowed = copyingAllowed;
 
     return self;
@@ -31961,7 +32229,10 @@ octaspire_dern_c_data_t *octaspire_dern_c_data_new_copy(
         octaspire_string_get_c_string(other->stdLibLenCallbackName),
         octaspire_string_get_c_string(other->stdLibLinkAtCallbackName),
         octaspire_string_get_c_string(other->stdLibCopyAtCallbackName),
+        octaspire_string_get_c_string(other->stdLibToStringCallbackName),
+        octaspire_string_get_c_string(other->stdLibCompareCallbackName),
         other->copyingAllowed,
+        other->vm,
         allocator);
 }
 
@@ -31984,6 +32255,12 @@ void octaspire_dern_c_data_release(octaspire_dern_c_data_t *self)
     octaspire_string_release(self->stdLibCopyAtCallbackName);
     self->stdLibCopyAtCallbackName = 0;
 
+    octaspire_string_release(self->stdLibToStringCallbackName);
+    self->stdLibToStringCallbackName = 0;
+
+    octaspire_string_release(self->stdLibCompareCallbackName);
+    self->stdLibCompareCallbackName = 0;
+
     octaspire_string_release(self->pluginName);
     self->pluginName = 0;
 
@@ -31997,17 +32274,37 @@ octaspire_string_t *octaspire_dern_c_data_to_string(
     octaspire_dern_c_data_t const * const self,
     octaspire_allocator_t * const allocator)
 {
-    return octaspire_string_new_format(
-        allocator,
-        "C data (%s : %s) payload=%p cleanUpCallbackName=%s stdLibLenCallbackName=%s "
-        "stdLibLinkAtCallbackName=%s stdLibCopyAtCallbackName=%s",
-        octaspire_string_get_c_string(self->pluginName),
-        octaspire_string_get_c_string(self->typeNameForPayload),
-        (void*)self->payload,
-        octaspire_string_get_c_string(self->cleanUpCallbackName),
-        octaspire_string_get_c_string(self->stdLibLenCallbackName),
-        octaspire_string_get_c_string(self->stdLibLinkAtCallbackName),
-        octaspire_string_get_c_string(self->stdLibCopyAtCallbackName));
+    if (octaspire_string_is_empty(self->stdLibToStringCallbackName))
+    {
+        return octaspire_string_new_format(
+            allocator,
+            "C data (%s : %s) payload=%p cleanUpCallbackName=%s stdLibLenCallbackName=%s "
+            "stdLibLinkAtCallbackName=%s stdLibCopyAtCallbackName=%s "
+            "stdLibCopyAtCallbackName=%s stdLibCompareCallbackName=%s",
+            octaspire_string_get_c_string(self->pluginName),
+            octaspire_string_get_c_string(self->typeNameForPayload),
+            (void*)self->payload,
+            octaspire_string_get_c_string(self->cleanUpCallbackName),
+            octaspire_string_get_c_string(self->stdLibLenCallbackName),
+            octaspire_string_get_c_string(self->stdLibLinkAtCallbackName),
+            octaspire_string_get_c_string(self->stdLibCopyAtCallbackName),
+            octaspire_string_get_c_string(self->stdLibToStringCallbackName),
+            octaspire_string_get_c_string(self->stdLibCompareCallbackName));
+    }
+
+    octaspire_dern_lib_t const * const lib = octaspire_dern_vm_get_library_const(
+        octaspire_dern_c_data_get_vm_const(self),
+        octaspire_dern_c_data_get_plugin_name(self));
+
+    if (!lib)
+    {
+        return 0;
+    }
+
+    return octaspire_dern_lib_dycall(
+        (octaspire_dern_lib_t * const)lib,
+        octaspire_string_get_c_string(self->stdLibToStringCallbackName),
+        (octaspire_dern_c_data_t * const)self);
 }
 
 bool octaspire_dern_c_data_is_equal(
@@ -32053,6 +32350,31 @@ int octaspire_dern_c_data_compare(
     {
         return tmp;
     }
+
+    // If available, use comparator from the binary library.
+    if (!octaspire_string_is_empty(self->stdLibCompareCallbackName))
+    {
+        octaspire_dern_lib_t const * const lib = octaspire_dern_vm_get_library_const(
+            octaspire_dern_c_data_get_vm_const(self),
+            octaspire_dern_c_data_get_plugin_name(self));
+
+        if (!lib)
+        {
+            return 0;
+        }
+
+        int const * const result = octaspire_dern_lib_dycall_2_const(
+            (octaspire_dern_lib_t * const)lib,
+            octaspire_string_get_c_string(self->stdLibCompareCallbackName),
+            self,
+            other);
+
+        octaspire_helpers_verify_not_null(result);
+
+        return *result;
+    }
+
+    // Library comparator was not available, so compare just pointers.
 
     ptrdiff_t const diff = self - other;
 
@@ -32113,6 +32435,17 @@ bool octaspire_dern_c_data_is_copying_allowed(
     return self->copyingAllowed;
 }
 
+octaspire_dern_vm_t * octaspire_dern_c_data_get_vm(
+    octaspire_dern_c_data_t * const self)
+{
+    return self->vm;
+}
+
+octaspire_dern_vm_t const * octaspire_dern_c_data_get_vm_const(
+    octaspire_dern_c_data_t const * const self)
+{
+    return self->vm;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          dev/src/octaspire_dern_c_data.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32985,6 +33318,7 @@ static octaspire_dern_value_t *octaspire_dern_vm_special_private_define_var_in_e
 
     return octaspire_dern_vm_create_new_value_boolean(vm, status);
 }
+
 static octaspire_dern_value_t *octaspire_dern_vm_special_private_define_var_no_env(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *firstArg,
@@ -38488,6 +38822,192 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_pop_front(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
     return firstArg;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "distance";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects two arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // TODO XXX support also non-numeric arguments. For example,
+    // for strings this function could calculate and return
+    // the Levenshtein distance of the two strings.
+
+    octaspire_dern_value_t * const firstArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    if (!octaspire_dern_value_is_number(firstArgVal))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The first argument to builtin '%s' must be number. "
+            "Type %s was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(firstArgVal->typeTag));
+    }
+
+    octaspire_dern_value_t * const secondArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 1);
+
+    if (!octaspire_dern_value_is_number(firstArgVal))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The second argument to builtin '%s' must be number. "
+            "Type %s was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(secondArgVal->typeTag));
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    // TODO maybe return integer if both arguments were integers, and so on.
+    return octaspire_dern_vm_create_new_value_real(
+        vm,
+        fabs(
+            octaspire_dern_value_as_number_get_value(firstArgVal) -
+            octaspire_dern_value_as_number_get_value(secondArgVal)));
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_max(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "max";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+    size_t const numExpectedArgs = 2;
+
+    if (numArgs < numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects at least %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    octaspire_dern_value_t * largestArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(largestArgVal);
+
+    for (size_t i = 1; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t * const nextArgVal =
+            octaspire_dern_value_as_vector_get_element_at(arguments, i);
+
+        octaspire_helpers_verify_not_null(nextArgVal);
+
+        if (octaspire_dern_value_is_greater_than(nextArgVal, largestArgVal))
+        {
+            largestArgVal = nextArgVal;
+        }
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return largestArgVal;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_min(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "min";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+    size_t const numExpectedArgs = 2;
+
+    if (numArgs < numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects at least %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    octaspire_dern_value_t * smallestArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(smallestArgVal);
+
+    for (size_t i = 1; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t * const nextArgVal =
+            octaspire_dern_value_as_vector_get_element_at(arguments, i);
+
+        octaspire_helpers_verify_not_null(nextArgVal);
+
+        if (octaspire_dern_value_is_less_than(nextArgVal, smallestArgVal))
+        {
+            smallestArgVal = nextArgVal;
+        }
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return smallestArgVal;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
@@ -45766,6 +46286,15 @@ bool octaspire_dern_value_as_string_is_index_valid(
         possiblyNegativeIndex);
 }
 
+bool octaspire_dern_value_as_string_is_empty(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_true(
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
+
+    return octaspire_string_is_empty(self->value.string);
+}
+
 octaspire_semver_t const *octaspire_dern_value_as_semver_const(
     octaspire_dern_value_t const * const self)
 {
@@ -46035,6 +46564,15 @@ bool octaspire_dern_value_as_vector_remove_element_at(
         possiblyNegativeIndex);
 }
 
+bool octaspire_dern_value_as_vector_clear(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    return octaspire_vector_clear(self->value.vector);
+}
+
 bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *self)
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
@@ -46069,6 +46607,115 @@ octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_cons
     return octaspire_vector_get_element_at_const(
         self->value.vector,
         possiblyNegativeIndex);
+}
+
+octaspire_dern_c_data_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    char const * const cDataName,
+    char const * const pluginName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_c_data_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t const * const arg =
+        octaspire_dern_value_as_vector_get_element_at_const(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_c_data(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects C data '%s' as "
+            "%i. argument. Type '%s' was given.",
+            dernFuncName,
+            cDataName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    octaspire_dern_c_data_t * cData = arg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            pluginName,
+            cDataName))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' "
+            "expects '%s' and '%s' as "
+            "plugin name and payload type name for the C data of the %d. "
+            "argument. Names '%s' and '%s' were given.",
+            dernFuncName,
+            pluginName,
+            cDataName,
+            possiblyNegativeIndex,
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.cData = octaspire_dern_c_data_get_payload(cData);
+    return result;
+}
+
+octaspire_dern_number_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_number_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t const * const arg =
+        octaspire_dern_value_as_vector_get_element_at_const(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects number as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.number = octaspire_dern_value_as_number_get_value(arg);
+    return result;
 }
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
@@ -47603,6 +48250,45 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_pop_front,
         1,
         "Remove the first value from supported collection.",
+        false,
+        env))
+    {
+        abort();
+    }
+
+    // distance
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "distance",
+        octaspire_dern_vm_builtin_distance,
+        2,
+        "Return non-negative distance of the arguments",
+        false,
+        env))
+    {
+        abort();
+    }
+
+    // max
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "max",
+        octaspire_dern_vm_builtin_max,
+        2,
+        "Return maximum value of the arguments",
+        false,
+        env))
+    {
+        abort();
+    }
+
+    // min
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "min",
+        octaspire_dern_vm_builtin_min,
+        2,
+        "Return minimum value of the arguments",
         false,
         env))
     {
@@ -49277,6 +49963,8 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
     char const * const stdLibLenCallbackName,
     char const * const stdLibLinkAtCallbackName,
     char const * const stdLibCopyAtCallbackName,
+    char const * const stdLibToStringCallbackName,
+    char const * const stdLibCompareCallbackName,
     bool const copyingAllowed,
     void * const payload)
 {
@@ -49293,7 +49981,10 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data(
         stdLibLenCallbackName,
         stdLibLinkAtCallbackName,
         stdLibCopyAtCallbackName,
+        stdLibToStringCallbackName,
+        stdLibCompareCallbackName,
         copyingAllowed,
+        self,
         self->allocator);
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
@@ -50279,6 +50970,8 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                             self,
                             arguments,
                             environment);
+
+                        octaspire_helpers_verify_not_null(result);
 
                         // TODO XXX add this error annotation to other places too
                         // (for example builtin and function calls)
@@ -51440,6 +52133,32 @@ octaspire_dern_lib_t *octaspire_dern_vm_get_library(
     }
 
     return octaspire_map_element_get_value(element);
+}
+
+octaspire_dern_lib_t const * octaspire_dern_vm_get_library_const(
+    octaspire_dern_vm_t const * const self,
+    char const * const name)
+{
+    octaspire_string_t *str = octaspire_string_new(
+        name,
+        self->allocator);
+
+    octaspire_helpers_verify_not_null(str);
+
+    octaspire_map_element_t const * const element = octaspire_map_get_const(
+        self->libraries,
+        octaspire_string_get_hash(str),
+        &str);
+
+    octaspire_string_release(str);
+    str = 0;
+
+    if (!element)
+    {
+        return 0;
+    }
+
+    return octaspire_map_element_get_value_const(element);
 }
 
 octaspire_stdio_t *octaspire_dern_vm_get_stdio(octaspire_dern_vm_t * const self)
@@ -57727,6 +58446,395 @@ TEST octaspire_dern_vm_special_quote_called_without_arguments_failure_test(void)
         "Special 'quote' expects one argument. 0 arguments were given.\n"
         "\tAt form: >>>>>>>>>>(quote)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_max_integers_0_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(max {D+0})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'max' expects at least 2 arguments. "
+        "1 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(max {D+0})<<<<<<<<<<\n",
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_max_integers_0_1_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(max {D+0} {D+1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(1,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_max_integers_10_11_12_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(max {D+10} {D+11} {D+12})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(12,                               evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_max_integers_12_11_10_minus_100_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(max {D+12} {D+10} {D+11} {D-100})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(12,                               evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_max_strings_abc_abd_abe_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(max [abc] [abd] [abe])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "abe",
+        octaspire_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_max_strings_abe_abd_abc_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(max [abe] [abd] [abc])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "abe",
+        octaspire_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_min_integers_0_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(min {D+0})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'min' expects at least 2 arguments. "
+        "1 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(min {D+0})<<<<<<<<<<\n",
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_min_integers_0_1_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(min {D+0} {D+1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_min_integers_10_11_12_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(min {D+10} {D+11} {D+12})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(10,                               evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_min_integers_12_11_10_minus_100_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(min {D+12} {D+10} {D+11} {D-100})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(-100,                             evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_min_strings_abc_abd_abe_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(min [abc] [abd] [abe])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "abc",
+        octaspire_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_min_strings_abe_abd_abc_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(min [abe] [abd] [abc])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "abc",
+        octaspire_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_distance_integers_0_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(distance {D+0})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'distance' expects two arguments. "
+        "1 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(distance {D+0})<<<<<<<<<<\n",
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_distance_integers_0_1_2_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(distance {D+0} {D+1} {D+2})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Builtin 'distance' expects two arguments. "
+        "3 arguments were given.\n"
+        "\tAt form: >>>>>>>>>>(distance {D+0} {D+1} {D+2})<<<<<<<<<<\n",
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_distance_integers_0_1_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(distance {D+0} {D+1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_REAL, evaluatedValue->typeTag);
+    ASSERT_IN_RANGE(1, evaluatedValue->value.real, 0.000001);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_distance_reals_0dot1_3dot14_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(distance {D+0.1} {D+3.14})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_REAL, evaluatedValue->typeTag);
+    ASSERT_IN_RANGE(3.04, evaluatedValue->value.real, 0.000001);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_distance_10_0dot1_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(distance {D+10} {D+0.1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_REAL, evaluatedValue->typeTag);
+    ASSERT_IN_RANGE(9.9, evaluatedValue->value.real, 0.000001);
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -70590,6 +71698,8 @@ octaspire_dern_value_t *octaspire_dern_test_dern_vm_create_new_user_data(
             "",
             "",
             "",
+            "",
+            "",
             true,
             (void*)octaspireDernVmTestCreateNewUserDataTestPayload);
 }
@@ -72206,6 +73316,26 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_special_define_called_with_four_arguments_integer_as_docstring_failure_test);
 
     RUN_TEST(octaspire_dern_vm_special_quote_called_without_arguments_failure_test);
+
+    RUN_TEST(octaspire_dern_vm_builtin_max_integers_0_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_max_integers_0_1_test);
+    RUN_TEST(octaspire_dern_vm_builtin_max_integers_10_11_12_test);
+    RUN_TEST(octaspire_dern_vm_builtin_max_integers_12_11_10_minus_100_test);
+    RUN_TEST(octaspire_dern_vm_builtin_max_strings_abc_abd_abe_test);
+    RUN_TEST(octaspire_dern_vm_builtin_max_strings_abe_abd_abc_test);
+
+    RUN_TEST(octaspire_dern_vm_builtin_min_integers_0_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_min_integers_0_1_test);
+    RUN_TEST(octaspire_dern_vm_builtin_min_integers_10_11_12_test);
+    RUN_TEST(octaspire_dern_vm_builtin_min_integers_12_11_10_minus_100_test);
+    RUN_TEST(octaspire_dern_vm_builtin_min_strings_abc_abd_abe_test);
+    RUN_TEST(octaspire_dern_vm_builtin_min_strings_abe_abd_abc_test);
+
+    RUN_TEST(octaspire_dern_vm_builtin_distance_integers_0_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_distance_integers_0_1_2_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_distance_integers_0_1_test);
+    RUN_TEST(octaspire_dern_vm_builtin_distance_reals_0dot1_3dot14_test);
+    RUN_TEST(octaspire_dern_vm_builtin_distance_10_0dot1_test);
 
     RUN_TEST(octaspire_dern_vm_builtin_plus_plus_integer_value_test);
     RUN_TEST(octaspire_dern_vm_builtin_doc_for_integer_value_test);

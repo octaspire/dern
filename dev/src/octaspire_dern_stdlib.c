@@ -17,6 +17,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_stdlib.h"
 #include <assert.h>
 #include <inttypes.h>
+#include <math.h>
 
 #ifndef OCTASPIRE_DERN_DO_NOT_USE_AMALGAMATED_CORE
     #include "octaspire-core-amalgamated.c"
@@ -272,6 +273,7 @@ static octaspire_dern_value_t *octaspire_dern_vm_special_private_define_var_in_e
 
     return octaspire_dern_vm_create_new_value_boolean(vm, status);
 }
+
 static octaspire_dern_value_t *octaspire_dern_vm_special_private_define_var_no_env(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *firstArg,
@@ -5775,6 +5777,192 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_pop_front(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
     return firstArg;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "distance";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 2)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects two arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    // TODO XXX support also non-numeric arguments. For example,
+    // for strings this function could calculate and return
+    // the Levenshtein distance of the two strings.
+
+    octaspire_dern_value_t * const firstArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    if (!octaspire_dern_value_is_number(firstArgVal))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The first argument to builtin '%s' must be number. "
+            "Type %s was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(firstArgVal->typeTag));
+    }
+
+    octaspire_dern_value_t * const secondArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 1);
+
+    if (!octaspire_dern_value_is_number(firstArgVal))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The second argument to builtin '%s' must be number. "
+            "Type %s was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(secondArgVal->typeTag));
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    // TODO maybe return integer if both arguments were integers, and so on.
+    return octaspire_dern_vm_create_new_value_real(
+        vm,
+        fabs(
+            octaspire_dern_value_as_number_get_value(firstArgVal) -
+            octaspire_dern_value_as_number_get_value(secondArgVal)));
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_max(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "max";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+    size_t const numExpectedArgs = 2;
+
+    if (numArgs < numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects at least %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    octaspire_dern_value_t * largestArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(largestArgVal);
+
+    for (size_t i = 1; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t * const nextArgVal =
+            octaspire_dern_value_as_vector_get_element_at(arguments, i);
+
+        octaspire_helpers_verify_not_null(nextArgVal);
+
+        if (octaspire_dern_value_is_greater_than(nextArgVal, largestArgVal))
+        {
+            largestArgVal = nextArgVal;
+        }
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return largestArgVal;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_min(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "min";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+    size_t const numExpectedArgs = 2;
+
+    if (numArgs < numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects at least %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    octaspire_dern_value_t * smallestArgVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(smallestArgVal);
+
+    for (size_t i = 1; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t * const nextArgVal =
+            octaspire_dern_value_as_vector_get_element_at(arguments, i);
+
+        octaspire_helpers_verify_not_null(nextArgVal);
+
+        if (octaspire_dern_value_is_less_than(nextArgVal, smallestArgVal))
+        {
+            smallestArgVal = nextArgVal;
+        }
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return smallestArgVal;
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(

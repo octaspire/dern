@@ -3007,6 +3007,15 @@ bool octaspire_dern_value_as_string_is_index_valid(
         possiblyNegativeIndex);
 }
 
+bool octaspire_dern_value_as_string_is_empty(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_true(
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING);
+
+    return octaspire_string_is_empty(self->value.string);
+}
+
 octaspire_semver_t const *octaspire_dern_value_as_semver_const(
     octaspire_dern_value_t const * const self)
 {
@@ -3276,6 +3285,15 @@ bool octaspire_dern_value_as_vector_remove_element_at(
         possiblyNegativeIndex);
 }
 
+bool octaspire_dern_value_as_vector_clear(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    return octaspire_vector_clear(self->value.vector);
+}
+
 bool octaspire_dern_value_as_vector_pop_back_element(octaspire_dern_value_t *self)
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
@@ -3310,6 +3328,115 @@ octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_cons
     return octaspire_vector_get_element_at_const(
         self->value.vector,
         possiblyNegativeIndex);
+}
+
+octaspire_dern_c_data_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    char const * const cDataName,
+    char const * const pluginName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_c_data_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t const * const arg =
+        octaspire_dern_value_as_vector_get_element_at_const(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_c_data(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects C data '%s' as "
+            "%i. argument. Type '%s' was given.",
+            dernFuncName,
+            cDataName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    octaspire_dern_c_data_t * cData = arg->value.cData;
+
+    if (!octaspire_dern_c_data_is_plugin_and_payload_type_name(
+            cData,
+            pluginName,
+            cDataName))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' "
+            "expects '%s' and '%s' as "
+            "plugin name and payload type name for the C data of the %d. "
+            "argument. Names '%s' and '%s' were given.",
+            dernFuncName,
+            pluginName,
+            cDataName,
+            possiblyNegativeIndex,
+            octaspire_dern_c_data_get_plugin_name(cData),
+            octaspire_dern_c_data_get_payload_typename(cData));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.cData = octaspire_dern_c_data_get_payload(cData);
+    return result;
+}
+
+octaspire_dern_number_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_number_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t const * const arg =
+        octaspire_dern_value_as_vector_get_element_at_const(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects number as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.number = octaspire_dern_value_as_number_get_value(arg);
+    return result;
 }
 
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(

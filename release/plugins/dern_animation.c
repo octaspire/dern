@@ -122,7 +122,8 @@ bool octaspire_dern_animation_is_playing(octaspire_dern_animation_t const * cons
     return self->playing;
 }
 
-static octaspire_map_t * dern_animation_private_animations               = 0;
+static octaspire_map_t    * dern_animation_private_animations = 0;
+static octaspire_string_t * dern_animation_private_lib_name   = 0;
 
 octaspire_dern_value_t *dern_animation_add(
     octaspire_dern_vm_t * const vm,
@@ -757,9 +758,19 @@ octaspire_dern_value_t *dern_animation_has_any(
 
 bool dern_animation_init(
     octaspire_dern_vm_t * const vm,
-    octaspire_dern_environment_t * const targetEnv)
+    octaspire_dern_environment_t * const targetEnv,
+    char const * const libName)
 {
-    octaspire_helpers_verify_true(vm && targetEnv);
+    octaspire_helpers_verify_true(vm && targetEnv && libName);
+
+    dern_animation_private_lib_name = octaspire_string_new(
+        libName,
+        octaspire_dern_vm_get_allocator(vm));
+
+    if (!dern_animation_private_lib_name)
+    {
+        return false;
+    }
 
     dern_animation_private_animations =
         octaspire_map_new_with_octaspire_string_keys(
@@ -890,6 +901,9 @@ bool dern_animation_clean(
 
     octaspire_map_release(dern_animation_private_animations);
     dern_animation_private_animations = 0;
+
+    octaspire_string_release(dern_animation_private_lib_name);
+    dern_animation_private_lib_name = 0;
 
     return true;
 }
