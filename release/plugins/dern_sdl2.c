@@ -3131,8 +3131,9 @@ octaspire_dern_value_t *dern_sdl2_CreateWindow(
             SDL_GetError());
     }
 
+    // TODO allow calling 'SetSwapInterval' as its own function.
     // Use Vsync
-    if (SDL_GL_SetSwapInterval(1) < 0)
+    /*if (SDL_GL_SetSwapInterval(1) < 0)
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
@@ -3140,7 +3141,7 @@ octaspire_dern_value_t *dern_sdl2_CreateWindow(
             "Builtin 'sdl2-create-window' failed to enable Vsync for OpenGL."
             "Error message is: '%s'.",
             SDL_GetError());
-    }
+    }*/
 
     GLenum error = GL_NO_ERROR;
 
