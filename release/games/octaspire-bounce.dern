@@ -225,7 +225,7 @@
   [apply an impulse on the ball] '(force [force]) howto-no)
 
 (define handle-keydown as (fn (key)
-    (println [key down {}] key)
+    (if (ln@ event {D+4}) (return)) ; don't handle repeat events.
     (if (== key [r]) (do (game-over) (return)))
     (if (not ballOnPlatform) (return))
     (if (== key [UP]) (= keyDownDuration (ln@ event {D+3})))
@@ -235,7 +235,8 @@
     (if (not ballOnPlatform) (return))
     (if (== key [UP]) (do
                           (= keyDownDuration (- (ln@ event {D+3}) keyDownDuration))
-                          (ball-apply-impulse (chipmunk-cpv {D+0} (min keyDownDuration {D+5000})))))
+                          (println [keydur {}] keyDownDuration)
+                          (ball-apply-impulse (chipmunk-cpv {D+0} (min keyDownDuration {D+300})))))
     )[handle keydup-event] '(key [key]) howto-no)
 
 (while running
