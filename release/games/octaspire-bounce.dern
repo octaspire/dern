@@ -220,6 +220,24 @@
 
 (level-load level-index)
 
+(define ball-apply-impulse as (fn (force)
+  (chipmunk-cpBodyApplyImpulseAtWorldPoint ball force (chipmunk-cpv)))
+  [apply an impulse on the ball] '(force [force]) howto-no)
+
+(define handle-keydown as (fn (key)
+    (println [key down {}] key)
+    (if (== key [r]) (do (game-over) (return)))
+    (if (not ballOnPlatform) (return))
+    (if (== key [UP]) (= keyDownDuration (ln@ event {D+3})))
+    )[handle keydown-event] '(key [key]) howto-no)
+
+(define handle-keyup as (fn (key)
+    (if (not ballOnPlatform) (return))
+    (if (== key [UP]) (do
+                          (= keyDownDuration (- (ln@ event {D+3}) keyDownDuration))
+                          (ball-apply-impulse (chipmunk-cpv {D+0} (min keyDownDuration {D+5000})))))
+    )[handle keydup-event] '(key [key]) howto-no)
+
 (while running
        (sdl2-TimerUpdate)
        (define dt as (sdl2-TimerGetSeconds) [dt])
@@ -230,12 +248,8 @@
        (define type  as nil [type of event])
        (if (and (!= event nil) (> (len event) {D+0})) (= type (ln@ event {D+0})))
        (select (== type 'QUIT)    (= running false)
-               (== type 'KEYDOWN) (if ballOnPlatform
-                                      (= keyDownDuration (ln@ event {D+3})))
-               (== type 'KEYUP)   (if ballOnPlatform
-                                      (do
-                                          (= keyDownDuration (- (ln@ event {D+3}) keyDownDuration))
-                                          (chipmunk-cpBodyApplyImpulseAtWorldPoint ball (chipmunk-cpv {D+0} (min keyDownDuration {D+5000})) (chipmunk-cpv)))))
+               (== type 'KEYDOWN) (handle-keydown (ln@ event {D+1}))
+               (== type 'KEYUP)   (handle-keyup   (ln@ event {D+1})))
 
        (for i in platforms
             (platform-update i))
