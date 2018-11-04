@@ -1635,6 +1635,14 @@ octaspire_dern_value_t *dern_sdl2_PollEvent(
 
                 octaspire_helpers_verify_not_null(timeStampValue);
                 octaspire_dern_value_as_vector_push_back_element(result, &timeStampValue);
+
+                octaspire_dern_value_t * repeatValue =
+                    octaspire_dern_vm_create_new_value_boolean(
+                        vm,
+                        event.key.repeat != 0);
+
+                octaspire_helpers_verify_not_null(repeatValue);
+                octaspire_dern_value_as_vector_push_back_element(result, &repeatValue);
             }
             break;
 
