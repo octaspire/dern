@@ -150,8 +150,8 @@
 
     (if (== index {D+0}) (do
         ; pipe1
-        (wall-add     {D-185} {D+60}  {D-185} {D-140}) ; left wall
-        (wall-add     {D-165} {D+60}  {D-165} {D-140}) ; right wall
+        (wall-add     {D+10} {D+60}  {D+10} {D-140}) ; left wall
+        (wall-add     {D+30} {D+60}  {D+30} {D-140}) ; right wall
         (platform-add {D-175} {D-130} {D+8}   (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+200}))
         (ball-add {D-175} {D-120})
 
