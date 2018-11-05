@@ -184,16 +184,12 @@
    (return true)) [todo] '(bodyA [todo] bodyB [bodyB]) howto-no)
 
 (define running             as true                  [is running or not])
-(define targetFPS           as {D+300}               [target FPS])
+(define targetFPS           as {D+60}                [target FPS])
 (define targetFrameDuration as (/ {D+1.0} targetFPS) [time for a frame to last])
 (define origoX              as {D+256}               [X-coordinate of center for drawing])
 (define origoY              as {D+256}               [Y-coordinate of center for drawing])
 
 (define keyDownDuration     as {D+0}   [duration of keypress])
-(define pressure            as {D+0}   [current pressure])
-(define pressureDeltaVel    as {D+0.1} [velocity of pressure change])
-(define maxPressure         as {D+1}   [max pressure that is tolerated])
-(define minPressure         as {D+0}   [smallest possible pressure])
 
 (define game-over as (fn ()
       (level-load level-index))
@@ -255,7 +251,7 @@
        (for i in platforms
             (platform-update i))
 
-       (chipmunk-cpSpaceStep space {D+0.0035})
+       (chipmunk-cpSpaceStep space {D+0.01666})
 
        (define ballpos as (chipmunk-cpBodyGetPosition ball) [position of the ball])
        (define ballx   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x ballpos))) [x component])
