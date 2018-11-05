@@ -150,7 +150,7 @@
         ; pipe1
         (wall-add     {D-155} {D+100} {D-155} {D-115}) ; left wall
         (wall-add     {D-135} {D+100} {D-135} {D-115}) ; right wall
-        (platform-add {D-145} {D-120} {D+118}   (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+200}))
+        (platform-add {D-145} {D-120} {D+8}   (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+200}))
         (ball-add     {D-145} {D+100})
 
         (wall-add {D+17} {D+50} {D+110} {D+47}) ; ramp to exit
