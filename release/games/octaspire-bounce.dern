@@ -99,8 +99,6 @@
     (define body as (ln@ slot 'body 'hash) [body of the platform])
     (define pos  as (chipmunk-cpBodyGetPosition body) [position of the platform])
     (define vel  as (chipmunk-cpBodyGetVelocity body) [velocity of the platform])
-    (define x    as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x pos))) [x component])
-    (define y    as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y pos))) [y component])
     (define x1   as (ln@ slot 'x1 'hash) [original x])
     (define y1   as (ln@ slot 'y1 'hash) [original y])
     (define max  as (ln@ slot 'max 'hash) [max delta])
@@ -153,7 +151,7 @@
         (wall-add     {D-155} {D+100} {D-155} {D-115}) ; left wall
         (wall-add     {D-135} {D+100} {D-135} {D-115}) ; right wall
         (platform-add {D-145} {D-120} {D+8}   (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+200}))
-        (ball-add     {D-145} {D-100})
+        (ball-add     {D-145} {D+100})
 
         (wall-add {D+17} {D+50} {D+110} {D+47}) ; ramp to exit
         (return)))
