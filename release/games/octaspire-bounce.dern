@@ -153,10 +153,9 @@
         (wall-add     {D-185} {D+60}  {D-185} {D-140}) ; left wall
         (wall-add     {D-165} {D+60}  {D-165} {D-140}) ; right wall
         (platform-add {D-175} {D-130} {D+8}   (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+200}))
+        (ball-add {D-175} {D-120})
 
         (wall-add {D+17} {D+50} {D+110} {D+47}) ; ramp to exit
-
-        (ball-add {D-175} {D-120})
         (return)))
 
     (if (== index {D+1}) (do
