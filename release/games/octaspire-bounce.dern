@@ -184,7 +184,7 @@
    (return true)) [todo] '(bodyA [todo] bodyB [bodyB]) howto-no)
 
 (define running             as true                  [is running or not])
-(define targetFPS           as {D+60}                [target FPS])
+(define targetFPS           as {D+100}               [target FPS])
 (define targetFrameDuration as (/ {D+1.0} targetFPS) [time for a frame to last])
 (define origoX              as {D+256}               [X-coordinate of center for drawing])
 (define origoY              as {D+256}               [Y-coordinate of center for drawing])
@@ -217,6 +217,7 @@
 (level-load level-index)
 
 (define ball-apply-impulse as (fn (force)
+  (println [impulse is {}] force)
   (chipmunk-cpBodyApplyImpulseAtWorldPoint ball force (chipmunk-cpv)))
   [apply an impulse on the ball] '(force [force]) howto-no)
 
@@ -232,7 +233,7 @@
     (if (== key [UP]) (do
                           (= keyDownDuration (- (ln@ event {D+3}) keyDownDuration))
                           (println [keydur {}] keyDownDuration)
-                          (ball-apply-impulse (chipmunk-cpv {D+0} (min keyDownDuration {D+300})))))
+                          (ball-apply-impulse (chipmunk-cpv {D+0} (min (/ keyDownDuration {D+5}) {D+120})))))
     )[handle keydup-event] '(key [key]) howto-no)
 
 (while running
@@ -251,7 +252,7 @@
        (for i in platforms
             (platform-update i))
 
-       (chipmunk-cpSpaceStep space {D+0.01666})
+       (chipmunk-cpSpaceStep space {D+0.01})
 
        (define ballpos as (chipmunk-cpBodyGetPosition ball) [position of the ball])
        (define ballx   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x ballpos))) [x component])
