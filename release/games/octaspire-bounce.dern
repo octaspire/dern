@@ -38,7 +38,7 @@
     (define wallShape as
         (chipmunk-cpSegmentShapeNew wall (chipmunk-cpv x1 y1) (chipmunk-cpv x2 y2) {D+0})
         [collision shape for the wall])
-    (chipmunk-cpShapeSetFriction wallShape {D+1})
+    (chipmunk-cpShapeSetFriction wallShape {D+0.25})
     (chipmunk-cpSpaceAddShape space wallShape)
     (= slot 'body wall)
     (= slot 'x1   x1)
@@ -72,7 +72,7 @@
     (define shape as
       (chipmunk-cpSegmentShapeNew body (chipmunk-cpv (- hw) {D+0}) (chipmunk-cpv hw {D+0}) {D+0})
       [platform collision shape])
-    (chipmunk-cpShapeSetFriction shape {D+1})
+    (chipmunk-cpShapeSetFriction shape {D+0.25})
     (chipmunk-cpSpaceAddShape space shape)
     (chipmunk-cpBodySetVelocity body vel)
     (= slot 'body body)
@@ -130,9 +130,9 @@
     (define ball as (chipmunk-cpBodyNew {D+1} {D+1}) [the ball body] in (env-global))
     (chipmunk-cpSpaceAddBody space ball)
     (define ballShape as
-        (chipmunk-cpCircleShapeNew ball {D+1.0} (chipmunk-cpv {D+0} {D+0}))
+        (chipmunk-cpCircleShapeNew ball {D+2.0} (chipmunk-cpv {D+0} {D+0}))
         [ball collision shape])
-    (chipmunk-cpShapeSetFriction ballShape {D+1})
+    (chipmunk-cpShapeSetFriction ballShape {D+0.25})
     (chipmunk-cpSpaceAddShape space ballShape)
     (chipmunk-cpBodySetPosition        ball (chipmunk-cpv x y))
     (chipmunk-cpBodySetVelocity        ball (chipmunk-cpv))
@@ -150,8 +150,8 @@
         ; pipe1
         (wall-add     {D-155} {D+100} {D-155} {D-115}) ; left wall
         (wall-add     {D-135} {D+100} {D-135} {D-115}) ; right wall
-        (platform-add {D-145} {D-120} {D+8}   (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+200}))
-        (ball-add     {D-145} {D+100})
+        (platform-add {D-145} {D-90}  {D+8}   (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+30}))
+        (ball-add     {D-145} {D+60})
 
         (wall-add {D+17} {D+50} {D+110} {D+47}) ; ramp to exit
         (return)))
@@ -205,7 +205,7 @@
         (enter-ortho window-zoom)
         (sdl2-glClear)
         ; ball
-        (sdl2-gl-ortho-circle-rotated ballx bally {D+10} {D+32} (chipmunk-cpBodyGetAngle ball))
+        (sdl2-gl-ortho-circle-rotated ballx bally {D+20} {D+32} (chipmunk-cpBodyGetAngle ball))
         ; All walls
         (for i in walls
              (wall-draw i))
@@ -221,7 +221,7 @@
 
 (define ball-apply-impulse as (fn (force)
   (println [impulse is {}] force)
-  (chipmunk-cpBodyApplyImpulseAtWorldPoint ball force (chipmunk-cpv)))
+  (chipmunk-cpBodyApplyImpulseAtWorldPoint ball force (chipmunk-cpBodyGetPosition ball)))
   [apply an impulse on the ball] '(force [force]) howto-no)
 
 (define handle-keydown as (fn (key)
@@ -258,10 +258,10 @@
        (chipmunk-cpSpaceStep space {D+0.01})
 
        (define ballpos as (chipmunk-cpBodyGetPosition ball) [position of the ball])
-       (define ballx   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x ballpos))) [x component])
-       (define bally   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y ballpos))) [y component])
-       (if (< bally {D-1600}) (game-over))
-       (if (and (> ballx {D+1300}) (> bally {D+700})) (level-next))
+       (define ballx   as (chipmunk-cpv-get-x ballpos) [x component])
+       (define bally   as (chipmunk-cpv-get-y ballpos) [y component])
+       (if (< bally {D-500}) (game-over))
+       (if (and (> ballx {D+130}) (> bally {D+90})) (level-next))
 
        (sdl2-TimerUpdate)
        (define currentFrameDuration as (sdl2-TimerGetSeconds) [current frame duration])
