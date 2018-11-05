@@ -57,10 +57,10 @@
     (define y2   as (ln@ slot 'y2 'hash) [y2 component])
 
     (sdl2-gl-ortho-line
-        (+ {D+320} (* {D+10} x1))
-        (+ {D+320} (* {D+10} y1))
-        (+ {D+320} (* {D+10} x2))
-        (+ {D+320} (* {D+10} y2))))
+        (* {D+10} x1)
+        (* {D+10} y1)
+        (* {D+10} x2)
+        (* {D+10} y2))
   [draw a wall] '(slot [slot containing the wall]) howto-no)
 
 (define platform-add as (fn (x y w vel max)
@@ -86,13 +86,13 @@
 
 (define platform-draw as (fn (slot)
     (define body as (ln@ slot 'body 'hash) [body of the platform])
-    (define pos  as (chipmunk-cpBodyGetPosition body) [position of the platform])
-    (define x    as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x pos))) [x component])
-    (define y    as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y pos))) [y component])
-    (define hw   as (ln@ slot 'hw 'hash) [half width])
+    (define pos  as (chipmunk-cpBodyGetPosition body)   [position of the platform])
+    (define x    as (* {D+10} (chipmunk-cpv-get-x pos)) [x component])
+    (define y    as (* {D+10} (chipmunk-cpv-get-y pos)) [y component])
+    (define hw   as (* {D+10} (ln@ slot 'hw 'hash))     [half width])
     (sdl2-gl-ortho-line
-        (- x (* {D+10} hw)) y
-        (+ x (* {D+10} hw)) y))
+        (- x hw) y
+        (+ x hw) y))
     [draw a platform] '(slot [slot containing the platform]) howto-no)
 
 (define platform-update as (fn (slot)
@@ -202,8 +202,8 @@
 
 (define render as (fn ()
         (define ballpos as (chipmunk-cpBodyGetPosition ball) [position of the ball])
-        (define ballx   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-x ballpos))) [x component])
-        (define bally   as (+ {D+320} (* {D+10} (chipmunk-cpv-get-y ballpos))) [y component])
+        (define ballx   as (* {D+10} (chipmunk-cpv-get-x ballpos)) [x component])
+        (define bally   as (* {D+10} (chipmunk-cpv-get-y ballpos)) [y component])
         (enter-ortho window-zoom)
         (sdl2-glClear)
         ; ball
