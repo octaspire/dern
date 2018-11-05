@@ -149,12 +149,14 @@
     (space-create)
 
     (if (== index {D+0}) (do
-        (wall-add {D-185} {D+60} {D-185} {D-140}) ; left wall  of pipe1
-        (wall-add {D-165} {D+60} {D-165} {D-140}) ; right wall of pipe1
+        ; pipe1
+        (wall-add     {D-185} {D+60}  {D-185} {D-140}) ; left wall
+        (wall-add     {D-165} {D+60}  {D-165} {D-140}) ; right wall
+        (platform-add {D-160} {D-130} {D+2}   (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+30}))
 
         (wall-add {D+17} {D+50} {D+110} {D+47}) ; ramp to exit
-        (platform-add {D+0} {D+0} {D+2} (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+30}))
-        (ball-add {D+0} {D+15})
+
+        (ball-add {D+0} {D-175})
         (return)))
 
     (if (== index {D+1}) (do
