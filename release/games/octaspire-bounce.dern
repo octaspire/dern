@@ -102,9 +102,11 @@
     (define x1   as (ln@ slot 'x1 'hash) [original x])
     (define y1   as (ln@ slot 'y1 'hash) [original y])
     (define max  as (ln@ slot 'max 'hash) [max delta])
+    (define maxX as (chipmunk-cpv-get-x max) [max x])
+    (define maxY as (chipmunk-cpv-get-y max) [max Y])
 
-    (if (>= (distance (chipmunk-cpv-get-x pos) x1) (chipmunk-cpv-get-x max)) (chipmunk-cpBodySetVelocity body (chipmunk-cpv (- (chipmunk-cpv-get-x vel)) (chipmunk-cpv-get-y vel))))
-    (if (>= (distance (chipmunk-cpv-get-y pos) y1) (chipmunk-cpv-get-y max)) (chipmunk-cpBodySetVelocity body (chipmunk-cpv (chipmunk-cpv-get-x vel) (- (chipmunk-cpv-get-y vel))))))
+    (if (and (!= maxX {D+0}) (>= (distance (chipmunk-cpv-get-x pos) x1) maxX)) (chipmunk-cpBodySetVelocity body (chipmunk-cpv (- (chipmunk-cpv-get-x vel)) (chipmunk-cpv-get-y vel))))
+    (if (and (!= maxY {D+0}) (>= (distance (chipmunk-cpv-get-y pos) y1) maxY)) (chipmunk-cpBodySetVelocity body (chipmunk-cpv (chipmunk-cpv-get-x vel) (- (chipmunk-cpv-get-y vel))))))
     [update a platform] '(slot [slot containing the platform]) howto-no)
 
 (define space as nil [chipmunk space])
@@ -150,8 +152,9 @@
         ; pipe1
         (wall-add     {D-155} {D+100} {D-155} {D-115}) ; left wall
         (wall-add     {D-135} {D+100} {D-135} {D-115}) ; right wall
-        (platform-add {D-145} {D-90}  {D+8}   (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+30}))
-        (ball-add     {D-145} {D+60})
+        (platform-add {D-145} {D-30}  {D+4}   (chipmunk-cpv {D+10} {D+0}) (chipmunk-cpv {D+6} {D+0}))
+        (platform-add {D-145} {D-90}  {D+8}   (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+30})) ; bottom platform
+        (ball-add     {D-145} {D-40})
 
         (wall-add {D+17} {D+50} {D+110} {D+47}) ; ramp to exit
         (return)))
@@ -236,7 +239,7 @@
     (if (== key [UP]) (do
                           (= keyDownDuration (- (ln@ event {D+3}) keyDownDuration))
                           (println [keydur {}] keyDownDuration)
-                          (ball-apply-impulse (chipmunk-cpv {D+0} (min (/ keyDownDuration {D+5}) {D+120})))))
+                          (ball-apply-impulse (chipmunk-cpv {D+0} (min (/ keyDownDuration {D+3}) {D+250})))))
     )[handle keydup-event] '(key [key]) howto-no)
 
 (while running
@@ -260,7 +263,7 @@
        (define ballpos as (chipmunk-cpBodyGetPosition ball) [position of the ball])
        (define ballx   as (chipmunk-cpv-get-x ballpos) [x component])
        (define bally   as (chipmunk-cpv-get-y ballpos) [y component])
-       (if (< bally {D-500}) (game-over))
+       (if (< bally {D-240}) (game-over))
        (if (and (> ballx {D+130}) (> bally {D+90})) (level-next))
 
        (sdl2-TimerUpdate)
