@@ -142,18 +142,18 @@
   [stop and position the ball] '(x [new x] y [new y]) howto-no)
 
 #! Level dimensions are about:
-   x -190 to 120
-   y -140 to 80
+   x -155 to 155
+   y -115 to 115
 !#
 (define level-load as (fn (index)
     (space-create)
 
     (if (== index {D+0}) (do
         ; pipe1
-        (wall-add     {D+10} {D+60}  {D+10} {D-140}) ; left wall
-        (wall-add     {D+30} {D+60}  {D+30} {D-140}) ; right wall
-        (platform-add {D-175} {D-130} {D+8}   (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+200}))
-        (ball-add {D-175} {D-120})
+        (wall-add     {D-155} {D+100} {D-155} {D-115}) ; left wall
+        (wall-add     {D-135} {D+100} {D-135} {D-115}) ; right wall
+        (platform-add {D-145} {D-120} {D+8}   (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+200}))
+        (ball-add     {D-145} {D-100})
 
         (wall-add {D+17} {D+50} {D+110} {D+47}) ; ramp to exit
         (return)))
