@@ -141,13 +141,17 @@
     (chipmunk-cpBodySetAngularVelocity ball {D+0}))
   [stop and position the ball] '(x [new x] y [new y]) howto-no)
 
+#! Level dimensions are about:
+   x -190 to 120
+   y -140 to 80
+!#
 (define level-load as (fn (index)
     (space-create)
 
     (if (== index {D+0}) (do
-        (wall-add {D-10} {D+70} {D+10}  {D+80}) ; top ramp
-        (wall-add {D-10} {D+30} {D-10}  {D-30}) ; left wall
-        (wall-add {D+10} {D+30} {D+10}  {D-30}) ; right wall
+        (wall-add {D-185} {D+60} {D-185} {D-140}) ; left wall  of pipe1
+        (wall-add {D-165} {D+60} {D-165} {D-140}) ; right wall of pipe1
+
         (wall-add {D+17} {D+50} {D+110} {D+47}) ; ramp to exit
         (platform-add {D+0} {D+0} {D+2} (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+30}))
         (ball-add {D+0} {D+15})
