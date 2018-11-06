@@ -69,11 +69,25 @@
     (define body as (chipmunk-cpBodyNewKinematic) [a body])
     (chipmunk-cpSpaceAddBody space body)
     (chipmunk-cpBodySetPosition body (chipmunk-cpv x y))
-    (define shape as
+    ; Bottom
+    (define shapeBottom as
       (chipmunk-cpSegmentShapeNew body (chipmunk-cpv (- hw) {D+0}) (chipmunk-cpv hw {D+0}) {D+0})
-      [platform collision shape])
-    (chipmunk-cpShapeSetFriction shape {D+0.25})
-    (chipmunk-cpSpaceAddShape space shape)
+      [platform collision bottom shape])
+    (chipmunk-cpShapeSetFriction shapeBottom {D+0.25})
+    (chipmunk-cpSpaceAddShape space shapeBottom)
+    ; Right wall
+    (define shapeRight as
+      (chipmunk-cpSegmentShapeNew body (chipmunk-cpv hw {D+1.5}) (chipmunk-cpv hw {D+0}) {D+0})
+      [platform collision right side shape])
+    (chipmunk-cpShapeSetFriction shapeRight {D+0.25})
+    (chipmunk-cpSpaceAddShape space shapeRight)
+    ; Left wall
+    (define shapeLeft as
+      (chipmunk-cpSegmentShapeNew body (chipmunk-cpv (- hw) {D+1.5}) (chipmunk-cpv (- hw) {D+0}) {D+0})
+      [platform collision left side shape])
+    (chipmunk-cpShapeSetFriction shapeLeft {D+0.25})
+    (chipmunk-cpSpaceAddShape space shapeLeft)
+
     (chipmunk-cpBodySetVelocity body vel)
     (= slot 'body body)
     (= slot 'x1  x)
@@ -85,14 +99,23 @@
     [add new platform in the level] '(x [center x] y [center y] w [w] vel [velocity] max [max delta]) howto-no)
 
 (define platform-draw as (fn (slot)
-    (define body as (ln@ slot 'body 'hash) [body of the platform])
-    (define pos  as (chipmunk-cpBodyGetPosition body)   [position of the platform])
-    (define x    as (* {D+10} (chipmunk-cpv-get-x pos)) [x component])
-    (define y    as (* {D+10} (chipmunk-cpv-get-y pos)) [y component])
-    (define hw   as (* {D+10} (ln@ slot 'hw 'hash))     [half width])
-    (sdl2-gl-ortho-line
-        (- x hw) y
-        (+ x hw) y))
+    (define body       as (ln@ slot 'body 'hash) [body of the platform])
+    (define pos        as (chipmunk-cpBodyGetPosition body)   [position of the platform])
+    (define x          as (* {D+10} (chipmunk-cpv-get-x pos)) [x component])
+    (define y          as (* {D+10} (chipmunk-cpv-get-y pos)) [y component])
+    (define hw         as (* {D+10} (ln@ slot 'hw 'hash))     [half width])
+    (define wallY      as (+ {D+15} y) [wall's top y])
+    (define leftWallX  as (- x hw) [left wall's x])
+    (define rightWallX as (+ x hw) [right wall's x])
+    (sdl2-gl-ortho-line ; Bottom
+        leftWallX  y
+        rightWallX y)
+    (sdl2-gl-ortho-line ; Left wall
+        leftWallX wallY
+        leftWallX y)
+    (sdl2-gl-ortho-line ; Right wall
+        rightWallX wallY
+        rightWallX y))
     [draw a platform] '(slot [slot containing the platform]) howto-no)
 
 (define platform-update as (fn (slot)
@@ -152,7 +175,7 @@
         ; pipe1
         (wall-add     {D-155} {D+100} {D-155} {D-115}) ; left wall
         (wall-add     {D-135} {D+100} {D-135} {D-115}) ; right wall
-        (platform-add {D-145} {D-30}  {D+4}   (chipmunk-cpv {D+10} {D+0}) (chipmunk-cpv {D+6} {D+0}))
+        (platform-add {D-145} {D-30}  {D+4}   (chipmunk-cpv {D+15} {D+0}) (chipmunk-cpv {D+6} {D+0}))
         (platform-add {D-145} {D-90}  {D+8}   (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+30})) ; bottom platform
         (ball-add     {D-145} {D-40})
 
