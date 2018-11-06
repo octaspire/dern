@@ -98,21 +98,23 @@
     [add new platform in the level] '(x [center x] y [center y] w [w] vel [velocity] max [max delta]) howto-no)
 
 (define platform-draw as (fn (slot)
-    (define body  as (ln@ slot 'body 'hash) [body of the platform])
-    (define pos   as (chipmunk-cpBodyGetPosition body)   [position of the platform])
-    (define x     as (* {D+10} (chipmunk-cpv-get-x pos)) [x component])
-    (define y     as (* {D+10} (chipmunk-cpv-get-y pos)) [y component])
-    (define hw    as (* {D+10} (ln@ slot 'hw 'hash))     [half width])
-    (define wallY as (+ {D+10} y) [wall's top y])
+    (define body       as (ln@ slot 'body 'hash) [body of the platform])
+    (define pos        as (chipmunk-cpBodyGetPosition body)   [position of the platform])
+    (define x          as (* {D+10} (chipmunk-cpv-get-x pos)) [x component])
+    (define y          as (* {D+10} (chipmunk-cpv-get-y pos)) [y component])
+    (define hw         as (* {D+10} (ln@ slot 'hw 'hash))     [half width])
+    (define wallY      as (+ {D+10} y) [wall's top y])
+    (define leftWallX  as (- x hw) [left wall's x])
+    (define rightWallX as (+ x hw) [right wall's x])
     (sdl2-gl-ortho-line ; Bottom
-        (- x hw) y
-        (+ x hw) y)
+        leftWallX  y
+        rightWallX y)
     (sdl2-gl-ortho-line ; Left wall
-        (- x hw) wallY
-        (- x hw) y)
+        leftWallX wallY
+        leftWallX y)
     (sdl2-gl-ortho-line ; Right wall
-        (+ x hw) wallY
-        (+ x hw) y))
+        rightWallX wallY
+        rightWallX y))
     [draw a platform] '(slot [slot containing the platform]) howto-no)
 
 (define platform-update as (fn (slot)
