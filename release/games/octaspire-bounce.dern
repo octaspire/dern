@@ -69,11 +69,24 @@
     (define body as (chipmunk-cpBodyNewKinematic) [a body])
     (chipmunk-cpSpaceAddBody space body)
     (chipmunk-cpBodySetPosition body (chipmunk-cpv x y))
-    (define shape as
+    (define shapeBottom as
       (chipmunk-cpSegmentShapeNew body (chipmunk-cpv (- hw) {D+0}) (chipmunk-cpv hw {D+0}) {D+0})
-      [platform collision shape])
-    (chipmunk-cpShapeSetFriction shape {D+0.25})
-    (chipmunk-cpSpaceAddShape space shape)
+      [platform collision bottom shape])
+    (chipmunk-cpShapeSetFriction shapeBottom {D+0.25})
+    (chipmunk-cpSpaceAddShape space shapeBottom)
+
+    (define shapeRight as
+      (chipmunk-cpSegmentShapeNew body (chipmunk-cpv hw {D+1}) (chipmunk-cpv hw {D+0}) {D+0})
+      [platform collision right side shape])
+    (chipmunk-cpShapeSetFriction shapeRight {D+0.25})
+    (chipmunk-cpSpaceAddShape space shapeRight)
+
+    (define shapeLeft as
+      (chipmunk-cpSegmentShapeNew body (chipmunk-cpv (- hw) {D+1}) (chipmunk-cpv (- hw) {D+0}) {D+0})
+      [platform collision left side shape])
+    (chipmunk-cpShapeSetFriction shapeLeft {D+0.25})
+    (chipmunk-cpSpaceAddShape space shapeLeft)
+
     (chipmunk-cpBodySetVelocity body vel)
     (= slot 'body body)
     (= slot 'x1  x)
@@ -85,13 +98,20 @@
     [add new platform in the level] '(x [center x] y [center y] w [w] vel [velocity] max [max delta]) howto-no)
 
 (define platform-draw as (fn (slot)
-    (define body as (ln@ slot 'body 'hash) [body of the platform])
-    (define pos  as (chipmunk-cpBodyGetPosition body)   [position of the platform])
-    (define x    as (* {D+10} (chipmunk-cpv-get-x pos)) [x component])
-    (define y    as (* {D+10} (chipmunk-cpv-get-y pos)) [y component])
-    (define hw   as (* {D+10} (ln@ slot 'hw 'hash))     [half width])
-    (sdl2-gl-ortho-line
+    (define body  as (ln@ slot 'body 'hash) [body of the platform])
+    (define pos   as (chipmunk-cpBodyGetPosition body)   [position of the platform])
+    (define x     as (* {D+10} (chipmunk-cpv-get-x pos)) [x component])
+    (define y     as (* {D+10} (chipmunk-cpv-get-y pos)) [y component])
+    (define hw    as (* {D+10} (ln@ slot 'hw 'hash))     [half width])
+    (define wallY as (+ {D+10} y) [wall's top y])
+    (sdl2-gl-ortho-line ; Bottom
         (- x hw) y
+        (+ x hw) y)
+    (sdl2-gl-ortho-line ; Left wall
+        (- x hw) wallY
+        (- x hw) y)
+    (sdl2-gl-ortho-line ; Right wall
+        (+ x hw) wallY
         (+ x hw) y))
     [draw a platform] '(slot [slot containing the platform]) howto-no)
 
