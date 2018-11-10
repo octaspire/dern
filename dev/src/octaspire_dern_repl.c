@@ -416,7 +416,24 @@ void main(int argc, char *argv[])
                 vm,
                 octaspire_string_get_c_string(str));
 
-        octaspire_helpers_verify_not_null(value);
+        if (!value)
+        {
+            octaspire_string_t *tmpStr =
+                octaspire_string_new("Incomplete input", allocator);
+
+            octaspire_dern_repl_print_message(
+                tmpStr,
+                OCTASPIRE_DERN_REPL_MESSAGE_ERROR,
+                useColors,
+                input);
+
+            printf("\n");
+
+            octaspire_string_release(tmpStr);
+            tmpStr = 0;
+
+            exit(EXIT_FAILURE);
+        }
 
         if (value->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
         {
@@ -453,7 +470,24 @@ void main(int argc, char *argv[])
             allocator,
             stdio);
 
-        octaspire_helpers_verify_not_null(input);
+        if (!input)
+        {
+            octaspire_string_t *tmpStr =
+                octaspire_string_new_format(allocator, "Path '%s' cannot be read", argv[userFilesStartIdx]);
+
+            octaspire_dern_repl_print_message(
+                tmpStr,
+                OCTASPIRE_DERN_REPL_MESSAGE_ERROR,
+                useColors,
+                input);
+
+            printf("\n");
+
+            octaspire_string_release(tmpStr);
+            tmpStr = 0;
+
+            exit(EXIT_FAILURE);
+        }
 
         octaspire_dern_value_t *value = 0;
 

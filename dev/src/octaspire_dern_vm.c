@@ -2891,12 +2891,17 @@ octaspire_dern_value_t *octaspire_dern_vm_parse_token(
                     if (!token2)
                     {
                         // No more input
+                        // We have not seen balancing right parenthesis yet,
+                        // report an error.
                         octaspire_dern_vm_pop_value(self, result);
 
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(self));
 
-                        return 0;
+                        return octaspire_dern_vm_create_new_value_error(
+                            self,
+                            octaspire_string_new(
+                                "Balancing right parenthesis ')' missing", self->allocator));
                     }
                     else if (
                         octaspire_dern_lexer_token_get_type_tag(token2) ==
@@ -2949,12 +2954,17 @@ octaspire_dern_value_t *octaspire_dern_vm_parse_token(
 
                             if (!element)
                             {
+                                // We have not seen balancing right parenthesis yet,
+                                // report an error.
                                 octaspire_dern_vm_pop_value(self, result);
 
                                 octaspire_helpers_verify_true(
                                     stackLength == octaspire_dern_vm_get_stack_length(self));
 
-                                return element;
+                                return octaspire_dern_vm_create_new_value_error(
+                                    self,
+                                    octaspire_string_new(
+                                        "Balancing right parenthesis ')' missing", self->allocator));
                             }
 
                             if (element->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
@@ -2977,19 +2987,10 @@ octaspire_dern_value_t *octaspire_dern_vm_parse_token(
                         }
                     }
                 }
-
-                /*
-                Clang says this code is never executed
-                if (!error)
-                {
-                    octaspire_dern_vm_pop_value(self, result);
-                }
-
-                octaspire_helpers_verify_true(
-                    stackLength == octaspire_dern_vm_get_stack_length(self));
-
-                return result;
-                */
+                // If execution would got here, it would mean that the balancing right
+                // parenthesis is missing and an error should be reported. However,
+                // the execution should never reach this place, and so no error is
+                // returned to prevent compiler warnings about code having no effect.
             }
         }
         break;
@@ -3295,6 +3296,14 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
 
     if (self->config.debugModeOn)
     {
+        if (!value)
+        {
+            fprintf(stderr,
+                    "[:::DEBUG:::] value is NULL\n");
+
+            return 0;
+
+        }
         octaspire_string_t *str =
             octaspire_dern_value_to_string(
                 value,
@@ -3472,6 +3481,10 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
 
                             octaspire_string_release(tmpStr);
                             tmpStr = 0;
+                        }
+                        else if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ILLEGAL)
+                        {
+                            abort();
                         }
                     }
 
@@ -3802,6 +3815,8 @@ octaspire_dern_value_t *octaspire_dern_vm_read_from_octaspire_input_and_eval_in_
     octaspire_dern_vm_t *self,
     octaspire_input_t * const input)
 {
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
+
     if (!input || !octaspire_input_is_good(input))
     {
         return octaspire_dern_vm_create_new_value_error_from_c_string(self, "No input");
@@ -3821,7 +3836,13 @@ octaspire_dern_value_t *octaspire_dern_vm_read_from_octaspire_input_and_eval_in_
             break;
         }
 
+        if (lastGoodResult)
+        {
+            octaspire_dern_vm_pop_value(self, lastGoodResult);
+        }
+
         lastGoodResult = result;
+        octaspire_dern_vm_push_value(self, lastGoodResult);
 
         if (result->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
         {
@@ -3838,9 +3859,17 @@ octaspire_dern_value_t *octaspire_dern_vm_read_from_octaspire_input_and_eval_in_
 
     if (!result && lastGoodResult)
     {
+        octaspire_dern_vm_pop_value(self, lastGoodResult);
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
         return lastGoodResult;
     }
 
+    if (lastGoodResult)
+    {
+        octaspire_dern_vm_pop_value(self, lastGoodResult);
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
     return result;
 }
 
