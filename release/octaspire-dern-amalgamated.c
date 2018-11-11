@@ -25638,7 +25638,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "432"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "433"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -50327,13 +50327,19 @@ octaspire_dern_value_t *octaspire_dern_vm_parse_token(
                         // report an error.
                         octaspire_dern_vm_pop_value(self, result);
 
+                        octaspire_helpers_verify_not_null(token);
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(self));
 
                         return octaspire_dern_vm_create_new_value_error(
                             self,
-                            octaspire_string_new(
-                                "Balancing right parenthesis ')' missing", self->allocator));
+                            octaspire_string_new_format(
+                                self->allocator,
+                                "Balancing right parenthesis ')' missing for left "
+                                "parenthesis given at column %zu of line %zu",
+                                octaspire_dern_lexer_token_get_position_column(token)->start,
+                                octaspire_dern_lexer_token_get_position_line(token)->start));
                     }
                     else if (
                         octaspire_dern_lexer_token_get_type_tag(token2) ==
@@ -50379,8 +50385,6 @@ octaspire_dern_value_t *octaspire_dern_vm_parse_token(
                             octaspire_dern_value_t *element =
                                 octaspire_dern_vm_parse_token(self, token2, input);
 
-                            //octaspire_helpers_verify_not_null(element);
-
                             octaspire_dern_lexer_token_release(token2);
                             token2 = 0;
 
@@ -50390,13 +50394,19 @@ octaspire_dern_value_t *octaspire_dern_vm_parse_token(
                                 // report an error.
                                 octaspire_dern_vm_pop_value(self, result);
 
+                                octaspire_helpers_verify_not_null(token);
+
                                 octaspire_helpers_verify_true(
                                     stackLength == octaspire_dern_vm_get_stack_length(self));
 
                                 return octaspire_dern_vm_create_new_value_error(
                                     self,
-                                    octaspire_string_new(
-                                        "Balancing right parenthesis ')' missing", self->allocator));
+                                    octaspire_string_new_format(
+                                        self->allocator,
+                                        "Balancing right parenthesis ')' missing for left "
+                                        "parenthesis given at column %zu of line %zu",
+                                        octaspire_dern_lexer_token_get_position_column(token)->start,
+                                        octaspire_dern_lexer_token_get_position_line(token)->start));
                             }
 
                             if (element->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
@@ -73325,6 +73335,30 @@ TEST octaspire_dern_vm_eval_right_parenthesis_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_eval_unbalanced_parenthesis_1_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define f as (fn () [f] '() howto-no)(define x as {D+10} [x])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Balancing right parenthesis ')' missing for left parenthesis "
+        "given at column 1 of line 1",
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_allocator_new(0);
@@ -73806,6 +73840,8 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_eval_empty_vector_test);
     RUN_TEST(octaspire_dern_vm_eval_vector_containing_empty_vector_test);
     RUN_TEST(octaspire_dern_vm_eval_right_parenthesis_test);
+
+    RUN_TEST(octaspire_dern_vm_eval_unbalanced_parenthesis_1_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;

@@ -2895,13 +2895,19 @@ octaspire_dern_value_t *octaspire_dern_vm_parse_token(
                         // report an error.
                         octaspire_dern_vm_pop_value(self, result);
 
+                        octaspire_helpers_verify_not_null(token);
+
                         octaspire_helpers_verify_true(
                             stackLength == octaspire_dern_vm_get_stack_length(self));
 
                         return octaspire_dern_vm_create_new_value_error(
                             self,
-                            octaspire_string_new(
-                                "Balancing right parenthesis ')' missing", self->allocator));
+                            octaspire_string_new_format(
+                                self->allocator,
+                                "Balancing right parenthesis ')' missing for left "
+                                "parenthesis given at column %zu of line %zu",
+                                octaspire_dern_lexer_token_get_position_column(token)->start,
+                                octaspire_dern_lexer_token_get_position_line(token)->start));
                     }
                     else if (
                         octaspire_dern_lexer_token_get_type_tag(token2) ==
@@ -2947,8 +2953,6 @@ octaspire_dern_value_t *octaspire_dern_vm_parse_token(
                             octaspire_dern_value_t *element =
                                 octaspire_dern_vm_parse_token(self, token2, input);
 
-                            //octaspire_helpers_verify_not_null(element);
-
                             octaspire_dern_lexer_token_release(token2);
                             token2 = 0;
 
@@ -2958,13 +2962,19 @@ octaspire_dern_value_t *octaspire_dern_vm_parse_token(
                                 // report an error.
                                 octaspire_dern_vm_pop_value(self, result);
 
+                                octaspire_helpers_verify_not_null(token);
+
                                 octaspire_helpers_verify_true(
                                     stackLength == octaspire_dern_vm_get_stack_length(self));
 
                                 return octaspire_dern_vm_create_new_value_error(
                                     self,
-                                    octaspire_string_new(
-                                        "Balancing right parenthesis ')' missing", self->allocator));
+                                    octaspire_string_new_format(
+                                        self->allocator,
+                                        "Balancing right parenthesis ')' missing for left "
+                                        "parenthesis given at column %zu of line %zu",
+                                        octaspire_dern_lexer_token_get_position_column(token)->start,
+                                        octaspire_dern_lexer_token_get_position_line(token)->start));
                             }
 
                             if (element->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
