@@ -175,12 +175,20 @@
   (if (== index {D+0}) (do
     ; pipe1
     (bounce-wall-add     {D-155} {D+100} {D-155} {D-115}) ; left wall
-    (bounce-wall-add     {D-154} {D+10}  {D-150} {D+15})  ; ramp wall
+    (bounce-wall-add     {D-154} {D+10}  {D-150} {D+15})  ; lower left ramp wall
+    (bounce-wall-add     {D-140} {D+85}  {D-136} {D+70})  ; upper right ramp wall
+    (bounce-wall-add     {D-154} {D+110} {D-150} {D+115}) ; ramp to pipe2
     (bounce-wall-add     {D-135} {D+100} {D-135} {D-115}) ; right wall
-    (bounce-platform-add {D-138} {D+20}  {D+4}   (chipmunk-cpv {D+0}  {D+10}) (chipmunk-cpv {D+0} {D+30})) ; upper  platform
+    (bounce-platform-add {D-138} {D+20}  {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper  platform
     (bounce-platform-add {D-145} {D-30}  {D+4}   (chipmunk-cpv {D+15} {D+0})  (chipmunk-cpv {D+6} {D+0}))  ; middle platform
     (bounce-platform-add {D-145} {D-90}  {D+8}   (chipmunk-cpv {D+0}  {D+30}) (chipmunk-cpv {D+0} {D+30})) ; bottom platform
     (bounce-ball-add     {D-145} {D-40})
+    ; pipe1
+    (bounce-wall-add     {D-115} {D+135} {D-115} {D-115}) ; right wall
+    (bounce-platform-add {D-118} {D+40}  {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper vertical platform
+    (bounce-wall-add     {D-115} {D+95}  {D-120} {D+90}) ; upper triangle ramp
+    (bounce-wall-add     {D-115} {D+85}  {D-120} {D+90}) ; upper triangle ramp
+
     (bounce-wall-add     {D+17}  {D+50}  {D+110} {D+47}) ; ramp to exit
     (return)))
   (if (== index {D+1}) (do

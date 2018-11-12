@@ -18,7 +18,10 @@ UNAME=$(shell uname -s)
 CFLAGS=-std=c99 -Wall -Wextra -g -O2 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 
 TAGS_C_FILES := $(SRCDIR)*.c $(INCDIR)*.h $(CORDIR)octaspire-core-amalgamated.c
-TAGS_DERN_FILES := $(GAMESDIR)octaspire-lightcube.dern $(GAMESDIR)octaspire-maze.dern
+
+TAGS_DERN_FILES := $(GAMESDIR)octaspire-bounce.dern    \
+                   $(GAMESDIR)octaspire-lightcube.dern \
+                   $(GAMESDIR)octaspire-maze.dern
 
 CHIPMUNK_SRCS := $(wildcard release/plugins/external/chipmunk/src/*.c)
 CHIPMUNK_OBJS := $(patsubst %.c, %.o, $(CHIPMUNK_SRCS))
@@ -39,10 +42,6 @@ TESTOBJS := $(SRCDIR)octaspire_dern_c_data.o      \
 DEVOBJS := $(TESTOBJS)                           \
            $(SRCDIR)octaspire_dern_lexer.o       \
            $(SRCDIR)octaspire_dern_vm.o
-
-# In batch mode Emacs doesn't load the usual initialization file. To get the correct
-# settings and styles in the batch mode, the initialization file must be loaded manually.
-EMACSFLAGS=--load dev/external/octaspire_dotfiles/emacs/.emacs.d/init.el --batch
 
 UNAME := $(shell uname)
 MACHINE := $(shell uname -m)
