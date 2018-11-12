@@ -25638,7 +25638,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "433"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "434"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -73359,6 +73359,32 @@ TEST octaspire_dern_vm_eval_unbalanced_parenthesis_1_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_eval_unbalanced_parenthesis_2_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "\n"
+            "; only comment\n"
+            "   (define f as (fn () [f] '() howto-no)(define x as {D+10} [x])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Balancing right parenthesis ')' missing for left parenthesis "
+        "given at column 4 of line 3",
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_allocator_new(0);
@@ -73842,6 +73868,7 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_eval_right_parenthesis_test);
 
     RUN_TEST(octaspire_dern_vm_eval_unbalanced_parenthesis_1_test);
+    RUN_TEST(octaspire_dern_vm_eval_unbalanced_parenthesis_2_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;
