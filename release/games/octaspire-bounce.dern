@@ -192,7 +192,8 @@
     (bounce-wall-add     {D-115} {D+85}  {D-120} {D+90}) ; upper triangle ramp
     (bounce-wall-add     {D-135} {D+75}  {D-130} {D+70}) ; upper left ramp
     ; pipe2
-    (bounce-wall-add     {D-95}  {D+100} {D-95}  {D-115}) ; right wall
+    (bounce-wall-add     {D-95}  {D+100} {D-95} {D-115}) ; right wall
+    (bounce-wall-add     {D-95}  {D-100} {D-90} {D-95})  ; lowest left ramp
 
     (bounce-wall-add     {D+17}  {D+50}  {D+110} {D+47}) ; ramp to exit
     (return)))
