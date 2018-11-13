@@ -194,6 +194,7 @@
     ; pipe2
     (bounce-wall-add     {D-95}  {D+100} {D-95}  {D-115}) ; right wall
     (bounce-wall-add     {D-115} {D-100} {D-110} {D-95})  ; lowest left ramp
+    (bounce-wall-add     {D-100} {D-80}  {D-75}  {D-95})  ; lowest right ramp
 
     (bounce-wall-add     {D+17}  {D+50}  {D+110} {D+47}) ; ramp to exit
     (return)))
