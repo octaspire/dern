@@ -184,10 +184,12 @@
     (bounce-platform-add {D-145} {D-90}  {D+8}   (chipmunk-cpv {D+0}  {D+30}) (chipmunk-cpv {D+0} {D+30})) ; bottom platform
     (bounce-ball-add     {D-145} {D-40})
     ; pipe1
-    (bounce-wall-add     {D-115} {D+135} {D-115} {D-115}) ; right wall
-    (bounce-platform-add {D-118} {D+40}  {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper vertical platform
+    (bounce-wall-add     {D-115} {D+155} {D-115} {D-115}) ; right wall
+    (bounce-platform-add {D-125} {D+55}  {D+4}   (chipmunk-cpv {D+30} {D+0})  (chipmunk-cpv {D+10}{D+0}))  ; upper horizontal platform
+    (bounce-platform-add {D-132} {D+0}   {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper vertical platform
     (bounce-wall-add     {D-115} {D+95}  {D-120} {D+90}) ; upper triangle ramp
     (bounce-wall-add     {D-115} {D+85}  {D-120} {D+90}) ; upper triangle ramp
+    (bounce-wall-add     {D-135} {D+75}  {D-130} {D+70}) ; upper left ramp
 
     (bounce-wall-add     {D+17}  {D+50}  {D+110} {D+47}) ; ramp to exit
     (return)))
@@ -254,19 +256,28 @@
   (chipmunk-cpBodyApplyImpulseAtWorldPoint bounce-ball force (chipmunk-cpBodyGetPosition bounce-ball)))
   [apply an impulse on the ball] '(force [force]) howto-no)
 
+#! Currently held jump key or an empty string. Pressing another
+   key while a jump key is held down cancels the jump. !#
+(define current-jump-key as [] [currently held jump key, if any])
+
 (define bounce-handle-keydown as (fn (key)
   (if (ln@ event {D+4}) (return)) ; don't handle repeat events.
   (if (== key [r]) (do (bounce-game-over) (return)))
   (if (not bounce-ball-on-platform) (return))
-  (if (== key [UP]) (= bounce-key-down-duration (ln@ event {D+3}))))
+  (if (== current-jump-key [])
+      (do
+        (= current-jump-key key)
+        (= bounce-key-down-duration (ln@ event {D+3})))
+      (= current-jump-key [])))
   [handle keydown-event] '(key [key]) howto-no)
 
 (define bounce-handle-keyup as (fn (key)
   (if (not bounce-ball-on-platform) (return))
-  (if (== key [UP]) (do
-    (= bounce-key-down-duration (- (ln@ event {D+3}) bounce-key-down-duration))
-    (println [keydur {}] bounce-key-down-duration)
-    (bounce-ball-apply-impulse (chipmunk-cpv {D+0} (min (/ bounce-key-down-duration {D+3}) {D+250}))))))
+  (if (== key current-jump-key)
+      (do
+        (= bounce-key-down-duration (- (ln@ event {D+3}) bounce-key-down-duration))
+        (= current-jump-key [])  
+        (bounce-ball-apply-impulse (chipmunk-cpv {D+0} (min (/ bounce-key-down-duration {D+3}) {D+250}))))))
   [handle keydup-event] '(key [key]) howto-no)
 
 (while bounce-running
