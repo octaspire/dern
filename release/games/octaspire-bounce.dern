@@ -184,9 +184,10 @@
     (bounce-platform-add {D-145} {D-90}  {D+8}   (chipmunk-cpv {D+0}  {D+30}) (chipmunk-cpv {D+0} {D+30})) ; bottom platform
     (bounce-ball-add     {D-145} {D-40})
     ; pipe1
-    (bounce-wall-add     {D-115} {D+155} {D-115} {D-115}) ; right wall
-    (bounce-platform-add {D-125} {D+55}  {D+4}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+8}{D+0}))  ; upper horizontal platform
-    (bounce-platform-add {D-132} {D+0}   {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper vertical platform
+    (bounce-wall-add     {D-115} {D+155} {D-115} {D-100}) ; right wall
+    (bounce-platform-add {D-125} {D+55}  {D+4}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+8}{D+0}))   ; upper horizontal platform
+    (bounce-platform-add {D-132} {D-60}  {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper vertical platform
+    (bounce-platform-add {D-115} {D-115} {D+4}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+18}{D+0}))   ; lower horizontal platform
     (bounce-wall-add     {D-115} {D+95}  {D-120} {D+90}) ; upper triangle ramp
     (bounce-wall-add     {D-115} {D+85}  {D-120} {D+90}) ; upper triangle ramp
     (bounce-wall-add     {D-135} {D+75}  {D-130} {D+70}) ; upper left ramp
