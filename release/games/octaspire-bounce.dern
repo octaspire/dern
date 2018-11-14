@@ -203,9 +203,10 @@
     (bounce-wall-add     {D-100} {D-80}  {D-95}  {D-95})  ; lowest right ramp
     (bounce-platform-add {D-112} {D-85}  {D+4}   (chipmunk-cpv {D+0} {D+0})  (chipmunk-cpv {D+1}{D+0}))  ; lowest static platform
     ; pipe3
-    (bounce-wall-add     {D-75} {D+155} {D-75}  {D-100}) ; right wall
-    (bounce-platform-add {D-76} {D-50}  {D+8}   (chipmunk-cpv {D+6} {D+0})  (chipmunk-cpv {D+10}{D+0}))  ; bottom platform
-    (bounce-platform-add {D-76} {D-115} {D+8}   (chipmunk-cpv {D+6} {D+0})  (chipmunk-cpv {D+15}{D+0}))  ; bottom platform
+    (bounce-wall-add     {D-75} {D+155} {D-75}  {D-100})  ; right wall
+    (bounce-wall-add     {D-75} {D+110} {D-65}  {D+120})  ; left top ramp
+    (bounce-platform-add {D-64} {D+0}   {D+8}   (chipmunk-cpv {D+6} {D+0})  (chipmunk-cpv {D+6}{D+0}))  ; middle platform
+    (bounce-platform-add {D-76} {D-115} {D+8}   (chipmunk-cpv {D+6} {D+0})  (chipmunk-cpv {D+15}{D+0})) ; bottom platform
 
     (bounce-wall-add     {D+17}  {D+50}  {D+110} {D+47}) ; ramp to exit
     (return)))
