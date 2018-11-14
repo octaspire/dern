@@ -194,6 +194,7 @@
     ; pipe2
     (bounce-platform-add {D-105} {D+40}  {D+8}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0}{D+10}))  ; top platform
     (bounce-platform-add {D-102} {D-30}  {D+4}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+5}{D+0}))  ; middle platform
+    (bounce-wall-add     {D-115} {D+110} {D-105} {D+120})  ; left top ramp
     (bounce-wall-add     {D-100} {D+70}  {D-95}  {D+75})  ; right triangle ramp, top
     (bounce-wall-add     {D-100} {D+70}  {D-95}  {D+65})  ; right triangle ramp, bottom
     (bounce-wall-add     {D-115} {D+0}   {D-110} {D+5})   ; middle ramp
@@ -201,6 +202,11 @@
     (bounce-wall-add     {D-115} {D-100} {D-110} {D-95})  ; lowest left ramp
     (bounce-wall-add     {D-100} {D-80}  {D-95}  {D-95})  ; lowest right ramp
     (bounce-platform-add {D-112} {D-85}  {D+4}   (chipmunk-cpv {D+0} {D+0})  (chipmunk-cpv {D+1}{D+0}))  ; lowest static platform
+    ; pipe3
+    (bounce-wall-add     {D-75} {D+155} {D-75}  {D-100})  ; right wall
+    (bounce-wall-add     {D-75} {D+110} {D-65}  {D+120})  ; left top ramp
+    (bounce-platform-add {D-64} {D+0}   {D+8}   (chipmunk-cpv {D+6} {D+0})  (chipmunk-cpv {D+6}{D+0}))  ; middle platform
+    (bounce-platform-add {D-76} {D-115} {D+8}   (chipmunk-cpv {D+6} {D+0})  (chipmunk-cpv {D+15}{D+0})) ; bottom platform
 
     (bounce-wall-add     {D+17}  {D+50}  {D+110} {D+47}) ; ramp to exit
     (return)))
