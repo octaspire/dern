@@ -187,11 +187,16 @@
     (bounce-wall-add     {D-115} {D+155} {D-115} {D-100}) ; right wall
     (bounce-platform-add {D-125} {D+55}  {D+4}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+8}{D+0}))   ; upper horizontal platform
     (bounce-platform-add {D-132} {D-60}  {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper vertical platform
-    (bounce-platform-add {D-120} {D-115} {D+4}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+12}{D+0}))  ; lower horizontal platform
+    (bounce-platform-add {D-119} {D-115} {D+8}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+12}{D+0}))  ; lower horizontal platform
     (bounce-wall-add     {D-115} {D+95}  {D-120} {D+90}) ; upper triangle ramp
     (bounce-wall-add     {D-115} {D+85}  {D-120} {D+90}) ; upper triangle ramp
     (bounce-wall-add     {D-135} {D+75}  {D-130} {D+70}) ; upper left ramp
     ; pipe2
+    (bounce-platform-add {D-105} {D+40}  {D+8}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0}{D+10}))  ; top platform
+    (bounce-platform-add {D-102} {D-30}  {D+4}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+5}{D+0}))  ; middle platform
+    (bounce-wall-add     {D-100} {D+70}  {D-95}  {D+75})  ; right triangle ramp, top
+    (bounce-wall-add     {D-100} {D+70}  {D-95}  {D+65})  ; right triangle ramp, bottom
+    (bounce-wall-add     {D-115} {D+0}   {D-110} {D+5})   ; middle ramp
     (bounce-wall-add     {D-95}  {D+100} {D-95}  {D-115}) ; right wall
     (bounce-wall-add     {D-115} {D-100} {D-110} {D-95})  ; lowest left ramp
     (bounce-wall-add     {D-100} {D-80}  {D-95}  {D-95})  ; lowest right ramp
@@ -258,7 +263,6 @@
 (bounce-level-load bounce-level-index)
 
 (define bounce-ball-apply-impulse as (fn (force)
-  (println [impulse is {}] force)
   (chipmunk-cpBodyApplyImpulseAtWorldPoint bounce-ball force (chipmunk-cpBodyGetPosition bounce-ball)))
   [apply an impulse on the ball] '(force [force]) howto-no)
 
