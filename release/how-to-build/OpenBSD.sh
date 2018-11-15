@@ -102,3 +102,21 @@ EXAMPLE_ERROR_HINT="OpenBSD: sudo pkg_add sdl2 sdl2-image sdl2-mixer sdl2-ttf"
 EXAMPLE_SUCCESS_RUN="LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-sdl2-example.dern"
 echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -fPIC -shared -DSDL_DISABLE_IMMINTRIN_H -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY $(sdl2-config --cflags) -I . -o libdern_sdl2.so plugins/dern_sdl2.c $(sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lGLU
 
+
+
+# Build Chipmunk library and plugin.
+
+printf "${BLUE}Compiling ${BOLD}Chipmunk library${NOCOLOR}${BLUE}"
+for srcFile in $(ls plugins/external/chipmunk/src/*.c)
+do
+    printf "."
+    "$CC" -O2 -std=c99 -Wall -Wextra -I plugins/external/chipmunk/include -I plugins/external/chipmunk/include/chipmunk -c "$srcFile"
+done
+
+printf "\rLinking ${BOLD}Chipmunk library${NOCOLOR}${BLUE}...${NOCOLOR}                                           \n\n"
+"$CC" -shared -o libchipmunk.so plugins/external/chipmunk/src/*.o -lm -lpthread
+
+EXAMPLE_NAME="Dern Chipmunk plugin"
+EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_SUCCESS_RUN="LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-chipmunk-example.dern"
+echoAndRun "$CC" -std=c99 -Wall -Wextra -g -O2 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS -I . -I plugins/external/chipmunk/include/ -I plugins/external/chipmunk/include/chipmunk -fPIC -shared -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o libdern_chipmunk.so plugins/dern_chipmunk.c -lm -lpthread -L . -lchipmunk
