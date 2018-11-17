@@ -61011,7 +61011,7 @@ TEST octaspire_dern_vm_special_while_with_special_for_value_with_special_while_t
     ASSERT(evaluatedValue);
     octaspire_dern_value_print(evaluatedValue,  octaspire_dern_vm_get_allocator(vm));
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
-    ASSERT_EQ(1210,                             evaluatedValue->value.integer);
+    ASSERT_EQ(1100,                             evaluatedValue->value.integer);
 
     octaspire_dern_vm_release(vm);
     vm = 0;
