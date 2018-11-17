@@ -445,5 +445,7 @@ push:
 	@git push origin-gitlab --tags
 	@git push origin-bitbucket
 	@git push origin-bitbucket --tags
+	@git push origin-sr
+	@git push origin-sr --tags
 	@git push origin-github --tags
 	@git push origin-github
