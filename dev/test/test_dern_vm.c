@@ -3626,7 +3626,6 @@ TEST octaspire_dern_vm_special_while_with_special_for_value_with_special_while_t
             "      (++ t))))");
 
     ASSERT(evaluatedValue);
-    octaspire_dern_value_print(evaluatedValue, octaspire_dern_vm_get_allocator(vm));
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(10,                              evaluatedValue->value.integer);
 
@@ -3636,7 +3635,6 @@ TEST octaspire_dern_vm_special_while_with_special_for_value_with_special_while_t
             "t");
 
     ASSERT(evaluatedValue);
-    octaspire_dern_value_print(evaluatedValue,  octaspire_dern_vm_get_allocator(vm));
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(1100,                             evaluatedValue->value.integer);
 
