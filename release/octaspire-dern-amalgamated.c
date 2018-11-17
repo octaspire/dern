@@ -60916,6 +60916,47 @@ TEST octaspire_dern_vm_special_while_with_two_values_to_repeat_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_special_while_with_special_for_value_to_repeat_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define i as {D+0} [i])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define t as {D+0} [t])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true,                             evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(while (< i {D+1000})"
+            "  (++ i)"
+            "  (for j from {D+0} to {D+1000}"
+            "    (++ t)))");
+
+    ASSERT(evaluatedValue);
+    octaspire_dern_value_print(evaluatedValue, octaspire_dern_vm_get_allocator(vm));
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(1000,                             evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_special_while_called_with_one_argument_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -73540,6 +73581,7 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
 
     RUN_TEST(octaspire_dern_vm_special_while_with_one_value_to_repeat_test);
     RUN_TEST(octaspire_dern_vm_special_while_with_two_values_to_repeat_test);
+    RUN_TEST(octaspire_dern_vm_special_while_with_special_for_value_to_repeat_test);
     RUN_TEST(octaspire_dern_vm_special_while_called_with_one_argument_failure_test);
     RUN_TEST(octaspire_dern_vm_special_while_called_with_integer_as_first_argument_failure_test);
 
