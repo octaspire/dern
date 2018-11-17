@@ -3625,7 +3625,7 @@ TEST octaspire_dern_vm_special_for_with_special_while_value_to_repeat_test(void)
 
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
-    ASSERT_EQ(10000,                            evaluatedValue->value.integer);
+    ASSERT_EQ(10100,                            evaluatedValue->value.integer);
 
     octaspire_dern_vm_release(vm);
     vm = 0;
