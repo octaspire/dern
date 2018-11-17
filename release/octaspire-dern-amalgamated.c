@@ -60990,18 +60990,18 @@ TEST octaspire_dern_vm_special_while_with_special_for_value_with_special_while_t
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
             vm,
-            "(while (< i {D+100})"
+            "(while (< i {D+10})"
             "  (++ i)"
-            "  (for j from {D+0} to {D+100}"
+            "  (for j from {D+0} to {D+10}"
             "    (define k as {D+0} [k])"
-            "    (while (< k {D+100})"
+            "    (while (< k {D+10})"
             "      (++ k)"
             "      (++ t))))");
 
     ASSERT(evaluatedValue);
     octaspire_dern_value_print(evaluatedValue, octaspire_dern_vm_get_allocator(vm));
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
-    ASSERT_EQ(300,                              evaluatedValue->value.integer);
+    ASSERT_EQ(10,                              evaluatedValue->value.integer);
 
     evaluatedValue =
         octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
@@ -61009,9 +61009,9 @@ TEST octaspire_dern_vm_special_while_with_special_for_value_with_special_while_t
             "t");
 
     ASSERT(evaluatedValue);
-    octaspire_dern_value_print(evaluatedValue, octaspire_dern_vm_get_allocator(vm));
+    octaspire_dern_value_print(evaluatedValue,  octaspire_dern_vm_get_allocator(vm));
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
-    ASSERT_EQ(20200,                            evaluatedValue->value.integer);
+    ASSERT_EQ(1210,                             evaluatedValue->value.integer);
 
     octaspire_dern_vm_release(vm);
     vm = 0;
