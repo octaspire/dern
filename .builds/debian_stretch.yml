@@ -1,0 +1,30 @@
+image: debian/stretch
+packages:
+    - build-essential
+    - valgrind
+    - libncursesw5-dev
+    - libsdl2-dev
+    - libsdl2-image-dev
+    - libsdl2-mixer-dev
+    - libsdl2-ttf-dev
+    - libglu1-mesa-dev
+sources:
+    - https://git.sr.ht/~octaspire/dern
+tasks:
+    - setup: |
+        cd dern
+        make submodules-init
+    - build-devel: |
+        cd dern
+        make all
+    - test-devel: |
+        cd dern
+        ./octaspire-dern-unit-test-runner --write-test-files
+        make test
+        make valgrind
+    - build-release: |
+        cd dern/release
+        sh how-to-build/linux.sh
+    - test-release: |
+        cd dern/release
+        ./octaspire-dern-unit-test-runner --write-test-files
