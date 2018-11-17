@@ -60994,7 +60994,7 @@ TEST octaspire_dern_vm_special_while_with_special_for_value_with_special_while_t
             "  (++ i)"
             "  (for j from {D+0} to {D+100}"
             "    (define k as {D+0} [k])"
-            "    (while (k < {D+100})"
+            "    (while (< k {D+100})"
             "      (++ k)"
             "      (++ t))))");
 
