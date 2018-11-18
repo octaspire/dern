@@ -206,7 +206,7 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "111"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "112"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_STR "Octaspire Core version " \
@@ -1009,6 +1009,10 @@ bool octaspire_string_is_equal_to_c_string(
     octaspire_string_t const * const self,
     char const * const str);
 
+size_t octaspire_string_levenshtein_distance(
+    octaspire_string_t const * const self,
+    octaspire_string_t const * const other);
+
 int octaspire_string_compare(
     octaspire_string_t const * const self,
     octaspire_string_t const * const other);
@@ -1554,6 +1558,12 @@ uint32_t octaspire_helpers_calculate_hash_for_memory_buffer_argument(
 size_t octaspire_helpers_character_digit_to_number(uint32_t const c);
 
 size_t octaspire_helpers_min_size_t(size_t const a, size_t const b);
+
+size_t octaspire_helpers_min3_size_t(
+    size_t const a,
+    size_t const b,
+    size_t const c);
+
 size_t octaspire_helpers_max_size_t(size_t const a, size_t const b);
 
 void octaspire_helpers_verify_true(bool const condition);
@@ -2221,6 +2231,19 @@ size_t octaspire_helpers_min_size_t(size_t const a, size_t const b)
     }
 
     return b;
+}
+
+size_t octaspire_helpers_min3_size_t(
+    size_t const a,
+    size_t const b,
+    size_t const c)
+{
+    if (a < b)
+    {
+        return octaspire_helpers_min_size_t(a, c);
+    }
+
+    return octaspire_helpers_min_size_t(b, c);
 }
 
 size_t octaspire_helpers_max_size_t(size_t const a, size_t const b)
@@ -5947,6 +5970,78 @@ bool octaspire_string_is_equal_to_c_string(
     }
 
     return memcmp(octaspire_vector_get_element_at(self->octets,  0), str, len) == 0;
+}
+
+size_t octaspire_string_private_levenshtein_distance_indicator_func(
+    octaspire_string_t const * const self,
+    size_t             const         i,
+    octaspire_string_t const * const other,
+    size_t             const         j)
+{
+    octaspire_helpers_verify_true(i > 0);
+    octaspire_helpers_verify_true(j > 0);
+
+    size_t const a = octaspire_string_get_ucs_character_at_index(self, i - 1);
+    size_t const b = octaspire_string_get_ucs_character_at_index(other, j - 1);
+
+    return (a == b) ? 0 : 1;
+}
+
+size_t octaspire_string_private_levenshtein_distance_helper(
+    octaspire_string_t const * const self,
+    size_t             const         i,
+    octaspire_string_t const * const other,
+    size_t             const         j)
+{
+    if (!i)
+    {
+        return j;
+    }
+
+    if (!j)
+    {
+        return i;
+    }
+
+    size_t const a = octaspire_string_private_levenshtein_distance_helper(
+        self,
+        i - 1,
+        other,
+        j) + 1;
+
+    size_t const b = octaspire_string_private_levenshtein_distance_helper(
+        self,
+        i,
+        other,
+        j - 1) + 1;
+
+    size_t const c = octaspire_string_private_levenshtein_distance_helper(
+        self,
+        i - 1,
+        other,
+        j - 1) + octaspire_string_private_levenshtein_distance_indicator_func(
+            self,
+            i,
+            other,
+            j);
+
+    return octaspire_helpers_min3_size_t(a, b, c);
+}
+
+size_t octaspire_string_levenshtein_distance(
+    octaspire_string_t const * const self,
+    octaspire_string_t const * const other)
+{
+    size_t const selfLen = octaspire_string_get_length_in_ucs_characters(self);
+
+    size_t const otherLen =
+        octaspire_string_get_length_in_ucs_characters(other);
+
+    return octaspire_string_private_levenshtein_distance_helper(
+        self,
+        selfLen,
+        other,
+        otherLen);
 }
 
 int octaspire_string_compare(
@@ -21207,6 +21302,96 @@ TEST octaspire_string_compare_with_string_abc_and_abca_test(void)
     PASS();
 }
 
+TEST octaspire_string_levenshtein_distance_called_with_kitten_and_sitting_test(void)
+{
+    octaspire_string_t *str1 =
+        octaspire_string_new(
+            "kitten",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+
+    octaspire_string_t *str2 =
+        octaspire_string_new(
+            "sitting",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str2);
+
+    size_t const result =
+        octaspire_string_levenshtein_distance(str1, str2);
+
+    ASSERT_EQ(3, result);
+
+    octaspire_string_release(str1);
+    str1 = 0;
+
+    octaspire_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_string_levenshtein_distance_called_with_flaw_and_lawn_test(void)
+{
+    octaspire_string_t *str1 =
+        octaspire_string_new(
+            "flaw",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+
+    octaspire_string_t *str2 =
+        octaspire_string_new(
+            "lawn",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str2);
+
+    size_t const result =
+        octaspire_string_levenshtein_distance(str1, str2);
+
+    ASSERT_EQ(2, result);
+
+    octaspire_string_release(str1);
+    str1 = 0;
+
+    octaspire_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_string_levenshtein_distance_called_with_jfpaasdasd2d_and_askdfsferrr4_test(void)
+{
+    octaspire_string_t *str1 =
+        octaspire_string_new(
+            "jfpaasdasd2d",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+
+    octaspire_string_t *str2 =
+        octaspire_string_new(
+            "askdfsferrr4",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str2);
+
+    size_t const result =
+        octaspire_string_levenshtein_distance(str1, str2);
+
+    ASSERT_EQ(11, result);
+
+    octaspire_string_release(str1);
+    str1 = 0;
+
+    octaspire_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
 TEST octaspire_string_is_index_valid_test(void)
 {
     octaspire_string_t *str1 =
@@ -21395,6 +21580,10 @@ GREATEST_SUITE(octaspire_string_suite)
     RUN_TEST(octaspire_string_compare_with_string_abca_and_abc_test);
     RUN_TEST(octaspire_string_compare_with_string_abb_and_abc_test);
     RUN_TEST(octaspire_string_compare_with_string_abc_and_abca_test);
+
+    RUN_TEST(octaspire_string_levenshtein_distance_called_with_kitten_and_sitting_test);
+    RUN_TEST(octaspire_string_levenshtein_distance_called_with_flaw_and_lawn_test);
+    RUN_TEST(octaspire_string_levenshtein_distance_called_with_jfpaasdasd2d_and_askdfsferrr4_test);
 
     RUN_TEST(octaspire_string_is_index_valid_test);
 
@@ -25638,7 +25827,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "439"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "440"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
