@@ -43,6 +43,9 @@ DEVOBJS := $(TESTOBJS)                           \
            $(SRCDIR)octaspire_dern_lexer.o       \
            $(SRCDIR)octaspire_dern_vm.o
 
+CPPCHECK_FILES := $(wildcard $(SRCDIR)*.[ch]) \
+                  $(wildcard $(PLUGINDIR)*.[ch])
+
 UNAME := $(shell uname)
 MACHINE := $(shell uname -m)
 OS := "Unknown"
@@ -386,7 +389,7 @@ codestyle:
 	@vera++ --root dev/external/vera --profile octaspire-plugin --error $(filter-out $(PLUGINDIR)stb_image.h, $(wildcard $(PLUGINDIR)*.[ch]))
 
 cppcheck:
-	@cppcheck --force --std=c99 -I dev/include dev/external/ocraspire_core/include --enable=warning,performance,portability --verbose --quiet $(wildcard $(SRCDIR)*.[ch]) $(filter-out $(PLUGINDIR)stb_image.h, $(wildcard $(PLUGINDIR)*.[ch]))
+	@cppcheck --force --std=c99 -I dev/include dev/external/ocraspire_core/include --enable=warning,performance,portability --verbose --quiet $(CPPCHECK_FILES)
 
 # Test both amalgamation and development version with valgrind.
 valgrind: $(RELDIR)octaspire-dern-repl octaspire-dern-unit-test-runner
