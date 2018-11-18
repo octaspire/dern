@@ -339,3 +339,4 @@ octaspire_dern_vm_t const * octaspire_dern_c_data_get_vm_const(
 {
     return self->vm;
 }
+

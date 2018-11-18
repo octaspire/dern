@@ -367,10 +367,14 @@ void * octaspire_dern_lib_dycall(
 #ifdef _WIN32
         if (self->binaryLibHandle)
         {
-            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t * const);
+            void* (*libDycallFunc)(octaspire_dern_vm_t          * const,
+                                   octaspire_dern_environment_t * const,
+                                   octaspire_dern_c_data_t      * const);
 
             libDycallFunc =
-                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t * const))
+                (void* (*)(octaspire_dern_vm_t          * const,
+                           octaspire_dern_environment_t * const,
+                           octaspire_dern_c_data_t      * const))
                     GetProcAddress(
                         self->binaryLibHandle,
                         funcName);
@@ -392,13 +396,17 @@ void * octaspire_dern_lib_dycall(
 #else
         if (self->binaryLibHandle)
         {
-            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t * const);
+            void* (*libDycallFunc)(octaspire_dern_vm_t          * const,
+                                   octaspire_dern_environment_t * const,
+                                   octaspire_dern_c_data_t      * const);
 
             // Clear any old errors
             dlerror();
 
             libDycallFunc =
-                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t * const))dlsym(
+                (void* (*)(octaspire_dern_vm_t          * const,
+                           octaspire_dern_environment_t * const,
+                           octaspire_dern_c_data_t      * const))dlsym(
                     self->binaryLibHandle,
                     funcName);
 
@@ -446,10 +454,16 @@ void * octaspire_dern_lib_dycall_2_const(
 #ifdef _WIN32
         if (self->binaryLibHandle)
         {
-            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const);
+            void* (*libDycallFunc)(octaspire_dern_vm_t           * const,
+                                   octaspire_dern_environment_t  * const,
+                                   octaspire_dern_c_data_t const * const,
+                                   octaspire_dern_c_data_t const * const);
 
             libDycallFunc =
-                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const))
+                (void* (*)(octaspire_dern_vm_t           * const,
+                           octaspire_dern_environment_t  * const,
+                           octaspire_dern_c_data_t const * const,
+                           octaspire_dern_c_data_t const * const))
                     GetProcAddress(
                         self->binaryLibHandle,
                         funcName);
@@ -472,13 +486,19 @@ void * octaspire_dern_lib_dycall_2_const(
 #else
         if (self->binaryLibHandle)
         {
-            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const);
+            void* (*libDycallFunc)(octaspire_dern_vm_t           * const,
+                                   octaspire_dern_environment_t  * const,
+                                   octaspire_dern_c_data_t const * const,
+                                   octaspire_dern_c_data_t const * const);
 
             // Clear any old errors
             dlerror();
 
             libDycallFunc =
-                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const))dlsym(
+                (void* (*)(octaspire_dern_vm_t           * const,
+                           octaspire_dern_environment_t  * const,
+                           octaspire_dern_c_data_t const * const,
+                           octaspire_dern_c_data_t const * const))dlsym(
                     self->binaryLibHandle,
                     funcName);
 
@@ -710,3 +730,4 @@ octaspire_dern_vm_t * octaspire_dern_lib_get_vm(octaspire_dern_lib_t * const sel
 {
     return self->vm;
 }
+
