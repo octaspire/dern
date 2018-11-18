@@ -8,6 +8,8 @@ packages:
     - libsdl2-mixer-dev
     - libsdl2-ttf-dev
     - libglu1-mesa-dev
+    - cppcheck
+    - vera++
 sources:
     - https://git.sr.ht/~octaspire/dern
 tasks:
@@ -21,6 +23,8 @@ tasks:
         cd dern
         ./octaspire-dern-unit-test-runner --write-test-files
         make test
+    - valgrind-devel: |
+        cd dern
         make valgrind
     - build-release: |
         cd dern/release
@@ -28,3 +32,9 @@ tasks:
     - test-release: |
         cd dern/release
         ./octaspire-dern-unit-test-runner --write-test-files
+    - cppcheck: |
+        cd dern
+        make cppcheck
+    - codestyle: |
+        cd dern
+        make codestyle
