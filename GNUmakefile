@@ -383,10 +383,10 @@ clean:
 
 codestyle:
 	@vera++ --root dev/external/vera --profile octaspire-plugin --error $(wildcard $(SRCDIR)*.[ch])
-	@vera++ --root dev/external/vera --profile octaspire-plugin --error $(wildcard $(PLUGINDIR)*.[ch])
+	@vera++ --root dev/external/vera --profile octaspire-plugin --error $(filter-out $(PLUGINDIR)stb_image.h, $(wildcard $(PLUGINDIR)*.[ch]))
 
 cppcheck:
-	@cppcheck --std=c99 -I dev/include dev/external/ocraspire_core/include --enable=warning,performance,portability --verbose --quiet $(wildcard $(SRCDIR)*.[ch]) $(wildcard $(PLUGINDIR)*.[ch])
+	@cppcheck --std=c99 -I dev/include dev/external/ocraspire_core/include --enable=warning,performance,portability --verbose --quiet $(wildcard $(SRCDIR)*.[ch]) $(filter-out $(PLUGINDIR)stb_image.h, $(wildcard $(PLUGINDIR)*.[ch]))
 
 # Test both amalgamation and development version with valgrind.
 valgrind: $(RELDIR)octaspire-dern-repl octaspire-dern-unit-test-runner

@@ -3862,7 +3862,8 @@ bool dern_chipmunk_init(
             "SYNOPSIS\n"
             "\t(require 'dern_chipmunk)\n"
             "\n"
-            "\t(chipmunk-cpSpaceAddWildCardHandler cpSpace collisionType postSolveFun separateFun) -> true or an error\n"
+            "\t(chipmunk-cpSpaceAddWildCardHandler cpSpace collisionType"
+            "\t  postSolveFun separateFun) -> true or an error\n"
             "\n"
             "DESCRIPTION\n"
             "\tAdd collision callbacks for collisions of collisionType with anything.\n"
@@ -4282,3 +4283,4 @@ bool dern_chipmunk_clean(
 
     return true;
 }
+
