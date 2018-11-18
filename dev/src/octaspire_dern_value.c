@@ -3694,8 +3694,7 @@ size_t octaspire_dern_value_get_length(
         }
         case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
-            return
-                3 +
+            return 3 +
                 octaspire_semver_get_num_pre_release_identifiers(self->value.semver) +
                 octaspire_semver_get_num_build_metadata_identifiers(self->value.semver);
         }

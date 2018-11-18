@@ -206,7 +206,7 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "112"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "113"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_STR "Octaspire Core version " \
@@ -9529,8 +9529,7 @@ size_t octaspire_semver_get_num_build_metadata_identifiers(
 
 size_t octaspire_semver_get_length(octaspire_semver_t const * const self)
 {
-    return
-        3 +
+    return 3 +
         octaspire_semver_get_num_pre_release_identifiers(self) +
         octaspire_semver_get_num_build_metadata_identifiers(self);
 }
@@ -25827,7 +25826,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "440"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "441"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -31952,10 +31951,14 @@ void * octaspire_dern_lib_dycall(
 #ifdef _WIN32
         if (self->binaryLibHandle)
         {
-            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t * const);
+            void* (*libDycallFunc)(octaspire_dern_vm_t          * const,
+                                   octaspire_dern_environment_t * const,
+                                   octaspire_dern_c_data_t      * const);
 
             libDycallFunc =
-                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t * const))
+                (void* (*)(octaspire_dern_vm_t          * const,
+                           octaspire_dern_environment_t * const,
+                           octaspire_dern_c_data_t      * const))
                     GetProcAddress(
                         self->binaryLibHandle,
                         funcName);
@@ -31977,13 +31980,17 @@ void * octaspire_dern_lib_dycall(
 #else
         if (self->binaryLibHandle)
         {
-            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t * const);
+            void* (*libDycallFunc)(octaspire_dern_vm_t          * const,
+                                   octaspire_dern_environment_t * const,
+                                   octaspire_dern_c_data_t      * const);
 
             // Clear any old errors
             dlerror();
 
             libDycallFunc =
-                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t * const))dlsym(
+                (void* (*)(octaspire_dern_vm_t          * const,
+                           octaspire_dern_environment_t * const,
+                           octaspire_dern_c_data_t      * const))dlsym(
                     self->binaryLibHandle,
                     funcName);
 
@@ -32031,10 +32038,16 @@ void * octaspire_dern_lib_dycall_2_const(
 #ifdef _WIN32
         if (self->binaryLibHandle)
         {
-            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const);
+            void* (*libDycallFunc)(octaspire_dern_vm_t           * const,
+                                   octaspire_dern_environment_t  * const,
+                                   octaspire_dern_c_data_t const * const,
+                                   octaspire_dern_c_data_t const * const);
 
             libDycallFunc =
-                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const))
+                (void* (*)(octaspire_dern_vm_t           * const,
+                           octaspire_dern_environment_t  * const,
+                           octaspire_dern_c_data_t const * const,
+                           octaspire_dern_c_data_t const * const))
                     GetProcAddress(
                         self->binaryLibHandle,
                         funcName);
@@ -32057,13 +32070,19 @@ void * octaspire_dern_lib_dycall_2_const(
 #else
         if (self->binaryLibHandle)
         {
-            void* (*libDycallFunc)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const);
+            void* (*libDycallFunc)(octaspire_dern_vm_t           * const,
+                                   octaspire_dern_environment_t  * const,
+                                   octaspire_dern_c_data_t const * const,
+                                   octaspire_dern_c_data_t const * const);
 
             // Clear any old errors
             dlerror();
 
             libDycallFunc =
-                (void* (*)(octaspire_dern_vm_t * const, octaspire_dern_environment_t * const, octaspire_dern_c_data_t const * const, octaspire_dern_c_data_t const * const))dlsym(
+                (void* (*)(octaspire_dern_vm_t           * const,
+                           octaspire_dern_environment_t  * const,
+                           octaspire_dern_c_data_t const * const,
+                           octaspire_dern_c_data_t const * const))dlsym(
                     self->binaryLibHandle,
                     funcName);
 
@@ -32295,6 +32314,7 @@ octaspire_dern_vm_t * octaspire_dern_lib_get_vm(octaspire_dern_lib_t * const sel
 {
     return self->vm;
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          dev/src/octaspire_dern_lib.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32635,6 +32655,7 @@ octaspire_dern_vm_t const * octaspire_dern_c_data_get_vm_const(
 {
     return self->vm;
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          dev/src/octaspire_dern_c_data.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47162,8 +47183,7 @@ size_t octaspire_dern_value_get_length(
         }
         case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
         {
-            return
-                3 +
+            return 3 +
                 octaspire_semver_get_num_pre_release_identifiers(self->value.semver) +
                 octaspire_semver_get_num_build_metadata_identifiers(self->value.semver);
         }
