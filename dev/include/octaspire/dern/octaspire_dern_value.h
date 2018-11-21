@@ -555,6 +555,9 @@ bool octaspire_dern_value_as_text_is_equal_to_c_string(
 char const *octaspire_dern_value_as_text_get_c_string(
     octaspire_dern_value_t const * const self);
 
+octaspire_string_t const *octaspire_dern_value_as_text_get_string(
+    octaspire_dern_value_t const * const self);
+
 size_t octaspire_dern_value_as_text_get_length_in_octets(
     octaspire_dern_value_t const * const self);
 

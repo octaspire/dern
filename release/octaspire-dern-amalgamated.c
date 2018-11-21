@@ -25826,7 +25826,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "441"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "442"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -26742,6 +26742,9 @@ bool octaspire_dern_value_as_text_is_equal_to_c_string(
     char const * const str);
 
 char const *octaspire_dern_value_as_text_get_c_string(
+    octaspire_dern_value_t const * const self);
+
+octaspire_string_t const *octaspire_dern_value_as_text_get_string(
     octaspire_dern_value_t const * const self);
 
 size_t octaspire_dern_value_as_text_get_length_in_octets(
@@ -39063,21 +39066,21 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
             numArgs);
     }
 
-    // TODO XXX support also non-numeric arguments. For example,
-    // for strings this function could calculate and return
-    // the Levenshtein distance of the two strings.
+    // TODO support also other types in addition to text (string or symbol)
+    // and numeric arguments.
 
     octaspire_dern_value_t * const firstArgVal =
         octaspire_dern_value_as_vector_get_element_at(arguments, 0);
 
-    if (!octaspire_dern_value_is_number(firstArgVal))
+    if (!octaspire_dern_value_is_number(firstArgVal) &&
+        !octaspire_dern_value_is_text(firstArgVal))
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "The first argument to builtin '%s' must be number. "
+            "The first argument to builtin '%s' must be a number or text. "
             "Type %s was given.",
             dernFuncName,
             octaspire_dern_value_helper_get_type_as_c_string(firstArgVal->typeTag));
@@ -39086,15 +39089,55 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
     octaspire_dern_value_t * const secondArgVal =
         octaspire_dern_value_as_vector_get_element_at(arguments, 1);
 
-    if (!octaspire_dern_value_is_number(firstArgVal))
+    if (!octaspire_dern_value_is_number(secondArgVal) &&
+        !octaspire_dern_value_is_text(secondArgVal))
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "The second argument to builtin '%s' must be number. "
+            "The second argument to builtin '%s' must be a number or text. "
             "Type %s was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(secondArgVal->typeTag));
+    }
+
+    if (octaspire_dern_value_is_number(firstArgVal))
+    {
+        if (octaspire_dern_value_is_text(secondArgVal))
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "The second argument to builtin '%s' must be a number "
+                "when first is a number. Type %s was given.",
+                dernFuncName,
+                octaspire_dern_value_helper_get_type_as_c_string(secondArgVal->typeTag));
+        }
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        // TODO maybe return integer if both arguments were integers, and so on.
+        return octaspire_dern_vm_create_new_value_real(
+            vm,
+            fabs(
+                octaspire_dern_value_as_number_get_value(firstArgVal) -
+                octaspire_dern_value_as_number_get_value(secondArgVal)));
+    }
+
+    if (octaspire_dern_value_is_number(secondArgVal))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The second argument to builtin '%s' must be textual "
+            "when first is textual. Type %s was given.",
             dernFuncName,
             octaspire_dern_value_helper_get_type_as_c_string(secondArgVal->typeTag));
     }
@@ -39102,12 +39145,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
     octaspire_helpers_verify_true(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-    // TODO maybe return integer if both arguments were integers, and so on.
-    return octaspire_dern_vm_create_new_value_real(
+    return octaspire_dern_vm_create_new_value_integer(
         vm,
-        fabs(
-            octaspire_dern_value_as_number_get_value(firstArgVal) -
-            octaspire_dern_value_as_number_get_value(secondArgVal)));
+        octaspire_string_levenshtein_distance(
+            octaspire_dern_value_as_text_get_string(firstArgVal),
+            octaspire_dern_value_as_text_get_string(secondArgVal)));
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_max(
@@ -46638,6 +46680,56 @@ char const *octaspire_dern_value_as_text_get_c_string(
         case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         {
             return octaspire_string_get_c_string(self->value.symbol);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            octaspire_helpers_verify_true(false);
+        }
+        break;
+    }
+
+    return 0;
+}
+
+octaspire_string_t const *octaspire_dern_value_as_text_get_string(
+    octaspire_dern_value_t const * const self)
+{
+    switch (self->typeTag)
+    {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        {
+            return self->value.character;
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            return self->value.string;
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            return self->value.symbol;
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:

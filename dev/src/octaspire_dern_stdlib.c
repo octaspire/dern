@@ -25,6 +25,7 @@ limitations under the License.
     #include <octaspire/core/octaspire_helpers.h>
     #include <octaspire/core/octaspire_list.h>
     #include <octaspire/core/octaspire_queue.h>
+    #include <octaspire/core/octaspire_string.h>
 #endif
 
 #include "octaspire/dern/octaspire_dern_vm.h"
@@ -5808,21 +5809,21 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
             numArgs);
     }
 
-    // TODO XXX support also non-numeric arguments. For example,
-    // for strings this function could calculate and return
-    // the Levenshtein distance of the two strings.
+    // TODO support also other types in addition to text (string or symbol)
+    // and numeric arguments.
 
     octaspire_dern_value_t * const firstArgVal =
         octaspire_dern_value_as_vector_get_element_at(arguments, 0);
 
-    if (!octaspire_dern_value_is_number(firstArgVal))
+    if (!octaspire_dern_value_is_number(firstArgVal) &&
+        !octaspire_dern_value_is_text(firstArgVal))
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "The first argument to builtin '%s' must be number. "
+            "The first argument to builtin '%s' must be a number or text. "
             "Type %s was given.",
             dernFuncName,
             octaspire_dern_value_helper_get_type_as_c_string(firstArgVal->typeTag));
@@ -5831,15 +5832,55 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
     octaspire_dern_value_t * const secondArgVal =
         octaspire_dern_value_as_vector_get_element_at(arguments, 1);
 
-    if (!octaspire_dern_value_is_number(firstArgVal))
+    if (!octaspire_dern_value_is_number(secondArgVal) &&
+        !octaspire_dern_value_is_text(secondArgVal))
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "The second argument to builtin '%s' must be number. "
+            "The second argument to builtin '%s' must be a number or text. "
             "Type %s was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(secondArgVal->typeTag));
+    }
+
+    if (octaspire_dern_value_is_number(firstArgVal))
+    {
+        if (octaspire_dern_value_is_text(secondArgVal))
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "The second argument to builtin '%s' must be a number "
+                "when first is a number. Type %s was given.",
+                dernFuncName,
+                octaspire_dern_value_helper_get_type_as_c_string(secondArgVal->typeTag));
+        }
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        // TODO maybe return integer if both arguments were integers, and so on.
+        return octaspire_dern_vm_create_new_value_real(
+            vm,
+            fabs(
+                octaspire_dern_value_as_number_get_value(firstArgVal) -
+                octaspire_dern_value_as_number_get_value(secondArgVal)));
+    }
+
+    if (octaspire_dern_value_is_number(secondArgVal))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "The second argument to builtin '%s' must be textual "
+            "when first is textual. Type %s was given.",
             dernFuncName,
             octaspire_dern_value_helper_get_type_as_c_string(secondArgVal->typeTag));
     }
@@ -5847,12 +5888,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
     octaspire_helpers_verify_true(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-    // TODO maybe return integer if both arguments were integers, and so on.
-    return octaspire_dern_vm_create_new_value_real(
+    return octaspire_dern_vm_create_new_value_integer(
         vm,
-        fabs(
-            octaspire_dern_value_as_number_get_value(firstArgVal) -
-            octaspire_dern_value_as_number_get_value(secondArgVal)));
+        octaspire_string_levenshtein_distance(
+            octaspire_dern_value_as_text_get_string(firstArgVal),
+            octaspire_dern_value_as_text_get_string(secondArgVal)));
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_max(
