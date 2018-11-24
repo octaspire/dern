@@ -206,7 +206,7 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "113"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "114"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_STR "Octaspire Core version " \
@@ -521,6 +521,10 @@ bool octaspire_vector_push_back_element(
 bool octaspire_vector_push_back_char(
     octaspire_vector_t *self,
     char const element);
+
+bool octaspire_vector_push_back_int(
+    octaspire_vector_t *self,
+    int const element);
 
 void octaspire_vector_for_each(
     octaspire_vector_t *self,
@@ -1558,11 +1562,17 @@ uint32_t octaspire_helpers_calculate_hash_for_memory_buffer_argument(
 size_t octaspire_helpers_character_digit_to_number(uint32_t const c);
 
 size_t octaspire_helpers_min_size_t(size_t const a, size_t const b);
+int octaspire_helpers_min_int(int const a, int const b);
 
 size_t octaspire_helpers_min3_size_t(
     size_t const a,
     size_t const b,
     size_t const c);
+
+int octaspire_helpers_min3_int(
+    int const a,
+    int const b,
+    int const c);
 
 size_t octaspire_helpers_max_size_t(size_t const a, size_t const b);
 
@@ -2233,6 +2243,16 @@ size_t octaspire_helpers_min_size_t(size_t const a, size_t const b)
     return b;
 }
 
+int octaspire_helpers_min_int(int const a, int const b)
+{
+    if (a < b)
+    {
+        return a;
+    }
+
+    return b;
+}
+
 size_t octaspire_helpers_min3_size_t(
     size_t const a,
     size_t const b,
@@ -2244,6 +2264,19 @@ size_t octaspire_helpers_min3_size_t(
     }
 
     return octaspire_helpers_min_size_t(b, c);
+}
+
+int octaspire_helpers_min3_int(
+    int const a,
+    int const b,
+    int const c)
+{
+    if (a < b)
+    {
+        return octaspire_helpers_min_int(a, c);
+    }
+
+    return octaspire_helpers_min_int(b, c);
 }
 
 size_t octaspire_helpers_max_size_t(size_t const a, size_t const b)
@@ -3740,6 +3773,21 @@ bool octaspire_vector_push_back_element(
 bool octaspire_vector_push_back_char(
     octaspire_vector_t *self,
     char const element)
+{
+    if (self->elementSize != sizeof(element))
+    {
+        return false;
+    }
+
+    return octaspire_vector_insert_element_at(
+        self,
+        &element,
+        octaspire_vector_get_length(self));
+}
+
+bool octaspire_vector_push_back_int(
+    octaspire_vector_t *self,
+    int const element)
 {
     if (self->elementSize != sizeof(element))
     {
@@ -5972,60 +6020,33 @@ bool octaspire_string_is_equal_to_c_string(
     return memcmp(octaspire_vector_get_element_at(self->octets,  0), str, len) == 0;
 }
 
-size_t octaspire_string_private_levenshtein_distance_indicator_func(
-    octaspire_string_t const * const self,
-    size_t             const         i,
-    octaspire_string_t const * const other,
-    size_t             const         j)
+static int octaspire_string_levenshtein_distance_helper_get_slot(
+    octaspire_vector_t const * const vectors,
+    size_t                     const i,
+    size_t                     const j)
 {
-    octaspire_helpers_verify_true(i > 0);
-    octaspire_helpers_verify_true(j > 0);
+    octaspire_vector_t const * const row = octaspire_vector_get_element_at_const(
+        vectors,
+        i);
 
-    size_t const a = octaspire_string_get_ucs_character_at_index(self, i - 1);
-    size_t const b = octaspire_string_get_ucs_character_at_index(other, j - 1);
+    int const * const result =
+        octaspire_vector_get_element_at_const(row, j);
 
-    return (a == b) ? 0 : 1;
+    octaspire_helpers_verify_not_null(result);
+    return *result;
 }
 
-size_t octaspire_string_private_levenshtein_distance_helper(
-    octaspire_string_t const * const self,
-    size_t             const         i,
-    octaspire_string_t const * const other,
-    size_t             const         j)
+static bool octaspire_string_levenshtein_distance_helper_set_slot(
+    octaspire_vector_t * const vectors,
+    size_t               const i,
+    size_t               const j,
+    int                  const slot)
 {
-    if (!i)
-    {
-        return j;
-    }
+    octaspire_vector_t * const row = octaspire_vector_get_element_at(
+        vectors,
+        i);
 
-    if (!j)
-    {
-        return i;
-    }
-
-    size_t const a = octaspire_string_private_levenshtein_distance_helper(
-        self,
-        i - 1,
-        other,
-        j) + 1;
-
-    size_t const b = octaspire_string_private_levenshtein_distance_helper(
-        self,
-        i,
-        other,
-        j - 1) + 1;
-
-    size_t const c = octaspire_string_private_levenshtein_distance_helper(
-        self,
-        i - 1,
-        other,
-        j - 1) + octaspire_string_private_levenshtein_distance_indicator_func(
-            self,
-            i,
-            other,
-            j);
-
-    return octaspire_helpers_min3_size_t(a, b, c);
+    return octaspire_vector_replace_element_at(row, j, &slot);
 }
 
 size_t octaspire_string_levenshtein_distance(
@@ -6037,11 +6058,94 @@ size_t octaspire_string_levenshtein_distance(
     size_t const otherLen =
         octaspire_string_get_length_in_ucs_characters(other);
 
-    return octaspire_string_private_levenshtein_distance_helper(
-        self,
+    octaspire_vector_t * vectors = octaspire_vector_new(
+        sizeof(octaspire_vector_t *),
+        true,
+        (octaspire_vector_element_callback_t)octaspire_vector_release,
+        self->allocator);
+
+    // Create vector of vectors
+
+    for (size_t i = 0; i < selfLen+1; ++i)
+    {
+        octaspire_vector_t * row = octaspire_vector_new(
+            sizeof(int),
+            false,
+            0,
+            self->allocator);
+
+        octaspire_vector_push_back_element(vectors, &row);
+
+        if (i == 0)
+        {
+            octaspire_vector_push_back_int(row, i);
+
+            for (size_t j = 1; j < otherLen+1; ++j)
+            {
+                octaspire_vector_push_back_int(row, j);
+            }
+        }
+        else
+        {
+            octaspire_vector_push_back_int(row, i);
+
+            for (size_t j = 1; j < otherLen+1; ++j)
+            {
+                octaspire_vector_push_back_int(row, 0);
+            }
+        }
+    }
+
+    // Main loop.
+
+    for (size_t j = 1; j < otherLen+1; ++j)
+    {
+        for (size_t i = 1; i < selfLen+1; ++i)
+        {
+            if (octaspire_string_get_ucs_character_at_index(self, i-1) ==
+                octaspire_string_get_ucs_character_at_index(other, j-1))
+            {
+                octaspire_string_levenshtein_distance_helper_set_slot(
+                    vectors,
+                    i,
+                    j,
+                    octaspire_string_levenshtein_distance_helper_get_slot(
+                        vectors,
+                        i - 1,
+                        j - 1));
+            }
+            else
+            {
+                octaspire_string_levenshtein_distance_helper_set_slot(
+                    vectors,
+                    i,
+                    j,
+                    octaspire_helpers_min3_int(
+                        octaspire_string_levenshtein_distance_helper_get_slot(
+                            vectors,
+                            i - 1,
+                            j) + 1,      // deletion
+                        octaspire_string_levenshtein_distance_helper_get_slot(
+                            vectors,
+                            i,
+                            j - 1) + 1,  // insertion
+                        octaspire_string_levenshtein_distance_helper_get_slot(
+                            vectors,
+                            i - 1,
+                            j - 1) + 1)); // substitution
+            }
+        }
+    }
+
+    int result = octaspire_string_levenshtein_distance_helper_get_slot(
+        vectors,
         selfLen,
-        other,
         otherLen);
+
+    octaspire_vector_release(vectors);
+    vectors = 0;
+
+    return result;
 }
 
 int octaspire_string_compare(
@@ -21301,6 +21405,156 @@ TEST octaspire_string_compare_with_string_abc_and_abca_test(void)
     PASS();
 }
 
+TEST octaspire_string_levenshtein_distance_called_with_abc_and_empty_string_test(void)
+{
+    octaspire_string_t *str1 =
+        octaspire_string_new(
+            "abc",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+
+    octaspire_string_t *str2 =
+        octaspire_string_new(
+            "",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str2);
+
+    size_t const result =
+        octaspire_string_levenshtein_distance(str1, str2);
+
+    ASSERT_EQ(3, result);
+
+    octaspire_string_release(str1);
+    str1 = 0;
+
+    octaspire_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_string_levenshtein_distance_called_with_two_empty_strings_test(void)
+{
+    octaspire_string_t *str1 =
+        octaspire_string_new(
+            "",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+
+    octaspire_string_t *str2 =
+        octaspire_string_new(
+            "",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str2);
+
+    size_t const result =
+        octaspire_string_levenshtein_distance(str1, str2);
+
+    ASSERT_EQ(0, result);
+
+    octaspire_string_release(str1);
+    str1 = 0;
+
+    octaspire_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_string_levenshtein_distance_called_with_empty_string_and_abc_test(void)
+{
+    octaspire_string_t *str1 =
+        octaspire_string_new(
+            "",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+
+    octaspire_string_t *str2 =
+        octaspire_string_new(
+            "abc",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str2);
+
+    size_t const result =
+        octaspire_string_levenshtein_distance(str1, str2);
+
+    ASSERT_EQ(3, result);
+
+    octaspire_string_release(str1);
+    str1 = 0;
+
+    octaspire_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_string_levenshtein_distance_called_with_abcdefghijklmnopqrstuvwxyz_and_abc_test(void)
+{
+    octaspire_string_t *str1 =
+        octaspire_string_new(
+            "abcdefghijklmnopqrstuvwxyz",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+
+    octaspire_string_t *str2 =
+        octaspire_string_new(
+            "abc",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str2);
+
+    size_t const result =
+        octaspire_string_levenshtein_distance(str1, str2);
+
+    ASSERT_EQ(23, result);
+
+    octaspire_string_release(str1);
+    str1 = 0;
+
+    octaspire_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_string_levenshtein_distance_called_with_a_and_b_test(void)
+{
+    octaspire_string_t *str1 =
+        octaspire_string_new(
+            "a",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+
+    octaspire_string_t *str2 =
+        octaspire_string_new(
+            "b",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str2);
+
+    size_t const result =
+        octaspire_string_levenshtein_distance(str1, str2);
+
+    ASSERT_EQ(1, result);
+
+    octaspire_string_release(str1);
+    str1 = 0;
+
+    octaspire_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
 TEST octaspire_string_levenshtein_distance_called_with_kitten_and_sitting_test(void)
 {
     octaspire_string_t *str1 =
@@ -21381,6 +21635,66 @@ TEST octaspire_string_levenshtein_distance_called_with_jfpaasdasd2d_and_askdfsfe
         octaspire_string_levenshtein_distance(str1, str2);
 
     ASSERT_EQ(11, result);
+
+    octaspire_string_release(str1);
+    str1 = 0;
+
+    octaspire_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_string_levenshtein_distance_called_with_rosettacode_and_raisethysword_test(void)
+{
+    octaspire_string_t *str1 =
+        octaspire_string_new(
+            "rosettacode",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+
+    octaspire_string_t *str2 =
+        octaspire_string_new(
+            "raisethysword",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str2);
+
+    size_t const result =
+        octaspire_string_levenshtein_distance(str1, str2);
+
+    ASSERT_EQ(8, result);
+
+    octaspire_string_release(str1);
+    str1 = 0;
+
+    octaspire_string_release(str2);
+    str2 = 0;
+
+    PASS();
+}
+
+TEST octaspire_string_levenshtein_distance_called_with_two_longer_strings_test(void)
+{
+    octaspire_string_t *str1 =
+        octaspire_string_new(
+            "CTAGGCTCGGACCAATCACCTAGGCCTCGGACCAACACCAACTACTCAAGAAGGGGTG",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str1);
+
+    octaspire_string_t *str2 =
+        octaspire_string_new(
+            "GACTTACTGGGACAAGTCTTGGACACATGGCAAACCAGTCCCGAACCAACAGCACATG",
+            octaspireContainerUtf8StringTestAllocator);
+
+    ASSERT(str2);
+
+    size_t const result =
+        octaspire_string_levenshtein_distance(str1, str2);
+
+    ASSERT_EQ(32, result);
 
     octaspire_string_release(str1);
     str1 = 0;
@@ -21580,9 +21894,16 @@ GREATEST_SUITE(octaspire_string_suite)
     RUN_TEST(octaspire_string_compare_with_string_abb_and_abc_test);
     RUN_TEST(octaspire_string_compare_with_string_abc_and_abca_test);
 
+    RUN_TEST(octaspire_string_levenshtein_distance_called_with_abc_and_empty_string_test);
+    RUN_TEST(octaspire_string_levenshtein_distance_called_with_two_empty_strings_test);
+    RUN_TEST(octaspire_string_levenshtein_distance_called_with_empty_string_and_abc_test);
+    RUN_TEST(octaspire_string_levenshtein_distance_called_with_abcdefghijklmnopqrstuvwxyz_and_abc_test);
+    RUN_TEST(octaspire_string_levenshtein_distance_called_with_a_and_b_test);
     RUN_TEST(octaspire_string_levenshtein_distance_called_with_kitten_and_sitting_test);
     RUN_TEST(octaspire_string_levenshtein_distance_called_with_flaw_and_lawn_test);
     RUN_TEST(octaspire_string_levenshtein_distance_called_with_jfpaasdasd2d_and_askdfsferrr4_test);
+    RUN_TEST(octaspire_string_levenshtein_distance_called_with_rosettacode_and_raisethysword_test);
+    RUN_TEST(octaspire_string_levenshtein_distance_called_with_two_longer_strings_test);
 
     RUN_TEST(octaspire_string_is_index_valid_test);
 
@@ -25826,7 +26147,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "444"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "445"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -59321,6 +59642,27 @@ TEST octaspire_dern_vm_builtin_distance_lawn_flaw_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_distance_jfpaasdasd2d_and_askdfsferrr4_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(distance [jfpaasdasd2d] [askdfsferrr4])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(11, evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_distance_called_with_symbols_flaw_and_lawn_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
@@ -74075,6 +74417,7 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_builtin_distance_called_with_abc_and_empty_string_test);
     RUN_TEST(octaspire_dern_vm_builtin_distance_flaw_lawn_test);
     RUN_TEST(octaspire_dern_vm_builtin_distance_lawn_flaw_test);
+    RUN_TEST(octaspire_dern_vm_builtin_distance_jfpaasdasd2d_and_askdfsferrr4_test);
     RUN_TEST(octaspire_dern_vm_builtin_distance_called_with_symbols_flaw_and_lawn_test);
     RUN_TEST(octaspire_dern_vm_builtin_distance_called_with_symbol_flaw_and_string_lawn_test);
     RUN_TEST(octaspire_dern_vm_builtin_distance_called_with_string_flaw_and_symbol_lawn_test);

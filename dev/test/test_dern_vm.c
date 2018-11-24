@@ -1647,6 +1647,27 @@ TEST octaspire_dern_vm_builtin_distance_lawn_flaw_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_distance_jfpaasdasd2d_and_askdfsferrr4_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(distance [jfpaasdasd2d] [askdfsferrr4])");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(11, evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_distance_called_with_symbols_flaw_and_lawn_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
@@ -16401,6 +16422,7 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_builtin_distance_called_with_abc_and_empty_string_test);
     RUN_TEST(octaspire_dern_vm_builtin_distance_flaw_lawn_test);
     RUN_TEST(octaspire_dern_vm_builtin_distance_lawn_flaw_test);
+    RUN_TEST(octaspire_dern_vm_builtin_distance_jfpaasdasd2d_and_askdfsferrr4_test);
     RUN_TEST(octaspire_dern_vm_builtin_distance_called_with_symbols_flaw_and_lawn_test);
     RUN_TEST(octaspire_dern_vm_builtin_distance_called_with_symbol_flaw_and_string_lawn_test);
     RUN_TEST(octaspire_dern_vm_builtin_distance_called_with_string_flaw_and_symbol_lawn_test);
