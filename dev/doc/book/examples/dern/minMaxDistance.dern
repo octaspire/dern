@@ -1,5 +1,8 @@
-(min  {D+1} {D+2} {D+3})   ; {D+1}
-(min  [abc] [abd] [abe])   ; [abc]
-(max  {D+1} {D+2} {D+3})   ; {D+3}
-(max  [abc] [abd] [abe])   ; [abe]
-(distance {D+1} {D+1.1})   ; {D+0.1}
+(min  {D+1} {D+2} {D+3})    ; {D+1}
+(min  [abc] [abd] [abe])    ; [abc]
+(max  {D+1} {D+2} {D+3})    ; {D+3}
+(max  [abc] [abd] [abe])    ; [abe]
+
+(distance {D+1} {D+1.1})    ; {D+0.1}
+(distance [lawn] [flaw])    ; {D+2}
+(distance 'kitten 'sitting) ; {D+3}

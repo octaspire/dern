@@ -20,7 +20,7 @@ limitations under the License.
 #include "octaspire/dern/octaspire_dern_config.h"
 
 static octaspire_allocator_t *octaspireDernVmTestAllocator = 0;
-static octaspire_stdio_t            *octaspireDernVmTestStdio     = 0;
+static octaspire_stdio_t     *octaspireDernVmTestStdio     = 0;
 
 TEST octaspire_dern_vm_new_test(void)
 {
@@ -16343,6 +16343,38 @@ TEST octaspire_dern_vm_eval_unbalanced_parenthesis_2_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_recursive_fibonacci_function_20_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(define fib as (fn (n)"
+            "  (if (< n {D+2}) (return n))"
+            "  (+ (fib (- n {D+1})) (fib (- n {D+2}))))"
+            "[f] '(n [n]) howto-ok)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(true, evaluatedValue->value.boolean);
+
+    evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(fib {D+20})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(6765, evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_allocator_new(0);
@@ -16839,6 +16871,8 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
 
     RUN_TEST(octaspire_dern_vm_eval_unbalanced_parenthesis_1_test);
     RUN_TEST(octaspire_dern_vm_eval_unbalanced_parenthesis_2_test);
+
+    RUN_TEST(octaspire_dern_vm_recursive_fibonacci_function_20_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;

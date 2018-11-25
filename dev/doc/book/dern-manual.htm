@@ -702,7 +702,10 @@
   <p>
     Functions <code>min</code> and <code>max</code> work for all
     types of values. Function <code>distance</code> works currently
-    only with numbers, but support for all types will be added later.
+    with numbers, strings and symbols, but support for all types will
+    be added later. For textual types function <code>distance</code>
+    calculates the Levenshtein distance of the values using
+    Wagner-Fischer algorithm.
   </p>
 
   <h2>Comparing and changing values, predicates</h2>

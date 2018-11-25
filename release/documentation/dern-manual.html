@@ -961,16 +961,23 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><span class="cbracket">(</span><span class="normal">m</span><span class="keyword">in</span><span class="normal">  </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; {D+1}</span>
-<span class="cbracket">(</span><span class="normal">m</span><span class="keyword">in</span><span class="normal">  </span><span class="string">[abc]</span><span class="normal"> </span><span class="string">[abd]</span><span class="normal"> </span><span class="string">[abe]</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; [abc]</span>
-<span class="cbracket">(</span><span class="normal">max  </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; {D+3}</span>
-<span class="cbracket">(</span><span class="normal">max  </span><span class="string">[abc]</span><span class="normal"> </span><span class="string">[abd]</span><span class="normal"> </span><span class="string">[abe]</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; [abe]</span>
-<span class="cbracket">(</span><span class="normal">distance </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+1.1}</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; {D+0.1}</span></pre>
+<pre><span class="cbracket">(</span><span class="normal">m</span><span class="keyword">in</span><span class="normal">  </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; {D+1}</span>
+<span class="cbracket">(</span><span class="normal">m</span><span class="keyword">in</span><span class="normal">  </span><span class="string">[abc]</span><span class="normal"> </span><span class="string">[abd]</span><span class="normal"> </span><span class="string">[abe]</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; [abc]</span>
+<span class="cbracket">(</span><span class="normal">max  </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; {D+3}</span>
+<span class="cbracket">(</span><span class="normal">max  </span><span class="string">[abc]</span><span class="normal"> </span><span class="string">[abd]</span><span class="normal"> </span><span class="string">[abe]</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; [abe]</span>
+
+<span class="cbracket">(</span><span class="normal">distance </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+1.1}</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; {D+0.1}</span>
+<span class="cbracket">(</span><span class="normal">distance </span><span class="string">[lawn]</span><span class="normal"> </span><span class="string">[flaw]</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; {D+2}</span>
+<span class="cbracket">(</span><span class="normal">distance 'kitten 'sitt</span><span class="keyword">in</span><span class="normal">g</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; {D+3}</span>
+</pre>
 
   <p>
     Functions <code>min</code> and <code>max</code> work for all
     types of values. Function <code>distance</code> works currently
-    only with numbers, but support for all types will be added later.
+    with numbers, strings and symbols, but support for all types will
+    be added later. For textual types function <code>distance</code>
+    calculates the Levenshtein distance of the values using
+    Wagner-Fischer algorithm.
   </p>
 
   <h2><a id="9"></a>9. Comparing and changing values, predicates</h2>
