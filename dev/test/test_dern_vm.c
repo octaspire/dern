@@ -497,7 +497,8 @@ TEST octaspire_dern_vm_special_select_function_selectors_failure_on_unknown_symb
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'f2')\n"
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'f2'. "
+        "Did you mean 'f1'?)\n"
         "\tAt form: >>>>>>>>>>(select (f1) [p] (f2) [a])<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -902,7 +903,7 @@ TEST octaspire_dern_vm_special_define_called_with_eight_arguments_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Unbound symbol 'f'",
+        "Unbound symbol 'f'. Did you mean '/'?",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     // Make sure f IS defined in myEnv-environment
@@ -999,7 +1000,8 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_error_at_first_
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'noSuchFuNcTion')\n"
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
+        "'noSuchFuNcTion'. Did you mean 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(define x as (noSuchFuNcTion) [x])<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -1096,7 +1098,7 @@ TEST octaspire_dern_vm_special_define_called_with_eight_arguments_error_in_envir
     ASSERT_STR_EQ(
         "Special 'define' expects environment as the seventh argument in this "
         "context. Value '<error>: Cannot evaluate operator of type 'error' (<error>: "
-        "Unbound symbol 'noSuchFuNcTion')' was given.\n"
+        "Unbound symbol 'noSuchFuNcTion'. Did you mean 'character?'?)' was given.\n"
         "\tAt form: >>>>>>>>>>(define f as (fn () (quote x)) [f] (quote ()) in (noSuchFuNcTion) howto-ok)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -7650,7 +7652,8 @@ TEST octaspire_dern_vm_error_in_function_body_is_reported_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     // TODO type of 'error' or 'vector'?
     ASSERT_STR_EQ(
-        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
+        "'NoSuchFunction'. Did you mean 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(f {D+1})<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -8129,7 +8132,8 @@ TEST octaspire_dern_vm_special_do_error_stops_evaluation_and_is_reported_test(vo
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
+        "'NoSuchFunction'. Did you mean 'counter'?)\n"
         "\tAt form: >>>>>>>>>>(NoSuchFunction)<<<<<<<<<<\n\n"
         "\tAt form: >>>>>>>>>>(do (++ counter) (NoSuchFunction) (++ counter))<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
@@ -11635,7 +11639,8 @@ TEST octaspire_dern_vm_error_during_user_function_call_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
+        "'NoSuchFunction'. Did you mean 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(f)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -11859,7 +11864,7 @@ TEST octaspire_dern_vm_special_eval_failure_on_unbound_symbol_on_second_argument
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Unbound symbol 'pi'\n"
+        "Unbound symbol 'pi'. Did you mean '/'?\n"
         "\tAt form: >>>>>>>>>>(eval (+ {D+1} {D+1}) pi)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 

@@ -610,3 +610,62 @@ int octaspire_dern_environment_compare(
         other->bindings);
 }
 
+bool octaspire_dern_environment_get_all_names_to_vector(
+    octaspire_dern_environment_t const * const self,
+    octaspire_vector_t                 * const result)
+{
+    if (self->enclosing)
+    {
+        if (!octaspire_dern_environment_get_all_names_to_vector(
+                self->enclosing->value.environment,
+                result))
+        {
+            return false;
+        }
+    }
+
+    for (size_t i = 0; i < octaspire_map_get_number_of_elements(self->bindings); ++i)
+    {
+        octaspire_map_element_t const * const element =
+            octaspire_map_get_at_index(
+                self->bindings,
+                (ptrdiff_t)i);
+
+        assert(element);
+
+        octaspire_dern_value_t const * const key =
+            octaspire_map_element_get_key(element);
+
+        octaspire_string_t * const keyAsStr =
+            octaspire_dern_value_to_string(key, self->allocator);
+
+        if (!octaspire_vector_push_back_element(result, &keyAsStr))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+octaspire_vector_t * octaspire_dern_environment_get_all_names(
+    octaspire_dern_environment_t const * const self)
+{
+    octaspire_vector_t * result =
+        octaspire_vector_new_for_octaspire_string_elements(
+            self->allocator);
+
+    if (!result)
+    {
+        return 0;
+    }
+
+    if (!octaspire_dern_environment_get_all_names_to_vector(self, result))
+    {
+        octaspire_vector_release(result);
+        result = 0;
+        return 0;
+    }
+
+    return result;
+}

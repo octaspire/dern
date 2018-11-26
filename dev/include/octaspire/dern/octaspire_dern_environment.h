@@ -92,6 +92,13 @@ int octaspire_dern_environment_compare(
     octaspire_dern_environment_t const * const self,
     octaspire_dern_environment_t const * const other);
 
+bool octaspire_dern_environment_get_all_names_to_vector(
+    octaspire_dern_environment_t const * const self,
+    octaspire_vector_t                 * const result);
+
+octaspire_vector_t * octaspire_dern_environment_get_all_names(
+    octaspire_dern_environment_t const * const self);
+
 #ifdef __cplusplus
 /* extern "C" */ }
 #endif

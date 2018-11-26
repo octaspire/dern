@@ -3376,12 +3376,43 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                     value,
                     self->allocator);
 
+                size_t bestIndex                    = 0;
+                int    bestDist                     = INT_MAX;
+                octaspire_string_t const * bestName = 0;
+
+                octaspire_vector_t * names =
+                    octaspire_dern_environment_get_all_names(
+                        environment->value.environment);
+
+                assert(names);
+
+                for (size_t i = 0; i < octaspire_vector_get_length(names); ++i)
+                {
+                    octaspire_string_t const * const elemAsStr =
+                        octaspire_vector_get_element_at_const(names, i);
+
+                    assert(elemAsStr);
+
+                    int dist = octaspire_string_levenshtein_distance(str, elemAsStr);
+
+                    if (dist < bestDist)
+                    {
+                        bestDist  = dist;
+                        bestIndex = i;
+                        bestName  = elemAsStr;
+                    }
+                }
+
                 result = octaspire_dern_vm_create_new_value_error(
                         self,
                         octaspire_string_new_format(
                             self->allocator,
-                            "Unbound symbol '%s'",
-                            octaspire_string_get_c_string(str)));
+                            "Unbound symbol '%s'. Did you mean '%s'?",
+                            octaspire_string_get_c_string(str),
+                            bestName ? octaspire_string_get_c_string(bestName) : ""));
+
+                octaspire_vector_release(names);
+                names = 0;
 
                 octaspire_string_release(str);
                 str = 0;

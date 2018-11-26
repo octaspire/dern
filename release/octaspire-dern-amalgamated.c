@@ -206,7 +206,7 @@ limitations under the License.
 #define OCTASPIRE_CORE_CONFIG_H
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "114"
+#define OCTASPIRE_CORE_CONFIG_VERSION_MINOR "115"
 #define OCTASPIRE_CORE_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_CORE_CONFIG_VERSION_STR "Octaspire Core version " \
@@ -438,6 +438,9 @@ octaspire_vector_t *octaspire_vector_new(
     size_t const elementSize,
     bool const elementIsPointer,
     octaspire_vector_element_callback_t elementReleaseCallback,
+    octaspire_allocator_t *allocator);
+
+octaspire_vector_t *octaspire_vector_new_for_octaspire_string_elements(
     octaspire_allocator_t *allocator);
 
 octaspire_vector_t *octaspire_vector_new_with_preallocated_elements(
@@ -3293,6 +3296,16 @@ octaspire_vector_t *octaspire_vector_new(
         elementIsPointer,
         OCTASPIRE_VECTOR_INITIAL_SIZE,
         elementReleaseCallback,
+        allocator);
+}
+
+octaspire_vector_t *octaspire_vector_new_for_octaspire_string_elements(
+    octaspire_allocator_t *allocator)
+{
+    return octaspire_vector_new(
+        sizeof(octaspire_string_t*),
+        true,
+        (octaspire_vector_element_callback_t)octaspire_string_release,
         allocator);
 }
 
@@ -14630,6 +14643,58 @@ TEST octaspire_vector_new_failure_test(void)
     PASS();
 }
 
+TEST octaspire_vector_new_for_octaspire_string_elements_test(void)
+{
+    octaspire_vector_t *vec =
+        octaspire_vector_new_for_octaspire_string_elements(
+            octaspireContainerVectorTestAllocator);
+
+    ASSERT(vec);
+
+    ASSERT(vec->elements);
+    ASSERT_EQ(sizeof(octaspire_string_t*),             vec->elementSize);
+    ASSERT_EQ(0,                                       vec->numElements);
+    ASSERT_EQ(OCTASPIRE_VECTOR_INITIAL_SIZE,           vec->numAllocated);
+
+    ASSERT_EQ(
+        (octaspire_vector_element_callback_t)octaspire_string_release,
+        vec->elementReleaseCallback);
+
+    ASSERT_EQ(octaspireContainerVectorTestAllocator,   vec->allocator);
+
+    octaspire_vector_release(vec);
+    vec = 0;
+
+    PASS();
+}
+
+TEST octaspire_vector_new_for_octaspire_string_elements_failure_test(void)
+{
+    octaspire_allocator_set_number_and_type_of_future_allocations_to_be_rigged(
+        octaspireContainerVectorTestAllocator,
+        1,
+        0);
+
+    ASSERT_EQ(1,
+              octaspire_allocator_get_number_of_future_allocations_to_be_rigged(
+                  octaspireContainerVectorTestAllocator));
+
+    octaspire_vector_t *vec =
+        octaspire_vector_new_for_octaspire_string_elements(
+            octaspireContainerVectorTestAllocator);
+
+    ASSERT_FALSE(vec);
+
+    ASSERT_EQ(0,
+              octaspire_allocator_get_number_of_future_allocations_to_be_rigged(
+                  octaspireContainerVectorTestAllocator));
+
+    octaspire_vector_release(vec);
+    vec = 0;
+
+    PASS();
+}
+
 TEST octaspire_vector_new_with_preallocated_elements_test(void)
 {
     size_t const numPreAllocated = 100;
@@ -17312,6 +17377,8 @@ GREATEST_SUITE(octaspire_vector_suite)
     RUN_TEST(octaspire_vector_private_compact_failure_test);
     RUN_TEST(octaspire_vector_new_test);
     RUN_TEST(octaspire_vector_new_failure_test);
+    RUN_TEST(octaspire_vector_new_for_octaspire_string_elements_test);
+    RUN_TEST(octaspire_vector_new_for_octaspire_string_elements_failure_test);
     RUN_TEST(octaspire_vector_new_with_preallocated_elements_test);
     RUN_TEST(octaspire_vector_new_with_preallocated_elements_allocation_failure_on_first_allocation_test);
     RUN_TEST(octaspire_vector_new_with_preallocated_elements_allocation_failure_on_second_allocation_test);
@@ -26147,7 +26214,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "446"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "447"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -27349,6 +27416,13 @@ bool octaspire_dern_environment_is_equal(
 int octaspire_dern_environment_compare(
     octaspire_dern_environment_t const * const self,
     octaspire_dern_environment_t const * const other);
+
+bool octaspire_dern_environment_get_all_names_to_vector(
+    octaspire_dern_environment_t const * const self,
+    octaspire_vector_t                 * const result);
+
+octaspire_vector_t * octaspire_dern_environment_get_all_names(
+    octaspire_dern_environment_t const * const self);
 
 #ifdef __cplusplus
 /* extern "C" */ }
@@ -28945,6 +29019,65 @@ int octaspire_dern_environment_compare(
         other->bindings);
 }
 
+bool octaspire_dern_environment_get_all_names_to_vector(
+    octaspire_dern_environment_t const * const self,
+    octaspire_vector_t                 * const result)
+{
+    if (self->enclosing)
+    {
+        if (!octaspire_dern_environment_get_all_names_to_vector(
+                self->enclosing->value.environment,
+                result))
+        {
+            return false;
+        }
+    }
+
+    for (size_t i = 0; i < octaspire_map_get_number_of_elements(self->bindings); ++i)
+    {
+        octaspire_map_element_t const * const element =
+            octaspire_map_get_at_index(
+                self->bindings,
+                (ptrdiff_t)i);
+
+        assert(element);
+
+        octaspire_dern_value_t const * const key =
+            octaspire_map_element_get_key(element);
+
+        octaspire_string_t * const keyAsStr =
+            octaspire_dern_value_to_string(key, self->allocator);
+
+        if (!octaspire_vector_push_back_element(result, &keyAsStr))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+octaspire_vector_t * octaspire_dern_environment_get_all_names(
+    octaspire_dern_environment_t const * const self)
+{
+    octaspire_vector_t * result =
+        octaspire_vector_new_for_octaspire_string_elements(
+            self->allocator);
+
+    if (!result)
+    {
+        return 0;
+    }
+
+    if (!octaspire_dern_environment_get_all_names_to_vector(self, result))
+    {
+        octaspire_vector_release(result);
+        result = 0;
+        return 0;
+    }
+
+    return result;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          dev/src/octaspire_dern_environment.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51430,12 +51563,43 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                     value,
                     self->allocator);
 
+                size_t bestIndex                    = 0;
+                int    bestDist                     = INT_MAX;
+                octaspire_string_t const * bestName = 0;
+
+                octaspire_vector_t * names =
+                    octaspire_dern_environment_get_all_names(
+                        environment->value.environment);
+
+                assert(names);
+
+                for (size_t i = 0; i < octaspire_vector_get_length(names); ++i)
+                {
+                    octaspire_string_t const * const elemAsStr =
+                        octaspire_vector_get_element_at_const(names, i);
+
+                    assert(elemAsStr);
+
+                    int dist = octaspire_string_levenshtein_distance(str, elemAsStr);
+
+                    if (dist < bestDist)
+                    {
+                        bestDist  = dist;
+                        bestIndex = i;
+                        bestName  = elemAsStr;
+                    }
+                }
+
                 result = octaspire_dern_vm_create_new_value_error(
                         self,
                         octaspire_string_new_format(
                             self->allocator,
-                            "Unbound symbol '%s'",
-                            octaspire_string_get_c_string(str)));
+                            "Unbound symbol '%s'. Did you mean '%s'?",
+                            octaspire_string_get_c_string(str),
+                            bestName ? octaspire_string_get_c_string(bestName) : ""));
+
+                octaspire_vector_release(names);
+                names = 0;
 
                 octaspire_string_release(str);
                 str = 0;
@@ -58492,7 +58656,8 @@ TEST octaspire_dern_vm_special_select_function_selectors_failure_on_unknown_symb
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'f2')\n"
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'f2'. "
+        "Did you mean 'f1'?)\n"
         "\tAt form: >>>>>>>>>>(select (f1) [p] (f2) [a])<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -58897,7 +59062,7 @@ TEST octaspire_dern_vm_special_define_called_with_eight_arguments_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Unbound symbol 'f'",
+        "Unbound symbol 'f'. Did you mean '/'?",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     // Make sure f IS defined in myEnv-environment
@@ -58994,7 +59159,8 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_error_at_first_
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'noSuchFuNcTion')\n"
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
+        "'noSuchFuNcTion'. Did you mean 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(define x as (noSuchFuNcTion) [x])<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -59091,7 +59257,7 @@ TEST octaspire_dern_vm_special_define_called_with_eight_arguments_error_in_envir
     ASSERT_STR_EQ(
         "Special 'define' expects environment as the seventh argument in this "
         "context. Value '<error>: Cannot evaluate operator of type 'error' (<error>: "
-        "Unbound symbol 'noSuchFuNcTion')' was given.\n"
+        "Unbound symbol 'noSuchFuNcTion'. Did you mean 'character?'?)' was given.\n"
         "\tAt form: >>>>>>>>>>(define f as (fn () (quote x)) [f] (quote ()) in (noSuchFuNcTion) howto-ok)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -65645,7 +65811,8 @@ TEST octaspire_dern_vm_error_in_function_body_is_reported_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     // TODO type of 'error' or 'vector'?
     ASSERT_STR_EQ(
-        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
+        "'NoSuchFunction'. Did you mean 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(f {D+1})<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -66124,7 +66291,8 @@ TEST octaspire_dern_vm_special_do_error_stops_evaluation_and_is_reported_test(vo
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
+        "'NoSuchFunction'. Did you mean 'counter'?)\n"
         "\tAt form: >>>>>>>>>>(NoSuchFunction)<<<<<<<<<<\n\n"
         "\tAt form: >>>>>>>>>>(do (++ counter) (NoSuchFunction) (++ counter))<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
@@ -69630,7 +69798,8 @@ TEST octaspire_dern_vm_error_during_user_function_call_test(void)
 
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
-        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'NoSuchFunction')\n"
+        "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
+        "'NoSuchFunction'. Did you mean 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(f)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -69854,7 +70023,7 @@ TEST octaspire_dern_vm_special_eval_failure_on_unbound_symbol_on_second_argument
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Unbound symbol 'pi'\n"
+        "Unbound symbol 'pi'. Did you mean '/'?\n"
         "\tAt form: >>>>>>>>>>(eval (+ {D+1} {D+1}) pi)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
