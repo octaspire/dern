@@ -102,3 +102,21 @@ EXAMPLE_ERROR_HINT="with homebrew: brew install sdl2 sdl2_image sdl2_mixer sdl2_
 EXAMPLE_SUCCESS_RUN="DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-sdl2-example.dern"
 echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -dynamiclib -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY -DOCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY $(sdl2-config --cflags) -framework OpenGL -Wno-deprecated-declarations -I . -o libdern_sdl2.dylib plugins/dern_sdl2.c $(sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
+
+
+# Build Chipmunk library and plugin.
+
+printf "${BLUE}Compiling ${BOLD}Chipmunk library${NOCOLOR}${BLUE}"
+for srcFile in $(ls plugins/external/chipmunk/src/*.c)
+do
+    printf "."
+    "$CC" -O2 -std=c99 -Wall -Wextra -I plugins/external/chipmunk/include -I plugins/external/chipmunk/include/chipmunk -c "$srcFile" -o "${srcFile%.c}.o"
+done
+
+printf "\rLinking ${BOLD}Chipmunk library${NOCOLOR}${BLUE}...${NOCOLOR}                                           \n\n"
+"$CC" -dynamiclib -o libchipmunk.dylib plugins/external/chipmunk/src/*.o -lm
+
+EXAMPLE_NAME="Dern Chipmunk plugin"
+EXAMPLE_ERROR_HINT="Install $CC compiler?"
+EXAMPLE_SUCCESS_RUN="DYLD_LIBRARY_PATH=. ./octaspire-dern-repl examples/dern-chipmunk-example.dern"
+echoAndRun "$CC" -std=c99 -Wall -Wextra -g -O2 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS -I . -I plugins/external/chipmunk/include/ -I plugins/external/chipmunk/include/chipmunk -dynamiclib -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o libdern_chipmunk.dylib plugins/dern_chipmunk.c -lm -L . -lchipmunk
