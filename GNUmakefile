@@ -145,7 +145,7 @@ else ifeq ($(UNAME), Linux)
     CHIPMUNK_LDFLAGS   := -lm
 endif
 
-.PHONY: oscheck development development-repl submodules-init submodules-pull clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push tag
+.PHONY: oscheck development development-repl submodules-init submodules-pull git-clean clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push tag
 
 all: oscheck submodulecheck development
 
@@ -284,6 +284,9 @@ submodules-pull:
 	@git submodule update --recursive --remote --quiet
 	@$(MAKE) -s TAGS
 	@echo "OK  Done."
+
+git-clean:
+	@sh $(ETCDIR)clean-repo.sh
 
 $(AMALGAMATION): $(ETCDIR)amalgamation_head.c                \
                  $(CORDIR)octaspire-core-amalgamated.c       \

@@ -3376,7 +3376,6 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                     value,
                     self->allocator);
 
-                size_t bestIndex                    = 0;
                 int    bestDist                     = INT_MAX;
                 octaspire_string_t const * bestName = 0;
 
@@ -3398,7 +3397,6 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                     if (dist < bestDist)
                     {
                         bestDist  = dist;
-                        bestIndex = i;
                         bestName  = elemAsStr;
                     }
                 }

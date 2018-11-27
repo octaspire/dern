@@ -26214,7 +26214,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "447"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "448"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -51563,7 +51563,6 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                     value,
                     self->allocator);
 
-                size_t bestIndex                    = 0;
                 int    bestDist                     = INT_MAX;
                 octaspire_string_t const * bestName = 0;
 
@@ -51585,7 +51584,6 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                     if (dist < bestDist)
                     {
                         bestDist  = dist;
-                        bestIndex = i;
                         bestName  = elemAsStr;
                     }
                 }
