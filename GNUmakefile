@@ -16,6 +16,7 @@ AMALGAMATION=$(RELDIR)octaspire-dern-amalgamated.c
 PLUGINS := $(wildcard $(PLUGINDIR)*.c)
 UNAME=$(shell uname -s)
 CFLAGS=-std=c99 -Wall -Wextra -g -O2 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+SQLITE3_CFLAGS=-std=c99 -Wall
 
 TAGS_C_FILES := $(SRCDIR)*.c $(INCDIR)*.h $(CORDIR)octaspire-core-amalgamated.c
 
@@ -222,7 +223,7 @@ libdern_sdl2$(DLSUFFIX): $(PLUGINDIR)dern_sdl2.c $(AMALGAMATION)
 
 libsqlite3$(DLSUFFIX): $(PLUGINDIR)external/sqlite3/sqlite3.c
 	$(info EC  sqlite3)
-	@$(CC) $(LIBCFLAGS) -c -o $@ $< $(SQLITE3_LDFLAGS)
+	@$(CC) $(SQLITE3_CFLAGS) $(LIBCFLAGS) -c -o $@ $< $(SQLITE3_LDFLAGS)
 
 libdern_sqlite3$(DLSUFFIX): $(PLUGINDIR)dern_sqlite3.c $(AMALGAMATION) libsqlite3$(DLSUFFIX)
 	$(info PC  $<)
