@@ -110,7 +110,7 @@ printf "${BLUE}Compiling ${BOLD}Chipmunk library${NOCOLOR}${BLUE}"
 for srcFile in $(ls plugins/external/chipmunk/src/*.c)
 do
     printf "."
-    "$CC" -O2 -std=c99 -Wall -Wextra -I plugins/external/chipmunk/include -I plugins/external/chipmunk/include/chipmunk -c "$srcFile"
+    "$CC" -O2 -std=c99 -Wall -Wextra -fPIC -I plugins/external/chipmunk/include -I plugins/external/chipmunk/include/chipmunk -c "$srcFile" -o "${srcFile%.c}.o"
 done
 
 printf "\rLinking ${BOLD}Chipmunk library${NOCOLOR}${BLUE}...${NOCOLOR}                                           \n\n"
