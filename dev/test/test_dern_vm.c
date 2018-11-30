@@ -498,7 +498,7 @@ TEST octaspire_dern_vm_special_select_function_selectors_failure_on_unknown_symb
 
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol 'f2'. "
-        "Did you mean 'f1'?)\n"
+        "Did you mean 'f1' or 'fn'?)\n"
         "\tAt form: >>>>>>>>>>(select (f1) [p] (f2) [a])<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -903,7 +903,8 @@ TEST octaspire_dern_vm_special_define_called_with_eight_arguments_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Unbound symbol 'f'. Did you mean '/'?",
+        "Unbound symbol 'f'. Did you mean '/', '<', 'if', '>', '*', '+', '-',"
+        " 'fn' or '='?",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     // Make sure f IS defined in myEnv-environment
@@ -8133,7 +8134,7 @@ TEST octaspire_dern_vm_special_do_error_stops_evaluation_and_is_reported_test(vo
 
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
-        "'NoSuchFunction'. Did you mean 'counter'?)\n"
+        "'NoSuchFunction'. Did you mean 'counter' or 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(NoSuchFunction)<<<<<<<<<<\n\n"
         "\tAt form: >>>>>>>>>>(do (++ counter) (NoSuchFunction) (++ counter))<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
@@ -11864,7 +11865,9 @@ TEST octaspire_dern_vm_special_eval_failure_on_unbound_symbol_on_second_argument
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Unbound symbol 'pi'. Did you mean '/'?\n"
+        "Unbound symbol 'pi'. Did you mean '/', '--', 'do', '<', 'uid', "
+        "'cp@', 'if', 'min', '>', '+=', '++', '*', 'nil', '+', '-', '<=', "
+        "'fn', '==', '=', 'or', '!=', '-=' or '>='?\n"
         "\tAt form: >>>>>>>>>>(eval (+ {D+1} {D+1}) pi)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 

@@ -3376,14 +3376,19 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                     value,
                     self->allocator);
 
-                int    bestDist                     = INT_MAX;
-                octaspire_string_t const * bestName = 0;
+                int    bestDist                      = INT_MAX;
+
+                octaspire_string_t * bestNames = octaspire_string_new(
+                    "",
+                    octaspire_dern_vm_get_allocator(self));
 
                 octaspire_vector_t * names =
                     octaspire_dern_environment_get_all_names(
                         environment->value.environment);
 
                 assert(names);
+
+                // Find the shortest distance.
 
                 for (size_t i = 0; i < octaspire_vector_get_length(names); ++i)
                 {
@@ -3397,7 +3402,68 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                     if (dist < bestDist)
                     {
                         bestDist  = dist;
-                        bestName  = elemAsStr;
+                    }
+                }
+
+                // Count the number of best alternatives.
+
+                size_t numBestDist = 0;
+
+                for (size_t i = 0; i < octaspire_vector_get_length(names); ++i)
+                {
+                    octaspire_string_t const * const elemAsStr =
+                        octaspire_vector_get_element_at_const(names, i);
+
+                    assert(elemAsStr);
+
+                    int dist = octaspire_string_levenshtein_distance(str, elemAsStr);
+
+                    if (dist == bestDist)
+                    {
+                        ++numBestDist;
+                    }
+                }
+
+                // Concatenate into a string to collect all
+                // the best alternatives.
+
+                size_t numBestAdded = 0;
+
+                for (size_t i = 0; i < octaspire_vector_get_length(names); ++i)
+                {
+                    octaspire_string_t const * const elemAsStr =
+                        octaspire_vector_get_element_at_const(names, i);
+
+                    assert(elemAsStr);
+
+                    int dist = octaspire_string_levenshtein_distance(str, elemAsStr);
+
+                    if (dist == bestDist)
+                    {
+                        if (!numBestAdded)
+                        {
+                            octaspire_string_concatenate_format(
+                                bestNames,
+                                "Did you mean '%s'%s",
+                                octaspire_string_get_c_string(elemAsStr),
+                                (numBestAdded == (numBestDist - 1)) ? "?" : "");
+                        }
+                        else if (numBestAdded == (numBestDist - 1))
+                        {
+                            octaspire_string_concatenate_format(
+                                bestNames,
+                                " or '%s'?",
+                                octaspire_string_get_c_string(elemAsStr));
+                        }
+                        else
+                        {
+                            octaspire_string_concatenate_format(
+                                bestNames,
+                                ", '%s'",
+                                octaspire_string_get_c_string(elemAsStr));
+                        }
+
+                        ++numBestAdded;
                     }
                 }
 
@@ -3405,9 +3471,12 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                         self,
                         octaspire_string_new_format(
                             self->allocator,
-                            "Unbound symbol '%s'. Did you mean '%s'?",
+                            "Unbound symbol '%s'. %s",
                             octaspire_string_get_c_string(str),
-                            bestName ? octaspire_string_get_c_string(bestName) : ""));
+                            octaspire_string_get_c_string(bestNames)));
+
+                octaspire_string_release(bestNames);
+                bestNames = 0;
 
                 octaspire_vector_release(names);
                 names = 0;
