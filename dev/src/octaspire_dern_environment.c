@@ -669,3 +669,4 @@ octaspire_vector_t * octaspire_dern_environment_get_all_names(
 
     return result;
 }
+
