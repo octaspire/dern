@@ -12,6 +12,7 @@
   [window])
 
 (sdl2-glClearColor {D+0} {D+0} {D+0} {D+1})
+(sdl2-gl-ortho-line-smooth-enable)
 
 (define bounce-enter-ortho as (fn (zoom)
   (define width  as (/ (* {D+4} bounce-window-width)  (* {D+2} zoom)) [target width])

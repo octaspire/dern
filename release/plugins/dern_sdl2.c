@@ -5046,6 +5046,72 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_enter(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+octaspire_dern_value_t *dern_sdl2_gl_ortho_line_smooth_enable(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "sdl2-gl-ortho-line-smooth-enable";
+    size_t const         numArgsExpected = 0;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numArgsExpected)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgsExpected,
+            numArgs);
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_POLYGON_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT,    GL_NICEST);
+    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+    glLineWidth(2.5);
+
+    // TODO better error checks:
+    // 1. clear any possible old errors before doing OpenGL operations.
+    // 2. use a helper function that pulls all the errors, if there
+    //    is more than one and concatenates them into an
+    //    error message. The function can then return either an error value
+    //    or boolean value true (or maybe 0) if there is no errors.
+    GLenum error = glGetError();
+
+    if (error != GL_NO_ERROR)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' failed. OpenGL error is: '%s'",
+            dern_sdl2_glError_to_cstr(error));
+    }
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_format(
+        vm,
+        "Builtin '%s' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.",
+        dernFuncName);
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
 octaspire_dern_value_t *dern_sdl2_gl_ortho_circle(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -8224,6 +8290,18 @@ bool dern_sdl2_init(
             dern_sdl2_gl_ortho_enter,
             4,
             "(sdl2-gl-ortho-enter left right bottom top) -> true or error",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-gl-ortho-line-smooth-enable",
+            dern_sdl2_gl_ortho_line_smooth_enable,
+            0,
+            "(sdl2-gl-ortho-line-smooth-enable) -> true or error",
             true,
             targetEnv))
     {
