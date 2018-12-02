@@ -183,8 +183,9 @@
     (bounce-platform-add {D-138} {D+20}  {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper  platform
     (bounce-platform-add {D-145} {D-30}  {D+4}   (chipmunk-cpv {D+15} {D+0})  (chipmunk-cpv {D+6} {D+0}))  ; middle platform
     (bounce-platform-add {D-145} {D-90}  {D+8}   (chipmunk-cpv {D+0}  {D+30}) (chipmunk-cpv {D+0} {D+30})) ; bottom platform
-    (bounce-ball-add     {D-145} {D-40})
-    ; pipe1
+    ;;;(bounce-ball-add     {D-145} {D-40})
+    (bounce-ball-add     {D+90} {D+140})
+    ; pipe2
     (bounce-wall-add     {D-115} {D+155} {D-115} {D-100}) ; right wall
     (bounce-platform-add {D-125} {D+55}  {D+4}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+8}{D+0}))   ; upper horizontal platform
     (bounce-platform-add {D-132} {D-60}  {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper vertical platform
@@ -192,7 +193,7 @@
     (bounce-wall-add     {D-115} {D+95}  {D-120} {D+90}) ; upper triangle ramp
     (bounce-wall-add     {D-115} {D+85}  {D-120} {D+90}) ; upper triangle ramp
     (bounce-wall-add     {D-135} {D+75}  {D-130} {D+70}) ; upper left ramp
-    ; pipe2
+    ; pipe3
     (bounce-platform-add {D-105} {D+40}  {D+8}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0}{D+10}))  ; top platform
     (bounce-platform-add {D-102} {D-30}  {D+4}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+5}{D+0}))  ; middle platform
     (bounce-wall-add     {D-115} {D+110} {D-105} {D+120})  ; left top ramp
@@ -203,13 +204,38 @@
     (bounce-wall-add     {D-115} {D-100} {D-110} {D-95})  ; lowest left ramp
     (bounce-wall-add     {D-100} {D-80}  {D-95}  {D-95})  ; lowest right ramp
     (bounce-platform-add {D-112} {D-85}  {D+4}   (chipmunk-cpv {D+0} {D+0})  (chipmunk-cpv {D+1}{D+0}))  ; lowest static platform
-    ; pipe3
+    ; pipe4
     (bounce-wall-add     {D-75} {D+155} {D-75}  {D-100})  ; right wall
     (bounce-wall-add     {D-75} {D+110} {D-65}  {D+120})  ; left top ramp
-    (bounce-platform-add {D-64} {D+0}   {D+8}   (chipmunk-cpv {D+6} {D+0})  (chipmunk-cpv {D+6}{D+0}))  ; middle platform
-    (bounce-platform-add {D-76} {D-115} {D+8}   (chipmunk-cpv {D+6} {D+0})  (chipmunk-cpv {D+15}{D+0})) ; bottom platform
+    (bounce-platform-add {D-64} {D+0}   {D+8}   (chipmunk-cpv {D+6} {D+0}) (chipmunk-cpv {D+5}  {D+0})) ; middle platform
+    (bounce-platform-add {D-76} {D-115} {D+8}   (chipmunk-cpv {D+6} {D+0}) (chipmunk-cpv {D+15} {D+0})) ; bottom platform
+    ; pipe5
+    (bounce-wall-add     {D-55} {D+100} {D-55}  {D-115})  ; right wall
+    ; pipe6
+    (bounce-wall-add     {D-35} {D+155} {D-35}  {D-100})  ; right wall
+    (bounce-wall-add     {D-40} {D+70}  {D-35}  {D+65})  ; right ramp
+    (bounce-platform-add {D-34} {D-115} {D+8}   (chipmunk-cpv {D+26} {D+0}) (chipmunk-cpv {D+15} {D+0})) ; bottom platform
+    ; pipe7
+    (bounce-wall-add     {D-15} {D+100} {D-15}  {D-115}) ; right wall
+    (bounce-wall-add     {D-35} {D+112} {D-15}  {D+118}) ; left upper ramp
+    (bounce-wall-add     {D-23} {D+80}  {D-15}  {D+75})  ; right upper ramp
+    (bounce-platform-add {D-30} {D+60}  {D+8}   (chipmunk-cpv {D+0} {D-40}) (chipmunk-cpv {D+0} {D+40})) ; top platform
+    (bounce-wall-add     {D-35} {D+10}  {D-27}  {D+15})  ; left middle ramp
+    (bounce-platform-add {D-20} {D-10}  {D+8}   (chipmunk-cpv {D+0} {D-40}) (chipmunk-cpv {D+0} {D+40})) ; middle platform
+    (bounce-wall-add     {D-20} {D-50}  {D-15}  {D-55})  ; right bottom ramp
+    (bounce-platform-add {D-30} {D-60}  {D+8}   (chipmunk-cpv {D+0} {D-40}) (chipmunk-cpv {D+0} {D+40})) ; bottom platform
 
-    (bounce-wall-add     {D+17}  {D+50}  {D+110} {D+47}) ; ramp to exit
+    (bounce-wall-add     {D+17}  {D+80}  {D+80} {D+60})  ; long ramp at top right
+    (bounce-wall-add     {D+80}  {D+80}  {D+100}{D+100}) ; ramp
+    (bounce-platform-add {D+90}  {D+55}  {D+20} (chipmunk-cpv {D+0}  {D+0}) (chipmunk-cpv {D+0}  {D+0})) ; top static platform
+    (bounce-platform-add {D+105} {D-115} {D+10} (chipmunk-cpv {D+40} {D+0}) (chipmunk-cpv {D+50} {D+0}))
+
+    ; pipe8
+    (bounce-wall-add     {D+135} {D+155} {D+135} {D-100}) ; left wall
+    (bounce-wall-add     {D+160} {D+155} {D+160} {D-115}) ; right wall
+    (bounce-platform-add {D+140} {D+20}  {D+8}   (chipmunk-cpv {D+0} {D+80}) (chipmunk-cpv {D+0} {D+90})) ; platform
+    (bounce-wall-add     {D+150} {D+40}  {D+160} {D+30})  ; right ramp
+
     (return)))
   (if (== index {D+1}) (do
     (bounce-wall-add {D+10} {D+30} {D+10} {D-30}) ; right wall
@@ -316,7 +342,7 @@
   (define ball-x   as (chipmunk-cpv-get-x ball-pos) [x component])
   (define ball-y   as (chipmunk-cpv-get-y ball-pos) [y component])
   (if (< ball-y {D-240}) (bounce-game-over))
-  (if (and (> ball-x {D+130}) (> ball-y {D+90})) (bounce-level-next))
+  (if (and (> ball-x {D+135}) (< ball-x {D+160}) (> ball-y {D+130}) (< ball-y {D+160})) (bounce-level-next))
   (sdl2-TimerUpdate)
   (define current-frame-duration as (sdl2-TimerGetSeconds) [current frame duration])
   (if (> bounce-target-frame-duration current-frame-duration) (do
