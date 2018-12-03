@@ -183,8 +183,8 @@
     (bounce-platform-add {D-138} {D+20}  {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper  platform
     (bounce-platform-add {D-145} {D-30}  {D+4}   (chipmunk-cpv {D+15} {D+0})  (chipmunk-cpv {D+6} {D+0}))  ; middle platform
     (bounce-platform-add {D-145} {D-90}  {D+8}   (chipmunk-cpv {D+0}  {D+30}) (chipmunk-cpv {D+0} {D+30})) ; bottom platform
-    ;;;(bounce-ball-add     {D-145} {D-40})
-    (bounce-ball-add     {D+90} {D+140})
+    (bounce-ball-add     {D-145} {D-40})
+    ;;;(bounce-ball-add     {D+90} {D+140})
     ; pipe2
     (bounce-wall-add     {D-115} {D+155} {D-115} {D-100}) ; right wall
     (bounce-platform-add {D-125} {D+55}  {D+4}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+8}{D+0}))   ; upper horizontal platform
