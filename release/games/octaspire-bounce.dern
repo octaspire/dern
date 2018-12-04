@@ -34,6 +34,7 @@
 
 (define bounce-walls     as '() [all walls in the level])
 (define bounce-platforms as '() [all platforms in the level])
+(define bounce-slopes    as '() [all slopes in the level])
 
 (define bounce-wall-add as (fn (x1 y1 x2 y2)
   (define slot as (bounce-make-empty-slot) [slot for the wall])
@@ -65,6 +66,36 @@
     (* {D+10} x2)
     (* {D+10} y2)))
   [draw a wall] '(slot [slot containing the wall]) howto-no)
+
+(define bounce-slope-add as (fn (x1 y1 x2 y2)
+  (define slot as (bounce-make-empty-slot) [slot for the slope])
+  (define body as (chipmunk-cpBodyNewKinematic) [a body])
+  (chipmunk-cpSpaceAddBody bounce-space body)
+  (define shape as
+    (chipmunk-cpSegmentShapeNew body (chipmunk-cpv x1 y1) (chipmunk-cpv x2 y2) {D+0})
+    [slope collision shape])
+  (chipmunk-cpShapeSetFriction shape {D+0.25})
+  (chipmunk-cpSpaceAddShape bounce-space shape)
+
+  (= slot 'body body)
+  (= slot 'x1  x1)
+  (= slot 'y1  y1)
+  (= slot 'x2  x2)
+  (= slot 'y2  y2)
+  (+= bounce-slopes slot))
+  [add new slope in the level] '(x1 [x1] y1 [y1] x2 [x2] y2 [y2]) howto-no)
+
+(define bounce-slope-draw as (fn (slot)
+  (define body         as (ln@ slot 'body 'hash) [body of the slope])
+  (define pos          as (chipmunk-cpBodyGetPosition body) [position of the slope])
+  (define x1           as (* {D+10} (ln@ slot 'x1 'hash))  [x component])
+  (define y1           as (* {D+10} (ln@ slot 'y1 'hash))  [y component])
+  (define x2           as (* {D+10} (ln@ slot 'x2 'hash))  [x component])
+  (define y2           as (* {D+10} (ln@ slot 'y2 'hash))  [y component])
+  (sdl2-glColor4ub {X+FF} {X+4F} {X+00} {X+FF})
+  (sdl2-gl-ortho-line x1 y1 x2 y2)
+  (sdl2-glColor4ub {X+FF} {X+FF} {X+FF} {X+FF}))
+  [draw a slope] '(slot [slot containing the slope]) howto-no)
 
 (define bounce-platform-add as (fn (x y w vel max)
   (define hw   as (/ w {D+2}) [half width])
@@ -110,9 +141,11 @@
   (define wall-y       as (+ {D+15} y) [wall's top y])
   (define left-wall-x  as (- x hw) [left wall's x])
   (define right-wall-x as (+ x hw) [right wall's x])
+  (sdl2-glColor4ub {X+FF} {X+4F} {X+00} {X+FF})
   (sdl2-gl-ortho-line left-wall-x  y      right-wall-x y)  ; Bottom
   (sdl2-gl-ortho-line left-wall-x  wall-y left-wall-x  y)  ; Left wall
-  (sdl2-gl-ortho-line right-wall-x wall-y right-wall-x y)) ; Right wall
+  (sdl2-gl-ortho-line right-wall-x wall-y right-wall-x y)  ; Right wall
+  (sdl2-glColor4ub {X+FF} {X+FF} {X+FF} {X+FF}))
   [draw a platform] '(slot [slot containing the platform]) howto-no)
 
 (define bounce-platform-update as (fn (slot)
@@ -140,6 +173,7 @@
   (= bounce-ball      nil)
   (= bounce-walls     '())
   (= bounce-platforms '())
+  (= bounce-slopes    '())
   (define bounce-space as (chipmunk-cpSpaceNew) [chipmunk space] in (env-global))
   (define gravity as (chipmunk-cpv {D+0} {D-100}) [Gravity vector])
   (chipmunk-cpSpaceSetGravity bounce-space gravity)
@@ -184,7 +218,7 @@
     (bounce-platform-add {D-145} {D-30}  {D+4}   (chipmunk-cpv {D+15} {D+0})  (chipmunk-cpv {D+6} {D+0}))  ; middle platform
     (bounce-platform-add {D-145} {D-90}  {D+8}   (chipmunk-cpv {D+0}  {D+30}) (chipmunk-cpv {D+0} {D+30})) ; bottom platform
     (bounce-ball-add     {D-145} {D-40})
-    ;;;(bounce-ball-add     {D+90} {D+140})
+
     ; pipe2
     (bounce-wall-add     {D-115} {D+155} {D-115} {D-100}) ; right wall
     (bounce-platform-add {D-125} {D+55}  {D+4}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+8}{D+0}))   ; upper horizontal platform
@@ -238,10 +272,14 @@
 
     (return)))
   (if (== index {D+1}) (do
-    (bounce-wall-add {D+10} {D+30} {D+10} {D-30}) ; right wall
-    (bounce-wall-add {D-10} {D+70} {D+10} {D+80}) ; top ramp
-    (bounce-platform-add {D+0} {D+0} {D+2} (chipmunk-cpv {D+0} {D+30}) (chipmunk-cpv {D+0} {D+30}))
-    (bounce-ball-add {D+0} {D+15})
+    (for i from {D+0} to {D+5}
+      (bounce-slope-add (+ {D-155} (* i {D+50})) {D+100} (+ {D-125} (* i {D+50})) {D+97})) ; top row
+
+    (bounce-slope-add {D+95} {D+50} {D+155} {D+60})
+    (for i from {D+1} to {D+5}
+      (bounce-slope-add (- {D+95} (* i {D+50})) {D+50} (- {D+125} (* i {D+50})) {D+53}))   ; 2. row
+
+    (bounce-ball-add  {D-154} {D+120})
     (return))))
   [load level having the given index] '(index [index]) howto-no)
 
@@ -276,6 +314,8 @@
   (bounce-level-load bounce-level-index))
   [game over] '() howto-no)
 
+(define bounce-star-angle as {D+0} [angle of the star])
+
 (define bounce-render as (fn ()
   (define bounce-ball-pos as (chipmunk-cpBodyGetPosition bounce-ball) [position of the ball])
   (define ball-x          as (* {D+10} (chipmunk-cpv-get-x bounce-ball-pos)) [x component])
@@ -283,13 +323,21 @@
   (bounce-enter-ortho bounce-window-zoom)
   (sdl2-glClear)
   ; ball
+  (sdl2-glColor4ub {X+FF} {X+FF} {X+00} {X+FF})
   (sdl2-gl-ortho-circle-rotated ball-x ball-y {D+20} {D+32} (chipmunk-cpBodyGetAngle bounce-ball))
+  (sdl2-glColor4ub {X+FF} {X+FF} {X+FF} {X+FF})
   ; All walls
   (for i in bounce-walls
     (bounce-wall-draw i))
   ; platforms
   (for i in bounce-platforms
-    (bounce-platform-draw i))
+       (bounce-platform-draw i))
+  ; slopes
+  (for i in bounce-slopes
+    (bounce-slope-draw i))
+  (sdl2-glColor4ub {X+99} {X+FF} {X+0} {X+FF})
+  (sdl2-gl-ortho-star-rotated {D+1470} {D+1145} {D+40} {D+5} bounce-star-angle)
+  (sdl2-glColor4ub {X+FF} {X+FF} {X+FF} {X+FF})
   (sdl2-GL-SwapWindow bounce-window))
   [render] '() howto-no)
 
@@ -328,6 +376,7 @@
   (define dt as (sdl2-TimerGetSeconds) [dt])
   (sdl2-TimerReset)
   (bounce-render)
+  (+= bounce-star-angle {D+0.02})
   (if (< bounce-window-zoom {D+1}) (+= bounce-window-zoom {D+0.05}))
   (define event as (sdl2-PollEvent) [event from sdl2])
   (define type  as nil [type of event])
