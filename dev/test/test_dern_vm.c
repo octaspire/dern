@@ -11867,7 +11867,7 @@ TEST octaspire_dern_vm_special_eval_failure_on_unbound_symbol_on_second_argument
     ASSERT_STR_EQ(
         "Unbound symbol 'pi'. Did you mean '/', '--', 'do', '<', 'uid', "
         "'cp@', 'if', 'min', '>', '+=', '++', '*', 'nil', '+', '-', '<=', "
-        "'fn', '==', '=', 'or', '!=', '-=' or '>='?\n"
+        "'fn', '==', '=', 'or', 'sin', '!=', '-=' or '>='?\n"
         "\tAt form: >>>>>>>>>>(eval (+ {D+1} {D+1}) pi)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
