@@ -6005,6 +6005,114 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_min(
     return smallestArgVal;
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_cos(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "cos";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+    size_t const numExpectedArgs = 1;
+
+    if (numArgs < numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    octaspire_dern_value_t * argVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(argVal);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    if (!octaspire_dern_value_is_number(argVal))
+    {
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "First argument to builtin '%s' should be a number. "
+            "Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(argVal->typeTag));
+    }
+
+    return octaspire_dern_vm_create_new_value_real(
+        vm,
+        cos(octaspire_dern_value_as_number_get_value(argVal)));
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_sin(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "sin";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+    size_t const numExpectedArgs = 1;
+
+    if (numArgs < numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    octaspire_dern_value_t * argVal =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(argVal);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    if (!octaspire_dern_value_is_number(argVal))
+    {
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "First argument to builtin '%s' should be a number. "
+            "Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(argVal->typeTag));
+    }
+
+    return octaspire_dern_vm_create_new_value_real(
+        vm,
+        sin(octaspire_dern_value_as_number_get_value(argVal)));
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_plus_equals(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

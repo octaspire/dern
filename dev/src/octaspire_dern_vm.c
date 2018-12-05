@@ -863,6 +863,32 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // cos
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "cos",
+        octaspire_dern_vm_builtin_cos,
+        1,
+        "Return cosine of the argument (measured in radians)",
+        false,
+        env))
+    {
+        abort();
+    }
+
+    // sin
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "sin",
+        octaspire_dern_vm_builtin_sin,
+        1,
+        "Return sine of the argument (measured in radians)",
+        false,
+        env))
+    {
+        abort();
+    }
+
     // +=
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
