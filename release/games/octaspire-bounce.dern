@@ -209,6 +209,7 @@
 (define bounce-level-load as (fn (index)
   (bounce-space-create)
   (if (== index {D+0}) (do
+    (bounce-star-location-set {D+147} {D+110}) ; location of the exit
     ; pipe1
     (bounce-wall-add     {D-155} {D+100} {D-155} {D-115}) ; left wall
     (bounce-wall-add     {D-154} {D+10}  {D-150} {D+15})  ; lower left ramp wall
@@ -218,7 +219,8 @@
     (bounce-platform-add {D-138} {D+20}  {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper  platform
     (bounce-platform-add {D-145} {D-30}  {D+4}   (chipmunk-cpv {D+15} {D+0})  (chipmunk-cpv {D+6} {D+0}))  ; middle platform
     (bounce-platform-add {D-145} {D-90}  {D+8}   (chipmunk-cpv {D+0}  {D+30}) (chipmunk-cpv {D+0} {D+30})) ; bottom platform
-    (bounce-ball-add     {D-145} {D-40})
+    ;(bounce-ball-add     {D-145} {D-40})
+    (bounce-ball-add     {D+140} {D+40})
 
     ; pipe2
     (bounce-wall-add     {D-115} {D+155} {D-115} {D-100}) ; right wall
@@ -273,6 +275,8 @@
 
     (return)))
   (if (== index {D+1}) (do
+    (bounce-star-location-set {D+147} {D-105}) ; location of the exit
+
     (for i from {D+0} to {D+5}
       (bounce-slope-add (+ {D-155} (* i {D+50})) {D+100} (+ {D-125} (* i {D+50})) {D+97})) ; top row
 
@@ -327,7 +331,14 @@
   (bounce-level-load bounce-level-index))
   [game over] '() howto-no)
 
-(define bounce-star-angle as {D+0} [angle of the star])
+(define bounce-star-angle      as {D+0} [angle of the star])
+(define bounce-star-location-x as {D+0} [position of the star])
+(define bounce-star-location-y as {D+0} [position of the star])
+
+(define bounce-star-location-set as (fn (x y)
+  (= bounce-star-location-x x)
+  (= bounce-star-location-y y))
+  [set star location] '(x [x] y [y]) howto-no)
 
 (define bounce-render-game as (fn ()
   (define bounce-ball-pos as (chipmunk-cpBodyGetPosition bounce-ball) [position of the ball])
@@ -349,14 +360,14 @@
   (for i in bounce-slopes
     (bounce-slope-draw i))
   (sdl2-glColor4ub {X+99} {X+FF} {X+0} {X+FF})
-  (sdl2-gl-ortho-star-rotated {D+1470} {D+1145} {D+40} {D+5} bounce-star-angle)
+  (sdl2-gl-ortho-star-rotated (* {D+10} bounce-star-location-x) (* {D+10} bounce-star-location-y) {D+40} {D+5} bounce-star-angle)
   (sdl2-glColor4ub {X+FF} {X+FF} {X+FF} {X+FF}))
   [render game] '() howto-no)
 
 (define bounce-render-pass as (fn ()
   (bounce-render-game)
-  (define x as {D+1470} [x])
-  (define y as {D+1145} [y])
+  (define x as (* {D+10} bounce-star-location-x) [x])
+  (define y as (* {D+10} bounce-star-location-y) [y])
   (define delta as bounce-pass-star-delta [star movement])
   (define angle as (* {D+0.5} bounce-star-angle) [angle])
   (define num-stars as {D+8} [number of stars])
@@ -407,6 +418,14 @@
         (bounce-ball-apply-impulse (chipmunk-cpv {D+0} (min (/ bounce-key-down-duration {D+3}) {D+250}))))))
   [handle keydup-event] '(event [event]) howto-no)
 
+(define bounce-is-player-on-star as (fn ()
+  (define ball-pos as (chipmunk-cpBodyGetPosition bounce-ball) [position of the ball])
+  (define ball-x   as (chipmunk-cpv-get-x ball-pos) [x component])
+  (define ball-y   as (chipmunk-cpv-get-y ball-pos) [y component])
+  (define distance as (sqrt (+ (pow (- ball-x bounce-star-location-x) {D+2}) (pow (- ball-y bounce-star-location-y) {D+2}))) [distance])
+  (<= distance {D+8}))
+  [does player touch the star] '() howto-no)
+
 (define bounce-update-game as (fn (dt)
   (+= bounce-star-angle {D+0.02})
   (if (< bounce-window-zoom {D+1}) (+= bounce-window-zoom {D+0.05}))
@@ -423,7 +442,8 @@
   (define ball-x   as (chipmunk-cpv-get-x ball-pos) [x component])
   (define ball-y   as (chipmunk-cpv-get-y ball-pos) [y component])
   (if (< ball-y {D-240}) (bounce-game-over))
-  (if (and (> ball-x {D+135}) (< ball-x {D+160}) (> ball-y {D+130}) (< ball-y {D+160})) (bounce-level-pass)))
+  ;(if (and (> ball-x {D+135}) (< ball-x {D+160}) (> ball-y {D+130}) (< ball-y {D+160})) (bounce-level-pass)))
+  (if (bounce-is-player-on-star) (bounce-level-pass)))
   [update game] '(dt [dt]) howto-no)
 
 (define bounce-update-pass as (fn (dt)

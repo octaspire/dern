@@ -889,6 +889,32 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // pow
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "pow",
+        octaspire_dern_vm_builtin_pow,
+        2,
+        "Calculate given value raised to the given exponent",
+        false,
+        env))
+    {
+        abort();
+    }
+
+    // sqrt
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "sqrt",
+        octaspire_dern_vm_builtin_sqrt,
+        1,
+        "Calculate square root of the given value",
+        false,
+        env))
+    {
+        abort();
+    }
+
     // +=
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
