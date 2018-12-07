@@ -889,6 +889,58 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // tan
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "tan",
+        octaspire_dern_vm_builtin_tan,
+        1,
+        "Return tangent of the argument (measured in radians)",
+        false,
+        env))
+    {
+        abort();
+    }
+
+    // asin
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "asin",
+        octaspire_dern_vm_builtin_asin,
+        1,
+        "Return arc sine of the argument (measured in radians)",
+        false,
+        env))
+    {
+        abort();
+    }
+
+    // acos
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "acos",
+        octaspire_dern_vm_builtin_acos,
+        1,
+        "Return arc cosine of the argument (measured in radians)",
+        false,
+        env))
+    {
+        abort();
+    }
+
+    // atan
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "atan",
+        octaspire_dern_vm_builtin_atan,
+        1,
+        "Return arc tangent of the argument (measured in radians)",
+        false,
+        env))
+    {
+        abort();
+    }
+
     // pow
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
