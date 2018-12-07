@@ -208,7 +208,7 @@
 !#
 (define bounce-level-load as (fn (index)
   (bounce-space-create)
-  (if (== index {D+0}) (do
+  (if (== index {D+1}) (do
     (bounce-star-location-set {D+147} {D+110}) ; location of the exit
     ; pipe1
     (bounce-wall-add     {D-155} {D+100} {D-155} {D-115}) ; left wall
@@ -219,8 +219,7 @@
     (bounce-platform-add {D-138} {D+20}  {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper  platform
     (bounce-platform-add {D-145} {D-30}  {D+4}   (chipmunk-cpv {D+15} {D+0})  (chipmunk-cpv {D+6} {D+0}))  ; middle platform
     (bounce-platform-add {D-145} {D-90}  {D+8}   (chipmunk-cpv {D+0}  {D+30}) (chipmunk-cpv {D+0} {D+30})) ; bottom platform
-    ;(bounce-ball-add     {D-145} {D-40})
-    (bounce-ball-add     {D+140} {D+40})
+    (bounce-ball-add     {D-145} {D-40})
 
     ; pipe2
     (bounce-wall-add     {D-115} {D+155} {D-115} {D-100}) ; right wall
@@ -274,15 +273,32 @@
     (bounce-wall-add     {D+150} {D+40}  {D+160} {D+30})  ; right ramp
 
     (return)))
-  (if (== index {D+1}) (do
+  (if (== index {D+0}) (do
     (bounce-star-location-set {D+147} {D-105}) ; location of the exit
 
     (for i from {D+0} to {D+5}
       (bounce-slope-add (+ {D-155} (* i {D+50})) {D+100} (+ {D-125} (* i {D+50})) {D+97})) ; top row
 
+    (bounce-wall-add {D-130} {D+90} {D+70}  {D+92}) ; separator
+    (bounce-wall-add {D-130} {D+90} {D-130} {D+94}) ; separator left end
+    (bounce-wall-add {D+70}  {D+92} {D+70}  {D+96}) ; separator right end
+
     (bounce-slope-add {D+95} {D+50} {D+155} {D+60})
-    (for i from {D+1} to {D+5}
+    (for i from {D+1} to {D+4}
       (bounce-slope-add (- {D+95} (* i {D+50})) {D+50} (- {D+125} (* i {D+50})) {D+53}))   ; 2. row
+    (bounce-slope-add {D-155} {D+60} {D-125} {D+40})
+
+    (bounce-wall-add {D-100} {D+40} {D+110} {D+40}) ; separator
+    (bounce-wall-add {D-100} {D+40} {D-100} {D+44}) ; separator left end
+    (bounce-wall-add {D+110} {D+40} {D+110} {D+44}) ; separator right end
+
+    (bounce-slope-add {D+45} {D+0} {D+75} {D-4})
+    (for i from {D+2} to {D+4}
+      (bounce-slope-add (- {D+95} (* i {D+50})) {D+0} (- {D+125} (* i {D+50})) {D+0}))   ; 3. row
+
+    (bounce-wall-add {D-100} {D-10} {D+70}  {D-10}) ; separator
+    (bounce-wall-add {D-100} {D-10} {D-100} {D-6})  ; separator left end
+    (bounce-wall-add {D+70}  {D-10} {D+70}  {D-6})  ; separator right end
 
     (bounce-ball-add  {D-154} {D+120})
     (return))))
