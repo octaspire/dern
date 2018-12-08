@@ -274,7 +274,10 @@
 
     (return)))
   (if (== index {D+0}) (do
-    (bounce-star-location-set {D+147} {D-105}) ; location of the exit
+    (bounce-star-location-set {D+147} {D-105})        ; location of the exit
+    (bounce-wall-add {D+140} {D-111} {D+154} {D-111}) ; separator below the star
+    (bounce-wall-add {D+140} {D-111} {D+140} {D-107}) ; separator left end
+    (bounce-wall-add {D+154} {D-111} {D+154} {D-107}) ; separator right end
 
     (for i from {D+0} to {D+5}
       (bounce-slope-add (+ {D-155} (* i {D+50})) {D+100} (+ {D-125} (* i {D+50})) {D+97})) ; top row
