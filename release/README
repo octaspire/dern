@@ -24,7 +24,7 @@ of this amalgamated source release can be downloaded from:
 
 Directory 'tool-support' contains files that help working with the Dern
 language using different tools; there are, for example, syntax files
-to allow Dern code to be syntax highlighted in Vim, Emacs, Pygments and
+to allow Dern code to be syntax highlighted in Vim, Emacs and
 GNU source-highlight.
 
 Directory 'documentation' contains a manual and directory 'examples'

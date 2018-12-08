@@ -327,7 +327,16 @@
   (= bounce-pass-star-delta {D+0})
   (= bounce-pass-star-alpha {D+0})
   (bounce-level-load bounce-level-index))
-  [load next level or the first all passed] '() howto-no)
+  [load next level or the first if all passed] '() howto-no)
+
+(define bounce-level-prev as (fn ()
+  (-- bounce-level-index)
+  (if (< bounce-level-index {D+0}) (= bounce-level-index (- bounce-level-count {D+1})))
+  (= bounce-level-passed false)
+  (= bounce-pass-star-delta {D+0})
+  (= bounce-pass-star-alpha {D+0})
+  (bounce-level-load bounce-level-index))
+  [load previous level or the last] '() howto-no)
 
 (define bounce-ball-on-platform as false [is ball in contact with a platform])
 
@@ -418,7 +427,10 @@
 (define bounce-handle-keydown as (fn (event)
   (define key as (ln@ event {D+1}) [key])
   (if (ln@ event {D+4}) (return)) ; don't handle repeat events.
+  (if (== key [q]) (= bounce-running false))
   (if (== key [r]) (do (bounce-game-over) (return)))
+  (if (== (ln@ event {D+1}) [LEFT])  (if (== (ln@ event {D+2}) [KMOD_LCTRL]) (bounce-level-prev)))
+  (if (== (ln@ event {D+1}) [RIGHT]) (if (== (ln@ event {D+2}) [KMOD_LCTRL]) (bounce-level-next)))
   (if (not bounce-ball-on-platform) (return))
   (if (== current-jump-key [])
       (do
