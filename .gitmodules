@@ -1,7 +1,3 @@
-[submodule "dev/external/octaspire_dotfiles"]
-	path = dev/external/octaspire_dotfiles
-	url = https://github.com/octaspire/dotfiles.git
-	branch = master
 [submodule "dev/external/octaspire_core"]
 	path = dev/external/octaspire_core
 	url = https://github.com/octaspire/core.git

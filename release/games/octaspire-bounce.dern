@@ -98,7 +98,9 @@
   (sdl2-glColor4ub {X+FF} {X+FF} {X+FF} {X+FF}))
   [draw a slope] '(slot [slot containing the slope]) howto-no)
 
-(define bounce-platform-add as (fn (x y w vel max)
+(define bounce-platform-add as (fn (x y w vel-x vel-y max-x max-y)
+  (define vel as (chipmunk-cpv vel-x vel-y) [vel])
+  (define max as (chipmunk-cpv max-x max-y) [vel])
   (define hw   as (/ w {D+2}) [half width])
   (define slot as (bounce-make-empty-slot) [slot for the platform])
   (define body as (chipmunk-cpBodyNewKinematic) [a body])
@@ -122,7 +124,6 @@
     [platform collision left side shape])
   (chipmunk-cpShapeSetFriction shape-left {D+0.25})
   (chipmunk-cpSpaceAddShape bounce-space shape-left)
-
   (chipmunk-cpBodySetVelocity body vel)
   (= slot 'body body)
   (= slot 'x1  x)
@@ -131,7 +132,7 @@
   (= slot 'vel vel)
   (= slot 'max max)
   (+= bounce-platforms slot))
-  [add new platform in the level] '(x [center x] y [center y] w [w] vel [velocity] max [max delta]) howto-no)
+  [add new platform in the level] '(x [center x] y [center y] w [w] vel-x [velocity x] vel-y [velocity y] max-x [max delta x] max-y [max delta y]) howto-no)
 
 (define bounce-platform-draw as (fn (slot)
   (define body         as (ln@ slot 'body 'hash) [body of the platform])
@@ -206,109 +207,122 @@
    x -155 to 155
    y -115 to 115
 !#
+(define bounce-level-load-0 as (fn ()
+  (bounce-star-location-set {D+147} {D-105})        ; location of the exit
+  (bounce-wall-add {D+140} {D-111} {D+154} {D-111}) ; separator below the star
+  (bounce-wall-add {D+140} {D-111} {D+140} {D-107}) ; separator left end
+  (bounce-wall-add {D+154} {D-111} {D+154} {D-107}) ; separator right end
+
+  (for i from {D+0} to {D+5}
+    (bounce-slope-add (+ {D-155} (* i {D+50})) {D+100} (+ {D-125} (* i {D+50})) {D+97})) ; top row
+
+  (bounce-wall-add {D-130} {D+90} {D+70}  {D+92}) ; separator
+  (bounce-wall-add {D-130} {D+90} {D-130} {D+94}) ; separator left end
+  (bounce-wall-add {D+70}  {D+92} {D+70}  {D+96}) ; separator right end
+
+  (bounce-slope-add {D+95} {D+50} {D+155} {D+60})
+  (for i from {D+1} to {D+4}
+    (bounce-slope-add (- {D+95} (* i {D+50})) {D+50} (- {D+125} (* i {D+50})) {D+53}))   ; 2. row
+  (bounce-slope-add {D-155} {D+60} {D-125} {D+40})
+
+  (bounce-wall-add {D-100} {D+40} {D+110} {D+40}) ; separator
+  (bounce-wall-add {D-100} {D+40} {D-100} {D+44}) ; separator left end
+  (bounce-wall-add {D+110} {D+40} {D+110} {D+44}) ; separator right end
+
+  (bounce-slope-add {D+45} {D+0} {D+75} {D-4})
+  (for i from {D+2} to {D+4}
+    (bounce-slope-add (- {D+95} (* i {D+50})) {D+0} (- {D+125} (* i {D+50})) {D+0}))   ; 3. row
+
+  (bounce-wall-add {D-100} {D-10} {D+70}  {D-10}) ; separator
+  (bounce-wall-add {D-100} {D-10} {D-100} {D-6})  ; separator left end
+  (bounce-wall-add {D+70}  {D-10} {D+70}  {D-6})  ; separator right end
+
+  (bounce-ball-add  {D-154} {D+120}))
+  [load a level] '() howto-no)
+
+(define bounce-level-load-1 as (fn ()
+  (bounce-star-location-set {D+147} {D+110}) ; location of the exit
+  ; pipe1
+  (bounce-wall-add     {D-155} {D+100} {D-155} {D-115}) ; left wall
+  (bounce-wall-add     {D-154} {D+10}  {D-150} {D+15})  ; lower left ramp wall
+  (bounce-wall-add     {D-140} {D+85}  {D-136} {D+70})  ; upper right ramp wall
+  (bounce-wall-add     {D-154} {D+110} {D-150} {D+115}) ; ramp to pipe2
+  (bounce-wall-add     {D-135} {D+100} {D-135} {D-115}) ; right wall
+  (bounce-platform-add {D-138} {D+20}  {D+4}   {D+0}  {D+20} {D+0} {D+30})  ; upper  platform
+  (bounce-platform-add {D-145} {D-30}  {D+4}   {D+15} {D+0}  {D+6} {D+0})  ; middle platform
+  (bounce-platform-add {D-145} {D-90}  {D+8}   {D+0}  {D+30} {D+0} {D+30}) ; bottom platform
+  (bounce-ball-add     {D-145} {D-40})
+  ; pipe2
+  (bounce-wall-add     {D-115} {D+155} {D-115} {D-100}) ; right wall
+  (bounce-platform-add {D-125} {D+55}  {D+4}   {D+10} {D+0}  {D+8}{D+0})   ; upper horizontal platform
+  (bounce-platform-add {D-132} {D-60}  {D+4}   {D+0}  {D+20} {D+0} {D+30}) ; upper vertical platform
+  (bounce-platform-add {D-119} {D-115} {D+8}   {D+10} {D+0}  {D+12}{D+0})  ; lower horizontal platform
+  (bounce-wall-add     {D-115} {D+95}  {D-120} {D+90}) ; upper triangle ramp
+  (bounce-wall-add     {D-115} {D+85}  {D-120} {D+90}) ; upper triangle ramp
+  (bounce-wall-add     {D-135} {D+75}  {D-130} {D+70}) ; upper left ramp
+  ; pipe3
+  (bounce-platform-add {D-105} {D+40}  {D+8}   {D+0}  {D+20} {D+0}{D+10}) ; top platform
+  (bounce-platform-add {D-102} {D-30}  {D+4}   {D+10} {D+0}  {D+5}{D+0})  ; middle platform
+  (bounce-wall-add     {D-115} {D+110} {D-105} {D+120})  ; left top ramp
+  (bounce-wall-add     {D-100} {D+70}  {D-95}  {D+75})  ; right triangle ramp, top
+  (bounce-wall-add     {D-100} {D+70}  {D-95}  {D+65})  ; right triangle ramp, bottom
+  (bounce-wall-add     {D-115} {D+0}   {D-110} {D+5})   ; middle ramp
+  (bounce-wall-add     {D-95}  {D+100} {D-95}  {D-115}) ; right wall
+  (bounce-wall-add     {D-115} {D-100} {D-110} {D-95})  ; lowest left ramp
+  (bounce-wall-add     {D-100} {D-80}  {D-95}  {D-95})  ; lowest right ramp
+  (bounce-platform-add {D-112} {D-85}  {D+4}   {D+0} {D+0} {D+1}{D+0}) ; lowest static platform
+  ; pipe4
+  (bounce-wall-add     {D-75} {D+155} {D-75}  {D-100})  ; right wall
+  (bounce-wall-add     {D-75} {D+110} {D-65}  {D+120})  ; left top ramp
+  (bounce-platform-add {D-64} {D+0}   {D+8}   {D+6} {D+0} {D+5}  {D+0}) ; middle platform
+  (bounce-platform-add {D-76} {D-115} {D+8}   {D+6} {D+0} {D+15} {D+0}) ; bottom platform
+  ; pipe5
+  (bounce-wall-add     {D-55} {D+100} {D-55}  {D-115})  ; right wall
+  ; pipe6
+  (bounce-wall-add     {D-35} {D+155} {D-35}  {D-100})  ; right wall
+  (bounce-wall-add     {D-40} {D+70}  {D-35}  {D+65})  ; right ramp
+  (bounce-platform-add {D-34} {D-115} {D+8}   {D+26} {D+0} {D+15} {D+0}) ; bottom platform
+  ; pipe7
+  (bounce-wall-add     {D-15} {D+100}  {D-15}  {D-115}) ; right wall
+  (bounce-wall-add     {D-35} {D+112}  {D-15}  {D+118}) ; left upper ramp
+  (bounce-wall-add     {D-23} {D+80}   {D-15}  {D+75})  ; right upper ramp
+  (bounce-platform-add {D-30} {D+60}   {D+8}   {D+0} {D-40} {D+0} {D+40}) ; top platform
+  (bounce-wall-add     {D-35} {D+10}   {D-27}  {D+15})  ; left middle ramp
+  (bounce-platform-add {D-20} {D-10}   {D+8}   {D+0} {D-40} {D+0} {D+40}) ; middle platform
+  (bounce-wall-add     {D-20} {D-50}   {D-15}  {D-55})  ; right bottom ramp
+  (bounce-platform-add {D-30} {D-60}   {D+8}   {D+0} {D-40} {D+0} {D+40}) ; bottom platform
+  (bounce-wall-add     {D+17}  {D+80}  {D+80}  {D+60})  ; long ramp at top right
+  (bounce-wall-add     {D+80}  {D+80}  {D+100} {D+100}) ; ramp
+  (bounce-platform-add {D+90}  {D+55}  {D+20}  {D+0}  {D+0} {D+0}  {D+0}) ; top static platform
+  (bounce-platform-add {D+105} {D-115} {D+10}  {D+40} {D+0} {D+50} {D+0})
+  ; pipe8
+  (bounce-wall-add     {D+135} {D+155} {D+135} {D-100}) ; left wall
+  (bounce-wall-add     {D+160} {D+155} {D+160} {D-115}) ; right wall
+  (bounce-platform-add {D+140} {D+20}  {D+8}   {D+0} {D+80} {D+0} {D+90}) ; platform
+  (bounce-wall-add     {D+150} {D+40}  {D+160} {D+30}))  ; right ramp
+  [load a level] '() howto-no)
+
+(define bounce-level-load-2 as (fn ()
+  (bounce-star-location-set {D+147} {D-105})        ; location of the exit
+  (bounce-wall-add {D+140} {D-111} {D+154} {D-111}) ; separator below the star
+  (bounce-wall-add {D+140} {D-111} {D+140} {D-107}) ; separator left end
+  (bounce-wall-add {D+154} {D-111} {D+154} {D-107}) ; separator right end
+
+  (for i from {D+0} to {D+5}
+    (bounce-slope-add (+ {D-155} (* i {D+50})) {D+100} (+ {D-125} (* i {D+50})) {D+97})) ; top row
+
+  (bounce-ball-add  {D-154} {D+120}))
+  [load a level] '() howto-no)
+
 (define bounce-level-load as (fn (index)
   (bounce-space-create)
-  (if (== index {D+1}) (do
-    (bounce-star-location-set {D+147} {D+110}) ; location of the exit
-    ; pipe1
-    (bounce-wall-add     {D-155} {D+100} {D-155} {D-115}) ; left wall
-    (bounce-wall-add     {D-154} {D+10}  {D-150} {D+15})  ; lower left ramp wall
-    (bounce-wall-add     {D-140} {D+85}  {D-136} {D+70})  ; upper right ramp wall
-    (bounce-wall-add     {D-154} {D+110} {D-150} {D+115}) ; ramp to pipe2
-    (bounce-wall-add     {D-135} {D+100} {D-135} {D-115}) ; right wall
-    (bounce-platform-add {D-138} {D+20}  {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper  platform
-    (bounce-platform-add {D-145} {D-30}  {D+4}   (chipmunk-cpv {D+15} {D+0})  (chipmunk-cpv {D+6} {D+0}))  ; middle platform
-    (bounce-platform-add {D-145} {D-90}  {D+8}   (chipmunk-cpv {D+0}  {D+30}) (chipmunk-cpv {D+0} {D+30})) ; bottom platform
-    (bounce-ball-add     {D-145} {D-40})
-
-    ; pipe2
-    (bounce-wall-add     {D-115} {D+155} {D-115} {D-100}) ; right wall
-    (bounce-platform-add {D-125} {D+55}  {D+4}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+8}{D+0}))   ; upper horizontal platform
-    (bounce-platform-add {D-132} {D-60}  {D+4}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0} {D+30})) ; upper vertical platform
-    (bounce-platform-add {D-119} {D-115} {D+8}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+12}{D+0}))  ; lower horizontal platform
-    (bounce-wall-add     {D-115} {D+95}  {D-120} {D+90}) ; upper triangle ramp
-    (bounce-wall-add     {D-115} {D+85}  {D-120} {D+90}) ; upper triangle ramp
-    (bounce-wall-add     {D-135} {D+75}  {D-130} {D+70}) ; upper left ramp
-    ; pipe3
-    (bounce-platform-add {D-105} {D+40}  {D+8}   (chipmunk-cpv {D+0}  {D+20}) (chipmunk-cpv {D+0}{D+10}))  ; top platform
-    (bounce-platform-add {D-102} {D-30}  {D+4}   (chipmunk-cpv {D+10} {D+0})  (chipmunk-cpv {D+5}{D+0}))  ; middle platform
-    (bounce-wall-add     {D-115} {D+110} {D-105} {D+120})  ; left top ramp
-    (bounce-wall-add     {D-100} {D+70}  {D-95}  {D+75})  ; right triangle ramp, top
-    (bounce-wall-add     {D-100} {D+70}  {D-95}  {D+65})  ; right triangle ramp, bottom
-    (bounce-wall-add     {D-115} {D+0}   {D-110} {D+5})   ; middle ramp
-    (bounce-wall-add     {D-95}  {D+100} {D-95}  {D-115}) ; right wall
-    (bounce-wall-add     {D-115} {D-100} {D-110} {D-95})  ; lowest left ramp
-    (bounce-wall-add     {D-100} {D-80}  {D-95}  {D-95})  ; lowest right ramp
-    (bounce-platform-add {D-112} {D-85}  {D+4}   (chipmunk-cpv {D+0} {D+0})  (chipmunk-cpv {D+1}{D+0}))  ; lowest static platform
-    ; pipe4
-    (bounce-wall-add     {D-75} {D+155} {D-75}  {D-100})  ; right wall
-    (bounce-wall-add     {D-75} {D+110} {D-65}  {D+120})  ; left top ramp
-    (bounce-platform-add {D-64} {D+0}   {D+8}   (chipmunk-cpv {D+6} {D+0}) (chipmunk-cpv {D+5}  {D+0})) ; middle platform
-    (bounce-platform-add {D-76} {D-115} {D+8}   (chipmunk-cpv {D+6} {D+0}) (chipmunk-cpv {D+15} {D+0})) ; bottom platform
-    ; pipe5
-    (bounce-wall-add     {D-55} {D+100} {D-55}  {D-115})  ; right wall
-    ; pipe6
-    (bounce-wall-add     {D-35} {D+155} {D-35}  {D-100})  ; right wall
-    (bounce-wall-add     {D-40} {D+70}  {D-35}  {D+65})  ; right ramp
-    (bounce-platform-add {D-34} {D-115} {D+8}   (chipmunk-cpv {D+26} {D+0}) (chipmunk-cpv {D+15} {D+0})) ; bottom platform
-    ; pipe7
-    (bounce-wall-add     {D-15} {D+100} {D-15}  {D-115}) ; right wall
-    (bounce-wall-add     {D-35} {D+112} {D-15}  {D+118}) ; left upper ramp
-    (bounce-wall-add     {D-23} {D+80}  {D-15}  {D+75})  ; right upper ramp
-    (bounce-platform-add {D-30} {D+60}  {D+8}   (chipmunk-cpv {D+0} {D-40}) (chipmunk-cpv {D+0} {D+40})) ; top platform
-    (bounce-wall-add     {D-35} {D+10}  {D-27}  {D+15})  ; left middle ramp
-    (bounce-platform-add {D-20} {D-10}  {D+8}   (chipmunk-cpv {D+0} {D-40}) (chipmunk-cpv {D+0} {D+40})) ; middle platform
-    (bounce-wall-add     {D-20} {D-50}  {D-15}  {D-55})  ; right bottom ramp
-    (bounce-platform-add {D-30} {D-60}  {D+8}   (chipmunk-cpv {D+0} {D-40}) (chipmunk-cpv {D+0} {D+40})) ; bottom platform
-
-    (bounce-wall-add     {D+17}  {D+80}  {D+80} {D+60})  ; long ramp at top right
-    (bounce-wall-add     {D+80}  {D+80}  {D+100}{D+100}) ; ramp
-    (bounce-platform-add {D+90}  {D+55}  {D+20} (chipmunk-cpv {D+0}  {D+0}) (chipmunk-cpv {D+0}  {D+0})) ; top static platform
-    (bounce-platform-add {D+105} {D-115} {D+10} (chipmunk-cpv {D+40} {D+0}) (chipmunk-cpv {D+50} {D+0}))
-
-    ; pipe8
-    (bounce-wall-add     {D+135} {D+155} {D+135} {D-100}) ; left wall
-    (bounce-wall-add     {D+160} {D+155} {D+160} {D-115}) ; right wall
-    (bounce-platform-add {D+140} {D+20}  {D+8}   (chipmunk-cpv {D+0} {D+80}) (chipmunk-cpv {D+0} {D+90})) ; platform
-    (bounce-wall-add     {D+150} {D+40}  {D+160} {D+30})  ; right ramp
-
-    (return)))
-  (if (== index {D+0}) (do
-    (bounce-star-location-set {D+147} {D-105})        ; location of the exit
-    (bounce-wall-add {D+140} {D-111} {D+154} {D-111}) ; separator below the star
-    (bounce-wall-add {D+140} {D-111} {D+140} {D-107}) ; separator left end
-    (bounce-wall-add {D+154} {D-111} {D+154} {D-107}) ; separator right end
-
-    (for i from {D+0} to {D+5}
-      (bounce-slope-add (+ {D-155} (* i {D+50})) {D+100} (+ {D-125} (* i {D+50})) {D+97})) ; top row
-
-    (bounce-wall-add {D-130} {D+90} {D+70}  {D+92}) ; separator
-    (bounce-wall-add {D-130} {D+90} {D-130} {D+94}) ; separator left end
-    (bounce-wall-add {D+70}  {D+92} {D+70}  {D+96}) ; separator right end
-
-    (bounce-slope-add {D+95} {D+50} {D+155} {D+60})
-    (for i from {D+1} to {D+4}
-      (bounce-slope-add (- {D+95} (* i {D+50})) {D+50} (- {D+125} (* i {D+50})) {D+53}))   ; 2. row
-    (bounce-slope-add {D-155} {D+60} {D-125} {D+40})
-
-    (bounce-wall-add {D-100} {D+40} {D+110} {D+40}) ; separator
-    (bounce-wall-add {D-100} {D+40} {D-100} {D+44}) ; separator left end
-    (bounce-wall-add {D+110} {D+40} {D+110} {D+44}) ; separator right end
-
-    (bounce-slope-add {D+45} {D+0} {D+75} {D-4})
-    (for i from {D+2} to {D+4}
-      (bounce-slope-add (- {D+95} (* i {D+50})) {D+0} (- {D+125} (* i {D+50})) {D+0}))   ; 3. row
-
-    (bounce-wall-add {D-100} {D-10} {D+70}  {D-10}) ; separator
-    (bounce-wall-add {D-100} {D-10} {D-100} {D-6})  ; separator left end
-    (bounce-wall-add {D+70}  {D-10} {D+70}  {D-6})  ; separator right end
-
-    (bounce-ball-add  {D-154} {D+120})
-    (return))))
+  (select (== index {D+0}) (bounce-level-load-0)
+          (== index {D+1}) (bounce-level-load-1)
+          (== index {D+2}) (bounce-level-load-2)))
   [load level having the given index] '(index [index]) howto-no)
 
 (define bounce-level-index as {D+0} [current level index])
-(define bounce-level-count as {D+2} [total number of levels])
+(define bounce-level-count as {D+3} [total number of levels])
 
 (define bounce-level-passed as false [is level passed])
 (define bounce-pass-star-delta as {D+0} [helper variable for star effect])
@@ -357,6 +371,12 @@
 
 (define bounce-game-over as (fn ()
   (bounce-level-load bounce-level-index))
+  [game over] '() howto-no)
+
+(define bounce-game-paused as false [is game paused or not])
+
+(define bounce-game-pause-toggle as (fn ()
+  (= bounce-game-paused (not bounce-game-paused)))
   [game over] '() howto-no)
 
 (define bounce-star-angle      as {D+0} [angle of the star])
@@ -427,8 +447,13 @@
 (define bounce-handle-keydown as (fn (event)
   (define key as (ln@ event {D+1}) [key])
   (if (ln@ event {D+4}) (return)) ; don't handle repeat events.
+  (if bounce-game-paused
+    (do
+      (if (== key [p]) (bounce-game-pause-toggle))
+      (return)))
   (if (== key [q]) (= bounce-running false))
   (if (== key [r]) (do (bounce-game-over) (return)))
+  (if (== key [p]) (do (bounce-game-pause-toggle) (return)))
   (if (== (ln@ event {D+1}) [LEFT])  (if (== (ln@ event {D+2}) [KMOD_LCTRL]) (bounce-level-prev)))
   (if (== (ln@ event {D+1}) [RIGHT]) (if (== (ln@ event {D+2}) [KMOD_LCTRL]) (bounce-level-next)))
   (if (not bounce-ball-on-platform) (return))
@@ -457,15 +482,24 @@
   (<= distance {D+8}))
   [does player touch the star] '() howto-no)
 
-(define bounce-update-game as (fn (dt)
-  (+= bounce-star-angle {D+0.02})
-  (if (< bounce-window-zoom {D+1}) (+= bounce-window-zoom {D+0.05}))
+(define bounce-handle-input as (fn ()
   (define event as (sdl2-PollEvent) [event from sdl2])
   (define type  as nil [type of event])
   (if (and (!= event nil) (> (len event) {D+0})) (= type (ln@ event {D+0})))
+  (if bounce-game-paused
+      (do
+          (if (== type 'KEYDOWN) (bounce-handle-keydown event))
+          (return)))
   (select (== type 'QUIT)    (= bounce-running false)
           (== type 'KEYDOWN) (bounce-handle-keydown event)
-          (== type 'KEYUP)   (bounce-handle-keyup   event))
+          (== type 'KEYUP)   (bounce-handle-keyup   event)))
+  [handle input] '() howto-no)
+
+(define bounce-update-game as (fn (dt)
+  (bounce-handle-input)
+  (if bounce-game-paused (return))
+  (+= bounce-star-angle {D+0.02})
+  (if (< bounce-window-zoom {D+1}) (+= bounce-window-zoom {D+0.05}))
   (for i in bounce-platforms
     (bounce-platform-update i))
   (chipmunk-cpSpaceStep bounce-space {D+0.01})
@@ -478,6 +512,7 @@
   [update game] '(dt [dt]) howto-no)
 
 (define bounce-update-pass as (fn (dt)
+  (if bounce-game-paused (return))
   (easing-update {D+0.02})
   (+= bounce-star-angle {D+0.02}))
   [update level pass effects] '(dt [dt]) howto-no)
