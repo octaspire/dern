@@ -146,7 +146,7 @@ else ifeq ($(UNAME), Linux)
     CHIPMUNK_LDFLAGS   := -lm
 endif
 
-.PHONY: oscheck development development-repl submodules-init submodules-pull git-clean clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push tag
+.PHONY: oscheck development development-repl submodules-init submodules-pull git-clean clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push tag cscope
 
 all: oscheck submodulecheck development
 
@@ -422,6 +422,12 @@ coverage-show: coverage
 TAGS: $(TAGS_C_FILES) $(TAGS_DERN_FILES)
 	@etags -o $@ $(TAGS_C_FILES)
 	@etags -o $@ --append --language scheme $(TAGS_DERN_FILES)
+
+cscope: cscope.files
+
+cscope.files: $(TAGS_C_FILES)
+	@find . -type f -iname "*.[ch]" -print -exec greadlink -f {} \; > cscope.files
+	@cscope -R -b -q
 
 major:
 	@sh dev/etc/bump-version.sh major
