@@ -66,6 +66,7 @@ ifeq ($(UNAME), Darwin)
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags) -framework OpenGL
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
     CHIPMUNK_LDFLAGS   := -lm
+    NUKLEAR_LDFLAGS    :=
 else ifeq ($(UNAME), OpenBSD)
     OS                 := "OpenBSD"
     LDFLAGS            := -lm
@@ -79,6 +80,7 @@ else ifeq ($(UNAME), OpenBSD)
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lGLU
     CHIPMUNK_LDFLAGS   := -lm -lpthread
+    NUKLEAR_LDFLAGS    :=
     MAKE=gmake
 else ifeq ($(UNAME), FreeBSD)
     OS                 := "FreeBSD"
@@ -93,6 +95,7 @@ else ifeq ($(UNAME), FreeBSD)
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
     CHIPMUNK_LDFLAGS   := -lm
+    NUKLEAR_LDFLAGS    :=
 else ifeq ($(UNAME), NetBSD)
     OS                 := "NetBSD"
     LDFLAGS            := -lm
@@ -118,6 +121,7 @@ else ifeq ($(UNAME)$(MACHINE), Haikux86_64)
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lGLU
     CHIPMUNK_LDFLAGS   := -lm
+    NUKLEAR_LDFLAGS    :=
 else ifeq ($(UNAME)$(MACHINE), HaikuBePC)
     CC                 := gcc-x86
     OS                 := "Haiku"
@@ -132,6 +136,7 @@ else ifeq ($(UNAME)$(MACHINE), HaikuBePC)
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
     CHIPMUNK_LDFLAGS   := -lm
+    NUKLEAR_LDFLAGS    :=
 else ifeq ($(UNAME), Linux)
     OS                 := "GNU/Linux"
     LDFLAGS            := -lm -Wl,-export-dynamic -ldl
@@ -144,6 +149,7 @@ else ifeq ($(UNAME), Linux)
     SDL2CONFIG_CFLAGS  := $(shell sdl2-config --cflags)
     SDL2CONFIG_LDFLAGS := $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lGLU
     CHIPMUNK_LDFLAGS   := -lm
+    NUKLEAR_LDFLAGS    :=
 endif
 
 .PHONY: oscheck development development-repl submodules-init submodules-pull git-clean clean codestyle cppcheck valgrind test coverage perf-linux major minor patch push tag cscope
@@ -171,7 +177,7 @@ endif
 ####### Development part: build using separate implementation files ###########
 ###############################################################################
 
-development: oscheck submodulecheck octaspire-dern-repl octaspire-dern-unit-test-runner libdern_socket$(DLSUFFIX) libdern_dir$(DLSUFFIX) libdern_easing$(DLSUFFIX) libdern_animation$(DLSUFFIX) libdern_ncurses$(DLSUFFIX) libdern_sdl2$(DLSUFFIX) libdern_sqlite3$(DLSUFFIX) libdern_chipmunk$(DLSUFFIX)
+development: oscheck submodulecheck octaspire-dern-repl octaspire-dern-unit-test-runner libdern_socket$(DLSUFFIX) libdern_dir$(DLSUFFIX) libdern_easing$(DLSUFFIX) libdern_animation$(DLSUFFIX) libdern_ncurses$(DLSUFFIX) libdern_sdl2$(DLSUFFIX) libdern_sqlite3$(DLSUFFIX) libdern_chipmunk$(DLSUFFIX) libdern_nuklear$(DLSUFFIX)
 
 octaspire-dern-repl: $(SRCDIR)octaspire_dern_repl.o $(DEVOBJS)
 	$(info LD  $@)
@@ -240,6 +246,10 @@ libchipmunk$(DLSUFFIX): $(CHIPMUNK_OBJS)
 libdern_chipmunk$(DLSUFFIX): $(PLUGINDIR)dern_chipmunk.c $(AMALGAMATION) libchipmunk$(DLSUFFIX)
 	$(info PC  $<)
 	@$(CC) $(CFLAGS) -I release -I $(PLUGINDIR)external/chipmunk/include/ -I $(PLUGINDIR)external/chipmunk/include/chipmunk $(LIBCFLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(CHIPMUNK_LDFLAGS)  -L . -lchipmunk
+
+libdern_nuklear$(DLSUFFIX): $(PLUGINDIR)dern_nuklear.c $(AMALGAMATION)
+	$(info PC  $<)
+	@$(CC) $(CFLAGS) -I release -I $(PLUGINDIR)external/nuklear/ $(SDL2CONFIG_CFLAGS) $(SDL2FLAGS) $(LIBCFLAGS) $(DLFLAGS) -DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION -o $@ $< $(NUKLEAR_LDFLAGS) $(SDL2CONFIG_LDFLAGS)
 
 
 perf-linux: octaspire-dern-unit-test-runner

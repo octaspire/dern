@@ -19,6 +19,13 @@ limitations under the License.
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+typedef struct dern_sdl2_allocation_context_t
+{
+    octaspire_dern_vm_t       *vm;
+    void                      *payload;
+}
+dern_sdl2_allocation_context_t;
+
 int const OCTASPIRE_MAZE_JOYSTICK_AXIS_NOISE = 32766;
 #define OCTASPIRE_RADIAN_AS_DEGREES 57.2957795
 
@@ -898,6 +905,20 @@ void dern_sdl2_window_clean_up_callback(void *payload)
     SDL_DestroyWindow((SDL_Window*)payload);
 }
 
+void dern_sdl2_event_clean_up_callback(void *payload)
+{
+    octaspire_helpers_verify_not_null(payload);
+    dern_sdl2_allocation_context_t * const context = payload;
+    octaspire_helpers_verify_not_null(context->vm);
+    octaspire_helpers_verify_not_null(context->payload);
+
+    octaspire_allocator_t * const allocator =
+        octaspire_dern_vm_get_allocator(context->vm);
+
+    octaspire_allocator_free(allocator, (SDL_Event*)(context->payload));
+    octaspire_allocator_free(allocator, context);
+}
+
 void dern_sdl2_renderer_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
@@ -1472,13 +1493,16 @@ octaspire_dern_value_t *dern_sdl2_PollEvent(
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
     size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
 
+    char   const * const dernFuncName = "sdl2-PollEvent";
+
     if (numArgs != 0)
     {
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Builtin 'sdl2-PollEvent' expects zero arguments. "
+            "Builtin '%s' expects zero arguments. "
             "%zu arguments were given.",
+            dernFuncName,
             numArgs);
     }
 
@@ -1686,6 +1710,63 @@ octaspire_dern_value_t *dern_sdl2_PollEvent(
             }
             break;
         }
+
+        void *copyOfEvent = octaspire_allocator_malloc(
+            octaspire_dern_vm_get_allocator(vm),
+            sizeof(SDL_Event));
+
+        if (!copyOfEvent)
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin '%s' failed to allocate memory.",
+                dernFuncName);
+        }
+
+        memcpy(copyOfEvent, &event, sizeof(SDL_Event));
+
+        dern_sdl2_allocation_context_t * const context = octaspire_allocator_malloc(
+            octaspire_dern_vm_get_allocator(vm),
+            sizeof(dern_sdl2_allocation_context_t));
+
+        if (!context)
+        {
+            octaspire_allocator_free(
+                octaspire_dern_vm_get_allocator(vm),
+                copyOfEvent);
+
+            copyOfEvent = 0;
+
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin '%s' failed to allocate memory for a SDL2 event context.",
+                dernFuncName);
+        }
+
+        context->vm      = vm;
+        context->payload = copyOfEvent;
+
+        octaspire_dern_value_t * eventValue =
+            octaspire_dern_vm_create_new_value_c_data(
+                vm,
+                DERN_SDL2_PLUGIN_NAME,
+                "event",
+                "dern_sdl2_event_clean_up_callback",
+                "",
+                "",
+                "",
+                "",
+                "",
+                true,
+                context);
+
+        octaspire_dern_value_as_vector_push_back_element(result, &eventValue);
 
         octaspire_helpers_verify_true(octaspire_dern_vm_pop_value(vm, result));
         octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
