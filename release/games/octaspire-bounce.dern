@@ -5,9 +5,10 @@
 
 (sdl2-Init 'VIDEO)
 
-(define bounce-window-width  as {D+800} [window width])
-(define bounce-window-height as {D+600} [window width])
-(define bounce-window-zoom   as {D+0.1} [window zoom factor])
+(define bounce-window-width       as {D+800} [window width])
+(define bounce-window-height      as {D+600} [window width])
+(define bounce-window-zoom        as {D+0.1} [window zoom factor])
+(define bounce-last-applied-force as {D+0}   [last applied impulse])
 
 (define bounce-window as
   (sdl2-CreateWindow [octaspire-bounce] 'CENTERED 'CENTERED bounce-window-width bounce-window-height)
@@ -371,6 +372,7 @@
 (define bounce-target-FPS            as {D+100} [target FPS])
 (define bounce-target-frame-duration as (/ {D+1.0} bounce-target-FPS) [time for a frame to last])
 (define bounce-key-down-duration     as {D+0} [duration of the current keypress, if any])
+(define bounce-key-down-time         as {D+0} [when the current keypress, started])
 
 (define bounce-game-over as (fn ()
   (bounce-level-load bounce-level-index))
@@ -390,6 +392,12 @@
   (= bounce-star-location-x x)
   (= bounce-star-location-y y))
   [set star location] '(x [x] y [y]) howto-no)
+
+(define bounce-duration-to-impulse as (fn ()
+  (define bounce-impulse as (/ bounce-key-down-duration {D+3}) [impulse])
+  (if (<= bounce-impulse {D+250}) (return bounce-impulse))
+  (return {D+250}))
+  [calculate impulse for a key down duration] '() howto-no)
 
 (define bounce-render-game as (fn ()
   (define bounce-ball-pos as (chipmunk-cpBodyGetPosition bounce-ball) [position of the ball])
@@ -414,7 +422,14 @@
   (sdl2-gl-ortho-star-rotated (* {D+10} bounce-star-location-x) (* {D+10} bounce-star-location-y) {D+40} {D+5} bounce-star-angle)
   (sdl2-glColor4ub {X+FF} {X+FF} {X+FF} {X+FF})
   ; ui
-  (nuklear-begin bounce-nuklear-ctx [hello])
+  (if (nuklear-begin bounce-nuklear-ctx [] {D+370} {D+500} {D+150} {D+90})
+    (do
+      (nuklear-layout-row-static bounce-nuklear-ctx {D+30} {D+150} {D+1})
+        (if bounce-game-paused
+          (nuklear-label bounce-nuklear-ctx [-- PAUSED --] 'RIGHT)
+          (nuklear-label bounce-nuklear-ctx (string-format [Level {}] (+ bounce-level-index {D+1})) 'RIGHT))
+      (nuklear-layout-row-static bounce-nuklear-ctx {D+30} {D+150} {D+1})
+      (nuklear-progress bounce-nuklear-ctx (bounce-duration-to-impulse) {D+250} false)))
   (nuklear-end bounce-nuklear-ctx))
   [render game] '() howto-no)
 
@@ -444,7 +459,8 @@
 (bounce-level-load bounce-level-index)
 
 (define bounce-ball-apply-impulse as (fn (force)
-  (chipmunk-cpBodyApplyImpulseAtWorldPoint bounce-ball force (chipmunk-cpBodyGetPosition bounce-ball)))
+  (chipmunk-cpBodyApplyImpulseAtWorldPoint bounce-ball force (chipmunk-cpBodyGetPosition bounce-ball))
+  (= bounce-last-applied-force (chipmunk-cpv-get-y force)))
   [apply an impulse on the ball] '(force [force]) howto-no)
 
 #! Currently held jump key or an empty string. Pressing another
@@ -467,7 +483,7 @@
   (if (== current-jump-key [])
       (do
         (= current-jump-key key)
-        (= bounce-key-down-duration (ln@ event {D+3})))
+        (= bounce-key-down-time (sdl2-GetTicks)))
       (= current-jump-key [])))
   [handle keydown-event] '(event [event]) howto-no)
 
@@ -476,9 +492,11 @@
   (if (not bounce-ball-on-platform) (return))
   (if (== key current-jump-key)
       (do
-        (= bounce-key-down-duration (- (ln@ event {D+3}) bounce-key-down-duration))
+        (= bounce-key-down-duration (- (sdl2-GetTicks) bounce-key-down-time))
         (= current-jump-key [])
-        (bounce-ball-apply-impulse (chipmunk-cpv {D+0} (min (/ bounce-key-down-duration {D+3}) {D+250}))))))
+        (= bounce-key-down-time {D+0})
+        (bounce-ball-apply-impulse (chipmunk-cpv {D+0} (bounce-duration-to-impulse)))
+        (= bounce-key-down-duration {D+0}))))
   [handle keydup-event] '(event [event]) howto-no)
 
 (define bounce-is-player-on-star as (fn ()
@@ -509,6 +527,9 @@
 (define bounce-update-game as (fn (dt)
   (bounce-handle-input)
   (if bounce-game-paused (return))
+  (if (> bounce-key-down-time {D+0})
+    (= bounce-key-down-duration (- (sdl2-GetTicks) bounce-key-down-time))
+    (= bounce-key-down-duration {D+0}))
   (+= bounce-star-angle {D+0.02})
   (if (< bounce-window-zoom {D+1}) (+= bounce-window-zoom {D+0.05}))
   (for i in bounce-platforms

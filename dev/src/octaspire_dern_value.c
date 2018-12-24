@@ -3489,6 +3489,115 @@ octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
     return result;
 }
 
+octaspire_dern_text_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_text_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_text_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t const * const arg =
+        octaspire_dern_value_as_vector_get_element_at_const(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_text(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects text (string or symbol) as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.text = octaspire_dern_value_as_text_get_string(arg);
+    return result;
+}
+
+octaspire_dern_one_of_texts_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_one_of_texts_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    char const * const alternatives[])
+{
+    octaspire_dern_one_of_texts_or_unpushed_error_t result =
+        {.text=0, .index=-1, .unpushedError=0};
+
+    octaspire_dern_text_or_unpushed_error_t textOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_text_or_unpushed_error_const(
+            self,
+            possiblyNegativeIndex,
+            dernFuncName);
+
+    if (textOrError.unpushedError)
+    {
+        result.unpushedError = textOrError.unpushedError;
+        return result;
+    }
+
+    octaspire_string_t * errorMessage = octaspire_string_new_format(
+        octaspire_dern_vm_get_allocator(self->vm),
+        "Error in %s: one of the following texts (string or symbol) "
+        "is expected: ",
+        dernFuncName);
+
+    size_t index = 0;
+    while (true)
+    {
+        if (alternatives[index] == 0)
+        {
+            result.unpushedError = octaspire_dern_vm_create_new_value_error(
+                self->vm,
+                errorMessage);
+
+            // No need to release 'errorMessage' here.
+            return result;
+        }
+        else
+        {
+            octaspire_helpers_verify_true(
+                octaspire_string_concatenate_format(
+                    errorMessage,
+                    "'%s', ",
+                    alternatives[index]));
+
+            if (octaspire_string_is_equal_to_c_string(
+                textOrError.text,
+                alternatives[index]))
+            {
+                break;
+            }
+            else
+            {
+                ++index;
+            }
+        }
+    }
+
+    octaspire_string_release(errorMessage);
+    errorMessage = 0;
+
+    result.text  = textOrError.text;
+    result.index = index;
+    return result;
+}
+
 octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_of_type_at(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_tag_t const typeTag,

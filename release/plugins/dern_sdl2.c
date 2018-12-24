@@ -1344,6 +1344,34 @@ octaspire_dern_value_t *dern_sdl2_Init(
         true);
 }
 
+octaspire_dern_value_t *dern_sdl2_GetTicks(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    size_t const numArgs = octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != 0)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'sdl2-GetTicks' expects zero arguments. "
+            "%zu arguments were given.",
+            numArgs);
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_integer(
+        vm,
+        SDL_GetTicks());
+}
+
 octaspire_dern_value_t *dern_sdl2_TimerUpdate(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -8049,6 +8077,18 @@ bool dern_sdl2_init(
             dern_sdl2_Init,
             1,
             "(sdl2-Init flags...) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-GetTicks",
+            dern_sdl2_GetTicks,
+            0,
+            "(sdl2-GetTicks) -> integer",
             true,
             targetEnv))
     {
