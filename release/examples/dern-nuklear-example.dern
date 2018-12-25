@@ -1,0 +1,80 @@
+(require 'dern_sdl2)
+(require 'dern_nuklear)
+
+(sdl2-Init 'VIDEO)
+
+(define dern-nuklear-example-window-width  as {D+800} [window width])
+(define dern-nuklear-example-window-height as {D+600} [window width])
+(define dern-nuklear-example-window-zoom   as {D+0.1} [window zoom factor])
+
+(define dern-nuklear-example-window as
+  (sdl2-CreateWindow
+    [Nuklear example]
+    'CENTERED
+    'CENTERED
+    dern-nuklear-example-window-width
+    dern-nuklear-example-window-height)
+  [window])
+
+(define dern-nuklear-example-nuklear-ctx as (nuklear-sdl-init dern-nuklear-example-window) [nuklear context])
+
+(sdl2-glClearColor {D+0} {D+0} {D+0} {D+1})
+(sdl2-gl-ortho-line-smooth-enable)
+
+(define dern-nuklear-example-enter-ortho as (fn (zoom)
+  (define width  as (/ (* {D+4} dern-nuklear-example-window-width)  (* {D+2} zoom)) [target width])
+  (define height as (/ (* {D+4} dern-nuklear-example-window-height) (* {D+2} zoom)) [target width])
+  (sdl2-gl-ortho-enter (- width) width (- height) height))
+  [enter ortho] '(zoom [zoom factor]) howto-no)
+
+(dern-nuklear-example-enter-ortho dern-nuklear-example-window-zoom)
+
+(define dern-nuklear-example-running               as true [is running or not])
+(define dern-nuklear-example-target-FPS            as {D+100} [target FPS])
+(define dern-nuklear-example-target-frame-duration as (/ {D+1.0} dern-nuklear-example-target-FPS) [time for a frame to last])
+
+(define dern-nuklear-example-checkbox-active       as false [is checkbox active or not])
+
+(define dern-nuklear-example-render as (fn ()
+  (if (nuklear-begin dern-nuklear-example-nuklear-ctx [] {D+10} {D+10} {D+780} {D+580})
+    (do
+      (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+30} {D+150} {D+1})
+      (nuklear-label dern-nuklear-example-nuklear-ctx [-- Text --] 'RIGHT)
+      (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+30} {D+150} {D+1})
+      (nuklear-progress dern-nuklear-example-nuklear-ctx {D+125} {D+250} false)
+      (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+90} {D+150} {D+1})
+      (if (nuklear-button-label dern-nuklear-example-nuklear-ctx [Quit Button]) (= dern-nuklear-example-running false))
+      (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+90} {D+150} {D+1})
+      (if (nuklear-checkbox-label dern-nuklear-example-nuklear-ctx [Checkbox] dern-nuklear-example-checkbox-active) (println [Toggled to {}] dern-nuklear-example-checkbox-active))))
+  (nuklear-end dern-nuklear-example-nuklear-ctx)
+  (nuklear-sdl-render)
+  (sdl2-GL-SwapWindow dern-nuklear-example-window))
+  [render] '() howto-no)
+
+(define dern-nuklear-example-update as (fn (dt)
+  (nuklear-input-begin dern-nuklear-example-nuklear-ctx)
+  (define event as (sdl2-PollEvent) [event from sdl2])
+  (if (!= event nil)
+    (nuklear-sdl-handle-event dern-nuklear-example-nuklear-ctx (ln@ event (- (len event) {D+1}))))
+  (nuklear-input-end dern-nuklear-example-nuklear-ctx)
+  (define type  as nil [type of event])
+  (if (and (!= event nil) (> (len event) {D+0})) (= type (ln@ event {D+0})))
+  (if (== type 'QUIT) (= dern-nuklear-example-running false)))
+  [update] '(dt [dt]) howto-no)
+
+(while dern-nuklear-example-running
+  (sdl2-TimerUpdate)
+  (define dt as (sdl2-TimerGetSeconds) [dt])
+  (sdl2-TimerReset)
+  (dern-nuklear-example-render)
+  (dern-nuklear-example-update dt)
+  (sdl2-TimerUpdate)
+  (define current-frame-duration as (sdl2-TimerGetSeconds) [current frame duration])
+  (if (> dern-nuklear-example-target-frame-duration current-frame-duration) (do
+    (define delay-in-seconds as (- dern-nuklear-example-target-frame-duration current-frame-duration) [time to sleep])
+    (if (> delay-in-seconds {D+0})
+        (sdl2-Delay delay-in-seconds))))
+  (= dt (sdl2-TimerGetSeconds)))
+
+(sdl2-Quit)
+

@@ -401,6 +401,10 @@ uintmax_t octaspire_dern_value_get_unique_id(
 bool octaspire_dern_value_as_boolean_get_value(
     octaspire_dern_value_t const * const self);
 
+void octaspire_dern_value_as_boolean_set_value(
+    octaspire_dern_value_t * const self,
+    bool const value);
+
 int32_t octaspire_dern_value_as_integer_get_value(
     octaspire_dern_value_t const * const self);
 

@@ -12149,7 +12149,8 @@ nk_tt_Rasterize(struct nk_tt__bitmap *result, float flatness_in_pixels,
     int x_off, int y_off, int invert, struct nk_allocator *alloc)
 {
     float scale = scale_x > scale_y ? scale_y : scale_x;
-    int winding_count, *winding_lengths;
+    int winding_count = 0;
+    int *winding_lengths = 0;
     struct nk_tt__point *windings = nk_tt_FlattenCurves(vertices, num_verts,
         flatness_in_pixels / scale, &winding_lengths, &winding_count, alloc);
 
@@ -13064,7 +13065,7 @@ nk_font_init(struct nk_font *font, float pixel_height,
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Woverlength-strings"
-#elif defined(__GNUC__) || defined(__GNUG__)
+#elif __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || defined(__GNUG__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Woverlength-strings"
 #endif
@@ -13196,7 +13197,7 @@ NK_GLOBAL const char nk_custom_cursor_data[NK_CURSOR_DATA_W * NK_CURSOR_DATA_H +
 
 #ifdef __clang__
 #pragma clang diagnostic pop
-#elif defined(__GNUC__) || defined(__GNUG__)
+#elif __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || defined(__GNUG__)
 #pragma GCC diagnostic pop
 #endif
 

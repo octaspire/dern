@@ -26223,7 +26223,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "467"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "468"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -26986,6 +26986,10 @@ uintmax_t octaspire_dern_value_get_unique_id(
 
 bool octaspire_dern_value_as_boolean_get_value(
     octaspire_dern_value_t const * const self);
+
+void octaspire_dern_value_as_boolean_set_value(
+    octaspire_dern_value_t * const self,
+    bool const value);
 
 int32_t octaspire_dern_value_as_integer_get_value(
     octaspire_dern_value_t const * const self);
@@ -46407,6 +46411,14 @@ bool octaspire_dern_value_as_boolean_get_value(
 {
     octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_BOOLEAN);
     return self->value.boolean;
+}
+
+void octaspire_dern_value_as_boolean_set_value(
+    octaspire_dern_value_t * const self,
+    bool const value)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_BOOLEAN);
+    self->value.boolean = value;
 }
 
 int32_t octaspire_dern_value_as_integer_get_value(

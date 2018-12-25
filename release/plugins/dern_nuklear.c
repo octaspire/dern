@@ -398,6 +398,192 @@ octaspire_dern_value_t *dern_nuklear_label(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+octaspire_dern_value_t *dern_nuklear_button_label(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName    = "nuklear-button-label";
+    char   const * const ctxName         = "ctx";
+    size_t const         numExpectedArgs = 2;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    // ctx
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            ctxName,
+            DERN_NUKLEAR_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    struct nk_context * const ctx = cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(ctx);
+
+    // text
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_text(secondArg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects text (string or symbol) as the second "
+            "argument. Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    char const * const text = octaspire_dern_value_as_text_get_c_string(secondArg);
+
+    bool const result = nk_button_label(ctx, text);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, result);
+}
+
+octaspire_dern_value_t *dern_nuklear_checkbox_label(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName    = "nuklear-checkbox-label";
+    char   const * const ctxName         = "ctx";
+    size_t const         numExpectedArgs = 3;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    // ctx
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            ctxName,
+            DERN_NUKLEAR_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    struct nk_context * const ctx = cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(ctx);
+
+    // text
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_text(secondArg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects text (string or symbol) as the second "
+            "argument. Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    char const * const text = octaspire_dern_value_as_text_get_c_string(secondArg);
+
+    // active
+
+    octaspire_dern_value_t * const thirdArg =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 2);
+
+    octaspire_helpers_verify_not_null(thirdArg);
+
+    if (!octaspire_dern_value_is_boolean(thirdArg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects boolean as the third "
+            "argument. Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(thirdArg->typeTag));
+    }
+
+    int active = octaspire_dern_value_as_boolean_get_value(thirdArg);
+
+    bool const result = nk_checkbox_label(ctx, text, &active);
+
+    octaspire_dern_value_as_boolean_set_value(thirdArg, active == nk_true);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, result);
+}
+
 octaspire_dern_value_t *dern_nuklear_progress(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1334,6 +1520,70 @@ bool dern_nuklear_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
+            "nuklear-button-label",
+            dern_nuklear_button_label,
+            2,
+            "NAME\n"
+            "\tnuklear-button-label\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_nuklear)\n"
+            "\n"
+            "\t(nuklear-button-label ctx text) -> true/false or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tDisplay a button label\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tctx           nuklear context.\n"
+            "\ttext          text to be shown.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue/false or error if something went wrong.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tnuklear-begin\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "nuklear-checkbox-label",
+            dern_nuklear_checkbox_label,
+            3,
+            "NAME\n"
+            "\tnuklear-checkbox-label\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_nuklear)\n"
+            "\n"
+            "\t(nuklear-checkbox-label ctx text active) -> true/false or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tDisplay a checkbox label\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tctx           nuklear context.\n"
+            "\ttext          text to be shown.\n"
+            "\tactive        the state before and after.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue if checkbox was toggled, false otherwise "
+            "\t(or error if something went wrong).\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tnuklear-begin\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
             "nuklear-progress",
             dern_nuklear_progress,
             4,
@@ -1620,3 +1870,4 @@ bool dern_nuklear_init(
 
     return true;
 }
+
