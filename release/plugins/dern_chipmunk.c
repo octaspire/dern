@@ -133,7 +133,7 @@ dern_chipmunk_new_cpVect_c_data_or_unpushed_error(
     octaspire_helpers_verify_not_null(sourceVector);
 
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
-    octaspire_dern_c_data_or_unpushed_error_t result = {0, 0};
+    octaspire_dern_c_data_or_unpushed_error_t result = {0, 0, 0};
 
     cpVect *vect = octaspire_allocator_malloc(
         octaspire_dern_vm_get_allocator(vm),
@@ -440,7 +440,7 @@ octaspire_dern_value_t *dern_chipmunk_cpCircleShapeNew(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -480,7 +480,7 @@ octaspire_dern_value_t *dern_chipmunk_cpCircleShapeNew(
     // cpVect
 
     cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             2,
             dernFuncName,
@@ -555,7 +555,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBoxShapeNew(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -574,7 +574,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBoxShapeNew(
 
     // width
 
-    octaspire_dern_number_or_unpushed_error_t numberOrError =
+    octaspire_dern_number_or_unpushed_error_const_t numberOrError =
         octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
             arguments,
             1,
@@ -683,7 +683,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSegmentShapeNew(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -703,7 +703,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSegmentShapeNew(
     // cpVect for a
 
     cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             1,
             dernFuncName,
@@ -728,7 +728,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSegmentShapeNew(
     // cpVect for b
 
     cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             2,
             dernFuncName,
@@ -750,7 +750,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSegmentShapeNew(
 
     // Radius
 
-    octaspire_dern_number_or_unpushed_error_t numberOrError =
+    octaspire_dern_number_or_unpushed_error_const_t numberOrError =
         octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
             arguments,
             3,
@@ -822,7 +822,7 @@ octaspire_dern_value_t *dern_chipmunk_cpShapeSetFriction(
     // cpShape
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -841,7 +841,7 @@ octaspire_dern_value_t *dern_chipmunk_cpShapeSetFriction(
 
     // Friction
 
-    octaspire_dern_number_or_unpushed_error_t numberOrError =
+    octaspire_dern_number_or_unpushed_error_const_t numberOrError =
         octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
             arguments,
             1,
@@ -900,7 +900,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
     // cpSpace
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -919,7 +919,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
 
     // cpVect
 
-    cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrErrorVect =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             1,
@@ -927,16 +927,16 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
             cpVectName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (cDataOrError.unpushedError)
+    if (cDataOrErrorVect.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return cDataOrErrorVect.unpushedError;
     }
 
     dern_chipmunk_allocation_context_t const * const context =
-        cDataOrError.cData;
+        cDataOrErrorVect.cData;
 
     octaspire_helpers_verify_not_null(context);
 
@@ -980,7 +980,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceReindexStatic(
     // cpSpace
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1035,7 +1035,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceGetGravity(
     // cpSpace
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1102,7 +1102,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceGetStaticBody(
     // cpSpace
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1170,7 +1170,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetVelocity(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1239,7 +1239,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetType(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1318,7 +1318,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodySetVelocity(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1337,7 +1337,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodySetVelocity(
 
     // cpVect
 
-    cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrErrorVect =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             1,
@@ -1345,16 +1345,16 @@ octaspire_dern_value_t *dern_chipmunk_cpBodySetVelocity(
             cpVectName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (cDataOrError.unpushedError)
+    if (cDataOrErrorVect.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return cDataOrErrorVect.unpushedError;
     }
 
     dern_chipmunk_allocation_context_t const * const context =
-        cDataOrError.cData;
+        cDataOrErrorVect.cData;
 
     octaspire_helpers_verify_not_null(context);
 
@@ -1400,7 +1400,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodySetAngularVelocity(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1476,7 +1476,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodySetPosition(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1495,7 +1495,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodySetPosition(
 
     // cpVect
 
-    cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrErrorVect =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             1,
@@ -1503,16 +1503,16 @@ octaspire_dern_value_t *dern_chipmunk_cpBodySetPosition(
             cpVectName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (cDataOrError.unpushedError)
+    if (cDataOrErrorVect.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return cDataOrErrorVect.unpushedError;
     }
 
     dern_chipmunk_allocation_context_t const * const context =
-        cDataOrError.cData;
+        cDataOrErrorVect.cData;
 
     octaspire_helpers_verify_not_null(context);
 
@@ -1555,7 +1555,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetAngle(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1607,7 +1607,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetPosition(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1675,7 +1675,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtLocalPoint(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1694,7 +1694,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtLocalPoint(
 
     // cpVect for the impulse
 
-    cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrErrorVect =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             1,
@@ -1702,16 +1702,16 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtLocalPoint(
             cpVectName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (cDataOrError.unpushedError)
+    if (cDataOrErrorVect.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return cDataOrErrorVect.unpushedError;
     }
 
     dern_chipmunk_allocation_context_t const * context =
-        cDataOrError.cData;
+        cDataOrErrorVect.cData;
 
     octaspire_helpers_verify_not_null(context);
 
@@ -1719,7 +1719,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtLocalPoint(
 
     // cpVect for the point
 
-    cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrErrorPoint =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             2,
@@ -1727,15 +1727,15 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtLocalPoint(
             cpVectName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (cDataOrError.unpushedError)
+    if (cDataOrErrorPoint.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return cDataOrErrorPoint.unpushedError;
     }
 
-    context = cDataOrError.cData;
+    context = cDataOrErrorPoint.cData;
 
     octaspire_helpers_verify_not_null(context);
 
@@ -1779,7 +1779,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtWorldPoint(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1798,7 +1798,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtWorldPoint(
 
     // cpVect for the impulse
 
-    cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrErrorImpulse =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             1,
@@ -1806,16 +1806,16 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtWorldPoint(
             cpVectName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (cDataOrError.unpushedError)
+    if (cDataOrErrorImpulse.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return cDataOrErrorImpulse.unpushedError;
     }
 
     dern_chipmunk_allocation_context_t const * context =
-        cDataOrError.cData;
+        cDataOrErrorImpulse.cData;
 
     octaspire_helpers_verify_not_null(context);
 
@@ -1823,7 +1823,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtWorldPoint(
 
     // cpVect for the point
 
-    cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrErrorPoint =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             2,
@@ -1831,15 +1831,15 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtWorldPoint(
             cpVectName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (cDataOrError.unpushedError)
+    if (cDataOrErrorPoint.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return cDataOrErrorPoint.unpushedError;
     }
 
-    context = cDataOrError.cData;
+    context = cDataOrErrorPoint.cData;
 
     octaspire_helpers_verify_not_null(context);
 
@@ -1883,7 +1883,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtLocalPoint(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1902,7 +1902,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtLocalPoint(
 
     // cpVect for the force
 
-    cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrErrorForce =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             1,
@@ -1910,16 +1910,16 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtLocalPoint(
             cpVectName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (cDataOrError.unpushedError)
+    if (cDataOrErrorForce.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return cDataOrErrorForce.unpushedError;
     }
 
     dern_chipmunk_allocation_context_t const * context =
-        cDataOrError.cData;
+        cDataOrErrorForce.cData;
 
     octaspire_helpers_verify_not_null(context);
 
@@ -1927,7 +1927,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtLocalPoint(
 
     // cpVect for the point
 
-    cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrErrorPoint =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             2,
@@ -1935,15 +1935,15 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtLocalPoint(
             cpVectName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (cDataOrError.unpushedError)
+    if (cDataOrErrorPoint.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return cDataOrErrorPoint.unpushedError;
     }
 
-    context = cDataOrError.cData;
+    context = cDataOrErrorPoint.cData;
 
     octaspire_helpers_verify_not_null(context);
 
@@ -1987,7 +1987,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtWorldPoint(
     // cpBody
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -2006,7 +2006,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtWorldPoint(
 
     // cpVect for the force
 
-    cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrErrorForce =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             1,
@@ -2014,16 +2014,16 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtWorldPoint(
             cpVectName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (cDataOrError.unpushedError)
+    if (cDataOrErrorForce.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return cDataOrErrorForce.unpushedError;
     }
 
     dern_chipmunk_allocation_context_t const * context =
-        cDataOrError.cData;
+        cDataOrErrorForce.cData;
 
     octaspire_helpers_verify_not_null(context);
 
@@ -2031,7 +2031,7 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtWorldPoint(
 
     // cpVect for the point
 
-    cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrErrorPoint =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             2,
@@ -2039,15 +2039,15 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtWorldPoint(
             cpVectName,
             DERN_CHIPMUNK_PLUGIN_NAME);
 
-    if (cDataOrError.unpushedError)
+    if (cDataOrErrorPoint.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return cDataOrErrorPoint.unpushedError;
     }
 
-    context = cDataOrError.cData;
+    context = cDataOrErrorPoint.cData;
 
     octaspire_helpers_verify_not_null(context);
 
@@ -2090,7 +2090,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceStep(
     // cpSpace
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -2162,7 +2162,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddBody(
     // cpSpace
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -2182,7 +2182,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddBody(
     // cpBody
 
     cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             1,
             dernFuncName,
@@ -2235,7 +2235,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddShape(
     // cpSpace
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -2255,7 +2255,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddShape(
     // cpShape
 
     cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             1,
             dernFuncName,
@@ -2492,7 +2492,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
     // cpSpace
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -2669,7 +2669,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceRemoveBody(
     // cpSpace
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -2689,7 +2689,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceRemoveBody(
     // cpBody
 
     cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             1,
             dernFuncName,
@@ -2745,7 +2745,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceContainsBody(
     // cpSpace
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -2765,7 +2765,7 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceContainsBody(
     // cpBody
 
     cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             1,
             dernFuncName,
@@ -2905,7 +2905,7 @@ octaspire_dern_value_t *dern_chipmunk_cpv_get_x(
 
     // cpVect
 
-    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrError =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             0,
@@ -2963,7 +2963,7 @@ octaspire_dern_value_t *dern_chipmunk_cpv_get_y(
 
     // cpVect
 
-    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrError =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             0,

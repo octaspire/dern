@@ -3388,7 +3388,7 @@ octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_cons
         possiblyNegativeIndex);
 }
 
-octaspire_dern_c_data_or_unpushed_error_t
+octaspire_dern_c_data_or_unpushed_error_const_t
 octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex,
@@ -3403,7 +3403,7 @@ octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
     octaspire_helpers_verify_not_null(vm);
 
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
-    octaspire_dern_c_data_or_unpushed_error_t result = {0, 0};
+    octaspire_dern_c_data_or_unpushed_error_const_t result = {0, 0, 0};
 
     octaspire_dern_value_t const * const arg =
         octaspire_dern_value_as_vector_get_element_at_const(self, possiblyNegativeIndex);
@@ -3453,11 +3453,37 @@ octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
         return result;
     }
 
+    result.value = arg;
     result.cData = octaspire_dern_c_data_get_payload(cData);
     return result;
 }
 
-octaspire_dern_number_or_unpushed_error_t
+octaspire_dern_c_data_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    char const * const cDataName,
+    char const * const pluginName)
+{
+
+    octaspire_dern_c_data_or_unpushed_error_t result = {0, 0, 0};
+    octaspire_dern_c_data_or_unpushed_error_const_t const constResult =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+            self,
+            possiblyNegativeIndex,
+            dernFuncName,
+            cDataName,
+            pluginName);
+
+    result.cData         = (void                   *)constResult.cData;
+    result.value         = (octaspire_dern_value_t *)constResult.value;
+    result.unpushedError =                           constResult.unpushedError;
+
+    return result;
+}
+
+octaspire_dern_number_or_unpushed_error_const_t
 octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex,
@@ -3470,7 +3496,7 @@ octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
     octaspire_helpers_verify_not_null(vm);
 
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
-    octaspire_dern_number_or_unpushed_error_t result = {0, 0};
+    octaspire_dern_number_or_unpushed_error_const_t result = {0, 0, 0};
 
     octaspire_dern_value_t const * const arg =
         octaspire_dern_value_as_vector_get_element_at_const(self, possiblyNegativeIndex);
@@ -3493,11 +3519,32 @@ octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
         return result;
     }
 
+    result.value  = arg;
     result.number = octaspire_dern_value_as_number_get_value(arg);
     return result;
 }
 
-octaspire_dern_text_or_unpushed_error_t
+octaspire_dern_number_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName)
+{
+    octaspire_dern_number_or_unpushed_error_t result = {0, 0, 0};
+    octaspire_dern_number_or_unpushed_error_const_t const constResult =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+            self,
+            possiblyNegativeIndex,
+            dernFuncName);
+
+    result.number        =                           constResult.number;
+    result.value         = (octaspire_dern_value_t *)constResult.value;
+    result.unpushedError =                           constResult.unpushedError;
+
+    return result;
+}
+
+octaspire_dern_text_or_unpushed_error_const_t
 octaspire_dern_value_as_vector_get_element_at_as_text_or_unpushed_error_const(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex,
@@ -3510,7 +3557,7 @@ octaspire_dern_value_as_vector_get_element_at_as_text_or_unpushed_error_const(
     octaspire_helpers_verify_not_null(vm);
 
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
-    octaspire_dern_text_or_unpushed_error_t result = {0, 0};
+    octaspire_dern_text_or_unpushed_error_const_t result = {0, 0, 0};
 
     octaspire_dern_value_t const * const arg =
         octaspire_dern_value_as_vector_get_element_at_const(self, possiblyNegativeIndex);
@@ -3533,21 +3580,22 @@ octaspire_dern_value_as_vector_get_element_at_as_text_or_unpushed_error_const(
         return result;
     }
 
+    result.value = arg;
     result.text = octaspire_dern_value_as_text_get_string(arg);
     return result;
 }
 
-octaspire_dern_one_of_texts_or_unpushed_error_t
+octaspire_dern_one_of_texts_or_unpushed_error_const_t
 octaspire_dern_value_as_vector_get_element_at_as_one_of_texts_or_unpushed_error_const(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex,
     char const * const dernFuncName,
     char const * const alternatives[])
 {
-    octaspire_dern_one_of_texts_or_unpushed_error_t result =
-        {.text=0, .index=-1, .unpushedError=0};
+    octaspire_dern_one_of_texts_or_unpushed_error_const_t result =
+        {.text=0, .value=0, .index=-1, .unpushedError=0};
 
-    octaspire_dern_text_or_unpushed_error_t textOrError =
+    octaspire_dern_text_or_unpushed_error_const_t textOrError =
         octaspire_dern_value_as_vector_get_element_at_as_text_or_unpushed_error_const(
             self,
             possiblyNegativeIndex,
@@ -3601,6 +3649,7 @@ octaspire_dern_value_as_vector_get_element_at_as_one_of_texts_or_unpushed_error_
     octaspire_string_release(errorMessage);
     errorMessage = 0;
 
+    result.value = textOrError.value;
     result.text  = textOrError.text;
     result.index = index;
     return result;

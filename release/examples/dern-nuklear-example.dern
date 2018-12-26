@@ -33,7 +33,8 @@
 (define dern-nuklear-example-target-FPS            as {D+100} [target FPS])
 (define dern-nuklear-example-target-frame-duration as (/ {D+1.0} dern-nuklear-example-target-FPS) [time for a frame to last])
 
-(define dern-nuklear-example-checkbox-active       as false [is checkbox active or not])
+(define dern-nuklear-example-checkbox-active       as false  [is checkbox active or not])
+(define dern-nuklear-example-slider-int-value      as {D+15} [current value of the integer slider])
 
 (define dern-nuklear-example-render as (fn ()
   (if (nuklear-begin dern-nuklear-example-nuklear-ctx [] {D+10} {D+10} {D+780} {D+580})
@@ -45,7 +46,9 @@
       (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+90} {D+150} {D+1})
       (if (nuklear-button-label dern-nuklear-example-nuklear-ctx [Quit Button]) (= dern-nuklear-example-running false))
       (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+90} {D+150} {D+1})
-      (if (nuklear-checkbox-label dern-nuklear-example-nuklear-ctx [Checkbox] dern-nuklear-example-checkbox-active) (println [Toggled to {}] dern-nuklear-example-checkbox-active))))
+      (if (nuklear-checkbox-label dern-nuklear-example-nuklear-ctx [Checkbox] dern-nuklear-example-checkbox-active) (println [Toggled to {}] dern-nuklear-example-checkbox-active))
+      (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+90} {D+150} {D+1})
+      (if (nuklear-slider-int dern-nuklear-example-nuklear-ctx {D+10} dern-nuklear-example-slider-int-value {D+20} {D+1}) (println [int to {}] dern-nuklear-example-slider-int-value))))
   (nuklear-end dern-nuklear-example-nuklear-ctx)
   (nuklear-sdl-render)
   (sdl2-GL-SwapWindow dern-nuklear-example-window))

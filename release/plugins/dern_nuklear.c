@@ -72,7 +72,7 @@ octaspire_dern_value_t *dern_nuklear_sdl_init(
     // SDL2 window
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -146,7 +146,7 @@ octaspire_dern_value_t *dern_nuklear_begin(
     // ctx
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -190,7 +190,7 @@ octaspire_dern_value_t *dern_nuklear_begin(
 
     for (size_t i = 0; i < numNumbers; ++i)
     {
-        octaspire_dern_number_or_unpushed_error_t const numberOrError =
+        octaspire_dern_number_or_unpushed_error_const_t const numberOrError =
             octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
                 arguments,
                 i + 2,
@@ -211,7 +211,7 @@ octaspire_dern_value_t *dern_nuklear_begin(
 
     for (size_t i = numExpectedArgs; i < numArgs; ++i)
     {
-        octaspire_dern_text_or_unpushed_error_t const textOrError =
+        octaspire_dern_text_or_unpushed_error_const_t const textOrError =
             octaspire_dern_value_as_vector_get_element_at_as_text_or_unpushed_error_const(
                 arguments,
                 i,
@@ -304,7 +304,7 @@ octaspire_dern_value_t *dern_nuklear_label(
     // ctx
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -430,7 +430,7 @@ octaspire_dern_value_t *dern_nuklear_button_label(
     // ctx
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -511,7 +511,7 @@ octaspire_dern_value_t *dern_nuklear_checkbox_label(
     // ctx
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -584,6 +584,144 @@ octaspire_dern_value_t *dern_nuklear_checkbox_label(
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
+octaspire_dern_value_t *dern_nuklear_slider_int(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName    = "nuklear-slider-int";
+    char   const * const ctxName         = "ctx";
+    size_t const         numExpectedArgs = 5;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    // ctx
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
+            arguments,
+            0,
+            dernFuncName,
+            ctxName,
+            DERN_NUKLEAR_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    struct nk_context * const ctx = cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(ctx);
+
+    // min
+
+    octaspire_dern_number_or_unpushed_error_const_t numberOrErrorMin =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName);
+
+    if (numberOrErrorMin.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return numberOrErrorMin.unpushedError;
+    }
+
+    int const minVal = numberOrErrorMin.number;
+
+    // value
+
+    octaspire_dern_number_or_unpushed_error_t numberOrErrorValue =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error(
+            arguments,
+            2,
+            dernFuncName);
+
+    if (numberOrErrorValue.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return numberOrErrorValue.unpushedError;
+    }
+
+    int  valueVal = numberOrErrorValue.number;
+
+    // max
+
+    octaspire_dern_number_or_unpushed_error_const_t numberOrErrorMax =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+            arguments,
+            3,
+            dernFuncName);
+
+    if (numberOrErrorMax.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return numberOrErrorMax.unpushedError;
+    }
+
+    int const maxVal = numberOrErrorMax.number;
+
+    // step
+
+    octaspire_dern_number_or_unpushed_error_const_t numberOrErrorStep =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+            arguments,
+            4,
+            dernFuncName);
+
+    if (numberOrErrorStep.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return numberOrErrorStep.unpushedError;
+    }
+
+    int const stepVal = numberOrErrorStep.number;
+
+    // Show the widget.
+
+    bool const result =
+        nk_slider_int(ctx, minVal, &valueVal, maxVal, stepVal);
+
+    octaspire_dern_value_as_number_set_value(
+        numberOrErrorValue.value,
+        (double)valueVal);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, result);
+}
+
 octaspire_dern_value_t *dern_nuklear_progress(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -616,7 +754,7 @@ octaspire_dern_value_t *dern_nuklear_progress(
     // ctx
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -737,7 +875,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row_dynamic(
     // ctx
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrErrorCtx =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -759,7 +897,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row_dynamic(
 
     // row-height
 
-    octaspire_dern_number_or_unpushed_error_t numberOrErrorRowHeight =
+    octaspire_dern_number_or_unpushed_error_const_t numberOrErrorRowHeight =
         octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
             arguments,
             1,
@@ -777,7 +915,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row_dynamic(
 
     // num-columns
 
-    octaspire_dern_number_or_unpushed_error_t numberOrErrorNumColumns =
+    octaspire_dern_number_or_unpushed_error_const_t numberOrErrorNumColumns =
         octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
             arguments,
             1,
@@ -833,7 +971,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row_static(
     // ctx
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrErrorCtx =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -855,7 +993,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row_static(
 
     // height
 
-    octaspire_dern_number_or_unpushed_error_t numberOrErrorHeight =
+    octaspire_dern_number_or_unpushed_error_const_t numberOrErrorHeight =
         octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
             arguments,
             1,
@@ -873,7 +1011,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row_static(
 
     // item-width
 
-    octaspire_dern_number_or_unpushed_error_t numberOrErrorItemWidth =
+    octaspire_dern_number_or_unpushed_error_const_t numberOrErrorItemWidth =
         octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
             arguments,
             1,
@@ -891,7 +1029,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row_static(
 
     // columns
 
-    octaspire_dern_number_or_unpushed_error_t numberOrErrorColumns =
+    octaspire_dern_number_or_unpushed_error_const_t numberOrErrorColumns =
         octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
             arguments,
             2,
@@ -947,7 +1085,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row(
     // ctx
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrErrorCtx =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -975,7 +1113,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row(
         0
     };
 
-    octaspire_dern_one_of_texts_or_unpushed_error_t textOrError =
+    octaspire_dern_one_of_texts_or_unpushed_error_const_t textOrError =
         octaspire_dern_value_as_vector_get_element_at_as_one_of_texts_or_unpushed_error_const(
             arguments,
             1,
@@ -998,7 +1136,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row(
 
     // height
 
-    octaspire_dern_number_or_unpushed_error_t numberOrErrorHeight =
+    octaspire_dern_number_or_unpushed_error_const_t numberOrErrorHeight =
         octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
             arguments,
             2,
@@ -1016,7 +1154,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row(
 
     // columns
 
-    octaspire_dern_number_or_unpushed_error_t numberOrErrorColumns =
+    octaspire_dern_number_or_unpushed_error_const_t numberOrErrorColumns =
         octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
             arguments,
             3,
@@ -1056,7 +1194,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row(
 
     for (size_t i = 4; (i < numArgs) && (numRatiosAdded < (size_t)columns); ++i)
     {
-        octaspire_dern_number_or_unpushed_error_t numberOrErrorRatio =
+        octaspire_dern_number_or_unpushed_error_const_t numberOrErrorRatio =
             octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
                 arguments,
                 i,
@@ -1138,7 +1276,7 @@ octaspire_dern_value_t *dern_nuklear_end(
     // ctx
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1197,7 +1335,7 @@ octaspire_dern_value_t *dern_nuklear_input_begin(
     // ctx
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1258,7 +1396,7 @@ octaspire_dern_value_t *dern_nuklear_sdl_handle_event(
     // ctx
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrErrorCtx =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1279,7 +1417,7 @@ octaspire_dern_value_t *dern_nuklear_sdl_handle_event(
 
     // SDL2 event
 
-    octaspire_dern_c_data_or_unpushed_error_t cDataOrErrorEvent =
+    octaspire_dern_c_data_or_unpushed_error_const_t cDataOrErrorEvent =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
             arguments,
             1,
@@ -1296,7 +1434,8 @@ octaspire_dern_value_t *dern_nuklear_sdl_handle_event(
     }
 
     // TODO actually sdl2_allocation_context_t
-    dern_nuklear_allocation_context_t * context = cDataOrErrorEvent.cData;
+    dern_nuklear_allocation_context_t const * const context =
+        cDataOrErrorEvent.cData;
 
     SDL_Event * const event = context->payload;
 
@@ -1340,7 +1479,7 @@ octaspire_dern_value_t *dern_nuklear_input_end(
     // ctx
 
     octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
-        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error_const(
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
             dernFuncName,
@@ -1572,6 +1711,41 @@ bool dern_nuklear_init(
             "\n"
             "RETURN VALUE\n"
             "\ttrue if checkbox was toggled, false otherwise "
+            "\t(or error if something went wrong).\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tnuklear-begin\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "nuklear-slider-int",
+            dern_nuklear_slider_int,
+            5,
+            "NAME\n"
+            "\tnuklear-slider-int\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_nuklear)\n"
+            "\n"
+            "\t(nuklear-slider-int ctx min val max step) -> true/false or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tDisplay an integer slider.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tctx           nuklear context.\n"
+            "\tmin           smallest possible value.\n"
+            "\tval           selected value.\n"
+            "\tmax           largest possible value.\n"
+            "\tstep          amount of change per step.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue if slider value was changed, false otherwise "
             "\t(or error if something went wrong).\n"
             "\n"
             "SEE ALSO\n"
