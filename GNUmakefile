@@ -18,7 +18,10 @@ UNAME=$(shell uname -s)
 CFLAGS=-std=c99 -Wall -Wextra -g -O2 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 SQLITE3_CFLAGS=-std=c99 -Wall
 
-TAGS_C_FILES := $(SRCDIR)*.c $(INCDIR)*.h $(CORDIR)octaspire-core-amalgamated.c
+TAGS_C_FILES := $(SRCDIR)*.c                          \
+                $(INCDIR)*.h                          \
+                $(CORDIR)octaspire-core-amalgamated.c \
+                $(PLUGINDIR)external/nuklear/nuklear.h
 
 TAGS_DERN_FILES := $(GAMESDIR)octaspire-bounce.dern    \
                    $(GAMESDIR)octaspire-lightcube.dern \

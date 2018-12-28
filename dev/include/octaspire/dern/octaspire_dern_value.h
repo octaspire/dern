@@ -544,6 +544,10 @@ size_t octaspire_dern_value_as_string_get_length_in_octets(
 char const *octaspire_dern_value_as_symbol_get_c_string(
     octaspire_dern_value_t const * const self);
 
+bool octaspire_dern_value_as_symbol_set_c_string(
+    octaspire_dern_value_t * const self,
+    char const * const str);
+
 bool octaspire_dern_value_is_symbol_and_equal_to_c_string(
     octaspire_dern_value_t const * const self,
     char const * const str);
@@ -635,6 +639,22 @@ typedef struct octaspire_dern_number_or_unpushed_error_const_t
 }
 octaspire_dern_number_or_unpushed_error_const_t;
 
+typedef struct octaspire_dern_boolean_or_unpushed_error_t
+{
+    bool                     boolean;
+    octaspire_dern_value_t * value;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_boolean_or_unpushed_error_t;
+
+typedef struct octaspire_dern_boolean_or_unpushed_error_const_t
+{
+    bool                           boolean;
+    octaspire_dern_value_t const * value;
+    octaspire_dern_value_t       * unpushedError;
+}
+octaspire_dern_boolean_or_unpushed_error_const_t;
+
 typedef struct octaspire_dern_text_or_unpushed_error_t
 {
     octaspire_string_t     const * text;
@@ -650,6 +670,14 @@ typedef struct octaspire_dern_text_or_unpushed_error_const_t
     octaspire_dern_value_t       * unpushedError;
 }
 octaspire_dern_text_or_unpushed_error_const_t;
+
+typedef struct octaspire_dern_symbol_or_unpushed_error_t
+{
+    octaspire_string_t     const * symbol;
+    octaspire_dern_value_t       * value;
+    octaspire_dern_value_t       * unpushedError;
+}
+octaspire_dern_symbol_or_unpushed_error_t;
 
 typedef struct octaspire_dern_one_of_texts_or_unpushed_error_t
 {
@@ -691,6 +719,18 @@ octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
     ptrdiff_t const possiblyNegativeIndex,
     char const * const dernFuncName);
 
+octaspire_dern_boolean_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_boolean_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName);
+
+octaspire_dern_boolean_or_unpushed_error_const_t
+octaspire_dern_value_as_vector_get_element_at_as_boolean_or_unpushed_error_const(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName);
+
 octaspire_dern_number_or_unpushed_error_t
 octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error(
     octaspire_dern_value_t * const self,
@@ -700,6 +740,12 @@ octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error(
 octaspire_dern_text_or_unpushed_error_const_t
 octaspire_dern_value_as_vector_get_element_at_as_text_or_unpushed_error_const(
     octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName);
+
+octaspire_dern_symbol_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_symbol_or_unpushed_error(
+    octaspire_dern_value_t * const self,
     ptrdiff_t const possiblyNegativeIndex,
     char const * const dernFuncName);
 

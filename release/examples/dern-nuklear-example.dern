@@ -33,22 +33,72 @@
 (define dern-nuklear-example-target-FPS            as {D+100} [target FPS])
 (define dern-nuklear-example-target-frame-duration as (/ {D+1.0} dern-nuklear-example-target-FPS) [time for a frame to last])
 
-(define dern-nuklear-example-checkbox-active       as false  [is checkbox active or not])
-(define dern-nuklear-example-slider-int-value      as {D+15} [current value of the integer slider])
+(define dern-nuklear-example-checkbox-active       as false    [is checkbox active or not])
+(define dern-nuklear-example-slider-int-value      as {D+15}   [current value of the integer slider])
+(define dern-nuklear-example-slider-float-value    as {D+1.75} [current value of the floating point slider])
+(define dern-nuklear-example-radio-option          as 'EASY    [currently selected option])
 
 (define dern-nuklear-example-render as (fn ()
   (if (nuklear-begin dern-nuklear-example-nuklear-ctx [] {D+10} {D+10} {D+780} {D+580})
     (do
+      ; Text Label
       (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+30} {D+150} {D+1})
       (nuklear-label dern-nuklear-example-nuklear-ctx [-- Text --] 'RIGHT)
+
+      ; Progress Bar
       (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+30} {D+150} {D+1})
       (nuklear-progress dern-nuklear-example-nuklear-ctx {D+125} {D+250} false)
+
+      ; Text Button
       (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+90} {D+150} {D+1})
-      (if (nuklear-button-label dern-nuklear-example-nuklear-ctx [Quit Button]) (= dern-nuklear-example-running false))
+      (if (nuklear-button-label
+            dern-nuklear-example-nuklear-ctx
+            [Quit Button])
+          (= dern-nuklear-example-running false))
+
+      ; Checkbox
       (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+90} {D+150} {D+1})
-      (if (nuklear-checkbox-label dern-nuklear-example-nuklear-ctx [Checkbox] dern-nuklear-example-checkbox-active) (println [Toggled to {}] dern-nuklear-example-checkbox-active))
+      (if (nuklear-checkbox-label
+            dern-nuklear-example-nuklear-ctx
+            [Checkbox]
+            dern-nuklear-example-checkbox-active)
+          (println [Toggled to {}] dern-nuklear-example-checkbox-active))
+
+      ; Slider (integer values and steps)
       (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+90} {D+150} {D+1})
-      (if (nuklear-slider-int dern-nuklear-example-nuklear-ctx {D+10} dern-nuklear-example-slider-int-value {D+20} {D+1}) (println [int to {}] dern-nuklear-example-slider-int-value))))
+      (if (nuklear-slider-int
+            dern-nuklear-example-nuklear-ctx
+            {D+10}                                ; Minimum value
+            dern-nuklear-example-slider-int-value ; Current value
+            {D+20}                                ; Maximum value
+            {D+1})                                ; Step size
+          (println [int to {}] dern-nuklear-example-slider-int-value))
+
+      ; Slider (floating point values and steps)
+      (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+90} {D+150} {D+1})
+      (if (nuklear-slider-float
+            dern-nuklear-example-nuklear-ctx
+            {D+1.5}                                 ; Minimum value
+            dern-nuklear-example-slider-float-value ; Current value
+            {D+2.5}                                 ; Maximum value
+            {D+0.1})                                ; Step size
+          (println [float to {}] dern-nuklear-example-slider-float-value))
+
+      ; Radio buttons
+      (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+90} {D+150} {D+2})
+      (if (nuklear-option-label
+            dern-nuklear-example-nuklear-ctx
+            [Easy]
+            'EASY
+            dern-nuklear-example-radio-option)
+          (println [EASY selected]))
+      (if (nuklear-option-label
+            dern-nuklear-example-nuklear-ctx
+            [Hard]
+            'HARD
+            dern-nuklear-example-radio-option)
+          (println [HARD selected]))
+      (println [Radio option {} is active] dern-nuklear-example-radio-option)))
   (nuklear-end dern-nuklear-example-nuklear-ctx)
   (nuklear-sdl-render)
   (sdl2-GL-SwapWindow dern-nuklear-example-window))

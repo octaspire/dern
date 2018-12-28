@@ -722,6 +722,270 @@ octaspire_dern_value_t *dern_nuklear_slider_int(
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
+octaspire_dern_value_t *dern_nuklear_slider_float(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName    = "nuklear-slider-float";
+    char   const * const ctxName         = "ctx";
+    size_t const         numExpectedArgs = 5;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    // ctx
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
+            arguments,
+            0,
+            dernFuncName,
+            ctxName,
+            DERN_NUKLEAR_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    struct nk_context * const ctx = cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(ctx);
+
+    // min
+
+    octaspire_dern_number_or_unpushed_error_const_t numberOrErrorMin =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName);
+
+    if (numberOrErrorMin.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return numberOrErrorMin.unpushedError;
+    }
+
+    float const minVal = numberOrErrorMin.number;
+
+    // value
+
+    octaspire_dern_number_or_unpushed_error_t numberOrErrorValue =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error(
+            arguments,
+            2,
+            dernFuncName);
+
+    if (numberOrErrorValue.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return numberOrErrorValue.unpushedError;
+    }
+
+    float valueVal = numberOrErrorValue.number;
+
+    // max
+
+    octaspire_dern_number_or_unpushed_error_const_t numberOrErrorMax =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+            arguments,
+            3,
+            dernFuncName);
+
+    if (numberOrErrorMax.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return numberOrErrorMax.unpushedError;
+    }
+
+    float const maxVal = numberOrErrorMax.number;
+
+    // step
+
+    octaspire_dern_number_or_unpushed_error_const_t numberOrErrorStep =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+            arguments,
+            4,
+            dernFuncName);
+
+    if (numberOrErrorStep.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return numberOrErrorStep.unpushedError;
+    }
+
+    float const stepVal = numberOrErrorStep.number;
+
+    // Show the widget.
+
+    bool const result =
+        nk_slider_float(ctx, minVal, &valueVal, maxVal, stepVal);
+
+    octaspire_dern_value_as_number_set_value(
+        numberOrErrorValue.value,
+        (double)valueVal);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, result);
+}
+
+octaspire_dern_value_t *dern_nuklear_option_label(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName    = "nuklear-option-label";
+    char   const * const ctxName         = "ctx";
+    size_t const         numExpectedArgs = 4;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    // ctx
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
+            arguments,
+            0,
+            dernFuncName,
+            ctxName,
+            DERN_NUKLEAR_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    struct nk_context * const ctx = cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(ctx);
+
+    // label
+
+    octaspire_dern_text_or_unpushed_error_const_t textOrErrorLabel =
+        octaspire_dern_value_as_vector_get_element_at_as_text_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName);
+
+    if (textOrErrorLabel.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return textOrErrorLabel.unpushedError;
+    }
+
+    char const * const labelVal =
+        octaspire_string_get_c_string(textOrErrorLabel.text);
+
+    // id
+
+    octaspire_dern_text_or_unpushed_error_const_t textOrErrorId =
+        octaspire_dern_value_as_vector_get_element_at_as_text_or_unpushed_error_const(
+            arguments,
+            2,
+            dernFuncName);
+
+    if (textOrErrorId.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return textOrErrorId.unpushedError;
+    }
+
+    // active-id
+
+    octaspire_dern_symbol_or_unpushed_error_t symbolOrErrorActiveId =
+        octaspire_dern_value_as_vector_get_element_at_as_symbol_or_unpushed_error(
+            arguments,
+            3,
+            dernFuncName);
+
+    if (symbolOrErrorActiveId.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return symbolOrErrorActiveId.unpushedError;
+    }
+
+    // Show the widget.
+
+    bool const result = nk_option_label(
+        ctx,
+        labelVal,
+        octaspire_dern_value_as_text_is_equal_to_c_string(
+            textOrErrorId.value,
+            (octaspire_dern_value_as_text_get_c_string(
+                symbolOrErrorActiveId.value))));
+
+    if (result)
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_value_as_symbol_set_c_string(
+                symbolOrErrorActiveId.value,
+                octaspire_string_get_c_string(textOrErrorId.text)));
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, result);
+}
+
 octaspire_dern_value_t *dern_nuklear_progress(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1749,7 +2013,79 @@ bool dern_nuklear_init(
             "\t(or error if something went wrong).\n"
             "\n"
             "SEE ALSO\n"
-            "\tnuklear-begin\n",
+            "\tnuklear-begin\n"
+            "\tnuklear-slider-float\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "nuklear-slider-float",
+            dern_nuklear_slider_float,
+            5,
+            "NAME\n"
+            "\tnuklear-slider-float\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_nuklear)\n"
+            "\n"
+            "\t(nuklear-slider-float ctx min val max step) -> true/false or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tDisplay a floating point slider.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tctx           nuklear context.\n"
+            "\tmin           smallest possible value.\n"
+            "\tval           selected value.\n"
+            "\tmax           largest possible value.\n"
+            "\tstep          amount of change per step.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue if slider value was changed, false otherwise "
+            "\t(or error if something went wrong).\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tnuklear-begin\n"
+            "\tnuklear-slider-int\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "nuklear-option-label",
+            dern_nuklear_option_label,
+            4,
+            "NAME\n"
+            "\tnuklear-option-label\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_nuklear)\n"
+            "\n"
+            "\t(nuklear-option-label ctx label active) -> boolean or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tDisplay a radio button\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tctx           nuklear context.\n"
+            "\tlabel         text label for the option.\n"
+            "\tid            symbol or string identifying this option.\n"
+            "\tactive-id     symbol identifying currently active option.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue if this option was selected, false otherwise "
+            "\t(or error if something went wrong).\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tnuklear-begin\n"
+            "\tnuklear-checkbox-label\n",
             false,
             targetEnv))
     {
