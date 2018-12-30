@@ -5891,8 +5891,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_distance(
     return octaspire_dern_vm_create_new_value_integer(
         vm,
         octaspire_string_levenshtein_distance(
-            octaspire_dern_value_as_text_get_string(firstArgVal),
-            octaspire_dern_value_as_text_get_string(secondArgVal)));
+            octaspire_dern_value_as_text_get_string_const(firstArgVal),
+            octaspire_dern_value_as_text_get_string_const(secondArgVal)));
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_max(

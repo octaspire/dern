@@ -361,7 +361,7 @@ octaspire_dern_value_t *dern_nuklear_label(
             octaspire_dern_value_helper_get_type_as_c_string(thirdArg->typeTag));
     }
 
-    octaspire_string_t const * const alignment = octaspire_dern_value_as_text_get_string(thirdArg);
+    octaspire_string_t const * const alignment = octaspire_dern_value_as_text_get_string_const(thirdArg);
 
     nk_flags flags = 0;
 
@@ -986,6 +986,275 @@ octaspire_dern_value_t *dern_nuklear_option_label(
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
+octaspire_dern_value_t *dern_nuklear_edit_string(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName    = "nuklear-edit-string";
+    char   const * const ctxName         = "ctx";
+    size_t const         numExpectedArgs = 5;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    // ctx
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
+            arguments,
+            0,
+            dernFuncName,
+            ctxName,
+            DERN_NUKLEAR_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    struct nk_context * const ctx = cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(ctx);
+
+    // edit-type
+
+    char const * const altEditType[] =
+    {
+        "SIMPLE",
+        "FIELD",
+        "BOX",
+        "EDITOR",
+        0
+    };
+
+    octaspire_dern_one_of_texts_or_unpushed_error_const_t textOrErrorEditType =
+        octaspire_dern_value_as_vector_get_element_at_as_one_of_texts_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName,
+            altEditType);
+
+    if (textOrErrorEditType.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return textOrErrorEditType.unpushedError;
+    }
+
+    octaspire_helpers_verify_true(
+        textOrErrorEditType.index >= 0 && textOrErrorEditType.index <= 3);
+
+    nk_flags editType = NK_EDIT_SIMPLE;
+
+    switch (textOrErrorEditType.index)
+    {
+        case 0: { editType = NK_EDIT_SIMPLE; } break;
+        case 1: { editType = NK_EDIT_FIELD;  } break;
+        case 2: { editType = NK_EDIT_BOX;    } break;
+        case 3: { editType = NK_EDIT_EDITOR; } break;
+    }
+
+    // str
+
+    octaspire_dern_string_or_unpushed_error_t stringOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_string_or_unpushed_error(
+            arguments,
+            2,
+            dernFuncName);
+
+    if (stringOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return stringOrError.unpushedError;
+    }
+
+    // len
+
+    octaspire_dern_number_or_unpushed_error_const_t numberOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+            arguments,
+            3,
+            dernFuncName);
+
+    if (numberOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return numberOrError.unpushedError;
+    }
+
+    int const len = numberOrError.number;
+
+    if (len < 2)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects input length larger than 1. %zu was given."
+            "%zu arguments were given.",
+            dernFuncName,
+            len);
+    }
+
+    // Remove characters until the string fits into the buffer.
+    while (octaspire_dern_value_as_string_get_length_in_octets(
+               stringOrError.value) >= (size_t)(len - 1))
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_value_as_string_pop_back_ucs_character(
+                stringOrError.value));
+    }
+
+    // filter
+
+    char const * const altFilter[] =
+    {
+        "DEFAULT",
+        "ASCII",
+        "FLOAT",
+        "DECIMAL",
+        "HEX",
+        "OCT",
+        "BINARY",
+        0
+    };
+
+    octaspire_dern_one_of_texts_or_unpushed_error_const_t textOrErrorFilter =
+        octaspire_dern_value_as_vector_get_element_at_as_one_of_texts_or_unpushed_error_const(
+            arguments,
+            4,
+            dernFuncName,
+            altFilter);
+
+    if (textOrErrorFilter.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return textOrErrorFilter.unpushedError;
+    }
+
+    octaspire_helpers_verify_true(
+        textOrErrorFilter.index >= 0 && textOrErrorFilter.index <= 6);
+
+    nk_plugin_filter filter = nk_filter_default;
+
+    switch (textOrErrorFilter.index)
+    {
+        case 0: { filter = nk_filter_default; } break;
+        case 1: { filter = nk_filter_ascii;   } break;
+        case 2: { filter = nk_filter_float;   } break;
+        case 3: { filter = nk_filter_decimal; } break;
+        case 4: { filter = nk_filter_hex;     } break;
+        case 5: { filter = nk_filter_oct;     } break;
+        case 6: { filter = nk_filter_binary;  } break;
+    }
+
+    char * memory = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(vm),
+        len);
+
+    octaspire_helpers_verify_not_null(memory);
+
+    strncpy(
+        memory,
+        octaspire_dern_value_as_string_get_c_string(stringOrError.value),
+        len);
+
+    int memused = octaspire_dern_value_as_string_get_length_in_octets(
+        stringOrError.value);
+
+    // Show the widget.
+
+    nk_flags const resultFlags = nk_edit_string(
+        ctx,
+        NK_EDIT_SIMPLE,
+        memory,
+        &memused,
+        len,
+        filter);
+
+    if (memused < len)
+    {
+        memory[memused] = '\0';
+    }
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_value_as_text_set_c_string(
+            stringOrError.value,
+            memory));
+
+    octaspire_allocator_free(octaspire_dern_vm_get_allocator(vm), memory);
+
+    memory = 0;
+
+    octaspire_string_t * const result = octaspire_string_new(
+        "",
+        octaspire_dern_vm_get_allocator(vm));
+
+    octaspire_helpers_verify_not_null(result);
+
+    if (resultFlags)
+    {
+        if (resultFlags & NK_EDIT_ACTIVE)
+        {
+            octaspire_string_concatenate_c_string(result, "ACTIVE ");
+        }
+
+        if (resultFlags & NK_EDIT_INACTIVE)
+        {
+            octaspire_string_concatenate_c_string(result, "INACTIVE ");
+        }
+
+        if (resultFlags & NK_EDIT_ACTIVATED)
+        {
+            octaspire_string_concatenate_c_string(result, "ACTIVATED ");
+        }
+
+        if (resultFlags & NK_EDIT_DEACTIVATED)
+        {
+            octaspire_string_concatenate_c_string(result, "DEACTIVATED ");
+        }
+
+        if (resultFlags & NK_EDIT_COMMITED)
+        {
+            octaspire_string_concatenate_c_string(result, "COMMITED ");
+        }
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_string(vm, result);
+}
+
 octaspire_dern_value_t *dern_nuklear_progress(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1182,7 +1451,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row_dynamic(
     octaspire_dern_number_or_unpushed_error_const_t numberOrErrorNumColumns =
         octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
             arguments,
-            1,
+            2,
             dernFuncName);
 
     if (numberOrErrorNumColumns.unpushedError)
@@ -1278,7 +1547,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row_static(
     octaspire_dern_number_or_unpushed_error_const_t numberOrErrorItemWidth =
         octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
             arguments,
-            1,
+            2,
             dernFuncName);
 
     if (numberOrErrorItemWidth.unpushedError)
@@ -1296,7 +1565,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row_static(
     octaspire_dern_number_or_unpushed_error_const_t numberOrErrorColumns =
         octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
             arguments,
-            2,
+            3,
             dernFuncName);
 
     if (numberOrErrorColumns.unpushedError)
@@ -1486,8 +1755,6 @@ octaspire_dern_value_t *dern_nuklear_layout_row(
     {
         ratios[numRatiosAdded + i] = ratio;
     }
-
-    printf("--->%d | %f | %d | %f | %f\n", textOrError.index, height, columns, ratios[0], ratios[1]);
 
     nk_layout_row(
         ctx,
@@ -2117,6 +2384,44 @@ bool dern_nuklear_init(
             "RETURN VALUE\n"
             "\tnumber of the current (possibly user modified) value\n"
             "\tor error if something went wrong.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tnuklear-begin\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "nuklear-edit-string",
+            dern_nuklear_edit_string,
+            5,
+            "NAME\n"
+            "\tnuklear-edit-string\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_nuklear)\n"
+            "\n"
+            "\t(nuklear-edit-string ctx edit-type str len filter) -> string or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tDisplay a simple text input with the given maximum length.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tctx           nuklear context.\n"
+            "\tedit-type     One of symbols: SIMPLE, FIELD, BOX or EDITOR."
+            "\tstr           edit result.\n"
+            "\tlen           max allowed input length.\n"
+            "\tfilter        text (string or symbol) describing allowed input.\n"
+            "\t              Must be one of: DEFAULT, ASCII, FLOAT, DECIMAL,\n"
+            "\t              HEX, OCT or BINARY.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tString that is empty or contains status information.\n"
+            "\tPossible values are: ACTIVE, INACTIVE, ACTIVATED, DEACTIVATED\n"
+            "\tand COMMITED. Error is returned if something went wrong.\n"
             "\n"
             "SEE ALSO\n"
             "\tnuklear-begin\n",

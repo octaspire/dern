@@ -3192,7 +3192,56 @@ char const *octaspire_dern_value_as_text_get_c_string(
     return 0;
 }
 
-octaspire_string_t const *octaspire_dern_value_as_text_get_string(
+bool octaspire_dern_value_as_text_set_c_string(
+    octaspire_dern_value_t * const self,
+    char const * const str)
+{
+    switch (self->typeTag)
+    {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            return octaspire_string_set_from_c_string(self->value.string, str);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            // TODO handle whitespace (and other
+            // characters not allowed in symbols)
+            return octaspire_string_set_from_c_string(self->value.symbol, str);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            octaspire_helpers_verify_true(false);
+        }
+        break;
+    }
+
+    return 0;
+}
+
+octaspire_string_t const *octaspire_dern_value_as_text_get_string_const(
     octaspire_dern_value_t const * const self)
 {
     switch (self->typeTag)
@@ -3240,6 +3289,13 @@ octaspire_string_t const *octaspire_dern_value_as_text_get_string(
     }
 
     return 0;
+}
+
+octaspire_string_t *octaspire_dern_value_as_text_get_string(
+    octaspire_dern_value_t * const self)
+{
+    return (octaspire_string_t*)
+        octaspire_dern_value_as_text_get_string_const(self);
 }
 
 size_t octaspire_dern_value_as_text_get_length_in_octets(
@@ -3651,7 +3707,48 @@ octaspire_dern_value_as_vector_get_element_at_as_text_or_unpushed_error_const(
     }
 
     result.value = arg;
-    result.text = octaspire_dern_value_as_text_get_string(arg);
+    result.text = octaspire_dern_value_as_text_get_string_const(arg);
+    return result;
+}
+
+octaspire_dern_string_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_string_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_string_or_unpushed_error_t result = {0, 0, 0};
+
+    octaspire_dern_value_t * const arg =
+        octaspire_dern_value_as_vector_get_element_at(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_string(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects string as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.value = arg;
+    result.str   = octaspire_dern_value_as_text_get_string(arg);
     return result;
 }
 
@@ -3692,7 +3789,7 @@ octaspire_dern_value_as_vector_get_element_at_as_symbol_or_unpushed_error(
     }
 
     result.value  = arg;
-    result.symbol = octaspire_dern_value_as_text_get_string(arg);
+    result.symbol = octaspire_dern_value_as_text_get_string_const(arg);
     return result;
 }
 
