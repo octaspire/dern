@@ -44,7 +44,11 @@
     (do
       ; Text Label
       (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+30} {D+150} {D+1})
-      (nuklear-label dern-nuklear-example-nuklear-ctx [-- Text --] 'RIGHT)
+      (nuklear-label
+        dern-nuklear-example-nuklear-ctx
+        [-- Text --]
+        'RIGHT
+        (nuklear-rgba {X+FF} {X+FF} {X+0} {X+FF}))
 
       ; Progress Bar
       (nuklear-layout-row-static dern-nuklear-example-nuklear-ctx {D+30} {D+150} {D+1})

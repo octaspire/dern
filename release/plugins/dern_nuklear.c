@@ -39,6 +39,20 @@ typedef struct dern_nuklear_allocation_context_t
 }
 dern_nuklear_allocation_context_t;
 
+void dern_nuklear_nk_color_clean_up_callback(void *payload)
+{
+    octaspire_helpers_verify_not_null(payload);
+    dern_nuklear_allocation_context_t * const context = payload;
+    octaspire_helpers_verify_not_null(context->vm);
+    octaspire_helpers_verify_not_null(context->payload);
+
+    octaspire_allocator_t * const allocator =
+        octaspire_dern_vm_get_allocator(context->vm);
+
+    octaspire_allocator_free(allocator, (struct nk_color*)(context->payload));
+    octaspire_allocator_free(allocator, context);
+}
+
 octaspire_dern_value_t *dern_nuklear_sdl_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -280,30 +294,33 @@ octaspire_dern_value_t *dern_nuklear_label(
     OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
 
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
-    char   const * const dernFuncName    = "nuklear-label";
-    char   const * const ctxName         = "ctx";
-    size_t const         numExpectedArgs = 3;
+    char   const * const dernFuncName     = "nuklear-label";
+    char   const * const ctxName          = "ctx";
+    char   const * const nkColorName      = "nk_color";
+    size_t const         numExpectedArgs1 = 3;
+    size_t const         numExpectedArgs2 = 4;
 
     size_t const numArgs =
         octaspire_dern_value_as_vector_get_length(arguments);
 
-    if (numArgs != numExpectedArgs)
+    if (numArgs != numExpectedArgs1 && numArgs != numExpectedArgs2)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Builtin '%s' expects %zu arguments. "
+            "Builtin '%s' expects %zu or %zu arguments. "
             "%zu arguments were given.",
             dernFuncName,
-            numExpectedArgs,
+            numExpectedArgs1,
+            numExpectedArgs2,
             numArgs);
     }
 
     // ctx
 
-    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrErrorCtx =
         octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
             arguments,
             0,
@@ -311,15 +328,15 @@ octaspire_dern_value_t *dern_nuklear_label(
             ctxName,
             DERN_NUKLEAR_PLUGIN_NAME);
 
-    if (cDataOrError.unpushedError)
+    if (cDataOrErrorCtx.unpushedError)
     {
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-        return cDataOrError.unpushedError;
+        return cDataOrErrorCtx.unpushedError;
     }
 
-    struct nk_context * const ctx = cDataOrError.cData;
+    struct nk_context * const ctx = cDataOrErrorCtx.cData;
 
     octaspire_helpers_verify_not_null(ctx);
 
@@ -390,7 +407,39 @@ octaspire_dern_value_t *dern_nuklear_label(
             octaspire_string_get_c_string(alignment));
     }
 
-    nk_label(ctx, text, flags);
+    if (numArgs == 3)
+    {
+        nk_label(ctx, text, flags);
+    }
+    else
+    {
+        octaspire_dern_c_data_or_unpushed_error_t cDataOrErrorNkColor =
+            octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
+                arguments,
+                3,
+                dernFuncName,
+                nkColorName,
+                DERN_NUKLEAR_PLUGIN_NAME);
+
+        if (cDataOrErrorNkColor.unpushedError)
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return cDataOrErrorNkColor.unpushedError;
+        }
+
+        dern_nuklear_allocation_context_t const * const context =
+            cDataOrErrorNkColor.cData;
+
+        octaspire_helpers_verify_not_null(context);
+
+        struct nk_color * const color = context->payload;
+
+        octaspire_helpers_verify_not_null(color);
+
+        nk_label_colored(ctx, text, flags, *color);
+    }
 
     octaspire_helpers_verify_true(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
@@ -2073,6 +2122,116 @@ octaspire_dern_value_t *dern_nuklear_sdl_render(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+octaspire_dern_value_t *dern_nuklear_rgba(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "nuklear-rgba";
+    char   const * const nkColorName  = "nk_color";
+
+    size_t const         numExpectedArgs = 4;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    int numbers[4] = {0};
+    size_t const numNumbers = sizeof(numbers) / sizeof(numbers[0]);
+
+    for (size_t i = 0; i < numNumbers; ++i)
+    {
+        octaspire_dern_number_or_unpushed_error_const_t const numberOrError =
+            octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+                arguments,
+                i,
+                dernFuncName);
+
+        if (numberOrError.unpushedError)
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return numberOrError.unpushedError;
+        }
+
+        numbers[i] = numberOrError.number;
+    }
+
+    struct nk_color *color = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(vm),
+        sizeof(struct nk_color));
+
+    if (!color)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' failed to allocate memory.",
+            dernFuncName);
+    }
+
+    color->r = numbers[0];
+    color->g = numbers[1];
+    color->b = numbers[2];
+    color->a = numbers[3];
+
+    dern_nuklear_allocation_context_t * const context = octaspire_allocator_malloc(
+        octaspire_dern_vm_get_allocator(vm),
+        sizeof(dern_nuklear_allocation_context_t));
+
+    if (!context)
+    {
+        octaspire_allocator_free(octaspire_dern_vm_get_allocator(vm), color);
+        color = 0;
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' failed to allocate memory for a nk_color context.",
+            dernFuncName);
+    }
+
+    context->vm      = vm;
+    context->payload = color;
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_c_data(
+        vm,
+        DERN_NUKLEAR_PLUGIN_NAME,
+        nkColorName,
+        "dern_nuklear_nk_color_clean_up_callback",
+        "",
+        "",
+        "",
+        "",//"dern_nuklear_to_string",
+        "",//"dern_nuklear_compare",
+        false,
+        context);
+}
+
 bool dern_nuklear_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv,
@@ -2160,14 +2319,14 @@ bool dern_nuklear_init(
             vm,
             "nuklear-label",
             dern_nuklear_label,
-            3,
+            4,
             "NAME\n"
             "\tnuklear-label\n"
             "\n"
             "SYNOPSIS\n"
             "\t(require 'dern_nuklear)\n"
             "\n"
-            "\t(nuklear-label ctx text alignment) -> true or error\n"
+            "\t(nuklear-label ctx text alignment <color>) -> true or error\n"
             "\n"
             "DESCRIPTION\n"
             "\tDisplay a text label\n"
@@ -2176,6 +2335,7 @@ bool dern_nuklear_init(
             "\tctx           nuklear context.\n"
             "\ttext          text to be shown.\n"
             "\talignment     LEFT, CENTERED or RIGHT.\n"
+            "\tcolor         optional color.\n"
             "\n"
             "RETURN VALUE\n"
             "\ttrue or error if something went wrong.\n"
@@ -2677,6 +2837,40 @@ bool dern_nuklear_init(
             "\n"
             "SEE ALSO\n"
             "\tnuklear-sdl-init\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "nuklear-rgba",
+            dern_nuklear_rgba,
+            4,
+            "NAME\n"
+            "\tnuklear-rgba\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_nuklear)\n"
+            "\n"
+            "\t(nuklear-rgba r g b a) -> true\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tCreate new color value.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tr             Red   channel 0 - 0xFF.\n"
+            "\tg             Green channel 0 - 0xFF.\n"
+            "\tb             Blue  channel 0 - 0xFF.\n"
+            "\ta             Alpha channel 0 - 0xFF.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\tNuklear color value to be used with those functions.\n"
+            "\tof this library that expect a Nuklear color as an argument.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\n",
             false,
             targetEnv))
     {
