@@ -64,7 +64,7 @@ echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -DOCTASPIRE_DERN_AMALGAMATED_REPL_IM
 
 EXAMPLE_NAME="Dern socket plugin"
 EXAMPLE_ERROR_HINT="Install $CC compiler?"
-EXAMPLE_SUCCESS_RUN="LD_LIBRARY_PATH=. ./octaspire-dern-repl examples/irc-client.dern"
+EXAMPLE_SUCCESS_RUN="LD_LIBRARY_PATH=. ./octaspire-dern-repl -I examples examples/irc-client-ncurses.dern"
 echoAndRun "$CC" -O2 -std=c99 -Wall -Wextra -fPIC -shared -I . -o libdern_socket.so plugins/dern_socket.c
 
 

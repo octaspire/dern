@@ -1,0 +1,219 @@
+(require 'dern_socket)
+
+(define irc-current-channel   as nil     [currently joined channel])
+(define irc-current-username  as []      [username])
+(define irc-current-realname  as []      [realname])
+(define irc-current-hint      as []      [current info or error message])
+(define irc-line-length       as {D+70}  [length of message line])
+(define irc-socket            as nil     [socket] in (env-global))
+(define irc-running           as true    [becomes false on /quit])
+
+(define irc-info-type? as (fn (type)
+  (or (== type 'ERROR) (== type 'INFO) (== type 'SUCCESS)))
+  [is given type information] '(type [type]) howto-ok)
+
+(define irc-break-into-lines as (fn (message)
+  (define result as (vector) [result])
+  (define line   as [] [a line])
+  (for c in message
+    (+= line c)
+    (if (>= (len line) irc-line-length) (do
+      (+= result (copy line))
+      (= line []))))
+  (if (or (== (len result) {D+0}) (> (len line) {D+0})) (+= result (copy line)))
+  (return result))
+  [break message into lines] '(message [message to break]) howto-ok)
+
+(define irc-create-result as (fn (type message)
+  (define result as (vector) [result vector])
+  (+= result type)
+  (+= result message)
+  (+= result (irc-break-into-lines message))
+  (if (irc-info-type? type)
+    (= irc-current-hint message))
+  (return result))
+  [create result message] '(type [type] message [message]) howto-ok)
+
+(define irc-set-current-channel as (fn (channel)
+  (= irc-current-channel channel))
+  [set current channel] '(channel [channel]) howto-no)
+
+(define irc-leave-current-channel as (fn ()
+  (define message as
+    (string-format [PART {}|newline|] irc-current-channel)
+    [message to be send])
+  (socket-send irc-socket message)
+  (irc-set-current-channel nil)
+  (irc-create-result 'SUCCESS [OK]))
+  [leave the current channel] '() howto-no)
+
+(define substr as (fn (str startIndex)
+  (define result as [] [result])
+  (if (>= startIndex (len str)) (return result))
+  (for i from startIndex to (- (len str) {D+1})
+    (+= result (cp@ str i)))
+  result)
+  [substr] '(str [str] startIndex [startIndex]) howto-no)
+
+(define irc-handle-nick as (fn (line)
+  (= irc-current-username (substr line {D+6}))
+  (return (irc-send-user-data)))
+  [handle /nick] '(line [line of text starting with /nick]) howto-no)
+
+(define irc-handle-join as (fn (line)
+  (if (== irc-current-username [])
+    (return (irc-create-result 'ERROR [Please set a nick first by using /nick or /user])))
+  (define channel as (substr line {D+6}) [channel])
+  (define message as (string-format [JOIN {}|newline|] channel) [message])
+  (socket-send irc-socket message)
+  (irc-set-current-channel channel)
+  (irc-create-result 'SUCCESS (string-format [joined {}] irc-current-channel)))
+  [handle /join] '(line [line of text starting with /join]) howto-no)
+
+(define irc-handle-msg as (fn (line)
+    (define restOfLine as (substr line {D+5}) [line without /msg])
+
+    (define tokens as (split restOfLine | |) [line split by space])
+
+    (if (< (len tokens) {D+2}) (return
+      (irc-create-result 'ERROR [/msg expect target name and message])))
+
+    (define target as (ln@ tokens {D+0}) [target] )
+    (define msgtxt as [] [msgtxt])
+
+    (for i from {D+1} to (- (len tokens) {D+1})
+         (+= msgtxt (ln@ tokens i))
+         (if (< i (- (len tokens) {D+1})) (+= msgtxt | |)))
+
+    (define message as (string-format [PRIVMSG {} :{}|newline|] target msgtxt) [message])
+    (socket-send irc-socket message)
+    (irc-create-result 'PRIVATE-MESSAGE (string-format [<---------------You---------------> {}] msgtxt)))
+  [handle /msg] '(line [line of text starting with /msg]) howto-no)
+
+(define irc-handle-connect as (fn (line)
+  (if (== irc-current-username [])
+    (return (irc-create-result
+      'ERROR [Please set a nick first by using /nick or nick and a real name using /user])))
+  (define restOfLine as (substr line {D+9})        [line without /connect])
+  (define tokens     as (split restOfLine | |)     [line split by space] )
+  (define address    as [localhost]                [address])
+  (define portnum    as {D+6667}                   [portnum])
+  (if (>= (len tokens) {D+1}) (= address (ln@ tokens {D+0})))
+  (if (>= (len tokens) {D+2}) (= portnum (ln@ tokens {D+1})))
+  (= portnum (to-integer portnum))
+  ; Sockets cannot be copied with '='
+  (define irc-socket as (socket-new-ipv4-stream-socket address portnum) [socket] in (env-global))
+  (if (string? irc-socket)
+    (do
+      (define error-message as (copy irc-socket) [error message])
+      (= irc-socket nil)
+      (return (irc-create-result 'ERROR error-message))))
+  (irc-read-socket)
+  (irc-send-user-data)
+  (irc-read-socket)
+  (return (irc-create-result 'SUCCESS (string-format [connected to {} at port {}] address portnum))))
+  [handle /connect] '(line [line of text starting with /connect]) howto-no)
+
+(define irc-send-user-data as (fn ()
+  (if (== irc-socket nil) (return (irc-create-result 'ERROR [No connection])))
+  (socket-send irc-socket (string-format [NICK {}|newline|] irc-current-username))
+  (socket-send irc-socket (string-format
+    [USER {} 8 * :{}|newline|]
+    irc-current-username
+    irc-current-realname))
+  (irc-create-result 'SUCCESS [OK]))
+  [send nick and possible real name to server] '() howto-no)
+
+(define irc-handle-user as (fn (line)
+  (define restOfLine as (substr line {D+6}) [line without /user])
+  (define tokens as (split restOfLine | |) [line split by space])
+  (= irc-current-username (cp@ tokens {D+0}))
+  (= irc-current-realname [])
+  (if (> (len tokens) {D+1})
+    (for i from {D+1} to (- (len tokens) {D+1})
+      (+= irc-current-realname (cp@ tokens i))
+      (if (< i (- (len tokens) {D+1})) (+= irc-current-realname | |))))
+  (return (irc-send-user-data)))
+  [handle /user] '(line [line of text starting with /user]) howto-no)
+
+(define irc-handle-command as (fn (line)
+  (if (starts-with? line [/quit])    (do (= irc-running false) (return (irc-create-result 'SUCCESS [QUIT OK]))))
+
+  (if (starts-with? line [/connect]) (return (irc-handle-connect line)))
+  (if (starts-with? line [/user])    (return (irc-handle-user    line)))
+  (if (starts-with? line [/nick])    (return (irc-handle-nick    line)))
+
+  (if (== irc-socket nil) (return (irc-create-result 'ERROR [You must connect first])))
+
+  (if (starts-with? line [/join])    (return (irc-handle-join    line)))
+  (if (starts-with? line [/msg])     (return (irc-handle-msg     line)))
+  (if (starts-with? line [/part])    (return (irc-leave-current-channel)))
+
+  (return (irc-create-result 'ERROR (string-format [Unknown command "{}"] line))))
+  [handle command, for example /join] '(line [line of text starting with /]) howto-no)
+
+(define irc-handle-message as (fn (line)
+  (if (== nil irc-current-channel)
+    (return (irc-create-result 'ERROR [You must enter a channel first])))
+  (define message as (string-format
+    [PRIVMSG {} :{}|newline|]
+    irc-current-channel
+    line)
+  [message])
+  (socket-send irc-socket message)
+  (return (irc-create-result
+    'USER
+    (string-format [<---------------You---------------> {}] line))))
+  [handle a line starting without /] '(line [line of text starting with /]) howto-no)
+
+(define irc-handle-input-line as (fn (input)
+  (if (== {D+0} (len input)) (return (irc-create-result 'ERROR [NO INPUT])))
+  (define first-char as (cp@ input {D+0}) [first character of user input])
+  (if (== |/| first-char)
+    (return (irc-handle-command input))
+    (return (irc-handle-message input))))
+  [get user input and handle it] '(input [user input line]) howto-no)
+
+(define irc-handle-ping as (fn (message)
+  (= message {D+1} |O|)
+  (socket-send irc-socket message)
+  (irc-create-result 'INFO [PING]))
+  [handle PING message from the IRC server] '(message [message]) howto-no)
+
+(define irc-extract-only-message-from-input as (fn (message)
+  (define result as [] [result])
+  (define numsyms as {D+0} [number of syms])
+  (for i from {D+0} to (- (len message) {D+1})
+    (define c as (cp@ message i) [c])
+    (if (>= numsyms {D+2})
+      (+= result c)
+      (if (== c |:|) (++ numsyms))))
+  (if (>= numsyms {D+2}) result message))
+  [get only the actual message] '(message [message]) howto-no)
+
+(define irc-read-socket as (fn ()
+  (if (== nil irc-socket) (return (irc-create-result 'ERROR [Not connected])))
+  (define input-from-socket as (socket-receive irc-socket false) [possible input from socket])
+  (if (== nil input-from-socket) (return (irc-create-result 'VERBOSE [No input])))
+  (define first-char as (cp@ input-from-socket {D+0}) [first character of user input])
+  (if (== |P| first-char)
+    (return (irc-handle-ping input-from-socket)))
+  (define tokens as (split input-from-socket | |) [line split by space])
+  (define command as [] [command])
+  (if (>= (len tokens) {D+2}) (= command (ln@ tokens {D+1})))
+  (if (== command [PRIVMSG])
+    (do
+      (define receiver as [] [channel or user])
+      (define sender   as [] [message is from])
+      (if (>= (len tokens) {D+1}) (= sender (substr (ln@ tokens {D+0}) {D+1})))
+      (if (>= (len tokens) {D+3}) (= receiver (ln@ tokens {D+2})))
+      (define msgToShow as (string-format
+        [<{}> {}]
+        sender
+        (irc-extract-only-message-from-input input-from-socket))
+       [msgToShow])
+      (return (irc-create-result
+        (if (== receiver irc-current-channel) 'MESSAGE 'PRIVATE-MESSAGE)
+        msgToShow))))
+    (return (irc-create-result 'OTHER input-from-socket)))
+  [read input from socket, if available] '() howto-no)

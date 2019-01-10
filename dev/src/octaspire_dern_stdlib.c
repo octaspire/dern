@@ -16,6 +16,7 @@ limitations under the License.
 ******************************************************************************/
 #include "octaspire/dern/octaspire_dern_stdlib.h"
 #include <assert.h>
+#include <errno.h>
 #include <inttypes.h>
 #include <math.h>
 
@@ -30,6 +31,7 @@ limitations under the License.
 
 #include "octaspire/dern/octaspire_dern_vm.h"
 #include "octaspire/dern/octaspire_dern_config.h"
+#include "octaspire/dern/octaspire_dern_port.h"
 
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #include <dlfcn.h>
@@ -3589,9 +3591,22 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_io_file_open(
             "Builtin 'io-file-open' expects string argument.");
     }
 
-    octaspire_dern_value_t * const result = octaspire_dern_vm_create_new_value_io_file(
+    octaspire_dern_value_t * result = octaspire_dern_vm_create_new_value_io_file(
         vm,
         octaspire_dern_value_as_string_get_c_string(firstArg));
+
+    octaspire_helpers_verify_not_null(result);
+    octaspire_helpers_verify_not_null(result->value.port);
+
+    if (!octaspire_dern_port_supports_output(result->value.port) ||
+        !octaspire_dern_port_supports_input(result->value.port))
+    {
+        result = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin 'io-file-open' failed to open file '%s': %s.",
+            octaspire_dern_value_as_string_get_c_string(firstArg),
+            strerror(errno));
+    }
 
     octaspire_dern_vm_pop_value(vm, arguments);
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
@@ -8998,10 +9013,58 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_require_source_file(
     }
     else
     {
-        input = octaspire_input_new_from_path(
-            octaspire_string_get_c_string(fileName),
-            octaspire_dern_vm_get_allocator(vm),
-            octaspire_dern_vm_get_stdio(vm));
+        octaspire_dern_vm_config_t const * const config =
+            octaspire_dern_vm_get_config_const(vm);
+
+        octaspire_helpers_verify_not_null(config);
+
+        if (config->includeDirectories)
+        {
+            for (size_t i = 0;
+                 i < octaspire_vector_get_length(config->includeDirectories);
+                 ++i)
+            {
+                octaspire_string_t const * const str =
+                    octaspire_vector_get_element_at_const(config->includeDirectories, i);
+
+                octaspire_helpers_verify_not_null(str);
+
+#ifdef _WIN32
+                char const * const pathSeparator = "\\";
+#else
+                char const * const pathSeparator = "/";
+#endif
+
+                octaspire_string_t * newPath = octaspire_string_new_format(
+                    octaspire_dern_vm_get_allocator(vm),
+                    "%s%s%s",
+                    octaspire_string_get_c_string(str),
+                    pathSeparator,
+                    octaspire_string_get_c_string(fileName));
+
+                octaspire_helpers_verify_not_null(newPath);
+
+                input = octaspire_input_new_from_path(
+                    octaspire_string_get_c_string(newPath),
+                    octaspire_dern_vm_get_allocator(vm),
+                    octaspire_dern_vm_get_stdio(vm));
+
+                octaspire_string_release(newPath);
+                newPath = 0;
+
+                if (input)
+                {
+                    break;
+                }
+            }
+        }
+        else
+        {
+            input = octaspire_input_new_from_path(
+                octaspire_string_get_c_string(fileName),
+                octaspire_dern_vm_get_allocator(vm),
+                octaspire_dern_vm_get_stdio(vm));
+        }
     }
 
     if (!input)
@@ -9763,6 +9826,20 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            if (numArgs > 2)
+            {
+                return octaspire_dern_vm_create_new_value_error_from_c_string(
+                    vm,
+                    "Builtin 'cp@' expects exactly one argument when used with nil.");
+            }
+
+            return octaspire_dern_vm_create_new_value_nil(vm);
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:

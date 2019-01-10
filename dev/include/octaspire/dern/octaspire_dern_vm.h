@@ -48,6 +48,7 @@ typedef struct octaspire_dern_vm_config_t
     octaspire_dern_vm_custom_require_source_file_loader_t preLoaderForRequireSrc;
     bool debugModeOn;
     bool noDlClose;
+    octaspire_vector_t * includeDirectories;
 }
 octaspire_dern_vm_config_t;
 

@@ -447,6 +447,120 @@ octaspire_dern_value_t *dern_nuklear_label(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+octaspire_dern_value_t *dern_nuklear_label_wrap(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName     = "nuklear-label";
+    char   const * const ctxName          = "ctx";
+    char   const * const nkColorName      = "nk_color";
+    size_t const         numExpectedArgs1 = 2;
+    size_t const         numExpectedArgs2 = 3;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numExpectedArgs1 && numArgs != numExpectedArgs2)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu or %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs1,
+            numExpectedArgs2,
+            numArgs);
+    }
+
+    // ctx
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrErrorCtx =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
+            arguments,
+            0,
+            dernFuncName,
+            ctxName,
+            DERN_NUKLEAR_PLUGIN_NAME);
+
+    if (cDataOrErrorCtx.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrErrorCtx.unpushedError;
+    }
+
+    struct nk_context * const ctx = cDataOrErrorCtx.cData;
+
+    octaspire_helpers_verify_not_null(ctx);
+
+    octaspire_dern_value_t const * const secondArg =
+        octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+    octaspire_helpers_verify_not_null(secondArg);
+
+    if (!octaspire_dern_value_is_text(secondArg))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects text (string or symbol) as the second "
+            "argument. Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(secondArg->typeTag));
+    }
+
+    char const * const text = octaspire_dern_value_as_text_get_c_string(secondArg);
+
+    if (numArgs == 2)
+    {
+        nk_label_wrap(ctx, text);
+    }
+    else
+    {
+        octaspire_dern_c_data_or_unpushed_error_t cDataOrErrorNkColor =
+            octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
+                arguments,
+                2,
+                dernFuncName,
+                nkColorName,
+                DERN_NUKLEAR_PLUGIN_NAME);
+
+        if (cDataOrErrorNkColor.unpushedError)
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return cDataOrErrorNkColor.unpushedError;
+        }
+
+        dern_nuklear_allocation_context_t const * const context =
+            cDataOrErrorNkColor.cData;
+
+        octaspire_helpers_verify_not_null(context);
+
+        struct nk_color * const color = context->payload;
+
+        octaspire_helpers_verify_not_null(color);
+
+        nk_label_colored_wrap(ctx, text, *color);
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
 octaspire_dern_value_t *dern_nuklear_button_label(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1125,6 +1239,12 @@ octaspire_dern_value_t *dern_nuklear_edit_string(
         case 3: { editType = NK_EDIT_EDITOR; } break;
     }
 
+    // TODO This allows committing the changes in the text box
+    // by using <ENTER>, but maybe this should not be hard-coded;
+    // it might be better to allow it to be given as an argument
+    // to this function somehow.
+    editType |= NK_EDIT_SIG_ENTER;
+
     // str
 
     octaspire_dern_string_or_unpushed_error_t stringOrError =
@@ -1244,7 +1364,7 @@ octaspire_dern_value_t *dern_nuklear_edit_string(
 
     nk_flags const resultFlags = nk_edit_string(
         ctx,
-        NK_EDIT_SIMPLE,
+        editType,
         memory,
         &memused,
         len,
@@ -1302,6 +1422,92 @@ octaspire_dern_value_t *dern_nuklear_edit_string(
         stackLength == octaspire_dern_vm_get_stack_length(vm));
 
     return octaspire_dern_vm_create_new_value_string(vm, result);
+}
+
+octaspire_dern_value_t *dern_nuklear_edit_focus(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName    = "nuklear-edit-focus";
+    char   const * const ctxName         = "ctx";
+    size_t const         numExpectedArgs = 2;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    // ctx
+
+    octaspire_dern_c_data_or_unpushed_error_t cDataOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_c_data_or_unpushed_error(
+            arguments,
+            0,
+            dernFuncName,
+            ctxName,
+            DERN_NUKLEAR_PLUGIN_NAME);
+
+    if (cDataOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return cDataOrError.unpushedError;
+    }
+
+    struct nk_context * const ctx = cDataOrError.cData;
+
+    octaspire_helpers_verify_not_null(ctx);
+
+    // focus
+
+    octaspire_dern_boolean_or_unpushed_error_const_t boolOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_boolean_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName);
+
+    if (boolOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return boolOrError.unpushedError;
+    }
+
+    bool const focus = boolOrError.boolean;
+
+    // Apply the requested focusing.
+
+    if (focus)
+    {
+        nk_edit_focus(ctx, NK_EDIT_ALWAYS_INSERT_MODE);
+    }
+    else
+    {
+        nk_edit_unfocus(ctx);
+    }
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
 octaspire_dern_value_t *dern_nuklear_progress(
@@ -2341,7 +2547,41 @@ bool dern_nuklear_init(
             "\ttrue or error if something went wrong.\n"
             "\n"
             "SEE ALSO\n"
-            "\tnuklear-begin\n",
+            "\tnuklear-begin\n"
+            "\tnuklear-label-wrap\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "nuklear-label-wrap",
+            dern_nuklear_label_wrap,
+            3,
+            "NAME\n"
+            "\tnuklear-label-wrap\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_nuklear)\n"
+            "\n"
+            "\t(nuklear-label-wrap ctx text <color>) -> true or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tDisplay a text label with wrapped text.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tctx           nuklear context.\n"
+            "\ttext          text to be shown.\n"
+            "\tcolor         optional color.\n"
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue or error if something went wrong.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tnuklear-begin\n"
+            "\tnuklear-label\n",
             false,
             targetEnv))
     {
@@ -2585,6 +2825,38 @@ bool dern_nuklear_init(
             "\n"
             "SEE ALSO\n"
             "\tnuklear-begin\n",
+            false,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "nuklear-edit-focus",
+            dern_nuklear_edit_focus,
+            2,
+            "NAME\n"
+            "\tnuklear-edit-focus\n"
+            "\n"
+            "SYNOPSIS\n"
+            "\t(require 'dern_nuklear)\n"
+            "\n"
+            "\t(nuklear-edit-focus ctx focus) -> true or error\n"
+            "\n"
+            "DESCRIPTION\n"
+            "\tSet focus of the next text entry programmatically.\n"
+            "\n"
+            "ARGUMENTS\n"
+            "\tctx           nuklear context.\n"
+            "\tfocus         boolean value for the focus."
+            "\n"
+            "RETURN VALUE\n"
+            "\ttrue or error if something went wrong.\n"
+            "\n"
+            "SEE ALSO\n"
+            "\tnuklear-begin\n"
+            "\tnuklear-edit-string\n",
             false,
             targetEnv))
     {

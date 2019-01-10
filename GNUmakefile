@@ -10,6 +10,7 @@ DEVGAMEDIR=$(ETCDIR)games/
 CORDIR=$(EXTDIR)octaspire_core/release/
 RELDIR=release/
 GAMESDIR=$(RELDIR)games/
+EXAMPLESDIR=$(RELDIR)examples/
 PLUGINDIR=$(RELDIR)plugins/
 RELDOCDIR=$(RELDIR)documentation/
 AMALGAMATION=$(RELDIR)octaspire-dern-amalgamated.c
@@ -23,9 +24,12 @@ TAGS_C_FILES := $(SRCDIR)*.c                          \
                 $(CORDIR)octaspire-core-amalgamated.c \
                 $(PLUGINDIR)external/nuklear/nuklear.h
 
-TAGS_DERN_FILES := $(GAMESDIR)octaspire-bounce.dern    \
-                   $(GAMESDIR)octaspire-lightcube.dern \
-                   $(GAMESDIR)octaspire-maze.dern
+TAGS_DERN_FILES := $(GAMESDIR)octaspire-bounce.dern      \
+                   $(GAMESDIR)octaspire-lightcube.dern   \
+                   $(GAMESDIR)octaspire-maze.dern        \
+                   $(EXAMPLESDIR)dern_irc.dern           \
+                   $(EXAMPLESDIR)irc-client-nuklear.dern \
+                   $(EXAMPLESDIR)irc-client-ncurses.dern
 
 CHIPMUNK_SRCS := $(wildcard release/plugins/external/chipmunk/src/*.c)
 CHIPMUNK_OBJS := $(patsubst %.c, %.o, $(CHIPMUNK_SRCS))

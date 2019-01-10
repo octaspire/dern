@@ -64,6 +64,7 @@ limitations under the License.
 #include <limits.h>
 #include <wchar.h>
 #include <locale.h>
+#include <errno.h>
 
 #endif
 

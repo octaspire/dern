@@ -1,0 +1,118 @@
+(require 'dern_ncurses)
+(require 'dern_irc)
+
+(define win as (ncurses-initscr) [win])
+(ncurses-set-keypad win true)
+(ncurses-set-cbreak true)
+(ncurses-set-nl true)
+(ncurses-halfdelay {D+1})
+(ncurses-set-echo false)
+
+(if (ncurses-has-colors) (ncurses-start-color))
+
+(ncurses-init-pair {D+1} 'RED    'BLACK)
+(ncurses-init-pair {D+2} 'YELLOW 'BLUE)
+(ncurses-init-pair {D+3} 'GREEN  'BLACK)
+(ncurses-init-pair {D+4} 'CYAN   'BLACK)
+
+(define num-rows-and-cols as (ncurses-getmaxyx win)           [number of rows and cols on screen] )
+(define maxlines          as (- (cp@ num-rows-and-cols {D+0}) {D+4})  [maxlines] )
+(define lines             as (queue-with-max-length maxlines) [messages] )
+(define irc-client-ncurses-text-value as []                   [stores line of user input])
+
+(= irc-line-length (- (cp@ num-rows-and-cols {D+1}) {D+1}))
+
+(define row as {D+1} [current row])
+
+(define irc-client-ncurses-print as (fn (text x color)
+  (if (ncurses-has-colors) (ncurses-attron color))
+  (ncurses-print win row x text)
+  (++ row)
+  (if (ncurses-has-colors) (ncurses-attroff color)))
+  [helper to print using ncurses] '(text [text] x [x] color [color]) howto-no)
+
+(define irc-client-ncurses-render-message-lines as (fn (lines color)
+  (for line in lines
+    (define line2 as [] [test])
+    (for i from {D+0} to (- (len line) {D+1})
+      (define c as (cp@ line i) [c])
+      (if (or (< (to-integer c) {D+31}) (> (to-integer c) {D+126})) (= c |x|))
+      (+= line2 c))
+    (irc-client-ncurses-print line2 {D+1} color)))
+  [render body of one message] '(lines [lines of the message] color [color]) howto-no)
+
+(define irc-client-ncurses-get-message-color as (fn (type)
+  (if (== type 'PRIVATE-MESSAGE) (return {D+2}))
+  (if (== type 'OTHER)           (return {D+1}))
+  (if (== type 'MESSAGE)         (return {D+3}))
+  (return {D+4}))
+  [get color for type and count of message] '(type [type of message]) howto-no)
+
+(define irc-client-ncurses-send as (fn ()
+  (+= lines (irc-handle-input-line irc-client-ncurses-text-value))
+  (= irc-client-ncurses-text-value []))
+  [send current input] '() howto-no)
+
+(define read-and-handle-input as (fn ()
+  (define char as (ncurses-getch) [octet of input from the user])
+
+  (if (== 'ERR char) (return))
+
+  (if (== 'KEY_ENTER char)
+    (do
+      (irc-client-ncurses-send)
+      (return)))
+
+  (if (and (or (== 'KEY_BACKSPACE char) (== 'KEY_DC char)) (> (len irc-client-ncurses-text-value) {D+0}))
+    (do
+      (-- irc-client-ncurses-text-value)
+      (return)))
+
+  (if (character? char)
+    (do
+      (+= irc-client-ncurses-text-value char)
+      (return))))
+    [read input and handle it if needed] '() howto-no)
+
+(define irc-client-ncurses-render as (fn ()
+  (for line in lines
+    (irc-client-ncurses-render-message-lines
+      (ln@ line {D+2})
+      (irc-client-ncurses-get-message-color (ln@ line {D+0}))))
+
+  ; Hint label
+  (define statusbar as [] [statusbar])
+  (for i from (len irc-current-hint) to (- (cp@ num-rows-and-cols {D+1}) {D+2}) (+= statusbar |-|))
+  (+= statusbar irc-current-hint)
+  (irc-client-ncurses-print statusbar {D+1} {D+1})
+
+  ; Text input
+  (irc-client-ncurses-print irc-client-ncurses-text-value {D+1} {D+2})
+  (read-and-handle-input))
+  [render] '() howto-no)
+
+(define irc-client-ncurses-read-and-handle-socket as (fn ()
+  (define line as (irc-read-socket) [line])
+  (define type as (cp@ line {D+0}) [type])
+  (define text as (cp@ line {D+1}) [type])
+  (if (not (irc-info-type? type))
+      (if (!= type 'VERBOSE)
+        (+= lines line))))
+  [read and handle socket] '() howto-no)
+
+(define irc-client-ncurses-counter as {D+0} [delay counter])
+
+(for i from {D+0} to maxlines
+  (+= lines (irc-create-result 'MESSAGE [~])))
+
+(while irc-running
+  (if (<= irc-client-ncurses-counter {D+0})
+    (do
+      (= irc-client-ncurses-counter {D+30})
+      (irc-client-ncurses-read-and-handle-socket))
+    (-- irc-client-ncurses-counter))
+  (ncurses-clear win)
+  (= row {D+0})
+  (irc-client-ncurses-render))
+
+(ncurses-endwin)

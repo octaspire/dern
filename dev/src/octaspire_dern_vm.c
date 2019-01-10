@@ -87,7 +87,8 @@ octaspire_dern_vm_config_t octaspire_dern_vm_config_default(void)
     {
         .preLoaderForRequireSrc  = 0,
         .debugModeOn             = false,
-        .noDlClose               = false
+        .noDlClose               = false,
+        .includeDirectories      = 0
     };
 
     return result;

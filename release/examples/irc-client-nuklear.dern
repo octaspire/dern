@@ -1,0 +1,151 @@
+(require 'dern_sdl2)
+(require 'dern_nuklear)
+(require 'dern_irc)
+
+(= irc-line-length {D+107})
+
+(sdl2-Init 'VIDEO)
+
+(define irc-client-nuklear-window-width  as {D+800} [window width])
+(define irc-client-nuklear-window-height as {D+600} [window width])
+(define irc-client-nuklear-window-zoom   as {D+0.1} [window zoom factor])
+
+(define maxlines          as {D+17} [TODO])
+(define lines             as (queue-with-max-length maxlines) [messages] )
+
+(define irc-client-nuklear-window as
+  (sdl2-CreateWindow
+    [Nuklear example]
+    'CENTERED
+    'CENTERED
+    irc-client-nuklear-window-width
+    irc-client-nuklear-window-height)
+  [window])
+
+(define irc-client-nuklear-nuklear-ctx as (nuklear-sdl-init irc-client-nuklear-window) [nuklear context])
+
+(sdl2-glClearColor {D+0} {D+0} {D+0} {D+1})
+(sdl2-gl-ortho-line-smooth-enable)
+
+(define irc-client-nuklear-enter-ortho as (fn (zoom)
+  (define width  as (/ (* {D+4} irc-client-nuklear-window-width)  (* {D+2} zoom)) [target width])
+  (define height as (/ (* {D+4} irc-client-nuklear-window-height) (* {D+2} zoom)) [target width])
+  (sdl2-gl-ortho-enter (- width) width (- height) height))
+  [enter ortho] '(zoom [zoom factor]) howto-no)
+
+(irc-client-nuklear-enter-ortho irc-client-nuklear-window-zoom)
+
+(define irc-client-nuklear-running               as true [is running or not])
+(define irc-client-nuklear-target-FPS            as {D+50} [target FPS])
+(define irc-client-nuklear-target-frame-duration as (/ {D+1.0} irc-client-nuklear-target-FPS) [time for a frame to last])
+(define irc-client-nuklear-text-value            as []       [text input])
+
+(define irc-client-nuklear-render-message-lines as (fn (lines color)
+  (for line in lines
+    (nuklear-layout-row-static irc-client-nuklear-nuklear-ctx {D+22} {D+750} {D+1})
+    (nuklear-label
+      irc-client-nuklear-nuklear-ctx
+      line
+      'LEFT
+      color)))
+  [render body of one message] '(lines [lines of the message] color [color]) howto-no)
+
+(define irc-client-nuklear-get-message-color as (fn (type)
+  (if (== type 'PRIVATE-MESSAGE) (return (nuklear-rgba {X+FF} {X+FF} {X+0}  {X+FF})))
+  (if (== type 'OTHER)           (return (nuklear-rgba {X+FF} {X+4F} {X+0}  {X+FF})))
+  (if (== type 'MESSAGE)         (return (nuklear-rgba {X+0} {X+FF} {X+0}   {X+FF})))
+  (return (nuklear-rgba {X+AA} {X+AA} {X+AA} {X+FF})))
+  [get color for type and count of message] '(type [type of message]) howto-no)
+
+(define irc-client-nuklear-send as (fn ()
+  (+= lines (irc-handle-input-line irc-client-nuklear-text-value))
+  (= irc-client-nuklear-text-value []))
+  [send current input] '() howto-no)
+
+(define irc-client-nuklear-render as (fn ()
+  (if (nuklear-begin irc-client-nuklear-nuklear-ctx [] {D+10} {D+10} {D+780} {D+580})
+    (do
+      ; Text Labels
+      (for line in lines
+        (irc-client-nuklear-render-message-lines
+          (ln@ line {D+2})
+          (irc-client-nuklear-get-message-color (ln@ line {D+0}))))
+
+      ; Text Button
+      (nuklear-layout-row-static irc-client-nuklear-nuklear-ctx {D+30} {D+100} {D+1})
+      (if (nuklear-button-label
+            irc-client-nuklear-nuklear-ctx
+            [Send <enter>])
+          (irc-client-nuklear-send))
+
+      ; Hint label
+      (nuklear-layout-row-static irc-client-nuklear-nuklear-ctx {D+22} {D+750} {D+1})
+      (nuklear-label
+        irc-client-nuklear-nuklear-ctx
+        irc-current-hint
+        'RIGHT
+        (nuklear-rgba {X+FF} {X+0} {X+0} {X+FF}))
+
+      ; Focus on the next text input widget
+      (nuklear-edit-focus irc-client-nuklear-nuklear-ctx true)
+
+      ; Text input (simple)
+      (nuklear-layout-row-static irc-client-nuklear-nuklear-ctx {D+30} {D+750} {D+1})
+      (if (== [ACTIVE COMMITED ] (nuklear-edit-string
+        irc-client-nuklear-nuklear-ctx
+        'SIMPLE
+        irc-client-nuklear-text-value
+        {D+256}
+        'DEFAULT))
+        (irc-client-nuklear-send))))
+  (nuklear-end irc-client-nuklear-nuklear-ctx)
+  (nuklear-sdl-render)
+  (sdl2-GL-SwapWindow irc-client-nuklear-window))
+  [render] '() howto-no)
+
+(define irc-client-nuklear-update as (fn (dt)
+  (nuklear-input-begin irc-client-nuklear-nuklear-ctx)
+  (define event as (sdl2-PollEvent) [event from sdl2])
+  (if (!= event nil)
+    (nuklear-sdl-handle-event irc-client-nuklear-nuklear-ctx (ln@ event (- (len event) {D+1}))))
+  (nuklear-input-end irc-client-nuklear-nuklear-ctx)
+  (define type  as nil [type of event])
+  (if (and (!= event nil) (> (len event) {D+0})) (= type (ln@ event {D+0})))
+  (if (== type 'QUIT) (= irc-client-nuklear-running false)))
+  [update] '(dt [dt]) howto-no)
+
+(define irc-client-nuklear-read-and-handle-socket as (fn ()
+  (define line as (irc-read-socket) [line])
+  (define type as (cp@ line {D+0}) [type])
+  (define text as (cp@ line {D+1}) [type])
+  (if (not (irc-info-type? type))
+      (if (!= type 'VERBOSE)
+        (+= lines line))))
+  [read and handle socket] '() howto-no)
+
+(define irc-client-nuklear-counter as {D+0} [delay counter])
+
+(for i from {D+0} to maxlines
+  (+= lines (irc-create-result 'MESSAGE [~])))
+
+(while (and irc-client-nuklear-running irc-running)
+  (sdl2-TimerUpdate)
+  (define dt as (sdl2-TimerGetSeconds) [dt])
+  (sdl2-TimerReset)
+  (if (<= irc-client-nuklear-counter {D+0})
+    (do
+      (= irc-client-nuklear-counter {D+90})
+      (irc-client-nuklear-read-and-handle-socket))
+    (-- irc-client-nuklear-counter))
+  (irc-client-nuklear-render)
+  (irc-client-nuklear-update dt)
+  (sdl2-TimerUpdate)
+  (define current-frame-duration as (sdl2-TimerGetSeconds) [current frame duration])
+  (if (> irc-client-nuklear-target-frame-duration current-frame-duration) (do
+    (define delay-in-seconds as (- irc-client-nuklear-target-frame-duration current-frame-duration) [time to sleep])
+    (if (> delay-in-seconds {D+0})
+        (sdl2-Delay delay-in-seconds))))
+  (= dt (sdl2-TimerGetSeconds)))
+
+(sdl2-Quit)
+

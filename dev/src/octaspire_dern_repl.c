@@ -188,6 +188,7 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
         "If any of -e string or [file] is used, REPL is not started unless -i is used.\n\n"
         "-c        --color-diagnostics : use colors on unix like systems\n"
         "-i        --interactive       : start REPL after any -e string or [file]s are evaluated\n"
+        "-I dir    --include dir       : Search this directory for source (.dern) libraries\n"
         "-e string --evaluate string   : evaluate a string without entering the REPL (see -i)\n"
         "-v        --version           : print version information and exit\n"
         "-h        --help              : print this help message and exit\n"
@@ -201,18 +202,22 @@ void octaspire_dern_repl_print_usage(char const * const binaryName, bool const u
 
 
 // Globals for the REPL. ////////////////////////////
-static octaspire_vector_t      *stringsToBeEvaluated = 0;
-static octaspire_allocator_t      *allocatorBootOnly    = 0;
-static octaspire_string_t *line                 = 0;
-static octaspire_stdio_t                 *stdio                = 0;
-static octaspire_input_t                 *input                = 0;
-static octaspire_dern_vm_t               *vm                   = 0;
-static octaspire_allocator_t      *allocator            = 0;
+static octaspire_vector_t    *stringsToBeEvaluated = 0;
+static octaspire_vector_t    *includeDirectories   = 0;
+static octaspire_allocator_t *allocatorBootOnly    = 0;
+static octaspire_string_t    *line                 = 0;
+static octaspire_stdio_t     *stdio                = 0;
+static octaspire_input_t     *input                = 0;
+static octaspire_dern_vm_t   *vm                   = 0;
+static octaspire_allocator_t *allocator            = 0;
 
 static void octaspire_dern_repl_private_cleanup(void)
 {
     octaspire_vector_release(stringsToBeEvaluated);
     stringsToBeEvaluated = 0;
+
+    octaspire_vector_release(includeDirectories);
+    includeDirectories = 0;
 
     octaspire_allocator_release(allocatorBootOnly);
     allocatorBootOnly = 0;
@@ -249,6 +254,7 @@ void main(int argc, char *argv[])
     int  userFilesStartIdx       = -1;
     bool enterReplAlways         = false;
     bool evaluate                = false;
+    bool include                 = false;
 
     octaspire_dern_vm_config_t vmConfig = octaspire_dern_vm_config_default();
 
@@ -297,6 +303,23 @@ void main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
+    includeDirectories = octaspire_vector_new(
+        sizeof(octaspire_string_t*),
+        true,
+        (octaspire_vector_element_callback_t)octaspire_string_release,
+        allocatorBootOnly);
+
+    if (!includeDirectories)
+    {
+        octaspire_dern_repl_print_message_c_str(
+            "Cannot create include directory vector",
+            OCTASPIRE_DERN_REPL_MESSAGE_FATAL,
+            useColors,
+            0);
+
+        exit(EXIT_FAILURE);
+    }
+
     if (argc > 1)
     {
         for (int i = 1; i < argc; ++i)
@@ -322,6 +345,28 @@ void main(int argc, char *argv[])
 
                 octaspire_vector_push_back_element(stringsToBeEvaluated, &tmp);
             }
+            else if (include)
+            {
+                include = false;
+
+                octaspire_string_t *tmp = octaspire_string_new(
+                    argv[i],
+                    allocatorBootOnly);
+
+                if (!tmp)
+                {
+                    octaspire_dern_repl_print_message_c_str(
+                        "Cannot create string for include path",
+                        OCTASPIRE_DERN_REPL_MESSAGE_FATAL,
+                        useColors,
+                        0);
+
+                    exit(EXIT_FAILURE);
+                }
+
+                octaspire_vector_push_back_element(includeDirectories, &tmp);
+                vmConfig.includeDirectories = includeDirectories;
+            }
             else if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--color-diagnostics") == 0)
             {
                 useColors = true;
@@ -329,6 +374,10 @@ void main(int argc, char *argv[])
             else if (strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "--interactive") == 0)
             {
                 enterReplAlways = true;
+            }
+            else if (strcmp(argv[i], "-I") == 0 || strcmp(argv[i], "--include") == 0)
+            {
+                include = true;
             }
             else if (strcmp(argv[i], "-e") == 0 || strcmp(argv[i], "--evaluate") == 0)
             {
