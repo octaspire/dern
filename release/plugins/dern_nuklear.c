@@ -2432,8 +2432,8 @@ octaspire_dern_value_t *dern_nuklear_rgba(
         "",
         "",
         "",
-        "",//"dern_nuklear_to_string",
-        "",//"dern_nuklear_compare",
+        "", //"dern_nuklear_to_string",
+        "", //"dern_nuklear_compare",
         false,
         context);
 }

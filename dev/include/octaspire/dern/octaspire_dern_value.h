@@ -518,11 +518,23 @@ bool octaspire_dern_value_as_string_pop_back_ucs_character(
 bool octaspire_dern_value_as_string_pop_front_ucs_character(
     octaspire_dern_value_t * const self);
 
+uint32_t octaspire_dern_value_as_text_get_ucs_character_at_index(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex);
+
 bool octaspire_dern_value_as_string_remove_all_substrings(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const value);
 
 bool octaspire_dern_value_as_string_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex);
+
+bool octaspire_dern_value_as_symbol_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex);
+
+bool octaspire_dern_value_as_text_is_index_valid(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
 

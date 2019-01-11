@@ -2950,6 +2950,26 @@ bool octaspire_dern_value_as_string_pop_front_ucs_character(
     return octaspire_string_pop_front_ucs_character(self->value.string);
 }
 
+uint32_t octaspire_dern_value_as_text_get_ucs_character_at_index(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex)
+{
+    octaspire_helpers_verify_true(
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING ||
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+
+    if (octaspire_dern_value_is_symbol(self))
+    {
+        return octaspire_string_get_ucs_character_at_index(
+            self->value.symbol,
+            possiblyNegativeIndex);
+    }
+
+    return octaspire_string_get_ucs_character_at_index(
+        self->value.string,
+        possiblyNegativeIndex);
+}
+
 bool octaspire_dern_value_as_string_remove_all_substrings(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const value)
@@ -3012,6 +3032,38 @@ bool octaspire_dern_value_as_string_is_index_valid(
 
     return octaspire_string_is_index_valid(
         self->value.string,
+        possiblyNegativeIndex);
+}
+
+bool octaspire_dern_value_as_symbol_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex)
+{
+    octaspire_helpers_verify_true(
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+
+    return octaspire_string_is_index_valid(
+        self->value.symbol,
+        possiblyNegativeIndex);
+}
+
+bool octaspire_dern_value_as_text_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex)
+{
+    octaspire_helpers_verify_true(
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING ||
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+
+    if (octaspire_dern_value_is_symbol(self))
+    {
+        return octaspire_dern_value_as_symbol_is_index_valid(
+            self,
+            possiblyNegativeIndex);
+    }
+
+    return octaspire_dern_value_as_string_is_index_valid(
+        self,
         possiblyNegativeIndex);
 }
 

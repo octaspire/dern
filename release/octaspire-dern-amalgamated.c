@@ -26224,7 +26224,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "473"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "474"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -27105,11 +27105,23 @@ bool octaspire_dern_value_as_string_pop_back_ucs_character(
 bool octaspire_dern_value_as_string_pop_front_ucs_character(
     octaspire_dern_value_t * const self);
 
+uint32_t octaspire_dern_value_as_text_get_ucs_character_at_index(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex);
+
 bool octaspire_dern_value_as_string_remove_all_substrings(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const value);
 
 bool octaspire_dern_value_as_string_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex);
+
+bool octaspire_dern_value_as_symbol_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex);
+
+bool octaspire_dern_value_as_text_is_index_valid(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
 
@@ -43442,6 +43454,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         {
             if (numArgs > 2)
             {
@@ -43450,7 +43463,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
 
                 return octaspire_dern_vm_create_new_value_error_from_c_string(
                     vm,
-                    "Builtin 'cp@' expects exactly two arguments when used with string.");
+                    "Builtin 'cp@' expects exactly two arguments when used "
+                    "with text (string or symbol).");
             }
 
             octaspire_dern_value_t const * const indexVal =
@@ -43465,7 +43479,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
 
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'cp@' expects integer as second argument when indexing a string. "
+                    "Builtin 'cp@' expects integer as second argument when "
+                    "indexing a text value (string or symbol). "
                     "Now type '%s' was given.",
                     octaspire_dern_value_helper_get_type_as_c_string(
                         indexVal->typeTag));
@@ -43474,7 +43489,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
             ptrdiff_t const index =
                 (ptrdiff_t)octaspire_dern_value_as_integer_get_value(indexVal);
 
-            if (!octaspire_dern_value_as_string_is_index_valid(
+            if (!octaspire_dern_value_as_text_is_index_valid(
                     collectionVal,
                     index))
             {
@@ -43483,7 +43498,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
 
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Index to builtin 'cp@' is not valid for the given string. "
+                    "Index to builtin 'cp@' is not valid for the given text "
+                    "value (string or symbol). "
 #ifdef __AROS__
                     "Index '%ld' was given.",
 #else
@@ -43497,8 +43513,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
 
             return octaspire_dern_vm_create_new_value_character_from_uint32t(
                 vm,
-                octaspire_string_get_ucs_character_at_index(
-                    collectionVal->value.string,
+                octaspire_dern_value_as_text_get_ucs_character_at_index(
+                    collectionVal,
                     index));
         }
 
@@ -43745,17 +43761,82 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
             {
                 return octaspire_dern_vm_create_new_value_error_from_c_string(
                     vm,
-                    "Builtin 'cp@' expects exactly one argument when used with nil.");
+                    "Builtin 'cp@' expects exactly two arguments when used with nil.");
             }
 
             return octaspire_dern_vm_create_new_value_nil(vm);
         }
 
-        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        {
+            if (numArgs > 2)
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_from_c_string(
+                    vm,
+                    "Builtin 'cp@' expects exactly two arguments when used "
+                    "with integer.");
+            }
+
+            octaspire_dern_value_t const * const indexVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+            octaspire_helpers_verify_not_null(indexVal);
+
+            if (!octaspire_dern_value_is_integer(indexVal))
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'cp@' expects integer as second argument when "
+                    "indexing an integer value. "
+                    "Now type '%s' was given.",
+                    octaspire_dern_value_helper_get_type_as_c_string(
+                        indexVal->typeTag));
+            }
+
+            int32_t const index =
+                octaspire_dern_value_as_integer_get_value(indexVal);
+
+            if (index < -32 || index > 31)
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Index to builtin 'cp@' must be between -32 .. 31 "
+                    "(inclusive) when indexing an integer. "
+#ifdef __AROS__
+                    "Index '%ld' was given.",
+#else
+                    "Index %" PRId32 " was given.",
+#endif
+                    index);
+            }
+
+            uint32_t const bits =
+                (uint32_t)octaspire_dern_value_as_integer_get_value(
+                    collectionVal);
+
+            uint32_t const realIndex = (index >= 0) ? index : (32 + index);
+            uint32_t const mask      = 1;
+
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_integer(
+                vm,
+                (bits & (mask << realIndex)) ? 1 : 0);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
@@ -47695,6 +47776,26 @@ bool octaspire_dern_value_as_string_pop_front_ucs_character(
     return octaspire_string_pop_front_ucs_character(self->value.string);
 }
 
+uint32_t octaspire_dern_value_as_text_get_ucs_character_at_index(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex)
+{
+    octaspire_helpers_verify_true(
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING ||
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+
+    if (octaspire_dern_value_is_symbol(self))
+    {
+        return octaspire_string_get_ucs_character_at_index(
+            self->value.symbol,
+            possiblyNegativeIndex);
+    }
+
+    return octaspire_string_get_ucs_character_at_index(
+        self->value.string,
+        possiblyNegativeIndex);
+}
+
 bool octaspire_dern_value_as_string_remove_all_substrings(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const value)
@@ -47757,6 +47858,38 @@ bool octaspire_dern_value_as_string_is_index_valid(
 
     return octaspire_string_is_index_valid(
         self->value.string,
+        possiblyNegativeIndex);
+}
+
+bool octaspire_dern_value_as_symbol_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex)
+{
+    octaspire_helpers_verify_true(
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+
+    return octaspire_string_is_index_valid(
+        self->value.symbol,
+        possiblyNegativeIndex);
+}
+
+bool octaspire_dern_value_as_text_is_index_valid(
+    octaspire_dern_value_t const * const self,
+    ptrdiff_t const possiblyNegativeIndex)
+{
+    octaspire_helpers_verify_true(
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_STRING ||
+        self->typeTag == OCTASPIRE_DERN_VALUE_TAG_SYMBOL);
+
+    if (octaspire_dern_value_is_symbol(self))
+    {
+        return octaspire_dern_value_as_symbol_is_index_valid(
+            self,
+            possiblyNegativeIndex);
+    }
+
+    return octaspire_dern_value_as_string_is_index_valid(
+        self,
         possiblyNegativeIndex);
 }
 
@@ -68135,6 +68268,28 @@ TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_string_abc_test(void
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_symbol_abc_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ 'abc {D+2})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "c",
+        octaspire_string_get_c_string(evaluatedValue->value.character));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_string_abc_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -68148,9 +68303,223 @@ TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_string_abc_failure_t
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Index to builtin 'cp@' is not valid for the given string. "
-        "Index '3' was given.\n"
+        "Index to builtin 'cp@' is not valid for the given text value "
+        "(string or symbol). Index '3' was given.\n"
         "\tAt form: >>>>>>>>>>(cp@ [abc] {D+3})<<<<<<<<<<\n",
+        octaspire_string_get_c_string(evaluatedValue->value.error->message));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_nil_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ nil {D+3})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_NIL, evaluatedValue->typeTag);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_minus1_and_integer_with_only_MSB_on_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ {B+10000000000000000000000000000000} {D-1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(1,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_minus2_and_integer_with_only_MSB_on_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ {B+10000000000000000000000000000000} {D-2})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_0_and_integer_Bplus_1000_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ {B+1000} {D+0})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_1_and_integer_Bplus_1000_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ {B+1000} {D+1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_integer_Bplus_1000_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ {B+1000} {D+2})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_integer_Bplus_1000_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ {B+1000} {D+3})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(1,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_4_and_integer_Bplus_1000_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ {B+1000} {D+4})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_31_and_integer_Bplus_1000_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ {B+1000} {D+31})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(0,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_32_and_integer_Bplus_1000_failure_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ {B+1000} {D+32})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "Index to builtin 'cp@' must be between -32 .. 31 (inclusive) "
+        "when indexing an integer. Index 32 was given.\n"
+        "\tAt form: >>>>>>>>>>(cp@ {D+8} {D+32})<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
     octaspire_dern_vm_release(vm);
@@ -77036,7 +77405,18 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_0_and_string_abc_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_1_and_string_abc_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_string_abc_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_symbol_abc_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_string_abc_failure_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_nil_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_minus1_and_integer_with_only_MSB_on_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_minus2_and_integer_with_only_MSB_on_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_0_and_integer_Bplus_1000_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_1_and_integer_Bplus_1000_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_integer_Bplus_1000_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_integer_Bplus_1000_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_4_and_integer_Bplus_1000_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_31_and_integer_Bplus_1000_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_32_and_integer_Bplus_1000_failure_test);
     RUN_TEST(octaspire_dern_vm_builtin_ln_at_sign_called_with_0_and_vector_1_2_3_test);
     RUN_TEST(octaspire_dern_vm_builtin_ln_at_sign_called_with_1_and_vector_1_2_3_test);
     RUN_TEST(octaspire_dern_vm_builtin_ln_at_sign_called_with_2_and_vector_1_2_3_test);

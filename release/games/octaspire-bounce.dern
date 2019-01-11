@@ -422,13 +422,13 @@
   (sdl2-gl-ortho-star-rotated (* {D+10} bounce-star-location-x) (* {D+10} bounce-star-location-y) {D+40} {D+5} bounce-star-angle)
   (sdl2-glColor4ub {X+FF} {X+FF} {X+FF} {X+FF})
   ; ui
-  (if (nuklear-begin bounce-nuklear-ctx [] {D+370} {D+500} {D+150} {D+90})
+  (if (nuklear-begin bounce-nuklear-ctx [] {D+370} {D+500} {D+155} {D+85})
     (do
-      (nuklear-layout-row-static bounce-nuklear-ctx {D+30} {D+150} {D+1})
+      (nuklear-layout-row-static bounce-nuklear-ctx {D+30} {D+130} {D+1})
         (if bounce-game-paused
-          (nuklear-label bounce-nuklear-ctx [-- PAUSED --] 'RIGHT)
+          (nuklear-label bounce-nuklear-ctx [-- PAUSED --] 'CENTERED)
           (nuklear-label bounce-nuklear-ctx (string-format [Level {}] (+ bounce-level-index {D+1})) 'RIGHT))
-      (nuklear-layout-row-static bounce-nuklear-ctx {D+30} {D+150} {D+1})
+      (nuklear-layout-row-static bounce-nuklear-ctx {D+30} {D+130} {D+1})
       (nuklear-progress bounce-nuklear-ctx (bounce-duration-to-impulse) {D+250} false)))
   (nuklear-end bounce-nuklear-ctx))
   [render game] '() howto-no)

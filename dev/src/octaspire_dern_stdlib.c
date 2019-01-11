@@ -9531,6 +9531,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         {
             if (numArgs > 2)
             {
@@ -9539,7 +9540,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
 
                 return octaspire_dern_vm_create_new_value_error_from_c_string(
                     vm,
-                    "Builtin 'cp@' expects exactly two arguments when used with string.");
+                    "Builtin 'cp@' expects exactly two arguments when used "
+                    "with text (string or symbol).");
             }
 
             octaspire_dern_value_t const * const indexVal =
@@ -9554,7 +9556,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
 
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Builtin 'cp@' expects integer as second argument when indexing a string. "
+                    "Builtin 'cp@' expects integer as second argument when "
+                    "indexing a text value (string or symbol). "
                     "Now type '%s' was given.",
                     octaspire_dern_value_helper_get_type_as_c_string(
                         indexVal->typeTag));
@@ -9563,7 +9566,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
             ptrdiff_t const index =
                 (ptrdiff_t)octaspire_dern_value_as_integer_get_value(indexVal);
 
-            if (!octaspire_dern_value_as_string_is_index_valid(
+            if (!octaspire_dern_value_as_text_is_index_valid(
                     collectionVal,
                     index))
             {
@@ -9572,7 +9575,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
 
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Index to builtin 'cp@' is not valid for the given string. "
+                    "Index to builtin 'cp@' is not valid for the given text "
+                    "value (string or symbol). "
 #ifdef __AROS__
                     "Index '%ld' was given.",
 #else
@@ -9586,8 +9590,8 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
 
             return octaspire_dern_vm_create_new_value_character_from_uint32t(
                 vm,
-                octaspire_string_get_ucs_character_at_index(
-                    collectionVal->value.string,
+                octaspire_dern_value_as_text_get_ucs_character_at_index(
+                    collectionVal,
                     index));
         }
 
@@ -9834,17 +9838,82 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_cp_at_sign(
             {
                 return octaspire_dern_vm_create_new_value_error_from_c_string(
                     vm,
-                    "Builtin 'cp@' expects exactly one argument when used with nil.");
+                    "Builtin 'cp@' expects exactly two arguments when used with nil.");
             }
 
             return octaspire_dern_vm_create_new_value_nil(vm);
         }
 
-        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        {
+            if (numArgs > 2)
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_from_c_string(
+                    vm,
+                    "Builtin 'cp@' expects exactly two arguments when used "
+                    "with integer.");
+            }
+
+            octaspire_dern_value_t const * const indexVal =
+                octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
+
+            octaspire_helpers_verify_not_null(indexVal);
+
+            if (!octaspire_dern_value_is_integer(indexVal))
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Builtin 'cp@' expects integer as second argument when "
+                    "indexing an integer value. "
+                    "Now type '%s' was given.",
+                    octaspire_dern_value_helper_get_type_as_c_string(
+                        indexVal->typeTag));
+            }
+
+            int32_t const index =
+                octaspire_dern_value_as_integer_get_value(indexVal);
+
+            if (index < -32 || index > 31)
+            {
+                octaspire_helpers_verify_true(
+                    stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+                return octaspire_dern_vm_create_new_value_error_format(
+                    vm,
+                    "Index to builtin 'cp@' must be between -32 .. 31 "
+                    "(inclusive) when indexing an integer. "
+#ifdef __AROS__
+                    "Index '%ld' was given.",
+#else
+                    "Index %" PRId32 " was given.",
+#endif
+                    index);
+            }
+
+            uint32_t const bits =
+                (uint32_t)octaspire_dern_value_as_integer_get_value(
+                    collectionVal);
+
+            uint32_t const realIndex = (index >= 0) ? index : (32 + index);
+            uint32_t const mask      = 1;
+
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_integer(
+                vm,
+                (bits & (mask << realIndex)) ? 1 : 0);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
         case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
-        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
         case OCTASPIRE_DERN_VALUE_TAG_ERROR:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:

@@ -2,3 +2,20 @@
 (+= (cp@ [abc] {D+1}) {D+2}))           ; |d|
 (ln@ (hash-map |a| [abc]) |a|   'hash)  ; [abc]
 (ln@ (hash-map |a| [abc]) {D+0} 'index) ; [abc]
+
+; Copy characters from text (string and symbol)
+
+(cp@ [abc] {D+1})                       ; |b|
+(cp@ 'ABC  {D+2})                       ; |A|
+
+; Copy bits from integer (32 bits available)
+
+(cp@ {B+1000} {D+2})                    ; {D+0}
+(cp@ {B+1000} {D+3})                    ; {D+1}
+(cp@ {B+1000} {D+31})                   ; {D+0}
+(cp@ {B+1000} {D-1})                    ; {D+0}
+
+; Copy values from containers
+
+(cp@ (vector |a| |b| |c|) {D+1})        ; |b|
+(cp@ (hash-map |a| [abc]) {D+0} 'index) ; [abc]
