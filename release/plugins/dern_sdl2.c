@@ -5393,6 +5393,100 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_circle_rotated(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+octaspire_dern_value_t *dern_sdl2_gl_ortho_square_box_rotated(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength     = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName    = "sdl2-gl-ortho-box-rotated";
+    size_t const         numArgsExpected = 4;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numArgsExpected)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgsExpected,
+            numArgs);
+    }
+
+    // x y width degrees
+    float args[4] = {0};
+
+    for (size_t i = 0; i < numArgsExpected; ++i)
+    {
+        octaspire_dern_value_t const * arg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
+
+        octaspire_helpers_verify_not_null(arg);
+
+        if (!octaspire_dern_value_is_number(arg))
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin '%s' expects number as %zu. argument. "
+                "Type '%s' was given.",
+                dernFuncName,
+                i + 1,
+                octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+        }
+
+        args[i] = octaspire_dern_value_as_number_get_value(arg);
+    }
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    glPushMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glTranslatef(args[0], args[1], 0);
+    glRotatef(OCTASPIRE_RADIAN_AS_DEGREES * args[3], 0, 0, 1);
+    glTranslatef(-args[0], -args[1], 0);
+
+    float const hw = 0.5f * args[2];
+
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(args[0] - hw, args[1] - hw);
+    glVertex2f(args[0] - hw, args[1] + hw);
+    glVertex2f(args[0] + hw, args[1] + hw);
+    glVertex2f(args[0] + hw, args[1] - hw);
+    glEnd();
+
+    // x in the middle
+    glBegin(GL_LINES);
+    glVertex2f(args[0] - hw, args[1] - hw);
+    glVertex2f(args[0] + hw, args[1] + hw);
+
+    glVertex2f(args[0] - hw, args[1] + hw);
+    glVertex2f(args[0] + hw, args[1] - hw);
+    glEnd();
+    glPopMatrix();
+#else
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_error_format(
+        vm,
+        "Builtin '%s' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.",
+        dernFuncName);
+#endif
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
 octaspire_dern_value_t *dern_sdl2_gl_ortho_star_rotated(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -8538,6 +8632,18 @@ bool dern_sdl2_init(
             dern_sdl2_gl_ortho_circle_rotated,
             5,
             "(sdl2-gl-ortho-circle-rotated x y radius segments degrees) -> true or error",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-gl-ortho-square-box-rotated",
+            dern_sdl2_gl_ortho_square_box_rotated,
+            5,
+            "(sdl2-gl-ortho-square-box-rotated x y width degrees) -> true or error",
             true,
             targetEnv))
     {

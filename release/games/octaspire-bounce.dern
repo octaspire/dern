@@ -40,6 +40,35 @@
 (define bounce-walls     as '() [all walls in the level])
 (define bounce-platforms as '() [all platforms in the level])
 (define bounce-slopes    as '() [all slopes in the level])
+(define bounce-boxes     as '() [all boxes in the level])
+
+(define bounce-box-add as (fn (x y)
+  (define slot as (bounce-make-empty-slot) [slot for the box])
+  (define box as (chipmunk-cpBodyNew {D+1} {D+1}) [the box body])
+  (chipmunk-cpSpaceAddBody bounce-space box)
+  (define box-shape as
+    (chipmunk-cpBoxShapeNew box {D+4.0} {D+4.0} {D+0.1})
+    [box collision shape])
+  (chipmunk-cpShapeSetFriction box-shape {D+0.8})
+  (chipmunk-cpSpaceAddShape bounce-space box-shape)
+  (chipmunk-cpBodySetPosition        box (chipmunk-cpv x y))
+  (chipmunk-cpBodySetVelocity        box (chipmunk-cpv))
+  (chipmunk-cpBodySetAngularVelocity box {D+0})
+  (= slot 'body box)
+  (= slot 'x1   x)
+  (= slot 'y1   y)
+  (+= bounce-boxes slot))
+  [add new box in the level] '(x [x] y [y]) howto-no)
+
+(define bounce-box-draw as (fn (slot)
+  (define body         as (ln@ slot 'body 'hash) [body of the box])
+  (define pos          as (chipmunk-cpBodyGetPosition body) [position of the box])
+  (define cx           as (* {D+10} (chipmunk-cpv-get-x pos))  [x component])
+  (define cy           as (* {D+10} (chipmunk-cpv-get-y pos))  [y component])
+  (sdl2-glColor4ub {X+0} {X+AA} {X+0} {X+FF})
+  (sdl2-gl-ortho-square-box-rotated cx cy {D+40} (chipmunk-cpBodyGetAngle body))
+  (sdl2-glColor4ub {X+FF} {X+FF} {X+FF} {X+FF}))
+  [draw a box] '(slot [slot containing the box]) howto-no)
 
 (define bounce-wall-add as (fn (x1 y1 x2 y2)
   (define slot as (bounce-make-empty-slot) [slot for the wall])
@@ -180,6 +209,7 @@
   (= bounce-walls     '())
   (= bounce-platforms '())
   (= bounce-slopes    '())
+  (= bounce-boxes     '())
   (define bounce-space as (chipmunk-cpSpaceNew) [chipmunk space] in (env-global))
   (define gravity as (chipmunk-cpv {D+0} {D-100}) [Gravity vector])
   (chipmunk-cpSpaceSetGravity bounce-space gravity)
@@ -315,6 +345,28 @@
   (for i from {D+0} to {D+5}
     (bounce-slope-add (+ {D-155} (* i {D+50})) {D+100} (+ {D-125} (* i {D+50})) {D+97})) ; top row
 
+  (bounce-box-add {D-135} {D+101})
+  (bounce-box-add {D-85}  {D+101})
+  (bounce-box-add {D-35}  {D+101})
+  (bounce-box-add {D+15}  {D+101})
+  (bounce-box-add {D+65}  {D+101})
+
+  (bounce-wall-add {D-155} {D+90} {D+120} {D+90}) ; separator
+  (bounce-wall-add {D-155} {D+90} {D-155} {D+94}) ; separator left end
+  (bounce-wall-add {D+120} {D+90} {D+120} {D+94}) ; separator right end
+
+  (for i from {D+1} to {D+5}
+    (bounce-slope-add (+ {D-155} (* i {D+50})) {D+57} (+ {D-125} (* i {D+50})) {D+60})) ; 2. row
+
+  (bounce-slope-add {D+125} {D+60} {D+155} {D+105})
+
+  (bounce-box-add {D+123} {D+64})
+  (bounce-box-add {D+123} {D+67})
+
+  (bounce-wall-add {D-115} {D+50} {D+120} {D+50}) ; separator
+  (bounce-wall-add {D-115} {D+50} {D-115} {D+54}) ; separator left end
+  (bounce-wall-add {D+120} {D+50} {D+120} {D+54}) ; separator right end
+
   (bounce-ball-add  {D-154} {D+120}))
   [load a level] '() howto-no)
 
@@ -415,6 +467,9 @@
   ; platforms
   (for i in bounce-platforms
        (bounce-platform-draw i))
+  ; boxes
+  (for i in bounce-boxes
+       (bounce-box-draw i))
   ; slopes
   (for i in bounce-slopes
     (bounce-slope-draw i))
