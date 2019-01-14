@@ -707,6 +707,19 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // to-real
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "to-real",
+        octaspire_dern_vm_builtin_to_real,
+        1,
+        "Give value or values as real number(s)",
+        true,
+        env))
+    {
+        abort();
+    }
+
     // print
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,

@@ -367,6 +367,22 @@
   (bounce-wall-add {D-115} {D+50} {D-115} {D+54}) ; separator left end
   (bounce-wall-add {D+120} {D+50} {D+120} {D+54}) ; separator right end
 
+  (bounce-slope-add {D-155} {D+40} {D-120} {D+30})  ; 3. row
+
+  (for i from {D+1} to {D+5}
+    (bounce-slope-add (+ {D-155} (* i {D+50})) {D+10} (+ {D-125} (* i {D+50})) {D+7}))
+
+  (bounce-box-add {D-95} {D+12})
+
+  (bounce-wall-add {D-115} {D+0} {D+120} {D+0}) ; separator
+  (bounce-wall-add {D-115} {D+0} {D-115} {D+4}) ; separator left end
+  (bounce-wall-add {D+120} {D+0} {D+120} {D+4}) ; separator right end
+
+  (bounce-slope-add {D-50} {D-50} {D+155} {D+0})  ; 4. row
+
+  (bounce-slope-add {D-90} {D-60} {D+100} {D-80}) ; 5. row
+  (bounce-box-add {D-85} {D-58})
+
   (bounce-ball-add  {D-154} {D+120}))
   [load a level] '() howto-no)
 
@@ -554,6 +570,17 @@
         (= bounce-key-down-duration {D+0}))))
   [handle keydup-event] '(event [event]) howto-no)
 
+(define bounce-handle-mousedown as (fn (event)
+  (define keymod as (sdl2-GetModState) [modifier state])
+  (if (not (ln@ keymod 'KMOD_SHIFT 'hash)) (return))
+  (define x as (ln@ event {D+1}) [mouse x])
+  (define y as (ln@ event {D+2}) [mouse y])
+  (define world as (sdl2-gl-screen-to-world x y) [world coordinates])
+  (chipmunk-cpBodySetPosition        bounce-ball (chipmunk-cpv (/ (ln@ world {D+0}) {D+10}) (/ (ln@ world {D+1}) {D+10})))
+  (chipmunk-cpBodySetVelocity        bounce-ball (chipmunk-cpv))
+  (chipmunk-cpBodySetAngularVelocity bounce-ball {D+0}))
+  [handle mouse button down-event] '(event [event]) howto-no)
+
 (define bounce-is-player-on-star as (fn ()
   (define ball-pos as (chipmunk-cpBodyGetPosition bounce-ball) [position of the ball])
   (define ball-x   as (chipmunk-cpv-get-x ball-pos) [x component])
@@ -574,9 +601,10 @@
       (do
           (if (== type 'KEYDOWN) (bounce-handle-keydown event))
           (return)))
-  (select (== type 'QUIT)    (= bounce-running false)
-          (== type 'KEYDOWN) (bounce-handle-keydown event)
-          (== type 'KEYUP)   (bounce-handle-keyup   event)))
+  (select (== type 'QUIT)            (= bounce-running false)
+          (== type 'MOUSEBUTTONDOWN) (bounce-handle-mousedown event)
+          (== type 'KEYDOWN)         (bounce-handle-keydown   event)
+          (== type 'KEYUP)           (bounce-handle-keyup     event)))
   [handle input] '() howto-no)
 
 (define bounce-update-game as (fn (dt)

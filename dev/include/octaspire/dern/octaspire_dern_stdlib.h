@@ -162,6 +162,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_to_real(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_print(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

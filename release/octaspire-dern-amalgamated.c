@@ -26224,7 +26224,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "475"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "476"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -28265,6 +28265,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_string(
     octaspire_dern_value_t *environment);
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_to_real(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
@@ -38888,6 +38893,97 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_string(
         }
 
         return octaspire_dern_vm_create_new_value_string(vm, str);
+    }
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_to_real(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "to-real";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+    size_t const numExpectedArgs = 1;
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const value =
+        octaspire_dern_value_as_vector_get_element_at_const(
+            arguments,
+            0);
+
+    // TODO other types
+    if (octaspire_dern_value_is_number(value))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_real(
+            vm,
+            octaspire_dern_value_as_number_get_value(value));
+    }
+    else if (octaspire_dern_value_is_character(value))
+    {
+        octaspire_string_t const * const str =
+            value->value.character;
+
+        octaspire_helpers_verify_not_null(str);
+
+        if (octaspire_string_is_index_valid(str, 0))
+        {
+            return octaspire_dern_vm_create_new_value_real(
+                vm,
+                (double)(octaspire_string_get_ucs_character_at_index(str, 0)));
+        }
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_real(vm, 0.0);
+    }
+    else if (octaspire_dern_value_is_text(value))
+    {
+        // TODO error checking.
+        double const valueAsReal = strtod(
+            octaspire_dern_value_as_text_get_c_string(value),
+            0);
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_real(vm, valueAsReal);
+    }
+    else
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "First argument to '%s' is currently unsupported type. "
+            "Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(value->typeTag));
     }
 }
 
@@ -50155,6 +50251,19 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_builtin_to_integer,
         1,
         "Give value or values as integer(s)",
+        true,
+        env))
+    {
+        abort();
+    }
+
+    // to-real
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "to-real",
+        octaspire_dern_vm_builtin_to_real,
+        1,
+        "Give value or values as real number(s)",
         true,
         env))
     {
@@ -77093,6 +77202,94 @@ TEST octaspire_dern_vm_recursive_fibonacci_function_20_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_to_real_called_with_integer_10_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t const * const evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-real {D+10})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_REAL, evaluatedValue->typeTag);
+    ASSERT_IN_RANGE(10.0, evaluatedValue->value.real, 0.000001);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_to_integer_called_with_real_10dot12_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t const * const evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-integer {D+10.12})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(10, evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_to_string_called_with_integer_10_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t const * const evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string {D+10})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "{D+10}",
+        octaspire_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_to_string_called_with_character_a_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t const * const evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string |a|)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "|a|",
+        octaspire_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_allocator_new(0);
@@ -77643,6 +77840,11 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_eval_unbalanced_parenthesis_2_test);
 
     RUN_TEST(octaspire_dern_vm_recursive_fibonacci_function_20_test);
+
+    RUN_TEST(octaspire_dern_vm_builtin_to_real_called_with_integer_10_test);
+    RUN_TEST(octaspire_dern_vm_builtin_to_integer_called_with_real_10dot12_test);
+    RUN_TEST(octaspire_dern_vm_builtin_to_string_called_with_integer_10_test);
+    RUN_TEST(octaspire_dern_vm_builtin_to_string_called_with_character_a_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;

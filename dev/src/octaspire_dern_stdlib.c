@@ -4968,6 +4968,97 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_string(
     }
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_to_real(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "to-real";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+    size_t const numExpectedArgs = 1;
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const value =
+        octaspire_dern_value_as_vector_get_element_at_const(
+            arguments,
+            0);
+
+    // TODO other types
+    if (octaspire_dern_value_is_number(value))
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_real(
+            vm,
+            octaspire_dern_value_as_number_get_value(value));
+    }
+    else if (octaspire_dern_value_is_character(value))
+    {
+        octaspire_string_t const * const str =
+            value->value.character;
+
+        octaspire_helpers_verify_not_null(str);
+
+        if (octaspire_string_is_index_valid(str, 0))
+        {
+            return octaspire_dern_vm_create_new_value_real(
+                vm,
+                (double)(octaspire_string_get_ucs_character_at_index(str, 0)));
+        }
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_real(vm, 0.0);
+    }
+    else if (octaspire_dern_value_is_text(value))
+    {
+        // TODO error checking.
+        double const valueAsReal = strtod(
+            octaspire_dern_value_as_text_get_c_string(value),
+            0);
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_real(vm, valueAsReal);
+    }
+    else
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "First argument to '%s' is currently unsupported type. "
+            "Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(value->typeTag));
+    }
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,

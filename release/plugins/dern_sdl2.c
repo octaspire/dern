@@ -1807,6 +1807,119 @@ octaspire_dern_value_t *dern_sdl2_PollEvent(
     }
 }
 
+octaspire_dern_value_t *dern_sdl2_GetModState(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "sdl2-GetModState";
+    size_t const         numArgsExpected = 0;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numArgsExpected)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgsExpected,
+            numArgs);
+    }
+
+    SDL_Keymod const keymod = SDL_GetModState();
+
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_create_new_value_hash_map(vm);
+
+    octaspire_helpers_verify_not_null(result);
+    octaspire_helpers_verify_true(octaspire_dern_vm_push_value(vm, result));
+
+    SDL_Keymod values[] =
+    {
+        KMOD_NONE,
+        KMOD_LSHIFT,
+        KMOD_RSHIFT,
+        KMOD_LCTRL,
+        KMOD_RCTRL,
+        KMOD_LALT,
+        KMOD_RALT,
+        KMOD_LGUI,
+        KMOD_RGUI,
+        KMOD_NUM,
+        KMOD_CAPS,
+        KMOD_MODE,
+        KMOD_CTRL,
+        KMOD_SHIFT,
+        KMOD_ALT,
+        KMOD_GUI
+    };
+
+    char const * const ids[] =
+    {
+        "KMOD_NONE",
+        "KMOD_LSHIFT",
+        "KMOD_RSHIFT",
+        "KMOD_LCTRL",
+        "KMOD_RCTRL",
+        "KMOD_LALT",
+        "KMOD_RALT",
+        "KMOD_LGUI",
+        "KMOD_RGUI",
+        "KMOD_NUM",
+        "KMOD_CAPS",
+        "KMOD_MODE",
+        "KMOD_CTRL",
+        "KMOD_SHIFT",
+        "KMOD_ALT",
+        "KMOD_GUI"
+    };
+
+    for (size_t i = 0; i < (sizeof(values) / sizeof(values[0])); ++i)
+    {
+        octaspire_dern_value_t * const key =
+            octaspire_dern_vm_create_new_value_symbol_from_c_string(
+                vm,
+                ids[i]);
+
+        octaspire_helpers_verify_true(octaspire_dern_vm_push_value(vm, key));
+
+        octaspire_dern_value_t * const value =
+            octaspire_dern_vm_create_new_value_boolean(
+                vm,
+                (keymod & values[i]));
+
+        octaspire_helpers_verify_true(octaspire_dern_vm_push_value(vm, value));
+
+        uint32_t const hash = octaspire_dern_value_get_hash(key);
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_value_as_hash_map_put(
+                result,
+                hash,
+                key,
+                value));
+
+        octaspire_helpers_verify_true(octaspire_dern_vm_pop_value(vm, value));
+        octaspire_helpers_verify_true(octaspire_dern_vm_pop_value(vm, key));
+    }
+
+    octaspire_helpers_verify_true(octaspire_dern_vm_pop_value(vm, result));
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return result;
+}
+
 octaspire_dern_value_t *dern_sdl2_CreateTexture(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -4500,6 +4613,167 @@ octaspire_dern_value_t *dern_sdl2_gluLookAt(
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
+}
+
+octaspire_dern_value_t *dern_sdl2_gl_screen_to_world(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const         stackLength  = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName = "sdl2-gl-screen-to-world";
+    size_t const         numArgsExpected = 2;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numArgsExpected)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgsExpected,
+            numArgs);
+    }
+
+    // x y
+    float args[2] = {0};
+
+    for (size_t i = 0; i < 2; ++i)
+    {
+        octaspire_dern_value_t const * arg =
+            octaspire_dern_value_as_vector_get_element_at_const(arguments, i);
+
+        octaspire_helpers_verify_not_null(arg);
+
+        if (!octaspire_dern_value_is_number(arg))
+        {
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin '%s' expects number as %zu. argument. "
+                "Type '%s' was given.",
+                dernFuncName,
+                i,
+                octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+        }
+
+        args[i] = octaspire_dern_value_as_number_get_value(arg);
+    }
+
+    octaspire_dern_value_t * const result =
+        octaspire_dern_vm_create_new_value_vector(vm);
+
+    octaspire_helpers_verify_not_null(result);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_push_value(vm, result));
+
+#ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
+    GLint   viewport[4]   = {0}; // x, y, width, height.
+    GLdouble   modv[16]   = {0}; // Model view matrix.
+    GLdouble   proj[16]   = {0}; // Projection matrix.
+    GLint      mouseYinGL = 0;   // Mouse y converted for OpenGL.
+    GLdouble   wx         = 0;
+    GLdouble   wy         = 0;
+    GLdouble   wz         = 0;
+    GLfloat    depth[2]   = {0};
+
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glGetDoublev(GL_MODELVIEW_MATRIX,  modv);
+    glGetDoublev(GL_PROJECTION_MATRIX, proj);
+    mouseYinGL = viewport[3] - (GLint)(args[1]) - 1;
+
+    glReadPixels(
+        args[0],            // mouse x
+        mouseYinGL,         // mouse y
+        1,                  // width
+        1,                  // height
+        GL_DEPTH_COMPONENT, // format
+        GL_FLOAT,           // type
+        depth);             // result
+
+    GLdouble const winX = args[0];    // Mouse x.
+    GLdouble const winY = mouseYinGL; // Converted mouse y.
+    GLdouble const winZ = depth[0];   // Depth used as the z.
+
+    if (gluUnProject(winX, winY, winZ, modv, proj, viewport, &wx, &wy, &wz) ==
+        GL_TRUE)
+    {
+        octaspire_dern_value_t * value =
+            octaspire_dern_vm_create_new_value_real(vm, wx);
+
+        octaspire_helpers_verify_not_null(value);
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_value_as_vector_push_back_element(
+                result,
+                &value));
+
+        value = octaspire_dern_vm_create_new_value_real(vm, wy);
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_value_as_vector_push_back_element(
+                result,
+                &value));
+
+        value = octaspire_dern_vm_create_new_value_real(vm, wz);
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_value_as_vector_push_back_element(
+                result,
+                &value));
+
+        octaspire_helpers_verify_true(octaspire_dern_vm_pop_value(vm, result));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+    else
+    {
+        octaspire_helpers_verify_true(octaspire_dern_vm_pop_value(vm, result));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        // TODO better error checks:
+        // 1. clear any possible old errors before doing OpenGL operations.
+        // 2. use a helper function that pulls all the errors, if there
+        //    is more than one and concatenates them into an
+        //    error message. The function can then return either an error value
+        //    or boolean value true (or maybe 0) if there is no errors.
+
+        GLenum error = glGetError();
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' failed; 'gluUnProject' failed: %s",
+            dernFuncName,
+            (error != GL_NO_ERROR) ? dern_sdl2_glError_to_cstr(error) : "");
+    }
+#else
+    octaspire_helpers_verify_true(octaspire_dern_vm_pop_value(vm, result));
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return octaspire_dern_vm_create_new_value_error_format(
+        vm,
+        "Builtin '%s' failed."
+        "Dern SDL2 plugin is compiled without OpenGL support.",
+        dernFuncName);
+#endif
 }
 
 octaspire_dern_value_t *dern_sdl2_gluPerspective(
@@ -8251,6 +8525,18 @@ bool dern_sdl2_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
+            "sdl2-GetModState",
+            dern_sdl2_GetModState,
+            0,
+            "(sdl2-GetModState) -> hash_map or error",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
             "sdl2-CreateTexture",
             dern_sdl2_CreateTexture,
             4,
@@ -8520,6 +8806,18 @@ bool dern_sdl2_init(
 
     if (!octaspire_dern_vm_create_and_register_new_builtin(
             vm,
+            "sdl2-gl-screen-to-world",
+            dern_sdl2_gl_screen_to_world,
+            2,
+            "(sdl2-gl-screen-to-world x y) -> (x y z) or error\n",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
             "sdl2-gluPerspective",
             dern_sdl2_gluPerspective,
             3,
@@ -8642,7 +8940,7 @@ bool dern_sdl2_init(
             vm,
             "sdl2-gl-ortho-square-box-rotated",
             dern_sdl2_gl_ortho_square_box_rotated,
-            5,
+            4,
             "(sdl2-gl-ortho-square-box-rotated x y width degrees) -> true or error",
             true,
             targetEnv))

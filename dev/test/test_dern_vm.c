@@ -17446,6 +17446,94 @@ TEST octaspire_dern_vm_recursive_fibonacci_function_20_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_to_real_called_with_integer_10_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t const * const evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-real {D+10})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_REAL, evaluatedValue->typeTag);
+    ASSERT_IN_RANGE(10.0, evaluatedValue->value.real, 0.000001);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_to_integer_called_with_real_10dot12_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t const * const evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-integer {D+10.12})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
+    ASSERT_EQ(10, evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_to_string_called_with_integer_10_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t const * const evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string {D+10})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "{D+10}",
+        octaspire_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_to_string_called_with_character_a_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t const * const evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string |a|)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "|a|",
+        octaspire_string_get_c_string(evaluatedValue->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_allocator_new(0);
@@ -17996,6 +18084,11 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_eval_unbalanced_parenthesis_2_test);
 
     RUN_TEST(octaspire_dern_vm_recursive_fibonacci_function_20_test);
+
+    RUN_TEST(octaspire_dern_vm_builtin_to_real_called_with_integer_10_test);
+    RUN_TEST(octaspire_dern_vm_builtin_to_integer_called_with_real_10dot12_test);
+    RUN_TEST(octaspire_dern_vm_builtin_to_string_called_with_integer_10_test);
+    RUN_TEST(octaspire_dern_vm_builtin_to_string_called_with_character_a_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;
