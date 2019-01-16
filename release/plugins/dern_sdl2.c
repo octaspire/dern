@@ -1895,7 +1895,9 @@ octaspire_dern_value_t *dern_sdl2_GetModState(
         octaspire_dern_value_t * const value =
             octaspire_dern_vm_create_new_value_boolean(
                 vm,
-                (keymod & values[i]));
+                (values[i] == KMOD_NONE) ?
+                    (keymod == 0) :
+                    (keymod & values[i]));
 
         octaspire_helpers_verify_true(octaspire_dern_vm_push_value(vm, value));
 

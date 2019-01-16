@@ -358,7 +358,7 @@
   (for i from {D+1} to {D+5}
     (bounce-slope-add (+ {D-155} (* i {D+50})) {D+57} (+ {D-125} (* i {D+50})) {D+60})) ; 2. row
 
-  (bounce-slope-add {D+125} {D+60} {D+155} {D+105})
+  (bounce-slope-add {D+125} {D+60} {D+155} {D+115})
 
   (bounce-box-add {D+123} {D+64})
   (bounce-box-add {D+123} {D+67})
@@ -367,7 +367,7 @@
   (bounce-wall-add {D-115} {D+50} {D-115} {D+54}) ; separator left end
   (bounce-wall-add {D+120} {D+50} {D+120} {D+54}) ; separator right end
 
-  (bounce-slope-add {D-155} {D+40} {D-120} {D+30})  ; 3. row
+  (bounce-slope-add {D-155} {D+85} {D-110} {D+20})  ; 3. row
 
   (for i from {D+1} to {D+5}
     (bounce-slope-add (+ {D-155} (* i {D+50})) {D+10} (+ {D-125} (* i {D+50})) {D+7}))
@@ -379,8 +379,9 @@
   (bounce-wall-add {D+120} {D+0} {D+120} {D+4}) ; separator right end
 
   (bounce-slope-add {D-50} {D-50} {D+155} {D+0})  ; 4. row
+  (bounce-wall-add {D+156} {D+5} {D+156} {D+0}) ; stopper wall right end
 
-  (bounce-slope-add {D-90} {D-60} {D+100} {D-80}) ; 5. row
+  (bounce-slope-add {D-125} {D-60} {D+100} {D-80}) ; 5. row
   (bounce-box-add {D-85} {D-58})
 
   (bounce-ball-add  {D-154} {D+120}))
@@ -538,6 +539,17 @@
    key while a jump key is held down cancels the jump. !#
 (define current-jump-key as [] [currently held jump key, if any])
 
+(define bounce-clear-jump-key as (fn ()
+  (= current-jump-key [])
+  (= bounce-key-down-time {D+0})
+  (= bounce-key-down-duration {D+0}))
+  [clear jump data] '() howto-no)
+
+(define bounce-is-modifier-down as (fn ()
+  (define keymod as (sdl2-GetModState) [modifier state])
+  (not (cp@ keymod 'KMOD_NONE 'hash)))
+  [is modifier key down] '() howto-no)
+
 (define bounce-handle-keydown as (fn (event)
   (define key as (ln@ event {D+1}) [key])
   (if (ln@ event {D+4}) (return)) ; don't handle repeat events.
@@ -551,23 +563,24 @@
   (if (== (ln@ event {D+1}) [LEFT])  (if (== (ln@ event {D+2}) [KMOD_LCTRL]) (bounce-level-prev)))
   (if (== (ln@ event {D+1}) [RIGHT]) (if (== (ln@ event {D+2}) [KMOD_LCTRL]) (bounce-level-next)))
   (if (not bounce-ball-on-platform) (return))
-  (if (== current-jump-key [])
+  (if (and (== current-jump-key []) (not (bounce-is-modifier-down)))
       (do
         (= current-jump-key key)
         (= bounce-key-down-time (sdl2-GetTicks)))
-      (= current-jump-key [])))
+      (bounce-clear-jump-key)))
   [handle keydown-event] '(event [event]) howto-no)
 
 (define bounce-handle-keyup as (fn (event)
   (define key as (ln@ event {D+1}) [key])
-  (if (not bounce-ball-on-platform) (return))
+  (if (not bounce-ball-on-platform)
+    (do
+      (bounce-clear-jump-key)
+      (return)))
   (if (== key current-jump-key)
       (do
         (= bounce-key-down-duration (- (sdl2-GetTicks) bounce-key-down-time))
-        (= current-jump-key [])
-        (= bounce-key-down-time {D+0})
-        (bounce-ball-apply-impulse (chipmunk-cpv {D+0} (bounce-duration-to-impulse)))
-        (= bounce-key-down-duration {D+0}))))
+          (bounce-ball-apply-impulse (chipmunk-cpv {D+0} (bounce-duration-to-impulse)))))
+  (bounce-clear-jump-key))
   [handle keydup-event] '(event [event]) howto-no)
 
 (define bounce-handle-mousedown as (fn (event)
