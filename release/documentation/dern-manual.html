@@ -578,7 +578,7 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><span class="normal">git clone https</span><span class="symbol">:</span><span class="normal">//github</span><span class="symbol">.</span><span class="normal">com/octaspire/dern</span><span class="symbol">.</span><span class="normal">git</span>
 <span class="normal">cd dern/release</span>
-<span class="normal">how-to-build/windows</span><span class="symbol">.</span><span class="normal">sh</span>
+<span class="normal">how-to-build/windows-mingw</span><span class="symbol">.</span><span class="normal">sh</span>
 </pre>
 
   <p>
@@ -587,7 +587,39 @@ http://www.gnu.org/software/src-highlite -->
     in the <b>Command Prompt</b> window (NOT in the Git Bash window).
   </p>
 
-    <h3>2.5 ReactOS</h3>
+    <h3>2.5 Windows using MSVC and Git</h3>
+
+  <p>
+    Download and install <b>Visual Studio 2017 (Community edition)</b> and
+    <b>Git</b>.
+  </p>
+
+  <p>
+    Start <b>Developer Command Prompt for VS 2017</b>.
+    It can be found under <i>Visual Studio 2017</i> in
+    the start menu.
+  </p>
+
+  <p>
+    Please note, that you cannot use regular windows command
+    prompt.
+  </p>
+
+  <p>
+    Enter the following commands into the <i>Developer Command Prompt</i>:
+  </p>
+
+<!-- Generator: GNU source-highlight 3.1.8
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><span class="function">cd</span><span class="normal"> </span><span class="path">c:\</span>
+<span class="normal">git clone http</span><span class="path">s:</span><span class="symbol">//</span><span class="normal">github</span><span class="symbol">.</span><span class="normal">com</span><span class="symbol">/</span><span class="normal">octaspire</span><span class="symbol">/</span><span class="normal">dern</span><span class="symbol">.</span><span class="normal">git</span>
+<span class="function">cd</span><span class="normal"> dern</span><span class="symbol">\</span><span class="normal">release</span>
+<span class="normal">how</span><span class="symbol">-</span><span class="normal">to</span><span class="symbol">-</span><span class="normal">build</span><span class="symbol">\</span><span class="normal">windows</span><span class="symbol">-</span><span class="normal">msvc</span><span class="symbol">.</span><span class="normal">bat</span>
+</pre>
+
+    <h3>2.6 ReactOS</h3>
 
   <p>
     Use <b>ReactOS Applications Manager</b> to install
@@ -607,7 +639,7 @@ http://www.gnu.org/software/src-highlite -->
     the <b>version-x.y.z</b> directory.
   </p>
 
-    <h3>2.6 AmigaOS 4.x</h3>
+    <h3>2.7 AmigaOS 4.x</h3>
 
   <p>
     Download and install
@@ -2178,7 +2210,7 @@ http://www.gnu.org/software/src-highlite -->
 
   <div class="footer">
     <p>
-      Copyright © 2017, 2018 octaspire.com<br/>
+      Copyright © 2017, 2018, 2019 octaspire.com<br/>
       All content in this site is released under the Apache 2.0 license,
       unless stated otherwise.
     </p>

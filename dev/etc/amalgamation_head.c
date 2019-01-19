@@ -1,6 +1,6 @@
 /******************************************************************************
 Octaspire Dern - Programming language
-Copyright 2017, 2018 www.octaspire.com
+Copyright 2017 - 2019 www.octaspire.com
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,6 +26,10 @@ limitations under the License.
 ******************************************************************************/
 #ifndef OCTASPIRE_DERN_AMALGAMATED_H
 #define OCTASPIRE_DERN_AMALGAMATED_H
+
+#ifdef _MSC_VER
+#include <windows.h>
+#endif
 
 #ifdef OCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 #ifdef _WIN32

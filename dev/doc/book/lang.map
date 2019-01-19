@@ -1,3 +1,4 @@
 dern = dern.lang
 sh = sh.lang
 c  = c.lang
+bat = bat.lang
