@@ -238,7 +238,9 @@ static void octaspire_dern_repl_private_cleanup(void)
 #ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
 void main(int argc, char *argv[])
 #else
-    #ifdef _WIN32
+    #ifdef _MSC_VER
+    int main(int argc, char *argv[], char *envp[])
+    #elif _WIN32
     int main(int argc, char *argv[], char *environ[])
     #elif __amigaos__
     int main(int argc, char *argv[], char *environ[])
@@ -446,7 +448,11 @@ void main(int argc, char *argv[])
     #endif
 #endif
 
-    for (char **var = environ; *var; ++var)
+#ifdef _MSC_VER
+    for (char **var = envp; (var && *var); ++var)
+#else
+    for (char **var = environ; (var && *var); ++var)
+#endif
     {
         octaspire_dern_vm_add_environment_variable(vm, *var);
     }

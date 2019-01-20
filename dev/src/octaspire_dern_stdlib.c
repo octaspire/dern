@@ -7344,7 +7344,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_times(
             {
                 allArgsAreIntegers = false;
 
-                integerResult *= currentArg->value.real;
+                integerResult *= (int32_t)(currentArg->value.real);
                 realResult    *= currentArg->value.real;
             }
             break;
@@ -7441,7 +7441,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_numerical(
             {
                 allArgsAreIntegers = false;
 
-                integerResult += currentArg->value.real;
+                integerResult += (int32_t)(currentArg->value.real);
                 realResult    += currentArg->value.real;
             }
             break;
@@ -8239,7 +8239,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_minus_numerical(
                     }
                     else
                     {
-                        integerResult -= currentArg->value.real;
+                        integerResult -= (int32_t)(currentArg->value.real);
                         realResult    -= currentArg->value.real;
                     }
                 }

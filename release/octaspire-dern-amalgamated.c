@@ -26337,7 +26337,7 @@ limitations under the License.
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
 #define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "479"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "2"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
     OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "." \
@@ -30843,7 +30843,7 @@ static size_t octaspire_dern_lexer_private_expect_semver_number(
             for (size_t i = 0; i < nextDigitIndex; ++i)
             {
                 char const c = digits[nextDigitIndex - 1 - i];
-                *result += (pow(10, i) * (c - '0'));
+                *result += (size_t)(pow(10, i) * (c - '0'));
             }
 
             return nextDigitIndex;
@@ -30859,7 +30859,7 @@ static size_t octaspire_dern_lexer_private_expect_semver_number(
     for (size_t i = 0; i < nextDigitIndex; ++i)
     {
         char const c = digits[nextDigitIndex - 1 - i];
-        *result += (pow(10, i) * (c - '0'));
+        *result += (size_t)(pow(10, i) * (c - '0'));
     }
 
     return nextDigitIndex;
@@ -31157,11 +31157,11 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
 
         if (c >= '0' && c <= '9')
         {
-            value += (pow(base, i) * (c - '0'));
+            value += (size_t)(pow(base, i) * (c - '0'));
         }
         else
         {
-            value += (pow(base, i) * (10 + (tolower(c) - 'a')));
+            value += (size_t)(pow(base, i) * (10 + (tolower(c) - 'a')));
         }
     }
 
@@ -31184,7 +31184,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
             allocator);
     }
 
-    int32_t const resultValue = (int32_t)value * factor;
+    int32_t const resultValue = (int32_t)((int32_t)value * factor);
 
     return octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER,
@@ -41384,7 +41384,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_times(
             {
                 allArgsAreIntegers = false;
 
-                integerResult *= currentArg->value.real;
+                integerResult *= (int32_t)(currentArg->value.real);
                 realResult    *= currentArg->value.real;
             }
             break;
@@ -41481,7 +41481,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_plus_numerical(
             {
                 allArgsAreIntegers = false;
 
-                integerResult += currentArg->value.real;
+                integerResult += (int32_t)(currentArg->value.real);
                 realResult    += currentArg->value.real;
             }
             break;
@@ -42279,7 +42279,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_private_minus_numerical(
                     }
                     else
                     {
-                        integerResult -= currentArg->value.real;
+                        integerResult -= (int32_t)(currentArg->value.real);
                         realResult    -= currentArg->value.real;
                     }
                 }
@@ -52025,7 +52025,7 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_symbol_from_c_
 
 octaspire_dern_value_t *octaspire_dern_vm_create_new_value_error(
     octaspire_dern_vm_t *self,
-    octaspire_string_t * value)
+    octaspire_string_t * const value)
 {
     octaspire_dern_value_t *result = octaspire_dern_vm_private_create_new_value_struct(
         self,
@@ -55633,7 +55633,9 @@ static void octaspire_dern_repl_private_cleanup(void)
 #ifdef OCTASPIRE_PLAN9_IMPLEMENTATION
 void main(int argc, char *argv[])
 #else
-    #ifdef _WIN32
+    #ifdef _MSC_VER
+    int main(int argc, char *argv[], char *envp[])
+    #elif _WIN32
     int main(int argc, char *argv[], char *environ[])
     #elif __amigaos__
     int main(int argc, char *argv[], char *environ[])
@@ -55841,7 +55843,11 @@ void main(int argc, char *argv[])
     #endif
 #endif
 
-    for (char **var = environ; *var; ++var)
+#ifdef _MSC_VER
+    for (char **var = envp; (var && *var); ++var)
+#else
+    for (char **var = environ; (var && *var); ++var)
+#endif
     {
         octaspire_dern_vm_add_environment_variable(vm, *var);
     }

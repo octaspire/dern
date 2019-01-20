@@ -1437,7 +1437,7 @@ static size_t octaspire_dern_lexer_private_expect_semver_number(
             for (size_t i = 0; i < nextDigitIndex; ++i)
             {
                 char const c = digits[nextDigitIndex - 1 - i];
-                *result += (pow(10, i) * (c - '0'));
+                *result += (size_t)(pow(10, i) * (c - '0'));
             }
 
             return nextDigitIndex;
@@ -1453,7 +1453,7 @@ static size_t octaspire_dern_lexer_private_expect_semver_number(
     for (size_t i = 0; i < nextDigitIndex; ++i)
     {
         char const c = digits[nextDigitIndex - 1 - i];
-        *result += (pow(10, i) * (c - '0'));
+        *result += (size_t)(pow(10, i) * (c - '0'));
     }
 
     return nextDigitIndex;
@@ -1751,11 +1751,11 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
 
         if (c >= '0' && c <= '9')
         {
-            value += (pow(base, i) * (c - '0'));
+            value += (size_t)(pow(base, i) * (c - '0'));
         }
         else
         {
-            value += (pow(base, i) * (10 + (tolower(c) - 'a')));
+            value += (size_t)(pow(base, i) * (10 + (tolower(c) - 'a')));
         }
     }
 
@@ -1778,7 +1778,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_integer_or_real_n
             allocator);
     }
 
-    int32_t const resultValue = (int32_t)value * factor;
+    int32_t const resultValue = (int32_t)((int32_t)value * factor);
 
     return octaspire_dern_lexer_token_new(
         OCTASPIRE_DERN_LEXER_TOKEN_TAG_INTEGER,
