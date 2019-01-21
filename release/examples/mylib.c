@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "octaspire-dern-amalgamated.c"
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *mylib_say(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
@@ -30,6 +33,9 @@ octaspire_dern_value_t *mylib_say(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool mylib_init(octaspire_dern_vm_t * const vm, octaspire_dern_environment_t * const targetEnv)
 {
     octaspire_helpers_verify_true(vm && targetEnv);
