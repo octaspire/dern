@@ -54,8 +54,8 @@ cl /nologo /W2 /I. /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /LD examples\myli
 cl /nologo /W2 /I. /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /LD plugins\dern_socket.c /link ws2_32.lib /out:libdern_socket.dll
 @ECHO.
 @ECHO RUN WITH:
-@ECHO octaspire-dern-repl.exe examples\irc-client-ncurses.dern
-@ECHO octaspire-dern-repl.exe examples\irc-client-nuklear.dern
+@ECHO octaspire-dern-repl.exe -I examples examples\irc-client-ncurses.dern
+@ECHO octaspire-dern-repl.exe -I examples examples\irc-client-nuklear.dern
 @ECHO.
 @ECHO BUILD WITH:
 @ECHO cl /W2 /I. /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /LD plugins\dern_socket.c /link ws2_32.lib /out:libdern_socket.dll
@@ -65,6 +65,11 @@ cl /nologo /W2 /I. /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /LD plugins\dern_
 @ECHO Dern ncurses plugin
 @ECHO -----------------------------------------------------------------
 cl /nologo /W2 /I. /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /LD plugins\dern_ncurses.c /link pdcurses.lib /out:libdern_ncurses.dll
+@ECHO.
+@ECHO INSTALL DEPENDENCIES LIKE THIS:
+@ECHO 1. Go to https://pdcurses.sourceforge.io
+@ECHO 2. Download file 'pdc34dllw.zip' into 'release'-directory
+@ECHO 3. Run command: unzip pdc34dllw.zip
 @ECHO.
 @ECHO RUN WITH:
 @ECHO octaspire-dern-repl.exe examples\dern-ncurses-example.dern
