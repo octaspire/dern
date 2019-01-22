@@ -59,12 +59,18 @@ limitations under the License.
 
 static char const * const DERN_NCURSES_PLUGIN_NAME = "dern_ncurses";
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void dern_ncurses_window_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
     endwin();
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_initscr(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -89,7 +95,9 @@ octaspire_dern_value_t *dern_ncurses_initscr(
         window);
 }
 
-
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_getmaxyx(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -164,6 +172,9 @@ octaspire_dern_value_t *dern_ncurses_getmaxyx(
         octaspire_dern_vm_create_new_value_integer(vm, (int32_t)x));
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_getch(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -235,7 +246,9 @@ octaspire_dern_value_t *dern_ncurses_getch(
         }
 
         case KEY_DC:
+#ifndef _MSC_VER
         case OCTASPIRE_DERN_NCURSES_ADDITIONAL_KEY_DC:
+#endif
         {
             return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "KEY_DC");
         }
@@ -250,6 +263,9 @@ octaspire_dern_value_t *dern_ncurses_getch(
     }
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_getstr(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -371,6 +387,9 @@ octaspire_dern_value_t *dern_ncurses_getstr(
     return octaspire_dern_vm_create_new_value_string(vm, resultStr);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_set_raw(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -412,6 +431,9 @@ octaspire_dern_value_t *dern_ncurses_set_raw(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_set_timeout(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -465,6 +487,9 @@ octaspire_dern_value_t *dern_ncurses_set_timeout(
     return octaspire_dern_vm_create_new_value_integer(vm, delay);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_set_cbreak(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -505,6 +530,9 @@ octaspire_dern_value_t *dern_ncurses_set_cbreak(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_set_echo(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -545,6 +573,9 @@ octaspire_dern_value_t *dern_ncurses_set_echo(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_set_nl(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -585,6 +616,9 @@ octaspire_dern_value_t *dern_ncurses_set_nl(
     return octaspire_dern_vm_create_new_value_nil(vm);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_set_cursor(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -685,6 +719,9 @@ octaspire_dern_value_t *dern_ncurses_set_cursor(
     return octaspire_dern_vm_create_new_value_symbol_from_c_string(vm, "very-visible");
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_set_keypad(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -759,6 +796,9 @@ octaspire_dern_value_t *dern_ncurses_set_keypad(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_erase(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -818,6 +858,9 @@ octaspire_dern_value_t *dern_ncurses_erase(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_clear(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -994,6 +1037,9 @@ static int dern_ncurses_private_print_symbol(
     return result;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_print(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1250,6 +1296,9 @@ octaspire_dern_value_t *dern_ncurses_print(
     abort();
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_halfdelay(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1292,6 +1341,9 @@ octaspire_dern_value_t *dern_ncurses_halfdelay(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_move(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1388,6 +1440,9 @@ octaspire_dern_value_t *dern_ncurses_move(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_attron(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1506,6 +1561,9 @@ octaspire_dern_value_t *dern_ncurses_attron(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_attroff(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1624,6 +1682,9 @@ octaspire_dern_value_t *dern_ncurses_attroff(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_has_colors(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1651,6 +1712,9 @@ octaspire_dern_value_t *dern_ncurses_has_colors(
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_init_color(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1713,6 +1777,9 @@ octaspire_dern_value_t *dern_ncurses_init_color(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_init_pair(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1829,6 +1896,9 @@ octaspire_dern_value_t *dern_ncurses_init_pair(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_start_color(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1856,7 +1926,9 @@ octaspire_dern_value_t *dern_ncurses_start_color(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
-
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_refresh(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1884,6 +1956,9 @@ octaspire_dern_value_t *dern_ncurses_refresh(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_ncurses_endwin(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1911,6 +1986,9 @@ octaspire_dern_value_t *dern_ncurses_endwin(
     return octaspire_dern_vm_create_new_value_boolean(vm, result != ERR);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_ncurses_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv,

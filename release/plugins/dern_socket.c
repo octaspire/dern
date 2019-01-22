@@ -14,15 +14,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ******************************************************************************/
-#include "octaspire-dern-amalgamated.c"
 #ifdef _WIN32
-#include <winsock2.h>
-#else
+#include <winsock2.h> // winsock2.h must be included before windows.h
+#endif
+
+#include "octaspire-dern-amalgamated.c"
+
+#ifndef _WIN32
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <unistd.h>
 #endif
+
 #ifdef __FreeBSD__
 #include <netinet/in.h>
 #endif
@@ -33,7 +38,6 @@ limitations under the License.
 #include <string.h>
 #include <stdlib.h>
 #include <locale.h>
-#include <unistd.h>
 #include <stdint.h>
 
 static char const * const DERN_SOCKET_PLUGIN_NAME = "dern_socket";
@@ -65,12 +69,18 @@ static char const *dern_socket_private_format_win32_error_message(void)
 }
 #endif
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void dern_socket_socket_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
     close((intptr_t)payload);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -324,6 +334,9 @@ octaspire_dern_value_t *dern_socket_new_ipv4_stream_socket(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_socket_close(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -413,6 +426,9 @@ octaspire_dern_value_t *dern_socket_close(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_socket_accept(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -536,6 +552,9 @@ octaspire_dern_value_t *dern_socket_accept(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_socket_receive(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -711,6 +730,9 @@ octaspire_dern_value_t *dern_socket_receive(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_socket_send(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -874,6 +896,9 @@ octaspire_dern_value_t *dern_socket_send(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_socket_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv,
@@ -1046,6 +1071,9 @@ bool dern_socket_init(
     return true;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_socket_clean(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv)
