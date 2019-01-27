@@ -93,6 +93,9 @@ void dern_sqlite3_db_clean_up_callback(void *payload)
     sqlite3_close((sqlite3*)payload);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sqlite3_open(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -165,6 +168,9 @@ octaspire_dern_value_t *dern_sqlite3_open(
     return result;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sqlite3_close(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -236,6 +242,9 @@ octaspire_dern_value_t *dern_sqlite3_close(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sqlite3_exec(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -381,6 +390,9 @@ octaspire_dern_value_t *dern_sqlite3_exec(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_sqlite3_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv,

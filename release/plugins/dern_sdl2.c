@@ -898,6 +898,9 @@ void dern_sdl2_clean_up_resources()
     octaspire_vector_clear(dern_sdl2_private_controllers);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void dern_sdl2_window_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
@@ -905,6 +908,9 @@ void dern_sdl2_window_clean_up_callback(void *payload)
     SDL_DestroyWindow((SDL_Window*)payload);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void dern_sdl2_event_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
@@ -919,6 +925,9 @@ void dern_sdl2_event_clean_up_callback(void *payload)
     octaspire_allocator_free(allocator, context);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void dern_sdl2_renderer_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
@@ -1011,6 +1020,9 @@ static Mix_Chunk * dern_sdl2_private_helper_uid_to_sound(
 }
 #endif
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void dern_sdl2_texture_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
@@ -1032,6 +1044,9 @@ void dern_sdl2_texture_clean_up_callback(void *payload)
 }
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void dern_sdl2_font_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
@@ -1057,6 +1072,9 @@ void dern_sdl2_font_clean_up_callback(void *payload)
 #endif
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void dern_sdl2_music_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
@@ -1079,6 +1097,9 @@ void dern_sdl2_music_clean_up_callback(void *payload)
 #endif
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void dern_sdl2_sound_clean_up_callback(void *payload)
 {
     octaspire_helpers_verify_not_null(payload);
@@ -1100,6 +1121,9 @@ void dern_sdl2_sound_clean_up_callback(void *payload)
 }
 #endif
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_Init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1344,6 +1368,9 @@ octaspire_dern_value_t *dern_sdl2_Init(
         true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_GetTicks(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1372,6 +1399,9 @@ octaspire_dern_value_t *dern_sdl2_GetTicks(
         SDL_GetTicks());
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_TimerUpdate(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1401,6 +1431,9 @@ octaspire_dern_value_t *dern_sdl2_TimerUpdate(
         true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_TimerReset(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1430,6 +1463,9 @@ octaspire_dern_value_t *dern_sdl2_TimerReset(
         true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_TimerGetSeconds(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1458,6 +1494,9 @@ octaspire_dern_value_t *dern_sdl2_TimerGetSeconds(
         octaspire_sdl2_timer_get_seconds(dern_sdl2_private_timer));
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_Delay(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1511,6 +1550,9 @@ octaspire_dern_value_t *dern_sdl2_Delay(
         true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_PollEvent(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1807,6 +1849,9 @@ octaspire_dern_value_t *dern_sdl2_PollEvent(
     }
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_GetModState(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1922,6 +1967,9 @@ octaspire_dern_value_t *dern_sdl2_GetModState(
     return result;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_CreateTexture(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2188,6 +2236,9 @@ octaspire_dern_value_t *dern_sdl2_CreateTexture(
         (void*)dern_sdl2_private_next_free_texture_uid);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_QueryTexture(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2335,6 +2386,9 @@ static SDL_Color octaspire_dern_sdl2_helpers_c_string_to_sdl_color(
 }
 #endif
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_CreateTextureFromFontAndText(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2551,6 +2605,9 @@ octaspire_dern_value_t *dern_sdl2_CreateTextureFromFontAndText(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_CreateSound(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2695,6 +2752,9 @@ octaspire_dern_value_t *dern_sdl2_CreateSound(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_CreateMusic(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2839,6 +2899,9 @@ octaspire_dern_value_t *dern_sdl2_CreateMusic(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_PlayMusic(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2967,6 +3030,9 @@ octaspire_dern_value_t *dern_sdl2_PlayMusic(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_PlaySound(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -3094,6 +3160,9 @@ octaspire_dern_value_t *dern_sdl2_PlaySound(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_CreateWindow(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -3436,6 +3505,9 @@ octaspire_dern_value_t *dern_sdl2_CreateWindow(
         window);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_CreateFont(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -3597,6 +3669,9 @@ octaspire_dern_value_t *dern_sdl2_CreateFont(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_CreateRenderer(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -3753,6 +3828,9 @@ octaspire_dern_value_t *dern_sdl2_CreateRenderer(
         renderer);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_RenderClear(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -3820,6 +3898,9 @@ octaspire_dern_value_t *dern_sdl2_RenderClear(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_RenderPresent(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -3880,6 +3961,9 @@ octaspire_dern_value_t *dern_sdl2_RenderPresent(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_GL_SwapWindow(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -3947,6 +4031,9 @@ octaspire_dern_value_t *dern_sdl2_GL_SwapWindow(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glColor4ub(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -4107,6 +4194,9 @@ octaspire_dern_value_t *dern_sdl2_glColor4ub(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glClearColor(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -4223,6 +4313,9 @@ octaspire_dern_value_t *dern_sdl2_glClearColor(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glReadPixel(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -4323,6 +4416,9 @@ octaspire_dern_value_t *dern_sdl2_glReadPixel(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glClear(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -4357,6 +4453,9 @@ octaspire_dern_value_t *dern_sdl2_glClear(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glPushMatrix(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -4391,6 +4490,9 @@ octaspire_dern_value_t *dern_sdl2_glPushMatrix(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glPopMatrix(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -4425,6 +4527,9 @@ octaspire_dern_value_t *dern_sdl2_glPopMatrix(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glLoadIdentity(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -4459,6 +4564,9 @@ octaspire_dern_value_t *dern_sdl2_glLoadIdentity(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glTranslatef(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -4555,6 +4663,9 @@ octaspire_dern_value_t *dern_sdl2_glTranslatef(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_gluLookAt(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -4617,6 +4728,9 @@ octaspire_dern_value_t *dern_sdl2_gluLookAt(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_gl_screen_to_world(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -4778,6 +4892,9 @@ octaspire_dern_value_t *dern_sdl2_gl_screen_to_world(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_gluPerspective(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -4894,6 +5011,9 @@ octaspire_dern_value_t *dern_sdl2_gluPerspective(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glViewport(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -5010,6 +5130,9 @@ octaspire_dern_value_t *dern_sdl2_glViewport(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glClearDepth(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -5066,6 +5189,9 @@ octaspire_dern_value_t *dern_sdl2_glClearDepth(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glRotatef(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -5182,6 +5308,9 @@ octaspire_dern_value_t *dern_sdl2_glRotatef(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glVertex3(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -5278,6 +5407,9 @@ octaspire_dern_value_t *dern_sdl2_glVertex3(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glTexCoord2f(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -5355,6 +5487,9 @@ octaspire_dern_value_t *dern_sdl2_glTexCoord2f(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_gl_ortho_enter(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -5431,6 +5566,9 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_enter(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_gl_ortho_line_smooth_enable(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -5497,6 +5635,9 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_line_smooth_enable(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_gl_ortho_circle(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -5576,6 +5717,9 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_circle(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_gl_ortho_circle_rotated(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -5669,6 +5813,9 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_circle_rotated(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_gl_ortho_square_box_rotated(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -5763,6 +5910,9 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_square_box_rotated(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_gl_ortho_star_rotated(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -5854,6 +6004,9 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_star_rotated(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_gl_ortho_line(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -5927,6 +6080,9 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_line(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glMatrixMode(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -6008,6 +6164,9 @@ octaspire_dern_value_t *dern_sdl2_glMatrixMode(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glBegin(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -6113,6 +6272,9 @@ octaspire_dern_value_t *dern_sdl2_glBegin(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glEnable(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -6418,6 +6580,9 @@ octaspire_dern_value_t *dern_sdl2_glEnable(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glDisable(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -6723,6 +6888,9 @@ octaspire_dern_value_t *dern_sdl2_glDisable(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_glEnd(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -6757,6 +6925,9 @@ octaspire_dern_value_t *dern_sdl2_glEnd(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_load_texture_base64(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -6915,6 +7086,9 @@ octaspire_dern_value_t *dern_sdl2_load_texture_base64(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_SetRenderDrawColor(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -7015,6 +7189,9 @@ octaspire_dern_value_t *dern_sdl2_SetRenderDrawColor(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_RenderDrawPoint(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -7112,6 +7289,9 @@ octaspire_dern_value_t *dern_sdl2_RenderDrawPoint(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_RenderDrawLine(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -7211,6 +7391,9 @@ octaspire_dern_value_t *dern_sdl2_RenderDrawLine(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_RenderDrawRect(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -7311,6 +7494,9 @@ octaspire_dern_value_t *dern_sdl2_RenderDrawRect(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_RenderCopy(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -7563,6 +7749,9 @@ octaspire_dern_value_t *dern_sdl2_RenderCopy(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_RenderFillRect(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -7663,6 +7852,9 @@ octaspire_dern_value_t *dern_sdl2_RenderFillRect(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_SetRenderDrawBlendMode(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -7777,6 +7969,9 @@ octaspire_dern_value_t *dern_sdl2_SetRenderDrawBlendMode(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_GetWindowSurface(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -7857,6 +8052,9 @@ octaspire_dern_value_t *dern_sdl2_GetWindowSurface(
         surface);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_GetPixelFormat(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -7927,6 +8125,9 @@ octaspire_dern_value_t *dern_sdl2_GetPixelFormat(
         surface->format);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_FillRect(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -8108,6 +8309,9 @@ octaspire_dern_value_t *dern_sdl2_FillRect(
         true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_UpdateWindowSurface(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -8177,6 +8381,9 @@ octaspire_dern_value_t *dern_sdl2_UpdateWindowSurface(
         true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_MapRGB(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -8263,6 +8470,9 @@ octaspire_dern_value_t *dern_sdl2_MapRGB(
         SDL_MapRGB(pixelFormat, colorComponents[0], colorComponents[1], colorComponents[2]));
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_NumJoysticks(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -8299,6 +8509,9 @@ octaspire_dern_value_t *dern_sdl2_NumJoysticks(
     return octaspire_dern_vm_create_new_value_integer(vm, result);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_Quit(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -8335,6 +8548,9 @@ octaspire_dern_value_t *dern_sdl2_Quit(
         true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_has_img(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -8365,6 +8581,9 @@ octaspire_dern_value_t *dern_sdl2_has_img(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_has_mix(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -8395,6 +8614,9 @@ octaspire_dern_value_t *dern_sdl2_has_mix(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_has_ttf(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -8425,6 +8647,9 @@ octaspire_dern_value_t *dern_sdl2_has_ttf(
 #endif
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_sdl2_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv,
@@ -9255,6 +9480,9 @@ bool dern_sdl2_init(
     return true;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_sdl2_clean(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv)

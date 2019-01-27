@@ -613,7 +613,9 @@ octaspire_dern_ease_t;
 static octaspire_vector_t * dern_easing_private_easings = 0;
 
 
-
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_easing_add(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2217,6 +2219,9 @@ octaspire_dern_value_t *dern_easing_add(
         true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_easing_update(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2536,6 +2541,9 @@ octaspire_dern_value_t *dern_easing_update(
         true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_easing_has_any(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2561,6 +2569,9 @@ octaspire_dern_value_t *dern_easing_has_any(
         !octaspire_vector_is_empty(dern_easing_private_easings));
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_easing_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv,
@@ -2620,6 +2631,9 @@ bool dern_easing_init(
     return true;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_easing_mark_all(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv)
@@ -2643,6 +2657,9 @@ bool dern_easing_mark_all(
     return true;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_easing_clean(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv)

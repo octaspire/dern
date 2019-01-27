@@ -53,6 +53,9 @@ void dern_nuklear_nk_color_clean_up_callback(void *payload)
     octaspire_allocator_free(allocator, context);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_sdl_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -128,6 +131,9 @@ octaspire_dern_value_t *dern_nuklear_sdl_init(
         ctx);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_begin(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -286,6 +292,9 @@ octaspire_dern_value_t *dern_nuklear_begin(
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_label(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -447,6 +456,9 @@ octaspire_dern_value_t *dern_nuklear_label(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_label_wrap(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -561,6 +573,9 @@ octaspire_dern_value_t *dern_nuklear_label_wrap(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_button_label(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -642,6 +657,9 @@ octaspire_dern_value_t *dern_nuklear_button_label(
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_checkbox_label(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -747,6 +765,9 @@ octaspire_dern_value_t *dern_nuklear_checkbox_label(
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_slider_int(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -885,6 +906,9 @@ octaspire_dern_value_t *dern_nuklear_slider_int(
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_slider_float(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1023,6 +1047,9 @@ octaspire_dern_value_t *dern_nuklear_slider_float(
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_option_label(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1149,6 +1176,9 @@ octaspire_dern_value_t *dern_nuklear_option_label(
     return octaspire_dern_vm_create_new_value_boolean(vm, result);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_edit_string(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1424,6 +1454,9 @@ octaspire_dern_value_t *dern_nuklear_edit_string(
     return octaspire_dern_vm_create_new_value_string(vm, result);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_edit_focus(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1510,6 +1543,9 @@ octaspire_dern_value_t *dern_nuklear_edit_focus(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_progress(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1631,6 +1667,9 @@ octaspire_dern_value_t *dern_nuklear_progress(
         (int32_t)current);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_layout_row_dynamic(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1727,6 +1766,9 @@ octaspire_dern_value_t *dern_nuklear_layout_row_dynamic(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_layout_row_static(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1841,6 +1883,9 @@ octaspire_dern_value_t *dern_nuklear_layout_row_static(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_layout_row(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2030,6 +2075,9 @@ octaspire_dern_value_t *dern_nuklear_layout_row(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_end(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2089,6 +2137,9 @@ octaspire_dern_value_t *dern_nuklear_end(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_input_begin(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2148,6 +2199,9 @@ octaspire_dern_value_t *dern_nuklear_input_begin(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_sdl_handle_event(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2233,6 +2287,9 @@ octaspire_dern_value_t *dern_nuklear_sdl_handle_event(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_input_end(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2292,6 +2349,9 @@ octaspire_dern_value_t *dern_nuklear_input_end(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_sdl_render(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2328,6 +2388,9 @@ octaspire_dern_value_t *dern_nuklear_sdl_render(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_nuklear_rgba(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2438,6 +2501,9 @@ octaspire_dern_value_t *dern_nuklear_rgba(
         context);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_nuklear_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv,

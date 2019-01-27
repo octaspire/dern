@@ -197,6 +197,9 @@ dern_chipmunk_new_cpVect_c_data_or_unpushed_error(
     return result;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -251,6 +254,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceNew(
         space);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodyNew(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -325,6 +331,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyNew(
         body);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodyNewStatic(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -367,6 +376,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyNewStatic(
         body);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodyNewKinematic(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -409,6 +421,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyNewKinematic(
         body);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpCircleShapeNew(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -525,6 +540,9 @@ octaspire_dern_value_t *dern_chipmunk_cpCircleShapeNew(
         shape);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBoxShapeNew(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -652,6 +670,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBoxShapeNew(
         shape);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpSegmentShapeNew(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -792,6 +813,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSegmentShapeNew(
         shape);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpShapeSetFriction(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -869,6 +893,9 @@ octaspire_dern_value_t *dern_chipmunk_cpShapeSetFriction(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -950,6 +977,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceSetGravity(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpSpaceReindexStatic(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1005,6 +1035,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceReindexStatic(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpSpaceGetGravity(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1072,6 +1105,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceGetGravity(
     return result.cData;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpSpaceGetStaticBody(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1138,6 +1174,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceGetStaticBody(
         cpSpaceGetStaticBody(space));
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodyGetVelocity(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1207,6 +1246,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetVelocity(
     return result.cData;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodyGetType(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1287,6 +1329,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetType(
     }
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodySetVelocity(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1370,6 +1415,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodySetVelocity(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodySetAngularVelocity(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1445,6 +1493,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodySetAngularVelocity(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodySetPosition(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1525,6 +1576,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodySetPosition(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodyGetAngle(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1577,6 +1631,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetAngle(
     return octaspire_dern_vm_create_new_value_real(vm, angle);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodyGetPosition(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1644,6 +1701,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyGetPosition(
     return result.cData;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtLocalPoint(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1748,6 +1808,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtLocalPoint(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtWorldPoint(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1852,6 +1915,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyImpulseAtWorldPoint(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtLocalPoint(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -1956,6 +2022,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtLocalPoint(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtWorldPoint(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2060,6 +2129,9 @@ octaspire_dern_value_t *dern_chipmunk_cpBodyApplyForceAtWorldPoint(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpSpaceStep(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2131,6 +2203,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceStep(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpSpaceAddBody(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2204,6 +2279,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddBody(
     return cDataOrError.cData;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpSpaceAddShape(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2277,6 +2355,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddShape(
     return cDataOrError.cData;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void dern_chipmunk_private_do_wildcard_callback(
     cpArbiter              *       arb,
     cpSpace                *       space,
@@ -2424,6 +2505,9 @@ void dern_chipmunk_private_do_wildcard_callback(
         stackLength == octaspire_dern_vm_get_stack_length(context->vm));
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void dern_chipmunk_private_wildcard_post_solve_handler(
     cpArbiter * arb,
     cpSpace   * space,
@@ -2443,6 +2527,9 @@ void dern_chipmunk_private_wildcard_post_solve_handler(
         stackLength == octaspire_dern_vm_get_stack_length(context->vm));
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void dern_chipmunk_private_wildcard_separate_handler(
     cpArbiter * arb,
     cpSpace   * space,
@@ -2462,6 +2549,9 @@ void dern_chipmunk_private_wildcard_separate_handler(
         stackLength == octaspire_dern_vm_get_stack_length(context->vm));
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2601,6 +2691,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_removeWildCardHandlers(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2638,6 +2731,9 @@ octaspire_dern_value_t *dern_chipmunk_removeWildCardHandlers(
             dern_chipmunk_private_collision_wildcard_contexts));
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpSpaceRemoveBody(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2714,6 +2810,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceRemoveBody(
     return octaspire_dern_vm_create_new_value_boolean(vm, true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpSpaceContainsBody(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2790,6 +2889,9 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceContainsBody(
         cpSpaceContainsBody(space, body));
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpv(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2876,6 +2978,9 @@ octaspire_dern_value_t *dern_chipmunk_cpv(
     return result.cData;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpv_get_x(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2934,6 +3039,9 @@ octaspire_dern_value_t *dern_chipmunk_cpv_get_x(
     return octaspire_dern_vm_create_new_value_real(vm, vect->x);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_chipmunk_cpv_get_y(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -2992,6 +3100,9 @@ octaspire_dern_value_t *dern_chipmunk_cpv_get_y(
     return octaspire_dern_vm_create_new_value_real(vm, vect->y);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_chipmunk_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv,
@@ -4076,6 +4187,9 @@ bool dern_chipmunk_init(
     return true;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void * dern_chipmunk_to_string(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv,
@@ -4160,6 +4274,9 @@ void * dern_chipmunk_to_string(
     }
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 void * dern_chipmunk_compare(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv,
@@ -4240,6 +4357,9 @@ void * dern_chipmunk_compare(
     }
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_chipmunk_mark_all(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv)
@@ -4269,6 +4389,9 @@ bool dern_chipmunk_mark_all(
     return true;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_chipmunk_clean(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv)

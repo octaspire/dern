@@ -31,6 +31,9 @@ limitations under the License.
 #endif
 #endif
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_dir_get_listing(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -217,6 +220,9 @@ octaspire_dern_value_t *dern_dir_get_listing(
     return result;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_dir_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv,

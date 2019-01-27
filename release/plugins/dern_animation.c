@@ -125,6 +125,9 @@ bool octaspire_dern_animation_is_playing(octaspire_dern_animation_t const * cons
 static octaspire_map_t    * dern_animation_private_animations = 0;
 static octaspire_string_t * dern_animation_private_lib_name   = 0;
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_animation_add(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -375,6 +378,9 @@ octaspire_dern_value_t *dern_animation_add(
         true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_animation_remove(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -438,6 +444,9 @@ octaspire_dern_value_t *dern_animation_remove(
     return octaspire_dern_vm_create_new_value_integer(vm, numRemoved);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_animation_loop(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -530,6 +539,9 @@ octaspire_dern_value_t *dern_animation_loop(
     return octaspire_dern_vm_create_new_value_integer(vm, loopCount);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_animation_playing(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -624,6 +636,9 @@ octaspire_dern_value_t *dern_animation_playing(
     return octaspire_dern_vm_create_new_value_boolean(vm, isPlaying);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_animation_update(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -731,6 +746,9 @@ octaspire_dern_value_t *dern_animation_update(
         true);
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_animation_has_any(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -756,6 +774,9 @@ octaspire_dern_value_t *dern_animation_has_any(
         !octaspire_map_is_empty(dern_animation_private_animations));
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_animation_init(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv,
@@ -861,6 +882,9 @@ bool dern_animation_init(
     return true;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_animation_mark_all(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv)
@@ -893,6 +917,9 @@ bool dern_animation_mark_all(
     return true;
 }
 
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 bool dern_animation_clean(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_environment_t * const targetEnv)
