@@ -1,3 +1,6 @@
+//
+// Modified version by octaspire 2019.
+//
 /* Copyright (c) 2013 Scott Lembcke and Howling Moon Software
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -176,7 +179,7 @@ cpHashSetInsert(cpHashSet *set, cpHashValue hash, void *ptr, cpHashSetTransFunc 
 }
 
 void *
-cpHashSetRemove(cpHashSet *set, cpHashValue hash, void *ptr)
+cpHashSetRemove(cpHashSet *set, cpHashValue hash, void const * const ptr)
 {
 	cpHashValue idx = hash%set->size;
 	

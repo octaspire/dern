@@ -1,3 +1,6 @@
+//
+// Modified version by octaspire 2019.
+//
 /* Copyright (c) 2013 Scott Lembcke and Howling Moon Software
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -149,7 +152,7 @@ CP_EXPORT cpFloat cpMomentForSegment(cpFloat m, cpVect a, cpVect b, cpFloat radi
 CP_EXPORT cpFloat cpAreaForSegment(cpVect a, cpVect b, cpFloat radius);
 
 /// Calculate the moment of inertia for a solid polygon shape assuming it's center of gravity is at it's centroid. The offset is added to each vertex.
-CP_EXPORT cpFloat cpMomentForPoly(cpFloat m, int count, const cpVect *verts, cpVect offset, cpFloat radius);
+CP_EXPORT cpFloat cpMomentForPoly(cpFloat m, const int count, const cpVect *verts, cpVect offset, cpFloat r);
 
 /// Calculate the signed area of a polygon. A Clockwise winding gives positive area.
 /// This is probably backwards from what you expect, but matches Chipmunk's the winding for poly shapes.

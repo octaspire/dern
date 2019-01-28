@@ -36,6 +36,11 @@ import urllib
 import zipfile
 
 ###############################################################################
+# Global variables                                                            #
+###############################################################################
+summary = []
+
+###############################################################################
 # Helper functions                                                            #
 ###############################################################################
 def octaspire_copydir(p):
@@ -73,7 +78,7 @@ def octaspire_depend_sourceforge(url, f, dirName, copyFromPath):
         octaspire_copydir(copyFromPath)
     print('')
 
-def octaspire_build(resultName, desc, buildCommand, *runExamples):
+def octaspire_build(resultName, desc, buildCommand, isExample, *runExamples):
     print('- Building   {}\n\t     {}'.format(resultName, desc))
     print('-----------------------------------------------------')
     os.system(buildCommand)
@@ -81,8 +86,28 @@ def octaspire_build(resultName, desc, buildCommand, *runExamples):
     if not os.path.isfile(resultName):
         print('\t ERROR {} FAILED TO BUILD'.format(resultName))
         sys.exit(1)
+    examples = ''
     for a in runExamples:
         print('             Run or test like this: {}'.format(a))
+        examples += '\n\t{}'.format(a)
+    print('')
+    ansiColor = '\033[1;32;31m'
+    if isExample:
+        ansiColor = '\033[1;32;32m'
+    summary.append('{}{}\033[0m {}'.format(ansiColor, desc, examples))
+
+def octaspire_game(resultName, *runExamples):
+    examples = ''
+    for a in runExamples:
+        examples += '\n\t{}'.format(a)
+    ansiColor = '\033[1;32;33m'
+    summary.append('{}{}\033[0m {}'.format(ansiColor, resultName, examples))
+
+def octaspire_summary():
+    print('\nSUMMARY OF \033[1;32;31mTOOLS\033[0m, \033[1;32;32mEXAMPLES\033[0m AND \033[1;32;33mGAMES\033[0m AND HOW TO RUN THEM')
+    print('========================================================')
+    for i in summary:
+        print(i)
     print('')
 
 def octaspire_create_lib_file(dllFileName):
@@ -156,9 +181,6 @@ def main(argv):
         'SDL2_ttf-2.0.14-win32-x86.zip',
         'SDL2_ttf-2.0.14-win32-x86',
         '')
-    octaspire_create_lib_file('SDL2_image.dll')
-    octaspire_create_lib_file('SDL2_mixer.dll')
-    octaspire_create_lib_file('SDL2_ttf.dll')
     # Get dependency: SDL2_ttf headers
     octaspire_depend(
         'https://www.libsdl.org/projects/SDL_ttf/release/',
@@ -189,6 +211,10 @@ def main(argv):
         'SDL2_image-2.0.4.zip',
         'SDL2_image-2.0.4',
         '')
+    # Generate some required .lib files for few dependencies
+    octaspire_create_lib_file('SDL2_image.dll')
+    octaspire_create_lib_file('SDL2_mixer.dll')
+    octaspire_create_lib_file('SDL2_ttf.dll')
     ###########################################################################
     # Build programs, plugins and examples                                    #
     ###########################################################################
@@ -197,36 +223,42 @@ def main(argv):
         'octaspire-dern-unit-test-runner.exe',
         'stand alone unit test runner',
         cl + cflags + '/DOCTASPIRE_DERN_AMALGAMATED_UNIT_TEST_IMPLEMENTATION octaspire-dern-amalgamated.c /link /out:octaspire-dern-unit-test-runner.exe',
+        False,
         'octaspire-dern-unit-test-runner.exe')
     # Build interactive Dern REPL
     octaspire_build(
         'octaspire-dern-repl.exe',
         'interactive Dern REPL',
         cl + cflags + '/DOCTASPIRE_DERN_AMALGAMATED_REPL_IMPLEMENTATION octaspire-dern-amalgamated.c /link /out:octaspire-dern-repl.exe',
+        False,
         'octaspire-dern-repl.exe')
     # Build Dern ncurses plugin
     octaspire_build(
         'libdern_ncurses.dll',
         'Dern ncurses plugin (uses pdcurses)',
         cl + cflags + '/I. /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /LD plugins\dern_ncurses.c /link pdcurses.lib /out:libdern_ncurses.dll',
+        True,
         'octaspire-dern-repl.exe examples\dern-ncurses-example.dern')
     # Build Dern SDL2 plugin
     octaspire_build(
         'libdern_sdl2.dll',
         'Dern SDL2 plugin (uses SDL2, SDL2_image, SDL2_mixer and SDL2_ttf)',
         cl + cflags + '/I. /ISDL2-2.0.9\include /ISDL2_image-2.0.4 /ISDL2_mixer-2.0.4 /ISDL2_ttf-2.0.14 /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /DOCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY /DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY /DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY /DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY /Dmain=SDL_main /LD plugins\dern_sdl2.c /link SDL2.lib SDL2_mixer.lib SDL2_ttf.lib SDL2_image.lib opengl32.lib glu32.lib /out:libdern_sdl2.dll',
+        True,
         'octaspire-dern-repl.exe examples\dern-sdl2-example.dern')
     # Build Dern Nuklear plugin
     octaspire_build(
         'libdern_nuklear.dll',
         'Dern Nuklear plugin',
         cl + cflags + '/I. /Iplugins/external/nuklear /ISDL2-2.0.9\include /ISDL2_image-2.0.4 /ISDL2_mixer-2.0.4 /ISDL2_ttf-2.0.14 /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /DOCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY /DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_IMAGE_LIBRARY /DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_MIXER_LIBRARY /DOCTASPIRE_DERN_SDL2_PLUGIN_USE_SDL_TTF_LIBRARY /LD plugins\dern_nuklear.c /link SDL2.lib SDL2_mixer.lib SDL2_ttf.lib SDL2_image.lib opengl32.lib glu32.lib /out:libdern_nuklear.dll',
+        True,
         'octaspire-dern-repl.exe examples\dern-nuklear-example.dern')
     # Build Dern socket plugin
     octaspire_build(
         'libdern_socket.dll',
         'Dern socket plugin',
         cl + cflags + '/I. /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /LD plugins\dern_socket.c /link ws2_32.lib /out:libdern_socket.dll',
+        True,
         'octaspire-dern-repl.exe -I examples examples\irc-client-ncurses.dern',
         'octaspire-dern-repl.exe -I examples examples\irc-client-nuklear.dern')
     # Build Dern easing plugin
@@ -234,18 +266,21 @@ def main(argv):
         'libdern_easing.dll',
         'Dern easing plugin',
         cl + cflags + '/I. /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /LD plugins\dern_easing.c /link /out:libdern_easing.dll',
+        True,
         'octaspire-dern-repl.exe examples\dern-easing-example.dern')
     # Build Dern animation plugin
     octaspire_build(
         'libdern_animation.dll',
         'Dern animation plugin',
         cl + cflags + '/I. /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /LD plugins\dern_animation.c /link /out:libdern_animation.dll',
+        True,
         'octaspire-dern-repl.exe examples\dern-animation-example.dern')
     # Build Dern dir plugin
     octaspire_build(
         'libdern_dir.dll',
         'Dern directory plugin',
         cl + cflags + '/W2 /I. /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /LD plugins\dern_dir.c /link /out:libdern_dir.dll',
+        True,
         'octaspire-dern-repl.exe examples\dern-dir-example.dern')
     print('Building Chipmunk library...')
     os.system(cl + cflagsChipmunk + '/Iplugins/external/chipmunk/include /Iplugins/external/chipmunk/include/chipmunk /LD plugins/external/chipmunk/src/*.c /link /out:libchipmunk.dll')
@@ -254,27 +289,35 @@ def main(argv):
         'libdern_chipmunk.dll',
         'Dern chipmunk plugin',
         cl + cflags + '/I. /Iplugins/external/chipmunk/include/ /Iplugins/external/chipmunk/include/chipmunk /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /LD plugins\dern_chipmunk.c plugins\external\sqlite3\sqlite3.c /link chipmunk.lib /out:libdern_chipmunk.dll',
+        True,
         'octaspire-dern-repl.exe examples\dern-chipmunk-example.dern')
-    #print('Compiling SQLite3...')
-    #os.system(cl + cflags + '/Iplugins/external/sqlite3 plugins/external/sqlite3/sqlite3.c')
     # Build Dern SQLite3 plugin
     octaspire_build(
         'libdern_sqlite3.dll',
         'Dern SQLite3 plugin',
         cl + cflags + '/I. /Iplugins/external/sqlite3/ /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /LD plugins\external\sqlite3\sqlite3.c plugins\dern_sqlite3.c /link /out:libdern_sqlite3.dll',
+        True,
         'octaspire-dern-repl.exe examples\dern-sqlite3-example.dern')
     # Build embedding example
     octaspire_build(
         'embedding-example.exe',
         'embedding example',
         cl + cflags + '/I. /DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS examples\embedding-example.c /link /out:embedding-example.exe',
+        True,
         'embedding-example.exe')
     # Build binary library example
     octaspire_build(
         'libmylib.dll',
         'binary library example',
         cl + cflags + '/I. /DOCTASPIRE_DERN_AMALGAMATED_IMPLEMENTATION /LD examples\mylib.c /link /out:libmylib.dll',
+        True,
         'octaspire-dern-repl.exe examples\use-mylib.dern')
+    # Add information about games into summary
+    octaspire_game('octaspire-maze',      'octaspire-dern-repl.exe games\octaspire-maze.dern')
+    octaspire_game('octaspire-lightcube', 'octaspire-dern-repl.exe games\octaspire-lightcube.dern')
+    octaspire_game('octaspire-bounce',    'octaspire-dern-repl.exe games\octaspire-bounce.dern')
+    # Print summary of runnable examples and how to run them
+    octaspire_summary()
 
 if __name__ == '__main__':
     main(sys.argv[1:])

@@ -1,3 +1,6 @@
+//
+// Modified version by octaspire 2019.
+//
 /* This is modified version, NOT the original. Modifications are
  * copyright 2018 by octaspire and are released under the same license
  * as the original.
@@ -54,7 +57,7 @@ void cpArrayFreeEach(cpArray *arr, void (freeFunc)(void*));
 
 //MARK: cpHashSet
 
-typedef cpBool (*cpHashSetEqlFunc)(void *ptr, void *elt);
+typedef cpBool (*cpHashSetEqlFunc)(void const * const ptr, void const * const elt);
 typedef void *(*cpHashSetTransFunc)(void *ptr, void *data);
 
 cpHashSet *cpHashSetNew(int size, cpHashSetEqlFunc eqlFunc);
@@ -64,7 +67,7 @@ void cpHashSetFree(cpHashSet *set);
 
 int cpHashSetCount(cpHashSet *set);
 void *cpHashSetInsert(cpHashSet *set, cpHashValue hash, void *ptr, cpHashSetTransFunc trans, void *data);
-void *cpHashSetRemove(cpHashSet *set, cpHashValue hash, void *ptr);
+void *cpHashSetRemove(cpHashSet *set, cpHashValue hash, void const * const ptr);
 void *cpHashSetFind(cpHashSet *set, cpHashValue hash, void *ptr);
 
 typedef void (*cpHashSetIteratorFunc)(void *elt, void *data);

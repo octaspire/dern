@@ -4357,7 +4357,7 @@ octaspire_dern_value_t *dern_sdl2_glReadPixel(
             octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
     }
 
-    x = octaspire_dern_value_as_number_get_value(arg);
+    x = (int)octaspire_dern_value_as_number_get_value(arg);
 
     // y
     arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
@@ -4376,7 +4376,7 @@ octaspire_dern_value_t *dern_sdl2_glReadPixel(
             octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
     }
 
-    y = octaspire_dern_value_as_number_get_value(arg);
+    y = (int)octaspire_dern_value_as_number_get_value(arg);
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     glFlush();
@@ -4810,7 +4810,7 @@ octaspire_dern_value_t *dern_sdl2_gl_screen_to_world(
     mouseYinGL = viewport[3] - (GLint)(args[1]) - 1;
 
     glReadPixels(
-        args[0],            // mouse x
+        (GLint)args[0],     // mouse x
         mouseYinGL,         // mouse y
         1,                  // width
         1,                  // height
@@ -5057,7 +5057,7 @@ octaspire_dern_value_t *dern_sdl2_glViewport(
             octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
     }
 
-    x = octaspire_dern_value_as_number_get_value(arg);
+    x = (int)octaspire_dern_value_as_number_get_value(arg);
 
     // y
     arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 1);
@@ -5076,7 +5076,7 @@ octaspire_dern_value_t *dern_sdl2_glViewport(
             octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
     }
 
-    y = octaspire_dern_value_as_number_get_value(arg);
+    y = (int)octaspire_dern_value_as_number_get_value(arg);
 
     // width
     arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 2);
@@ -5095,7 +5095,7 @@ octaspire_dern_value_t *dern_sdl2_glViewport(
             octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
     }
 
-    width = octaspire_dern_value_as_number_get_value(arg);
+    width = (size_t)octaspire_dern_value_as_number_get_value(arg);
 
     // height
     arg = octaspire_dern_value_as_vector_get_element_at_const(arguments, 3);
@@ -5114,7 +5114,7 @@ octaspire_dern_value_t *dern_sdl2_glViewport(
             octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
     }
 
-    height = octaspire_dern_value_as_number_get_value(arg);
+    height = (size_t)octaspire_dern_value_as_number_get_value(arg);
 
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     glViewport(x, y, width, height);

@@ -2618,7 +2618,8 @@ octaspire_dern_value_t *dern_chipmunk_cpSpaceAddWildCardHandler(
     }
 
     cpCollisionType const collisionType =
-        octaspire_dern_value_as_number_get_value(secondArg);
+        (cpCollisionType const)octaspire_dern_value_as_number_get_value(
+            secondArg);
 
     // (Lambda) function for postSolve callback
 

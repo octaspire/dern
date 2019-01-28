@@ -835,7 +835,7 @@ octaspire_dern_value_t *dern_nuklear_slider_int(
         return numberOrErrorMin.unpushedError;
     }
 
-    int const minVal = numberOrErrorMin.number;
+    int const minVal = (int const)numberOrErrorMin.number;
 
     // value
 
@@ -853,7 +853,7 @@ octaspire_dern_value_t *dern_nuklear_slider_int(
         return numberOrErrorValue.unpushedError;
     }
 
-    int  valueVal = numberOrErrorValue.number;
+    int  valueVal = (int)numberOrErrorValue.number;
 
     // max
 
@@ -871,7 +871,7 @@ octaspire_dern_value_t *dern_nuklear_slider_int(
         return numberOrErrorMax.unpushedError;
     }
 
-    int const maxVal = numberOrErrorMax.number;
+    int const maxVal = (int const)numberOrErrorMax.number;
 
     // step
 
@@ -889,7 +889,7 @@ octaspire_dern_value_t *dern_nuklear_slider_int(
         return numberOrErrorStep.unpushedError;
     }
 
-    int const stepVal = numberOrErrorStep.number;
+    int const stepVal = (int const)numberOrErrorStep.number;
 
     // Show the widget.
 
@@ -1307,7 +1307,7 @@ octaspire_dern_value_t *dern_nuklear_edit_string(
         return numberOrError.unpushedError;
     }
 
-    int const len = numberOrError.number;
+    int const len = (int const)numberOrError.number;
 
     if (len < 2)
     {
@@ -1756,7 +1756,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row_dynamic(
         return numberOrErrorNumColumns.unpushedError;
     }
 
-    int const columns = numberOrErrorNumColumns.number;
+    int const columns = (int const)numberOrErrorNumColumns.number;
 
     nk_layout_row_dynamic(ctx, height, columns);
 
@@ -1855,7 +1855,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row_static(
         return numberOrErrorItemWidth.unpushedError;
     }
 
-    int const item_width = numberOrErrorItemWidth.number;
+    int const item_width = (int const)numberOrErrorItemWidth.number;
 
     // columns
 
@@ -1873,7 +1873,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row_static(
         return numberOrErrorColumns.unpushedError;
     }
 
-    int const columns = numberOrErrorColumns.number;
+    int const columns = (int const)numberOrErrorColumns.number;
 
     nk_layout_row_static(ctx, height, item_width, columns);
 
@@ -2001,7 +2001,7 @@ octaspire_dern_value_t *dern_nuklear_layout_row(
         return numberOrErrorColumns.unpushedError;
     }
 
-    int const columns = numberOrErrorColumns.number;
+    int const columns = (int const)numberOrErrorColumns.number;
 
     if (columns <= 0)
     {
@@ -2440,7 +2440,7 @@ octaspire_dern_value_t *dern_nuklear_rgba(
             return numberOrError.unpushedError;
         }
 
-        numbers[i] = numberOrError.number;
+        numbers[i] = (int)numberOrError.number;
     }
 
     struct nk_color *color = octaspire_allocator_malloc(
