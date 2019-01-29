@@ -587,11 +587,12 @@ http://www.gnu.org/software/src-highlite -->
     in the <b>Command Prompt</b> window (NOT in the Git Bash window).
   </p>
 
-    <h3>2.5 Windows using MSVC and Git</h3>
+    <h3>2.5 Windows using MSVC, Python 2.7 and Git</h3>
 
   <p>
-    Download and install <b>Visual Studio 2017 (Community edition)</b> and
-    <b>Git</b>.
+    Download and install <b>Visual Studio 2017 (Community edition)</b>,
+    <b>Git</b> and <b>Python 2.7.x</b>. The installation script
+    is tested with python version 2.7.15.
   </p>
 
   <p>
@@ -616,8 +617,23 @@ http://www.gnu.org/software/src-highlite -->
 <pre><span class="function">cd</span><span class="normal"> </span><span class="path">c:\</span>
 <span class="normal">git clone http</span><span class="path">s:</span><span class="symbol">//</span><span class="normal">github</span><span class="symbol">.</span><span class="normal">com</span><span class="symbol">/</span><span class="normal">octaspire</span><span class="symbol">/</span><span class="normal">dern</span><span class="symbol">.</span><span class="normal">git</span>
 <span class="function">cd</span><span class="normal"> dern</span><span class="symbol">\</span><span class="normal">release</span>
-<span class="normal">how</span><span class="symbol">-</span><span class="normal">to</span><span class="symbol">-</span><span class="normal">build</span><span class="symbol">\</span><span class="normal">windows</span><span class="symbol">-</span><span class="normal">msvc</span><span class="symbol">.</span><span class="normal">bat</span>
+<span class="path">C:\Python27\python</span><span class="symbol">.</span><span class="normal">exe how</span><span class="symbol">-</span><span class="normal">to</span><span class="symbol">-</span><span class="normal">build</span><span class="symbol">\</span><span class="normal">windows</span><span class="symbol">-</span><span class="normal">msvc</span><span class="symbol">.</span><span class="normal">py</span>
 </pre>
+
+  <p>
+    Please note, that you might have to change the path
+    for the python executable in the instructions above;
+    depending where you installed it.
+    Or, if the python executable can be found from <i>PATH</i>,
+    you can leave the path out.
+  </p>
+
+  <p>
+    The python script will download, extract and set up all the
+    libraries that are needed for Dern plugins. Then it will
+    build all the Dern programs, plugins and examples and will give
+    you a summary how to run or test them.
+  </p>
 
     <h3>2.6 ReactOS</h3>
 
