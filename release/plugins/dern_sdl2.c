@@ -7089,6 +7089,112 @@ octaspire_dern_value_t *dern_sdl2_load_texture_base64(
 #ifdef _MSC_VER
 extern __declspec(dllexport)
 #endif
+octaspire_dern_value_t *dern_sdl2_GL_SetAttribute(
+    octaspire_dern_vm_t * const vm,
+    octaspire_dern_value_t * const arguments,
+    octaspire_dern_value_t * const environment)
+{
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(environment);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    char   const * const dernFuncName    = "sdl2-GL-SetAttribute";
+    size_t const         numExpectedArgs = 2;
+
+    size_t const numArgs =
+        octaspire_dern_value_as_vector_get_length(arguments);
+
+    if (numArgs != numExpectedArgs)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects %zu arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numExpectedArgs,
+            numArgs);
+    }
+
+    // name
+
+    // TODO XXX Add rest of supported names.
+    char const * const attrNames[] =
+    {
+        "RED_SIZE",
+        "GREEN_SIZE",
+        "BLUE_SIZE",
+        0
+    };
+
+    octaspire_dern_one_of_texts_or_unpushed_error_const_t textOrErrorAttrName =
+        octaspire_dern_value_as_vector_get_element_at_as_one_of_texts_or_unpushed_error_const(
+            arguments,
+            0,
+            dernFuncName,
+            attrNames);
+
+    if (textOrErrorAttrName.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return textOrErrorAttrName.unpushedError;
+    }
+
+    octaspire_helpers_verify_true(
+        textOrErrorAttrName.index >= 0 && textOrErrorAttrName.index <= 2);
+
+    SDL_GLattr attr = 0;
+
+    switch (textOrErrorAttrName.index)
+    {
+        case 0: { attr = SDL_GL_RED_SIZE;   } break;
+        case 1: { attr = SDL_GL_GREEN_SIZE; } break;
+        case 2: { attr = SDL_GL_BLUE_SIZE;  } break;
+    }
+
+    // value
+
+    octaspire_dern_number_or_unpushed_error_const_t numberOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
+            arguments,
+            1,
+            dernFuncName);
+
+    if (numberOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return numberOrError.unpushedError;
+    }
+
+    // Set the attribute.
+
+    int const result = SDL_GL_SetAttribute(
+        attr,
+        (int)numberOrError.number);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    if (result == 0)
+    {
+        return octaspire_dern_vm_create_new_value_boolean(vm, true);
+    }
+
+    return octaspire_dern_vm_create_new_value_error_format(
+        vm,
+        "Builtin '%s' failed: %s.",
+        dernFuncName,
+        SDL_GetError());
+}
+
+#ifdef _MSC_VER
+extern __declspec(dllexport)
+#endif
 octaspire_dern_value_t *dern_sdl2_SetRenderDrawColor(
     octaspire_dern_vm_t * const vm,
     octaspire_dern_value_t * const arguments,
@@ -9277,6 +9383,18 @@ bool dern_sdl2_init(
             dern_sdl2_SetRenderDrawColor,
             5,
             "(sdl2-SetRenderDrawColor renderer r g b a) -> <true or error message>",
+            true,
+            targetEnv))
+    {
+        return false;
+    }
+
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+            vm,
+            "sdl2-GL-SetAttribute",
+            dern_sdl2_GL_SetAttribute,
+            2,
+            "(sdl2-GL-SetAttribute name value) -> <true or error message>",
             true,
             targetEnv))
     {

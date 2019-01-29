@@ -2315,6 +2315,11 @@ limitations under the License.
 
 (sdl2-Init 'VIDEO)
 
+; Required for color picking.
+(sdl2-GL-SetAttribute 'RED_SIZE   {D+8})
+(sdl2-GL-SetAttribute 'GREEN_SIZE {D+8})
+(sdl2-GL-SetAttribute 'BLUE_SIZE  {D+8})
+
 (define window   as (sdl2-CreateWindow [octaspire-maze] 'CENTERED 'CENTERED {D+640} {D+640}) [window])
 (define renderer as (sdl2-CreateRenderer window {D-1} 'SOFTWARE) [renderer])
 
