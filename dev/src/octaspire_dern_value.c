@@ -49,6 +49,7 @@ static char const * const octaspire_dern_value_helper_type_tags_as_c_strings[] =
     "list",
     "environment",
     "function",
+    "macro",
     "special",
     "builtin",
     "port",
@@ -992,6 +993,7 @@ bool octaspire_dern_value_set(
 
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -1214,6 +1216,9 @@ uint32_t octaspire_dern_value_get_hash(
                 self->value.environment);
 
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+            return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.function);
+
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
             return octaspire_helpers_calculate_hash_for_void_pointer_argument(self->value.function);
 
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
@@ -1611,6 +1616,26 @@ octaspire_string_t *octaspire_dern_private_value_to_string(
                 return octaspire_dern_function_to_string(self->value.function, allocator);
             }
 
+            case OCTASPIRE_DERN_VALUE_TAG_MACRO:
+            {
+                octaspire_string_t * tmpStr =
+                    octaspire_dern_function_to_string(self->value.function, allocator);
+
+                octaspire_helpers_verify_not_null(tmpStr);
+
+                octaspire_string_t * const result = octaspire_string_new_format(
+                    allocator,
+                    "macro %s",
+                    octaspire_string_get_c_string(tmpStr));
+
+                octaspire_helpers_verify_not_null(result);
+
+                octaspire_string_release(tmpStr);
+                tmpStr = 0;
+
+                return result;
+            }
+
             case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
             {
                 return octaspire_dern_builtin_to_string(self->value.builtin, allocator);
@@ -1795,6 +1820,12 @@ bool octaspire_dern_value_is_function(
     return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_FUNCTION;
 }
 
+bool octaspire_dern_value_is_macro(
+    octaspire_dern_value_t const * const self)
+{
+    return self->typeTag == OCTASPIRE_DERN_VALUE_TAG_MACRO;
+}
+
 bool octaspire_dern_value_is_builtin(
     octaspire_dern_value_t const * const self)
 {
@@ -1813,9 +1844,10 @@ bool octaspire_dern_value_is_howto_allowed(
     // TODO XXX make user functions to support setting
     // howto
     octaspire_helpers_verify_true(
-        octaspire_dern_value_is_builtin(self) ||
-        octaspire_dern_value_is_special(self) ||
-        octaspire_dern_value_is_function(self));
+        octaspire_dern_value_is_builtin(self)  ||
+        octaspire_dern_value_is_special(self)  ||
+        octaspire_dern_value_is_function(self) ||
+        octaspire_dern_value_is_macro(self));
 
     return self->howtoAllowed;
 }
@@ -1950,6 +1982,13 @@ octaspire_dern_function_t *octaspire_dern_value_as_function(
     return self->value.function;
 }
 
+octaspire_dern_function_t *octaspire_dern_value_as_macro(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_true(self->typeTag == OCTASPIRE_DERN_VALUE_TAG_MACRO);
+    return self->value.function;
+}
+
 bool octaspire_dern_value_as_hash_map_add(
     octaspire_dern_value_t * const self,
     octaspire_dern_value_t * const toBeAdded1,
@@ -2024,6 +2063,7 @@ bool octaspire_dern_value_as_hash_map_add(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -2179,6 +2219,7 @@ bool octaspire_dern_value_as_character_add(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -2253,6 +2294,7 @@ bool octaspire_dern_value_as_character_subtract(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -2359,6 +2401,7 @@ bool octaspire_dern_value_as_integer_add(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -2465,6 +2508,7 @@ bool octaspire_dern_value_as_integer_subtract(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -2514,6 +2558,7 @@ bool octaspire_dern_value_as_semver_add_or_subtract(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -2628,6 +2673,7 @@ bool octaspire_dern_value_as_real_add(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -2729,6 +2775,7 @@ bool octaspire_dern_value_as_real_subtract(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -2812,6 +2859,7 @@ bool octaspire_dern_value_as_string_push_back(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -2895,6 +2943,7 @@ bool octaspire_dern_value_as_symbol_push_back(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -3011,6 +3060,7 @@ bool octaspire_dern_value_as_string_remove_all_substrings(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -3131,6 +3181,18 @@ bool octaspire_dern_value_is_symbol_and_equal_to_c_string(
     return octaspire_string_is_equal_to_c_string(self->value.symbol, str);
 }
 
+bool octaspire_dern_value_is_symbol_and_starts_with_c_string(
+    octaspire_dern_value_t const * const self,
+    char const * const str)
+{
+    if (self->typeTag != OCTASPIRE_DERN_VALUE_TAG_SYMBOL)
+    {
+        return false;
+    }
+
+    return octaspire_string_starts_with_c_string(self->value.symbol, str);
+}
+
 bool octaspire_dern_value_as_symbol_is_equal_to_c_string(
     octaspire_dern_value_t const * const self,
     char const * const str)
@@ -3181,6 +3243,7 @@ bool octaspire_dern_value_as_text_is_equal_to_c_string(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -3230,6 +3293,7 @@ char const *octaspire_dern_value_as_text_get_c_string(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -3279,6 +3343,7 @@ bool octaspire_dern_value_as_text_set_c_string(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -3329,6 +3394,7 @@ octaspire_string_t const *octaspire_dern_value_as_text_get_string_const(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -3389,6 +3455,61 @@ size_t octaspire_dern_value_as_text_get_length_in_octets(
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
+        case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
+        case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
+        case OCTASPIRE_DERN_VALUE_TAG_PORT:
+        case OCTASPIRE_DERN_VALUE_TAG_C_DATA:
+        case OCTASPIRE_DERN_VALUE_TAG_SEMVER:
+        {
+            octaspire_helpers_verify_true(false);
+        }
+        break;
+    }
+
+    return 0;
+}
+
+size_t octaspire_dern_value_as_text_get_length_in_ucs_characters(
+    octaspire_dern_value_t const * const self)
+{
+    switch (self->typeTag)
+    {
+        case OCTASPIRE_DERN_VALUE_TAG_ILLEGAL:
+        {
+            abort();
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_CHARACTER:
+        {
+            return octaspire_string_get_length_in_ucs_characters(
+                self->value.character);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_STRING:
+        {
+            return octaspire_string_get_length_in_ucs_characters(
+                self->value.string);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_SYMBOL:
+        {
+            return octaspire_string_get_length_in_ucs_characters(
+                self->value.symbol);
+        }
+
+        case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
+        case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
+        case OCTASPIRE_DERN_VALUE_TAG_REAL:
+        case OCTASPIRE_DERN_VALUE_TAG_ERROR:
+        case OCTASPIRE_DERN_VALUE_TAG_VECTOR:
+        case OCTASPIRE_DERN_VALUE_TAG_HASH_MAP:
+        case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
+        case OCTASPIRE_DERN_VALUE_TAG_LIST:
+        case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
+        case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:
@@ -4106,6 +4227,10 @@ size_t octaspire_dern_value_get_length(
         }
 
         case OCTASPIRE_DERN_VALUE_TAG_NIL:
+        {
+            return 0;
+        }
+
         case OCTASPIRE_DERN_VALUE_TAG_BOOLEAN:
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
         case OCTASPIRE_DERN_VALUE_TAG_REAL:
@@ -4151,6 +4276,7 @@ size_t octaspire_dern_value_get_length(
         {
             return octaspire_dern_environment_get_length(self->value.environment);
         }
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
         {
             return octaspire_dern_function_get_number_of_required_arguments(
@@ -4276,7 +4402,8 @@ bool octaspire_dern_value_mark(octaspire_dern_value_t *self)
             }
         }
     }
-    else if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_FUNCTION)
+    else if (self->typeTag == OCTASPIRE_DERN_VALUE_TAG_FUNCTION ||
+             self->typeTag == OCTASPIRE_DERN_VALUE_TAG_MACRO)
     {
         bool status = true;
 
@@ -4560,6 +4687,7 @@ int octaspire_dern_value_compare(
                     self->value.environment,
                     other->value.environment);
         }
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
         {
             return octaspire_dern_function_compare(
@@ -4621,6 +4749,7 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_C_DATA:

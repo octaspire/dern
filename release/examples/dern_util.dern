@@ -1,0 +1,57 @@
+(define first as (macro (container)
+  (if (== (len container) {D+0}) (return nil))
+  (define tmp as (cp@ container {D+0}) [tmp])
+  (quote tmp))
+  [Return a copy of the first value in a container]
+  '(container [container])
+  howto-ok)
+
+(define car as (macro (container)
+  (define tmp as `(first ,container) [tmp])
+  (quote tmp))
+  [Return a copy of the first value in a container]
+  '(container [container])
+  howto-ok)
+
+(define rest as (macro (container)
+  (if (<= (len container) {D+1})
+    nil
+    (do
+      (define tmp as (cp@ container {D+1} {D-1}) [tmp])
+      (quote tmp))))
+  [Return a vector holding copies of all but the first value of a container]
+  '(container [container])
+  howto-ok)
+
+(define cdr as (macro (container)
+  (define tmp as `(rest ,container) [tmp])
+  (quote tmp))
+  [Return a vector holding copies of all but the first value of a container]
+  '(container [container])
+  howto-ok)
+
+(define when as (macro (cond action)
+  `(if ,cond ,action nil))
+  [if without else branch] '(cond [cond] action [action]) howto-ok)
+
+(define ensure-vector as (macro (v)
+   (if (vector? v) (return (quote v)))
+   (define tmp as `(vector ,v) [vector to be returned])
+   (quote tmp))
+  [ensure given value is a vector] '(v [value]) howto-ok)
+
+(define ->> as (macro (x forms ...)
+  (if (== forms nil) (return x))
+  (define num-forms as (len forms) [number of forms])
+  (if (== {D+0} num-forms) (return (quote x)))
+  (define first-form as `(ensure-vector (car ,forms)) [currently first form])
+  (= first-form (eval first-form))
+  (+= first-form (template ,x))
+  (= first-form (eval first-form))
+  (define rest-forms as `(cdr ,forms) [forms without the first])
+  (= rest-forms (eval rest-forms))
+  (if (== rest-forms nil) (return first-form))
+  `(->> ,first-form ,@ rest-forms))
+  [Threads the expr through the forms]
+  '(x [expression] forms [forms to thread through] ... [varargs])
+  howto-ok)

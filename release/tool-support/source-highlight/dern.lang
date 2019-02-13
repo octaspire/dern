@@ -15,34 +15,9 @@ end
 
 type = 'true|false|nil'
 
-keyword =
-        "!=",
-        "*",
-        "++|+=|+",
-        "--|-==|-=|-",
-        "/",
-        "<=|<",
-        "===|==|=",
-        ">=|>",
-        "abort|acos|and|as|asin|atan",
-        "cos|cp@",
-        "define|distance|doc|do",
-        "env-current|env-global|env-new|eval|exit",
-        "find|fn|for",
-        "howto-ok|howto-no|howto|hash-map",
-        "io-file-open|input-file-open|if|in",
-        "len|list|ln@",
-        "mod",
-        "not",
-        "output-file-open|or",
-        "port-supports-output?|port-supports-input?|pop-front|pow|println|print|port-read|port-write|port-seek|port-flush|port-close|port-dist|port-length|pop-back",
-        "queue-with-max-length|queue|quote",
-        "read-and-eval-path|read-and-eval-string|require|return",
-        "select|sin|sqrt|starts-with?|string-format",
-        "tan|to-integer|to-string",
-        "uid",
-        "vector",
-        "while"
+vardef words = '(\,@|\,|\!\=|\*|\+\+|\+\=|\+|\-\-|\-\=\=|\-\=|\->>|\-|\/|<\=|<|\=\=\=|\=\=|>\=|\=|>|abort|acos|and|as|asin|atan|car|cdr|cos|cp@|define|distance|doc|do|ensure-vector|env-current|env-global|env-new|eval|exit|find|first|fn|for|hash-map|host-get-command-line-arguments|host-get-environment-variables|howto-ok|howto-no|howto|io-file-open|input-file-open|if|in|len|list|ln@|macro|max|min|mod|not|output-file-open|or|port-supports-output\?|port-supports-input\?|pop-front|pow|println|print|port-read|port-write|port-seek|port-flush|port-close|port-dist|port-length|pop-back|queue-with-max-length|queue|quote|rest|read-and-eval-path|read-and-eval-string|require|return|select|sin|sqrt|starts-with\?|string-format|tan|template|to-integer|to-string|uid|vector\?|vector|when|while)'
+
+# Match a keyword unless it is just a prefix of variable name.
+keyword = $words + '(?![[:alnum:]-])'
 
 cbracket = "(|)"
-

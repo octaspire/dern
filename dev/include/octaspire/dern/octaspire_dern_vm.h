@@ -191,6 +191,12 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_function(
     char const * const docstr,
     octaspire_vector_t *docVec);
 
+struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_macro(
+    octaspire_dern_vm_t *self,
+    octaspire_dern_function_t * const value,
+    char const * const docstr,
+    octaspire_vector_t *docVec);
+
 struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_special(
     octaspire_dern_vm_t *self,
     octaspire_dern_special_t * const value,

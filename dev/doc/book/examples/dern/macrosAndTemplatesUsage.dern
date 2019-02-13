@@ -1,0 +1,28 @@
+; Run these examples with command:
+;
+;   ./octaspire-dern-repl -I release/examples
+;
+; or
+;
+;   ./octaspire-dern-repl -I examples
+;
+; depending the directory you are in.
+
+(require 'dern_util)
+
+(when true  (println [you should see this]))
+(when false (println [you should NOT see this]))
+
+(first (|a| |b| |c|))                     ; |a|
+(car   (|a| |b| |c|))
+
+(first ((|a| |b|) (|c| |d|) (|e| |f|)))   ; (|a| |b|)
+(car   ((|a| |b|) (|c| |d|) (|e| |f|)))
+
+(rest  (|a| |b| |c|))                     ; (|b| |c|)
+(cdr   (|a| |b| |c|))
+
+(rest  ((|a| |b|) (|c| |d|) (|e| |f|)))   ; ((|c| |d|) (|e| |f|))
+(cdr   ((|a| |b|) (|c| |d|) (|e| |f|)))
+
+(->> |a| (+ |b|) (+ |c|) (+ |d|))         ; [dcba]

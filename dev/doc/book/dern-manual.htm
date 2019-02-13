@@ -839,9 +839,37 @@
     Values can be selected from collections using <code>ln@</code> and
     copied with <code>cp@</code>. <code>ln@</code> is pronounced
     <b>link at</b> and <code>cp@</code> is pronounced <b>copy at</b>.
+    <code>cp@</code> can be used to copy either a single value or
+    a range of values. As usual the index or indices can be
+    given either as negative or non-negative. Negative indices
+    count from the end; this means that <code>-1</code> is the
+    last value in a collection.
   </p>
 
   .INCLUDE: dev/doc/book/examples/dern/selectingFromCollection.dern
+
+  <h2>Macros and templates</h2>
+
+  <p>
+    Above was discussion about selecting values from collections.
+    You might be wondering whether Dern has functions <code>car</code>
+    (also known as <code>first</code>) and <code>cdr</code> (also known
+    as <code>rest</code>). These functions are implemented using
+    <i>macros</i> and <i>templates</i> and use <code>cp@</code>
+    to copy either the first or the rest of the values.
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/macrosAndTemplates.dern
+
+  <p>
+    Below is an example of using these macros. Please note,
+    that if the macros are not defined in the same directory
+    with the Dern REPL executable, you must add the directory
+    containing the macro definitions into the include path
+    using <code>-I</code> command line switch:
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/macrosAndTemplatesUsage.dern
 
   <h2>Accessing and manipulating command line arguments and environment variables</h2>
 
@@ -875,6 +903,12 @@
   </p>
 
   .INCLUDE: dev/doc/book/examples/dern/varArgs.dern
+
+  <p>
+    As can be seen from the examples above, the last formal parameter
+    name before <code>...</code> will contain all the additional
+    arguments.
+  </p>
 
   <h2>Environments</h2>
 

@@ -2526,7 +2526,7 @@ TEST octaspire_dern_lexer_pop_next_token_illegal_character_empty_character_test(
 
 TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(void)
 {
-    octaspire_dern_lexer_token_t *expected[12];
+    octaspire_dern_lexer_token_t *expected[13];
 
     uint32_t const     integerVal = 123;
     double const       realVal    = 987.456;
@@ -2535,8 +2535,9 @@ TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(vo
     char const * const symbolVal  = "here_is_a_symbol";
     char const * const errorVal   = "Decimal number can contain only digits '0' - '9'.";
 
-    void const * const values[12] =
+    void const * const values[13] =
     {
+        0,
         0,
         0,
         0,
@@ -2551,8 +2552,9 @@ TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(vo
         errorVal
     };
 
-    octaspire_dern_lexer_token_position_t linePositions[12] =
+    octaspire_dern_lexer_token_position_t linePositions[13] =
     {
+        {1, 1},
         {1, 1},
         {1, 1},
         {1, 1},
@@ -2567,37 +2569,39 @@ TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(vo
         {1, 1}
     };
 
-    octaspire_dern_lexer_token_position_t columnPositions[12] =
+    octaspire_dern_lexer_token_position_t columnPositions[13] =
     {
         {1, 1},
         {3, 3},
         {5, 5},
-        {7, 10},
-        {12, 16},
-        {18, 20},
-        {22, 28},
-        {30, 40},
-        {42, 59},
-        {61, 63},
-        {65, 80},
-        {82, 87}
+        {7, 7},
+        {9, 12},
+        {14, 18},
+        {20, 22},
+        {24, 30},
+        {32, 42},
+        {44, 61},
+        {63, 65},
+        {67, 82},
+        {84, 89}
     };
 
     // + 6
-    octaspire_dern_lexer_token_position_t ucsIndexPositions[12] =
+    octaspire_dern_lexer_token_position_t ucsIndexPositions[13] =
     {
         {0, 0},
         {2, 2},
         {4, 4},
-        {6, 9},
-        {11, 15},
-        {17, 19},
-        {21, 27},
-        {29, 39},
-        {41, 58},
-        {60, 62},
-        {64, 79},
-        {81, 86}
+        {6, 6},
+        {8, 11},
+        {13, 17},
+        {19, 21},
+        {23, 29},
+        {31, 41},
+        {43, 60},
+        {62, 64},
+        {66, 81},
+        {83, 88}
     };
 
     ASSERT((sizeof(expected) / sizeof(expected[0])) == (sizeof(values) / sizeof(values[0])));
@@ -2621,7 +2625,7 @@ TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(vo
     }
 
     octaspire_input_t *input = octaspire_input_new_from_c_string(
-        "( ) ' true false nil {D+123} {D+987.456} [here is a string] |+| here_is_a_symbol {D+12a}",
+        "( ) ' ` true false nil {D+123} {D+987.456} [here is a string] |+| here_is_a_symbol {D+12a}",
         octaspireDernLexerTestAllocator);
 
     ASSERT(input);
@@ -2630,7 +2634,6 @@ TEST octaspire_dern_lexer_pop_next_token_all_token_types_amid_whitespace_test(vo
     {
         octaspire_dern_lexer_token_t *token = octaspire_dern_lexer_pop_next_token(input, octaspireDernLexerTestAllocator);
         ASSERT(token);
-
         ASSERT(octaspire_dern_lexer_token_is_equal(expected[i], token));
 
         octaspire_dern_lexer_token_release(token);

@@ -19,3 +19,7 @@
 
 (cp@ (vector |a| |b| |c|) {D+1})        ; |b|
 (cp@ (hash-map |a| [abc]) {D+0} 'index) ; [abc]
+
+; Ranges
+
+(cp@ '(|a| |b| |c| |d|) {D+1} {D-1})    ; (|b| |c| |d|)

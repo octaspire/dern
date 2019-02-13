@@ -60,6 +60,7 @@ static char const * const octaspire_dern_lexer_private_token_tag_types_as_c_stri
     "OCTASPIRE_DERN_LEXER_TOKEN_TAG_LPAREN",
     "OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN",
     "OCTASPIRE_DERN_LEXER_TOKEN_TAG_QUOTE",
+    "OCTASPIRE_DERN_LEXER_TOKEN_TAG_BACK_QUOTE",
     "OCTASPIRE_DERN_LEXER_TOKEN_TAG_TRUE",
     "OCTASPIRE_DERN_LEXER_TOKEN_TAG_FALSE",
     "OCTASPIRE_DERN_LEXER_TOKEN_TAG_NIL",
@@ -102,6 +103,13 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_right_parenthesis
     size_t const startIndexInInput);
 
 octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_quote(
+    octaspire_input_t *input,
+    octaspire_allocator_t *allocator,
+    size_t const startLine,
+    size_t const startColumn,
+    size_t const startIndexInInput);
+
+octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_back_quote(
     octaspire_input_t *input,
     octaspire_allocator_t *allocator,
     size_t const startLine,
@@ -208,6 +216,7 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_token_new(
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_LPAREN:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_QUOTE:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_BACK_QUOTE:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_TRUE:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_FALSE:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_NIL:
@@ -449,6 +458,7 @@ void octaspire_dern_lexer_token_release(
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_LPAREN:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_QUOTE:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_BACK_QUOTE:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_TRUE:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_FALSE:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_NIL:
@@ -653,6 +663,7 @@ bool octaspire_dern_lexer_token_is_equal(
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_LPAREN:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_RPAREN:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_QUOTE:
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_BACK_QUOTE:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_TRUE:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_FALSE:
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_NIL:
@@ -703,6 +714,16 @@ octaspire_string_t *octaspire_dern_lexer_token_to_string(
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_QUOTE:
         {
             if (!octaspire_string_concatenate_c_string(result, "quote"))
+            {
+                return 0;
+            }
+
+            return result;
+        }
+
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_BACK_QUOTE:
+        {
+            if (!octaspire_string_concatenate_c_string(result, "back quote"))
             {
                 return 0;
             }
@@ -1323,6 +1344,78 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_quote(
         return octaspire_dern_lexer_token_new(
             OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
             "Quote ' expected",
+            octaspire_dern_lexer_token_position_init(
+                startLine,
+                octaspire_input_get_line_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startColumn,
+                octaspire_input_get_column_number(input)),
+            octaspire_dern_lexer_token_position_init(
+                startIndexInInput,
+                endIndexInInput),
+            allocator);
+    }
+}
+
+octaspire_dern_lexer_token_t *octaspire_dern_lexer_private_pop_back_quote(
+    octaspire_input_t *input,
+    octaspire_allocator_t *allocator,
+    size_t const startLine,
+    size_t const startColumn,
+    size_t const startIndexInInput)
+{
+    size_t endIndexInInput = startIndexInInput;
+
+    if (octaspire_input_is_good(input))
+    {
+        endIndexInInput  = octaspire_input_get_ucs_character_index(input);
+        uint32_t const c = octaspire_input_peek_next_ucs_character(input);
+
+        if (c == '`')
+        {
+            octaspire_dern_lexer_token_t *result = octaspire_dern_lexer_token_new(
+                OCTASPIRE_DERN_LEXER_TOKEN_TAG_BACK_QUOTE,
+                0,
+                octaspire_dern_lexer_token_position_init(
+                    startLine,
+                    octaspire_input_get_line_number(input)),
+                octaspire_dern_lexer_token_position_init(
+                    startColumn,
+                    octaspire_input_get_column_number(input)),
+                octaspire_dern_lexer_token_position_init(
+                    startIndexInInput,
+                    endIndexInInput),
+                allocator);
+
+            if (!octaspire_input_pop_next_ucs_character(input))
+            {
+                abort();
+            }
+
+            return result;
+        }
+        else
+        {
+            return octaspire_dern_lexer_token_new(
+                OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+                "Back quote ` expected",
+                octaspire_dern_lexer_token_position_init(
+                    startLine,
+                    octaspire_input_get_line_number(input)),
+                octaspire_dern_lexer_token_position_init(
+                    startColumn,
+                    octaspire_input_get_column_number(input)),
+                octaspire_dern_lexer_token_position_init(
+                    startIndexInInput,
+                    endIndexInInput),
+                allocator);
+        }
+    }
+    else
+    {
+        return octaspire_dern_lexer_token_new(
+            OCTASPIRE_DERN_LEXER_TOKEN_TAG_ERROR,
+            "Back quote ` expected",
             octaspire_dern_lexer_token_position_init(
                 startLine,
                 octaspire_input_get_line_number(input)),
@@ -2869,6 +2962,16 @@ octaspire_dern_lexer_token_t *octaspire_dern_lexer_pop_next_token(
             case '\'':
             {
                 return octaspire_dern_lexer_private_pop_quote(
+                    input,
+                    allocator,
+                    startLine,
+                    startColumn,
+                    startIndexInInput);
+            }
+
+            case '`':
+            {
+                return octaspire_dern_lexer_private_pop_back_quote(
                     input,
                     allocator,
                     startLine,

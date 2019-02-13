@@ -1444,6 +1444,19 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // template
+    if (!octaspire_dern_vm_create_and_register_new_special(
+        self,
+        "template",
+        octaspire_dern_vm_special_template,
+        1,
+        "TODO",
+        true,
+        env))
+    {
+        abort();
+    }
+
     // fn
     if (!octaspire_dern_vm_create_and_register_new_special(
         self,
@@ -1451,6 +1464,19 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         octaspire_dern_vm_special_fn,
         2,
         "Create new anonymous function",
+        true,
+        env))
+    {
+        abort();
+    }
+
+    // macro
+    if (!octaspire_dern_vm_create_and_register_new_special(
+        self,
+        "macro",
+        octaspire_dern_vm_special_macro,
+        2,
+        "Create new anonymous macro",
         true,
         env))
     {
@@ -1988,6 +2014,7 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_copy(
         }
         break;
 
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
         {
             result->value.function = octaspire_dern_function_new_copy(
@@ -2594,6 +2621,38 @@ octaspire_dern_value_t *octaspire_dern_vm_create_new_value_function(
     return result;
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_create_new_value_macro(
+    octaspire_dern_vm_t *self,
+    octaspire_dern_function_t * const value,
+    char const * const docstr,
+    octaspire_vector_t *docVec)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
+
+    octaspire_dern_value_t *result =
+        octaspire_dern_vm_private_create_new_value_struct(
+            self,
+            OCTASPIRE_DERN_VALUE_TAG_MACRO);
+
+    octaspire_dern_vm_push_value(self, result);
+
+    result->value.function = value;
+
+    result->docstr = octaspire_dern_vm_create_new_value_string_from_c_string(
+        self,
+        docstr);
+
+    result->docvec =
+        docVec ? octaspire_dern_vm_create_new_value_vector_from_vector(self, docVec) : 0;
+
+    octaspire_dern_vm_pop_value(self, result);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(self));
+
+    return result;
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_create_new_value_special(
     octaspire_dern_vm_t *self,
     octaspire_dern_special_t * const value,
@@ -2801,6 +2860,7 @@ void octaspire_dern_vm_clear_value_to_nil(
         }
         break;
 
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
         {
             octaspire_dern_function_release(value->value.function);
@@ -3171,6 +3231,78 @@ octaspire_dern_value_t *octaspire_dern_vm_parse_token(
         }
         break;
 
+        case OCTASPIRE_DERN_LEXER_TOKEN_TAG_BACK_QUOTE:
+        {
+            octaspire_dern_value_t *templateValue = octaspire_dern_vm_parse(
+                self,
+                input);
+
+            octaspire_dern_vm_push_value(self, templateValue);
+
+            if (!templateValue || templateValue->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+            {
+                result = templateValue; // report error to caller
+            }
+            else
+            {
+                octaspire_dern_value_t *templateSym =
+                    octaspire_dern_vm_create_new_value_symbol_from_c_string(
+                        self,
+                        "template");
+
+                octaspire_helpers_verify_not_null(templateSym);
+                octaspire_dern_vm_push_value(self, templateSym);
+
+                if (octaspire_dern_value_is_vector(templateValue))
+                {
+                    if (!octaspire_dern_value_as_vector_push_front_element(
+                            templateValue,
+                            &templateSym))
+                    {
+                        abort();
+                    }
+
+                    result = templateValue;
+                }
+                else
+                {
+                    result = octaspire_dern_vm_create_new_value_vector(self);
+
+                    if (!result)
+                    {
+                        result = octaspire_dern_vm_create_new_value_error_from_c_string(
+                            self,
+                            "Allocation failure");
+                    }
+                    else
+                    {
+                        octaspire_dern_vm_push_value(self, result);
+
+                        if (!octaspire_dern_value_as_vector_push_back_element(
+                                result,
+                                &templateSym))
+                        {
+                            abort();
+                        }
+
+                        if (!octaspire_dern_value_as_vector_push_back_element(
+                                result,
+                                &templateValue))
+                        {
+                            abort();
+                        }
+
+                        octaspire_dern_vm_pop_value(self, result);
+                    }
+                }
+
+                octaspire_dern_vm_pop_value(self, templateSym);
+            }
+
+            octaspire_dern_vm_pop_value(self, templateValue);
+        }
+        break;
+
         case OCTASPIRE_DERN_LEXER_TOKEN_TAG_TRUE:
         {
             result = octaspire_dern_vm_get_value_true(self);
@@ -3410,10 +3542,11 @@ octaspire_dern_value_t *octaspire_dern_vm_call_lambda(
     return result;
 }
 
-octaspire_dern_value_t *octaspire_dern_vm_eval(
-    octaspire_dern_vm_t *self,
-    octaspire_dern_value_t *value,
-    octaspire_dern_value_t *environment)
+static octaspire_dern_value_t *octaspire_dern_vm_private_eval_impl(
+    octaspire_dern_vm_t    * self,
+    octaspire_dern_value_t * value,
+    octaspire_dern_value_t * environment,
+    bool                   * wasMacroCall)
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(self);
 
@@ -3477,6 +3610,7 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         {
             result = value;
         }
@@ -3808,8 +3942,13 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                 }
                 break;
 
+                case OCTASPIRE_DERN_VALUE_TAG_MACRO:
                 case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
                 {
+                    // wasMacroCall should NOT be made false; only true.
+                    if (operator->typeTag == OCTASPIRE_DERN_VALUE_TAG_MACRO)
+                        *wasMacroCall = true;
+
                     octaspire_vector_t *argVec =
                         octaspire_vector_new_with_preallocated_elements(
                             sizeof(octaspire_dern_value_t*),
@@ -3827,36 +3966,52 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                          i < octaspire_vector_get_length(vec);
                          ++i)
                     {
-                        octaspire_dern_value_t *evaluated = octaspire_dern_vm_eval(
-                            self,
-                            octaspire_vector_get_element_at(
-                                vec,
-                                (ptrdiff_t)i),
-                            environment);
-
-
-                        if (evaluated->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+                        if (operator->typeTag != OCTASPIRE_DERN_VALUE_TAG_MACRO)
                         {
-                            result = evaluated;
-
-                            // TODO XXX add this error annotation to other places too
-                            // (for example builtin and function calls)
-                            octaspire_string_t *tmpStr =
-                                octaspire_dern_value_to_string(value, self->allocator);
-
-                            octaspire_string_concatenate_format(
-                                result->value.error->message,
-                                "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
-                                octaspire_string_get_c_string(tmpStr));
-
-                            octaspire_string_release(tmpStr);
-                            tmpStr = 0;
+                            octaspire_dern_value_t *evaluated = octaspire_dern_vm_eval(
+                                self,
+                                octaspire_vector_get_element_at(
+                                    vec,
+                                    (ptrdiff_t)i),
+                                environment);
 
 
-                            break;
+                            if (evaluated->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+                            {
+                                result = evaluated;
+
+                                // TODO XXX add this error annotation to other places too
+                                // (for example builtin and function calls)
+                                octaspire_string_t *tmpStr =
+                                    octaspire_dern_value_to_string(value, self->allocator);
+
+                                octaspire_string_concatenate_format(
+                                    result->value.error->message,
+                                    "\n\tAt form: >>>>>>>>>>%s<<<<<<<<<<\n",
+                                    octaspire_string_get_c_string(tmpStr));
+
+                                octaspire_string_release(tmpStr);
+                                tmpStr = 0;
+
+
+                                break;
+                            }
+
+                            octaspire_dern_value_as_vector_push_back_element(
+                                arguments,
+                                &evaluated);
                         }
+                        else
+                        {
+                            octaspire_dern_value_t * const tmpVal =
+                                octaspire_vector_get_element_at(
+                                    vec,
+                                    (ptrdiff_t)i);
 
-                        octaspire_dern_value_as_vector_push_back_element(arguments, &evaluated);
+                            octaspire_dern_value_as_vector_push_back_element(
+                                arguments,
+                                &tmpVal);
+                        }
                     }
 
                     if (!result)
@@ -3957,6 +4112,23 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
                                     break;
                                 }
                             }
+
+                            if (*wasMacroCall)
+                            {
+                                octaspire_dern_value_t * const toBeEvaluated =
+                                    result;
+
+                                octaspire_helpers_verify_true(
+                                    octaspire_dern_vm_push_value(self, toBeEvaluated));
+
+                                result = octaspire_dern_vm_eval(
+                                    self,
+                                    toBeEvaluated,
+                                    extendedEnvVal);
+
+                                octaspire_helpers_verify_true(
+                                    octaspire_dern_vm_pop_value(self, toBeEvaluated));
+                            }
                         }
 
                         // TODO pop function->body?
@@ -4035,6 +4207,63 @@ octaspire_dern_value_t *octaspire_dern_vm_eval(
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(self));
 
     return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_eval(
+    octaspire_dern_vm_t *self,
+    octaspire_dern_value_t *value,
+    octaspire_dern_value_t *environment)
+{
+    bool wasMacroCall = false;
+    octaspire_dern_value_t * result = 0;
+
+    while (true)
+    {
+        result = octaspire_dern_vm_private_eval_impl(self, value, environment, &wasMacroCall);
+
+        if (!wasMacroCall)
+        {
+            return result;
+        }
+
+        if (!octaspire_dern_value_is_vector(result))
+        {
+            return result;
+        }
+
+        if (octaspire_dern_value_as_vector_get_length(result) == 0)
+        {
+            return result;
+        }
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_push_value(self, result));
+
+        octaspire_dern_value_t const * const operator =
+            octaspire_dern_vm_private_eval_impl(
+                self,
+                octaspire_dern_value_as_vector_get_element_at(
+                    result,
+                    0),
+                environment,
+                &wasMacroCall);
+
+        octaspire_helpers_verify_not_null(operator);
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(self, result));
+
+        if (!octaspire_dern_value_is_macro(operator))
+        {
+            return result;
+        }
+        else
+        {
+            wasMacroCall = true;
+        }
+
+        value = result;
+    }
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_read_from_octaspire_input_and_eval_in_global_environment(
@@ -4814,6 +5043,7 @@ octaspire_dern_value_t *octaspire_dern_vm_find_from_value(
         case OCTASPIRE_DERN_VALUE_TAG_QUEUE:
         case OCTASPIRE_DERN_VALUE_TAG_LIST:
         case OCTASPIRE_DERN_VALUE_TAG_FUNCTION:
+        case OCTASPIRE_DERN_VALUE_TAG_MACRO:
         case OCTASPIRE_DERN_VALUE_TAG_SPECIAL:
         case OCTASPIRE_DERN_VALUE_TAG_BUILTIN:
         case OCTASPIRE_DERN_VALUE_TAG_PORT:

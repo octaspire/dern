@@ -55,6 +55,7 @@ typedef enum
     OCTASPIRE_DERN_VALUE_TAG_LIST,
     OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT,
     OCTASPIRE_DERN_VALUE_TAG_FUNCTION,
+    OCTASPIRE_DERN_VALUE_TAG_MACRO,
     OCTASPIRE_DERN_VALUE_TAG_SPECIAL,
     OCTASPIRE_DERN_VALUE_TAG_BUILTIN,
     OCTASPIRE_DERN_VALUE_TAG_PORT,
@@ -373,6 +374,9 @@ struct octaspire_dern_environment_t const *octaspire_dern_value_as_environment_g
 bool octaspire_dern_value_is_function(
     octaspire_dern_value_t const * const self);
 
+bool octaspire_dern_value_is_macro(
+    octaspire_dern_value_t const * const self);
+
 bool octaspire_dern_value_is_builtin(
     octaspire_dern_value_t const * const self);
 
@@ -427,6 +431,9 @@ double octaspire_dern_value_as_number_get_value(
     octaspire_dern_value_t const * const self);
 
 octaspire_dern_function_t *octaspire_dern_value_as_function(
+    octaspire_dern_value_t * const self);
+
+octaspire_dern_function_t *octaspire_dern_value_as_macro(
     octaspire_dern_value_t * const self);
 
 bool octaspire_dern_value_as_hash_map_add(
@@ -564,6 +571,10 @@ bool octaspire_dern_value_is_symbol_and_equal_to_c_string(
     octaspire_dern_value_t const * const self,
     char const * const str);
 
+bool octaspire_dern_value_is_symbol_and_starts_with_c_string(
+    octaspire_dern_value_t const * const self,
+    char const * const str);
+
 bool octaspire_dern_value_as_symbol_is_equal_to_c_string(
     octaspire_dern_value_t const * const self,
     char const * const str);
@@ -586,6 +597,9 @@ octaspire_string_t const *octaspire_dern_value_as_text_get_string_const(
     octaspire_dern_value_t const * const self);
 
 size_t octaspire_dern_value_as_text_get_length_in_octets(
+    octaspire_dern_value_t const * const self);
+
+size_t octaspire_dern_value_as_text_get_length_in_ucs_characters(
     octaspire_dern_value_t const * const self);
 
 bool octaspire_dern_value_as_vector_is_index_valid(

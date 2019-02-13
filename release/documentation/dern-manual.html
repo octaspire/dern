@@ -368,22 +368,23 @@
 <a href="#11">Removing the last value from a vector</a><br/>
 <a href="#12">Branching and selection</a><br/>
 <a href="#13">Selecting values from collections</a><br/>
-<a href="#14">Accessing and manipulating command line arguments and environment variables</a><br/>
-<a href="#15">Formatted and regular printing</a><br/>
-<a href="#16">Formatted string creation</a><br/>
-<a href="#17">Functions with variable number of arguments</a><br/>
-<a href="#18">Environments</a><br/>
-<a href="#19">Getting help with <code>howto</code></a><br/>
-<a href="#20">Returning from functions early</a><br/>
-<a href="#21">Evaluating values</a><br/>
-<a href="#22">Input and output ports</a><br/>
-<a href="#23">Converting between types</a><br/>
-<a href="#24">Searching and indexing</a><br/>
-<a href="#25">Loading libraries with <code>require</code></a><br/>
-<a href="#26">Using custom library loader with <code>require</code></a><br/>
-<a href="#27">Embedding in C programs</a><br/>
-<a href="#28">Tool support</a><br/>
-<a href="#29">Using the development repository</a><br/>
+<a href="#14">Macros and templates</a><br/>
+<a href="#15">Accessing and manipulating command line arguments and environment variables</a><br/>
+<a href="#16">Formatted and regular printing</a><br/>
+<a href="#17">Formatted string creation</a><br/>
+<a href="#18">Functions with variable number of arguments</a><br/>
+<a href="#19">Environments</a><br/>
+<a href="#20">Getting help with <code>howto</code></a><br/>
+<a href="#21">Returning from functions early</a><br/>
+<a href="#22">Evaluating values</a><br/>
+<a href="#23">Input and output ports</a><br/>
+<a href="#24">Converting between types</a><br/>
+<a href="#25">Searching and indexing</a><br/>
+<a href="#26">Loading libraries with <code>require</code></a><br/>
+<a href="#27">Using custom library loader with <code>require</code></a><br/>
+<a href="#28">Embedding in C programs</a><br/>
+<a href="#29">Tool support</a><br/>
+<a href="#30">Using the development repository</a><br/>
 
   <h2><a id="1"></a>1. About</h2>
 
@@ -726,9 +727,9 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">  </span><span class="cbracket">(</span><span class="keyword">println</span><span class="cbracket">)</span>
 
 <span class="normal">  </span><span class="comment">; 6. Define new function to greet people and use it</span>
-<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> greeter </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">greet</span><span class="keyword">in</span><span class="normal">g name</span><span class="cbracket">)</span>
-<span class="normal">      </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[{}, {}!]</span><span class="normal"> greet</span><span class="keyword">in</span><span class="normal">g name</span><span class="cbracket">))</span>
-<span class="normal">    </span><span class="string">[My greeter function]</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">greet</span><span class="keyword">in</span><span class="normal">g </span><span class="string">[the greeting]</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> greeter </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">greeting name</span><span class="cbracket">)</span>
+<span class="normal">      </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[{}, {}!]</span><span class="normal"> greeting name</span><span class="cbracket">))</span>
+<span class="normal">    </span><span class="string">[My greeter function]</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">greeting </span><span class="string">[the greeting]</span>
 <span class="normal">                            name </span><span class="string">[who to greet]</span><span class="cbracket">)</span>
 <span class="normal">                            </span><span class="keyword">howto-no</span><span class="cbracket">)</span>
 
@@ -738,11 +739,11 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">  </span><span class="comment">; using 'return'</span>
 <span class="normal">  </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> grumpy </span><span class="keyword">as</span><span class="normal"> </span><span class="type">true</span><span class="normal"> </span><span class="string">[is our hero grumpy, or not]</span><span class="cbracket">)</span>
 
-<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> greeter </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">greet</span><span class="keyword">in</span><span class="normal">g name</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> greeter </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">greeting name</span><span class="cbracket">)</span>
 <span class="normal">      </span><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> grumpy </span><span class="cbracket">(</span><span class="keyword">return</span><span class="normal"> </span><span class="string">[I'm grumpy and don't greet]</span><span class="cbracket">))</span>
-<span class="normal">      </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[{}, {}!]</span><span class="normal"> greet</span><span class="keyword">in</span><span class="normal">g name</span><span class="cbracket">)</span>
+<span class="normal">      </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[{}, {}!]</span><span class="normal"> greeting name</span><span class="cbracket">)</span>
 <span class="normal">      </span><span class="cbracket">(</span><span class="keyword">string-format</span><span class="normal"> </span><span class="string">[I greeted "{}", as asked]</span><span class="normal"> name</span><span class="cbracket">))</span>
-<span class="normal">    </span><span class="string">[My greeter function]</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">greet</span><span class="keyword">in</span><span class="normal">g </span><span class="string">[the greeting]</span>
+<span class="normal">    </span><span class="string">[My greeter function]</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">greeting </span><span class="string">[the greeting]</span>
 <span class="normal">                            name </span><span class="string">[who to greet]</span><span class="cbracket">)</span>
 <span class="normal">                            </span><span class="keyword">howto-no</span><span class="cbracket">)</span>
 
@@ -798,11 +799,11 @@ http://www.gnu.org/software/src-highlite -->
 <span class="string">[Hello</span><span class="specialchar">|newline|</span><span class="string">]</span><span class="normal">  </span><span class="comment">; Hello and newline</span>
 <span class="string">[Я могу есть стекло, оно мне не вредит]</span>
 <span class="normal">|a|               </span><span class="comment">; These are characters (utf-8)</span>
-<span class="normal">|newl</span><span class="keyword">in</span><span class="normal">e|         </span><span class="comment">; \n</span>
+<span class="normal">|newline|         </span><span class="comment">; \n</span>
 <span class="normal">|tab|             </span><span class="comment">; \t</span>
 <span class="normal">|bar|             </span><span class="comment">; |</span>
-<span class="normal">|str</span><span class="keyword">in</span><span class="normal">g</span><span class="keyword">-</span><span class="normal">start|    </span><span class="comment">; [</span>
-<span class="normal">|str</span><span class="keyword">in</span><span class="normal">g</span><span class="keyword">-</span><span class="normal">end|      </span><span class="comment">; ]</span>
+<span class="normal">|string-start|    </span><span class="comment">; [</span>
+<span class="normal">|string-end|      </span><span class="comment">; ]</span>
 <span class="normal">|61|              </span><span class="comment">; a in hexadecimal notation</span>
 <span class="normal">|7A|              </span><span class="comment">; z in hexadecimal notation</span>
 <span class="normal">|44F|             </span><span class="comment">; я in hexadecimal notation</span>
@@ -884,7 +885,7 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> pi </span><span class="keyword">as</span><span class="normal"> </span><span class="number">{D+3.14}</span><span class="normal"> </span><span class="string">[value for pi]</span><span class="cbracket">)</span>
 <span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> names </span><span class="keyword">as</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">John Lisa Mark</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[names list]</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> </span><span class="keyword">do</span><span class="normal">uble </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">x</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">*</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> x</span><span class="cbracket">))</span><span class="normal"> </span><span class="string">[doubles nums]</span>
+<span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> double </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">x</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">*</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> x</span><span class="cbracket">))</span><span class="normal"> </span><span class="string">[doubles nums]</span>
 <span class="normal">    '</span><span class="cbracket">(</span><span class="normal">x </span><span class="string">[this is doubled]</span><span class="cbracket">)</span><span class="normal"> </span><span class="keyword">howto-ok</span><span class="cbracket">)</span></pre>
 
   <p>
@@ -899,7 +900,7 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><span class="normal">pi</span>
 <span class="normal">names</span>
-<span class="cbracket">(</span><span class="keyword">do</span><span class="normal">uble </span><span class="number">{D+1}</span><span class="cbracket">)</span></pre>
+<span class="cbracket">(</span><span class="normal">double </span><span class="number">{D+1}</span><span class="cbracket">)</span></pre>
 
   <p>
     And to see the documentation for these values:
@@ -911,7 +912,7 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><span class="cbracket">(</span><span class="keyword">doc</span><span class="normal"> pi</span><span class="cbracket">)</span>
 <span class="cbracket">(</span><span class="keyword">doc</span><span class="normal"> names</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="keyword">doc</span><span class="normal"> </span><span class="keyword">do</span><span class="normal">uble</span><span class="cbracket">)</span></pre>
+<span class="cbracket">(</span><span class="keyword">doc</span><span class="normal"> double</span><span class="cbracket">)</span></pre>
 
   <p>
     The documentation of the function contains also documentation for
@@ -1017,14 +1018,14 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><span class="cbracket">(</span><span class="normal">m</span><span class="keyword">in</span><span class="normal">  </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; {D+1}</span>
-<span class="cbracket">(</span><span class="normal">m</span><span class="keyword">in</span><span class="normal">  </span><span class="string">[abc]</span><span class="normal"> </span><span class="string">[abd]</span><span class="normal"> </span><span class="string">[abe]</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; [abc]</span>
-<span class="cbracket">(</span><span class="normal">max  </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; {D+3}</span>
-<span class="cbracket">(</span><span class="normal">max  </span><span class="string">[abc]</span><span class="normal"> </span><span class="string">[abd]</span><span class="normal"> </span><span class="string">[abe]</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; [abe]</span>
+<pre><span class="cbracket">(</span><span class="keyword">min</span><span class="normal">  </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; {D+1}</span>
+<span class="cbracket">(</span><span class="keyword">min</span><span class="normal">  </span><span class="string">[abc]</span><span class="normal"> </span><span class="string">[abd]</span><span class="normal"> </span><span class="string">[abe]</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; [abc]</span>
+<span class="cbracket">(</span><span class="keyword">max</span><span class="normal">  </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; {D+3}</span>
+<span class="cbracket">(</span><span class="keyword">max</span><span class="normal">  </span><span class="string">[abc]</span><span class="normal"> </span><span class="string">[abd]</span><span class="normal"> </span><span class="string">[abe]</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; [abe]</span>
 
 <span class="cbracket">(</span><span class="keyword">distance</span><span class="normal"> </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+1.1}</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; {D+0.1}</span>
 <span class="cbracket">(</span><span class="keyword">distance</span><span class="normal"> </span><span class="string">[lawn]</span><span class="normal"> </span><span class="string">[flaw]</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; {D+2}</span>
-<span class="cbracket">(</span><span class="keyword">distance</span><span class="normal"> 'kitten 'sitt</span><span class="keyword">in</span><span class="normal">g</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; {D+3}</span>
+<span class="cbracket">(</span><span class="keyword">distance</span><span class="normal"> 'kitten 'sitting</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; {D+3}</span>
 </pre>
 
   <p>
@@ -1098,9 +1099,9 @@ http://www.gnu.org/software/src-highlite -->
 
 <span class="cbracket">(</span><span class="keyword">+</span><span class="normal"> </span><span class="string">[Hello]</span><span class="normal"> </span><span class="string">[ ]</span><span class="normal"> </span><span class="string">[World.]</span><span class="normal"> </span><span class="string">[ Bye.]</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; Hello World. Bye.</span>
 
-<span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> greet</span><span class="keyword">in</span><span class="normal">g </span><span class="keyword">as</span><span class="normal"> </span><span class="string">[Hello]</span><span class="normal"> </span><span class="string">[my greeting]</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="keyword">+=</span><span class="normal"> greet</span><span class="keyword">in</span><span class="normal">g </span><span class="string">[ World!]</span><span class="cbracket">)</span><span class="normal">          </span><span class="comment">; Hello World!</span>
-<span class="cbracket">(</span><span class="keyword">+=</span><span class="normal"> greet</span><span class="keyword">in</span><span class="normal">g |!|</span><span class="cbracket">)</span><span class="normal">                </span><span class="comment">; Hello World!!</span>
+<span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> greeting </span><span class="keyword">as</span><span class="normal"> </span><span class="string">[Hello]</span><span class="normal"> </span><span class="string">[my greeting]</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="keyword">+=</span><span class="normal"> greeting </span><span class="string">[ World!]</span><span class="cbracket">)</span><span class="normal">          </span><span class="comment">; Hello World!</span>
+<span class="cbracket">(</span><span class="keyword">+=</span><span class="normal"> greeting |!|</span><span class="cbracket">)</span><span class="normal">                </span><span class="comment">; Hello World!!</span>
 
 <span class="cbracket">(</span><span class="keyword">+=</span><span class="normal"> '</span><span class="cbracket">(</span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal"> '</span><span class="cbracket">(</span><span class="number">{D+4}</span><span class="normal"> </span><span class="number">{D+5}</span><span class="normal"> </span><span class="number">{D+6}</span><span class="cbracket">))</span>
 <span class="comment">; (1 2 3 (4 5 6))</span>
@@ -1258,6 +1259,11 @@ http://www.gnu.org/software/src-highlite -->
     Values can be selected from collections using <code>ln@</code> and
     copied with <code>cp@</code>. <code>ln@</code> is pronounced
     <b>link at</b> and <code>cp@</code> is pronounced <b>copy at</b>.
+    <code>cp@</code> can be used to copy either a single value or
+    a range of values. As usual the index or indices can be
+    given either as negative or non-negative. Negative indices
+    count from the end; this means that <code>-1</code> is the
+    last value in a collection.
   </p>
 
 <!-- Generator: GNU source-highlight 3.1.8
@@ -1266,8 +1272,8 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><span class="cbracket">(</span><span class="keyword">++</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> '</span><span class="cbracket">(</span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+1}</span><span class="cbracket">))</span><span class="normal">   </span><span class="comment">; 3</span>
 <span class="cbracket">(</span><span class="keyword">+=</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">cp@</span><span class="normal"> </span><span class="string">[abc]</span><span class="normal"> </span><span class="number">{D+1}</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+2}</span><span class="cbracket">))</span><span class="normal">           </span><span class="comment">; |d|</span>
-<span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">hash-map</span><span class="normal"> |a| </span><span class="string">[abc]</span><span class="cbracket">)</span><span class="normal"> |a|   'h</span><span class="keyword">as</span><span class="normal">h</span><span class="cbracket">)</span><span class="normal">  </span><span class="comment">; [abc]</span>
-<span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">hash-map</span><span class="normal"> |a| </span><span class="string">[abc]</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+0}</span><span class="normal"> '</span><span class="keyword">in</span><span class="normal">dex</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; [abc]</span>
+<span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">hash-map</span><span class="normal"> |a| </span><span class="string">[abc]</span><span class="cbracket">)</span><span class="normal"> |a|   'hash</span><span class="cbracket">)</span><span class="normal">  </span><span class="comment">; [abc]</span>
+<span class="cbracket">(</span><span class="keyword">ln@</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">hash-map</span><span class="normal"> |a| </span><span class="string">[abc]</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+0}</span><span class="normal"> 'index</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; [abc]</span>
 
 <span class="comment">; Copy characters from text (string and symbol)</span>
 
@@ -1284,10 +1290,130 @@ http://www.gnu.org/software/src-highlite -->
 <span class="comment">; Copy values from containers</span>
 
 <span class="cbracket">(</span><span class="keyword">cp@</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">vector</span><span class="normal"> |a| |b| |c|</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+1}</span><span class="cbracket">)</span><span class="normal">        </span><span class="comment">; |b|</span>
-<span class="cbracket">(</span><span class="keyword">cp@</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">hash-map</span><span class="normal"> |a| </span><span class="string">[abc]</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+0}</span><span class="normal"> '</span><span class="keyword">in</span><span class="normal">dex</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; [abc]</span>
+<span class="cbracket">(</span><span class="keyword">cp@</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">hash-map</span><span class="normal"> |a| </span><span class="string">[abc]</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+0}</span><span class="normal"> 'index</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; [abc]</span>
+
+<span class="comment">; Ranges</span>
+
+<span class="cbracket">(</span><span class="keyword">cp@</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">|a| |b| |c| |d|</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D-1}</span><span class="cbracket">)</span><span class="normal">    </span><span class="comment">; (|b| |c| |d|)</span>
 </pre>
 
-  <h2><a id="14"></a>14. Accessing and manipulating command line arguments and environment variables</h2>
+  <h2><a id="14"></a>14. Macros and templates</h2>
+
+  <p>
+    Above was discussion about selecting values from collections.
+    You might be wondering whether Dern has functions <code>car</code>
+    (also known as <code>first</code>) and <code>cdr</code> (also known
+    as <code>rest</code>). These functions are implemented using
+    <i>macros</i> and <i>templates</i> and use <code>cp@</code>
+    to copy either the first or the rest of the values.
+  </p>
+
+<!-- Generator: GNU source-highlight 3.1.8
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> </span><span class="keyword">first</span><span class="normal"> </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">macro</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">container</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">==</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">len</span><span class="normal"> container</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+0}</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="normal"> </span><span class="type">nil</span><span class="cbracket">))</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> tmp </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">cp@</span><span class="normal"> container </span><span class="number">{D+0}</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[tmp]</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">quote</span><span class="normal"> tmp</span><span class="cbracket">))</span>
+<span class="normal">  </span><span class="string">[Return a copy of the first value in a container]</span>
+<span class="normal">  '</span><span class="cbracket">(</span><span class="normal">container </span><span class="string">[container]</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="keyword">howto-ok</span><span class="cbracket">)</span>
+
+<span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> </span><span class="keyword">car</span><span class="normal"> </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">macro</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">container</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> tmp </span><span class="keyword">as</span><span class="normal"> `</span><span class="cbracket">(</span><span class="keyword">first</span><span class="normal"> ,container</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[tmp]</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">quote</span><span class="normal"> tmp</span><span class="cbracket">))</span>
+<span class="normal">  </span><span class="string">[Return a copy of the first value in a container]</span>
+<span class="normal">  '</span><span class="cbracket">(</span><span class="normal">container </span><span class="string">[container]</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="keyword">howto-ok</span><span class="cbracket">)</span>
+
+<span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> </span><span class="keyword">rest</span><span class="normal"> </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">macro</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">container</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">&lt;=</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">len</span><span class="normal"> container</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+1}</span><span class="cbracket">)</span>
+<span class="normal">    </span><span class="type">nil</span>
+<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">do</span>
+<span class="normal">      </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> tmp </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">cp@</span><span class="normal"> container </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D-1}</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[tmp]</span><span class="cbracket">)</span>
+<span class="normal">      </span><span class="cbracket">(</span><span class="keyword">quote</span><span class="normal"> tmp</span><span class="cbracket">))))</span>
+<span class="normal">  </span><span class="string">[Return a vector holding copies of all but the first value of a container]</span>
+<span class="normal">  '</span><span class="cbracket">(</span><span class="normal">container </span><span class="string">[container]</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="keyword">howto-ok</span><span class="cbracket">)</span>
+
+<span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> </span><span class="keyword">cdr</span><span class="normal"> </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">macro</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">container</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> tmp </span><span class="keyword">as</span><span class="normal"> `</span><span class="cbracket">(</span><span class="keyword">rest</span><span class="normal"> ,container</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[tmp]</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">quote</span><span class="normal"> tmp</span><span class="cbracket">))</span>
+<span class="normal">  </span><span class="string">[Return a vector holding copies of all but the first value of a container]</span>
+<span class="normal">  '</span><span class="cbracket">(</span><span class="normal">container </span><span class="string">[container]</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="keyword">howto-ok</span><span class="cbracket">)</span>
+
+<span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> </span><span class="keyword">when</span><span class="normal"> </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">macro</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">cond action</span><span class="cbracket">)</span>
+<span class="normal">  `</span><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> ,cond ,action </span><span class="type">nil</span><span class="cbracket">))</span>
+<span class="normal">  </span><span class="string">[if without else branch]</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">cond </span><span class="string">[cond]</span><span class="normal"> action </span><span class="string">[action]</span><span class="cbracket">)</span><span class="normal"> </span><span class="keyword">howto-ok</span><span class="cbracket">)</span>
+
+<span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> </span><span class="keyword">ensure-vector</span><span class="normal"> </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">macro</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">v</span><span class="cbracket">)</span>
+<span class="normal">   </span><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">vector?</span><span class="normal"> v</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">quote</span><span class="normal"> v</span><span class="cbracket">)))</span>
+<span class="normal">   </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> tmp </span><span class="keyword">as</span><span class="normal"> `</span><span class="cbracket">(</span><span class="keyword">vector</span><span class="normal"> ,v</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[vector to be returned]</span><span class="cbracket">)</span>
+<span class="normal">   </span><span class="cbracket">(</span><span class="keyword">quote</span><span class="normal"> tmp</span><span class="cbracket">))</span>
+<span class="normal">  </span><span class="string">[ensure given value is a vector]</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">v </span><span class="string">[value]</span><span class="cbracket">)</span><span class="normal"> </span><span class="keyword">howto-ok</span><span class="cbracket">)</span>
+
+<span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> </span><span class="keyword">-&gt;&gt;</span><span class="normal"> </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">macro</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">x forms ...</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">==</span><span class="normal"> forms </span><span class="type">nil</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="normal"> x</span><span class="cbracket">))</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> num-forms </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">len</span><span class="normal"> forms</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[number of forms]</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">==</span><span class="normal"> </span><span class="number">{D+0}</span><span class="normal"> num-forms</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">quote</span><span class="normal"> x</span><span class="cbracket">)))</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> first-form </span><span class="keyword">as</span><span class="normal"> `</span><span class="cbracket">(</span><span class="keyword">ensure-vector</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">car</span><span class="normal"> ,forms</span><span class="cbracket">))</span><span class="normal"> </span><span class="string">[currently first form]</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">=</span><span class="normal"> first-form </span><span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> first-form</span><span class="cbracket">))</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">+=</span><span class="normal"> first-form </span><span class="cbracket">(</span><span class="keyword">template</span><span class="normal"> ,x</span><span class="cbracket">))</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">=</span><span class="normal"> first-form </span><span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> first-form</span><span class="cbracket">))</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> rest-forms </span><span class="keyword">as</span><span class="normal"> `</span><span class="cbracket">(</span><span class="keyword">cdr</span><span class="normal"> ,forms</span><span class="cbracket">)</span><span class="normal"> </span><span class="string">[forms without the first]</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">=</span><span class="normal"> rest-forms </span><span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> rest-forms</span><span class="cbracket">))</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">==</span><span class="normal"> rest-forms </span><span class="type">nil</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="normal"> first-form</span><span class="cbracket">))</span>
+<span class="normal">  `</span><span class="cbracket">(</span><span class="keyword">-&gt;&gt;</span><span class="normal"> ,first-form </span><span class="keyword">,@</span><span class="normal"> rest-forms</span><span class="cbracket">))</span>
+<span class="normal">  </span><span class="string">[Threads the expr through the forms]</span>
+<span class="normal">  '</span><span class="cbracket">(</span><span class="normal">x </span><span class="string">[expression]</span><span class="normal"> forms </span><span class="string">[forms to thread through]</span><span class="normal"> ... </span><span class="string">[varargs]</span><span class="cbracket">)</span>
+<span class="normal">  </span><span class="keyword">howto-ok</span><span class="cbracket">)</span>
+</pre>
+
+  <p>
+    Below is an example of using these macros. Please note,
+    that if the macros are not defined in the same directory
+    with the Dern REPL executable, you must add the directory
+    containing the macro definitions into the include path
+    using <code>-I</code> command line switch:
+  </p>
+
+<!-- Generator: GNU source-highlight 3.1.8
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><span class="comment">; Run these examples with command:</span>
+<span class="comment">;</span>
+<span class="comment">;   ./octaspire-dern-repl -I release/examples</span>
+<span class="comment">;</span>
+<span class="comment">; or</span>
+<span class="comment">;</span>
+<span class="comment">;   ./octaspire-dern-repl -I examples</span>
+<span class="comment">;</span>
+<span class="comment">; depending the directory you are in.</span>
+
+<span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'dern_util</span><span class="cbracket">)</span>
+
+<span class="cbracket">(</span><span class="keyword">when</span><span class="normal"> </span><span class="type">true</span><span class="normal">  </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[you should see this]</span><span class="cbracket">))</span>
+<span class="cbracket">(</span><span class="keyword">when</span><span class="normal"> </span><span class="type">false</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[you should NOT see this]</span><span class="cbracket">))</span>
+
+<span class="cbracket">(</span><span class="keyword">first</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">|a| |b| |c|</span><span class="cbracket">))</span><span class="normal">                     </span><span class="comment">; |a|</span>
+<span class="cbracket">(</span><span class="keyword">car</span><span class="normal">   </span><span class="cbracket">(</span><span class="normal">|a| |b| |c|</span><span class="cbracket">))</span>
+
+<span class="cbracket">(</span><span class="keyword">first</span><span class="normal"> </span><span class="cbracket">((</span><span class="normal">|a| |b|</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">|c| |d|</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">|e| |f|</span><span class="cbracket">)))</span><span class="normal">   </span><span class="comment">; (|a| |b|)</span>
+<span class="cbracket">(</span><span class="keyword">car</span><span class="normal">   </span><span class="cbracket">((</span><span class="normal">|a| |b|</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">|c| |d|</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">|e| |f|</span><span class="cbracket">)))</span>
+
+<span class="cbracket">(</span><span class="keyword">rest</span><span class="normal">  </span><span class="cbracket">(</span><span class="normal">|a| |b| |c|</span><span class="cbracket">))</span><span class="normal">                     </span><span class="comment">; (|b| |c|)</span>
+<span class="cbracket">(</span><span class="keyword">cdr</span><span class="normal">   </span><span class="cbracket">(</span><span class="normal">|a| |b| |c|</span><span class="cbracket">))</span>
+
+<span class="cbracket">(</span><span class="keyword">rest</span><span class="normal">  </span><span class="cbracket">((</span><span class="normal">|a| |b|</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">|c| |d|</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">|e| |f|</span><span class="cbracket">)))</span><span class="normal">   </span><span class="comment">; ((|c| |d|) (|e| |f|))</span>
+<span class="cbracket">(</span><span class="keyword">cdr</span><span class="normal">   </span><span class="cbracket">((</span><span class="normal">|a| |b|</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">|c| |d|</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">|e| |f|</span><span class="cbracket">)))</span>
+
+<span class="cbracket">(</span><span class="keyword">-&gt;&gt;</span><span class="normal"> |a| </span><span class="cbracket">(</span><span class="keyword">+</span><span class="normal"> |b|</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">+</span><span class="normal"> |c|</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">+</span><span class="normal"> |d|</span><span class="cbracket">))</span><span class="normal">         </span><span class="comment">; [dcba]</span>
+</pre>
+
+  <h2><a id="15"></a>15. Accessing and manipulating command line arguments and environment variables</h2>
 
   <p>
     This section is not ready yet. See the example below. More information will
@@ -1298,10 +1424,10 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><span class="cbracket">(</span><span class="normal">host</span><span class="keyword">-</span><span class="normal">get</span><span class="keyword">-</span><span class="normal">comm</span><span class="keyword">and-</span><span class="normal">l</span><span class="keyword">in</span><span class="normal">e</span><span class="keyword">-</span><span class="normal">arguments</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">host</span><span class="keyword">-</span><span class="normal">get</span><span class="keyword">-</span><span class="normal">environment</span><span class="keyword">-</span><span class="normal">variables</span><span class="cbracket">)</span></pre>
+<pre><span class="cbracket">(</span><span class="keyword">host-get-command-line-arguments</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="keyword">host-get-environment-variables</span><span class="cbracket">)</span></pre>
 
-  <h2><a id="15"></a>15. Formatted and regular printing</h2>
+  <h2><a id="16"></a>16. Formatted and regular printing</h2>
 
   <p>
     Here are few examples:
@@ -1322,7 +1448,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hi {} and {}! It is {} degrees outside.]</span>
 <span class="normal">    name1 name2 number</span><span class="cbracket">)</span></pre>
 
-  <h2><a id="16"></a>16. Formatted string creation</h2>
+  <h2><a id="17"></a>17. Formatted string creation</h2>
 
   <p>
     Here are few examples:
@@ -1342,7 +1468,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">  </span><span class="string">[Hi {} and {}! It is {} degrees outside]</span>
 <span class="normal">  name1 name2 number</span><span class="cbracket">)</span></pre>
 
-  <h2><a id="17"></a>17. Functions with variable number of arguments</h2>
+  <h2><a id="18"></a>18. Functions with variable number of arguments</h2>
 
   <p>
     Here are few examples:
@@ -1364,7 +1490,13 @@ http://www.gnu.org/software/src-highlite -->
 
 <span class="cbracket">(</span><span class="normal">f </span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="normal"> </span><span class="number">{D+3}</span><span class="cbracket">)</span><span class="normal">   </span><span class="comment">; Prints 1|newline|(2 3)</span></pre>
 
-  <h2><a id="18"></a>18. Environments</h2>
+  <p>
+    As can be seen from the examples above, the last formal parameter
+    name before <code>...</code> will contain all the additional
+    arguments.
+  </p>
+
+  <h2><a id="19"></a>19. Environments</h2>
 
   <p>
     Here are few examples:
@@ -1378,7 +1510,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="cbracket">(</span><span class="keyword">env-current</span><span class="cbracket">)</span>
 <span class="cbracket">(</span><span class="keyword">env-new</span><span class="cbracket">)</span></pre>
 
-  <h2><a id="19"></a>19. Getting help with <code>howto</code></h2>
+  <h2><a id="20"></a>20. Getting help with <code>howto</code></h2>
 
   <p>
     Function <code>howto</code> can be used for asking howto do something.
@@ -1427,7 +1559,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="comment">; prints ((find (quote (John Mike Alice Lola))</span>
 <span class="comment">;               (quote Lola)))</span></pre>
 
-  <h2><a id="20"></a>20. Returning from functions early</h2>
+  <h2><a id="21"></a>21. Returning from functions early</h2>
 
   <p>
     The value of the last expression of function is usually the return value
@@ -1439,10 +1571,10 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> err</span><span class="keyword">or</span><span class="normal">Code </span><span class="keyword">as</span><span class="normal"> </span><span class="number">{D+1}</span><span class="normal"> </span><span class="string">[0 means no error.]</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> errorCode </span><span class="keyword">as</span><span class="normal"> </span><span class="number">{D+1}</span><span class="normal"> </span><span class="string">[0 means no error.]</span><span class="cbracket">)</span>
 
-<span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> start</span><span class="keyword">-</span><span class="normal">eng</span><span class="keyword">in</span><span class="normal">e </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span>
-<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">!=</span><span class="normal"> err</span><span class="keyword">or</span><span class="normal">Code </span><span class="number">{D+0}</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="normal"> </span><span class="string">[Cannot start]</span><span class="cbracket">))</span>
+<span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> start-engine </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span>
+<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">!=</span><span class="normal"> errorCode </span><span class="number">{D+0}</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="normal"> </span><span class="string">[Cannot start]</span><span class="cbracket">))</span>
 <span class="normal">    </span><span class="comment">; .... Start the engine here...</span>
 <span class="normal">    </span><span class="string">[Start engine if all OK]</span><span class="normal"> '</span><span class="cbracket">()</span><span class="normal"> </span><span class="keyword">howto-no</span><span class="cbracket">))</span></pre>
 
@@ -1459,7 +1591,7 @@ http://www.gnu.org/software/src-highlite -->
 <pre><span class="cbracket">((</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="normal"> </span><span class="type">nil</span><span class="cbracket">)))</span><span class="normal">   </span><span class="comment">; Evaluates into 'nil'.</span>
 <span class="cbracket">((</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="cbracket">)))</span><span class="normal">       </span><span class="comment">; Evaluates into 'nil'.</span></pre>
 
-  <h2><a id="21"></a>21. Evaluating values</h2>
+  <h2><a id="22"></a>22. Evaluating values</h2>
 
   <p>
     Special <code>eval</code> can be used to evaluate a given value. It can
@@ -1477,21 +1609,21 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> level</span><span class="keyword">-</span><span class="normal">next </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span>
-<span class="normal">    </span><span class="cbracket">(</span><span class="normal">level</span><span class="keyword">-</span><span class="normal">reset</span><span class="cbracket">)</span>
+<pre><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> level-next </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span>
+<span class="normal">    </span><span class="cbracket">(</span><span class="normal">level-reset</span><span class="cbracket">)</span>
 
-<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> lnum </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">+</span><span class="normal"> level</span><span class="keyword">-</span><span class="normal">current</span><span class="keyword">-</span><span class="normal">number </span><span class="number">{D+1}</span><span class="cbracket">)</span>
+<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> lnum </span><span class="keyword">as</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">+</span><span class="normal"> level-current-number </span><span class="number">{D+1}</span><span class="cbracket">)</span>
 <span class="normal">        </span><span class="string">[level number]</span><span class="cbracket">)</span>
 
-<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">&gt;</span><span class="normal"> lnum number</span><span class="keyword">-</span><span class="normal">of</span><span class="keyword">-</span><span class="normal">levels</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">=</span><span class="normal"> lnum </span><span class="number">{D+1}</span><span class="cbracket">))</span>
+<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">if</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">&gt;</span><span class="normal"> lnum number-of-levels</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">=</span><span class="normal"> lnum </span><span class="number">{D+1}</span><span class="cbracket">))</span>
 
-<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> name</span><span class="keyword">-</span><span class="normal">of</span><span class="keyword">-fn-</span><span class="normal">to</span><span class="keyword">-</span><span class="normal">call </span><span class="keyword">as</span><span class="normal"> 'level</span><span class="keyword">-</span>
+<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">define</span><span class="normal"> name-of-fn-to-call </span><span class="keyword">as</span><span class="normal"> 'level</span><span class="keyword">-</span>
 <span class="normal">        </span><span class="string">[name of the level builder function to call]</span><span class="cbracket">)</span>
-<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">+=</span><span class="normal"> name</span><span class="keyword">-</span><span class="normal">of</span><span class="keyword">-fn-</span><span class="normal">to</span><span class="keyword">-</span><span class="normal">call lnum</span><span class="cbracket">)</span>
-<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> </span><span class="cbracket">((</span><span class="keyword">eval</span><span class="normal"> name</span><span class="keyword">-</span><span class="normal">of</span><span class="keyword">-fn-</span><span class="normal">to</span><span class="keyword">-</span><span class="normal">call</span><span class="cbracket">))))</span><span class="normal"> </span><span class="string">[next level]</span>
+<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">+=</span><span class="normal"> name-of-fn-to-call lnum</span><span class="cbracket">)</span>
+<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> </span><span class="cbracket">((</span><span class="keyword">eval</span><span class="normal"> name-of-fn-to-call</span><span class="cbracket">))))</span><span class="normal"> </span><span class="string">[next level]</span>
 <span class="normal">        '</span><span class="cbracket">()</span><span class="normal"> </span><span class="keyword">howto-no</span><span class="cbracket">)</span></pre>
 
-  <h2><a id="22"></a>22. Input and output ports</h2>
+  <h2><a id="23"></a>23. Input and output ports</h2>
 
   <p>
     Input and output can be done through ports. Ports can be created and
@@ -1543,10 +1675,10 @@ http://www.gnu.org/software/src-highlite -->
 <span class="cbracket">(</span><span class="keyword">port-write</span><span class="normal"> f </span><span class="number">{D+65}</span><span class="cbracket">)</span>
 
 <span class="comment">; Seek one octet forward  from the current position</span>
-<span class="cbracket">(</span><span class="keyword">port-seek</span><span class="normal"> f  </span><span class="number">{D+1}</span><span class="normal"> 'from</span><span class="keyword">-</span><span class="normal">current</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="keyword">port-seek</span><span class="normal"> f  </span><span class="number">{D+1}</span><span class="normal"> 'from-current</span><span class="cbracket">)</span>
 
 <span class="comment">; Seek one octet backward from the current position</span>
-<span class="cbracket">(</span><span class="keyword">port-seek</span><span class="normal"> f </span><span class="number">{D-1}</span><span class="normal"> 'from</span><span class="keyword">-</span><span class="normal">current</span><span class="cbracket">)</span>
+<span class="cbracket">(</span><span class="keyword">port-seek</span><span class="normal"> f </span><span class="number">{D-1}</span><span class="normal"> 'from-current</span><span class="cbracket">)</span>
 
 <span class="comment">; Tell the distance (in octets) from</span>
 <span class="comment">; the beginning of the port</span>
@@ -1633,13 +1765,13 @@ http://www.gnu.org/software/src-highlite -->
 
 <span class="cbracket">(</span><span class="keyword">port-write</span><span class="normal"> f '</span><span class="cbracket">(</span><span class="number">{D+65}</span><span class="normal"> |A| </span><span class="string">[ Hi!]</span><span class="cbracket">))</span><span class="normal"> </span><span class="comment">; AA Hi!</span></pre>
 
-  <h2><a id="23"></a>23. Converting between types</h2>
+  <h2><a id="24"></a>24. Converting between types</h2>
 
   <p>
     TODO
   </p>
 
-  <h2><a id="24"></a>24. Searching and indexing</h2>
+  <h2><a id="25"></a>25. Searching and indexing</h2>
 
   <p>
     TODO
@@ -1677,7 +1809,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">find</span><span class="normal"> </span><span class="string">[012345 abc abc abc]</span><span class="normal"> </span><span class="string">[abc]</span><span class="cbracket">))</span>
 <span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">find</span><span class="normal"> </span><span class="string">[012345]</span><span class="normal"> |3|</span><span class="cbracket">))</span><span class="normal"> </span><span class="comment">; prints ({D+3})</span></pre>
 
-  <h2><a id="25"></a>25. Loading libraries with <code>require</code></h2>
+  <h2><a id="26"></a>26. Loading libraries with <code>require</code></h2>
 
   <p>
     Dern has support for loading libraries or "plugins" during run time with
@@ -1707,7 +1839,7 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
+<span class="cbracket">(</span><span class="normal">mylib-say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
 
   <p>
     If <b>mylib</b>-library is required later again, there is no need to
@@ -1803,7 +1935,7 @@ http://www.gnu.org/software/src-highlite -->
     an example with Makefiles for different systems.
   </p>
 
-    <h3>25.1 Building and using a binary library in Haiku</h3>
+    <h3>26.1 Building and using a binary library in Haiku</h3>
 
   <p>
     Run these commands from the <b>build</b>-directory of
@@ -1828,9 +1960,9 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
+<span class="cbracket">(</span><span class="normal">mylib-say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
 
-    <h3>25.2 Building and using a binary library in MINIX 3</h3>
+    <h3>26.2 Building and using a binary library in MINIX 3</h3>
 
   <p>
     Run these commands from the <b>build</b>-directory of
@@ -1855,9 +1987,9 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
+<span class="cbracket">(</span><span class="normal">mylib-say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
 
-    <h3>25.3 Building and using a binary library in Linux</h3>
+    <h3>26.3 Building and using a binary library in Linux</h3>
 
   <p>
     Run these commands from the <b>build</b>-directory of
@@ -1882,9 +2014,9 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
+<span class="cbracket">(</span><span class="normal">mylib-say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
 
-    <h3>25.4 Building and using a binary library in FreeBSD</h3>
+    <h3>26.4 Building and using a binary library in FreeBSD</h3>
 
   <p>
     Run these commands from the <b>build</b>-directory of
@@ -1909,9 +2041,9 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
+<span class="cbracket">(</span><span class="normal">mylib-say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
 
-    <h3>25.5 Building and using a binary library in NetBSD</h3>
+    <h3>26.5 Building and using a binary library in NetBSD</h3>
 
   <p>
     Run these commands from the <b>build</b>-directory of
@@ -1936,9 +2068,9 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><span class="cbracket">(</span><span class="keyword">require</span><span class="normal"> 'mylib</span><span class="cbracket">)</span>
-<span class="cbracket">(</span><span class="normal">mylib</span><span class="keyword">-</span><span class="normal">say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
+<span class="cbracket">(</span><span class="normal">mylib-say </span><span class="string">[Hello world from library]</span><span class="cbracket">)</span></pre>
 
-  <h2><a id="26"></a>26. Using custom library loader with <code>require</code></h2>
+  <h2><a id="27"></a>27. Using custom library loader with <code>require</code></h2>
 
   <p>
     Sometimes you might want to override the default library searching and
@@ -1996,20 +2128,20 @@ http://www.gnu.org/software/src-highlite -->
 <span class="cbracket">}</span>
 </pre>
 
-  <h2><a id="27"></a>27. Embedding in C programs</h2>
+  <h2><a id="28"></a>28. Embedding in C programs</h2>
 
   <p>
     TODO
   </p>
 
-  <h2><a id="28"></a>28. Tool support</h2>
+  <h2><a id="29"></a>29. Tool support</h2>
 
   <p>
     <b>etc</b>-directory of the source distribution contains syntax files
     for <b>vim</b>, <b>emacs</b> and <b>GNU source-highlight</b>.
   </p>
 
-  <h2><a id="29"></a>29. Using the development repository</h2>
+  <h2><a id="30"></a>30. Using the development repository</h2>
 
   <p>
   The amalgamated source release can be used without Make or other build tools;
@@ -2116,7 +2248,7 @@ http://www.gnu.org/software/src-highlite -->
     the documentation.
   </p>
 
-    <h3>29.1 Raspberry Pi, Debian and Ubuntu</h3>
+    <h3>30.1 Raspberry Pi, Debian and Ubuntu</h3>
 
   <p>
     To build Dern from the regular source distribution in <i>Raspberry Pi
@@ -2134,7 +2266,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">make</span>
 </pre>
 
-    <h3>29.2 Arch Linux</h3>
+    <h3>30.2 Arch Linux</h3>
 
   <p>
     To build on <i>Arch Linux (Arch Linux ARM)</i> system:
@@ -2151,7 +2283,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">make</span>
 </pre>
 
-    <h3>29.3 Haiku</h3>
+    <h3>30.3 Haiku</h3>
 
   <p>
     To build on <i>Haiku (Version Walter (Revision hrev51127) x86_gcc2)</i>:
@@ -2168,7 +2300,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="variable">CC</span><span class="symbol">=</span><span class="normal">gcc-x</span><span class="number">86</span><span class="normal"> make</span>
 </pre>
 
-    <h3>29.4 FreeBSD</h3>
+    <h3>30.4 FreeBSD</h3>
 
   <p>
     To build on <i>FreeBSD (FreeBSD-11.0-RELEASE-arm-armv6-RPI2)</i> system:
@@ -2185,7 +2317,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">make</span>
 </pre>
 
-    <h3>29.5 NetBSD</h3>
+    <h3>30.5 NetBSD</h3>
 
   <p>
     To build on <i>NetBSD (NetBSD-7.1-i386)</i> system:
@@ -2203,7 +2335,7 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">make</span>
 </pre>
 
-    <h3>29.6 MINIX 3</h3>
+    <h3>30.6 MINIX 3</h3>
 
   <p>
     To build from the regular source distribution on

@@ -8643,6 +8643,96 @@ TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_symbol_abc_test(void
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_1_and_minus1_symbol_xabcy_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ 'xabcy {D+1} {D-1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
+
+    char * expected[] =
+    {
+        "a",
+        "b",
+        "c",
+        "y"
+    };
+
+    size_t const numExpected = sizeof(expected) / sizeof(expected[0]);
+
+    ASSERT_EQ(
+        numExpected,
+        octaspire_dern_value_as_vector_get_length(evaluatedValue));
+
+    for (size_t i = 0; i < numExpected; ++i)
+    {
+        octaspire_dern_value_t const * const tmpVal =
+            octaspire_dern_value_as_vector_get_element_at_const(evaluatedValue, i);
+
+        ASSERT(tmpVal);
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, tmpVal->typeTag);
+
+        ASSERT_STR_EQ(
+            expected[i],
+            octaspire_dern_value_as_character_get_c_string(tmpVal));
+    }
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_1_and_minus1_vector_with_chars_xabcy_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(cp@ '(|x| |a| |b| |c| |y|) {D+1} {D-1})");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
+
+    char * expected[] =
+    {
+        "a",
+        "b",
+        "c",
+        "y"
+    };
+
+    size_t const numExpected = sizeof(expected) / sizeof(expected[0]);
+
+    ASSERT_EQ(
+        numExpected,
+        octaspire_dern_value_as_vector_get_length(evaluatedValue));
+
+    for (size_t i = 0; i < numExpected; ++i)
+    {
+        octaspire_dern_value_t const * const tmpVal =
+            octaspire_dern_value_as_vector_get_element_at_const(evaluatedValue, i);
+
+        ASSERT(tmpVal);
+        ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_CHARACTER, tmpVal->typeTag);
+
+        ASSERT_STR_EQ(
+            expected[i],
+            octaspire_dern_value_as_character_get_c_string(tmpVal));
+    }
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_string_abc_failure_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
@@ -8656,7 +8746,7 @@ TEST octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_string_abc_failure_t
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Index to builtin 'cp@' is not valid for the given text value "
+        "First index to builtin 'cp@' is not valid for the given text value "
         "(string or symbol). Index '3' was given.\n"
         "\tAt form: >>>>>>>>>>(cp@ [abc] {D+3})<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
@@ -15318,9 +15408,6 @@ TEST octaspire_dern_vm_split_called_with_string_and_char_test(void)
     PASS();
 }
 
-
-
-
 TEST octaspire_dern_vm_cp_at_sign_with_vector_test(void)
 {
     octaspire_dern_vm_t *vm =
@@ -17840,13 +17927,14 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_special_for_second_argument_not_symbol_failure_test);
     RUN_TEST(octaspire_dern_vm_special_for_called_with_integer_as_first_argument_failure_test);
 
-
     RUN_TEST(octaspire_dern_vm_error_in_function_body_is_reported_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_1_2_3_and_integers_0_and_1_and_2_and_3_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_0_and_string_abc_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_1_and_string_abc_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_string_abc_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_2_and_symbol_abc_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_1_and_minus1_symbol_xabcy_test);
+    RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_1_and_minus1_vector_with_chars_xabcy_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_string_abc_failure_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_3_and_nil_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_minus1_and_integer_with_only_MSB_on_test);
@@ -17858,6 +17946,7 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_4_and_integer_Bplus_1000_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_31_and_integer_Bplus_1000_test);
     RUN_TEST(octaspire_dern_vm_builtin_cp_at_sign_called_with_32_and_integer_Bplus_1000_failure_test);
+
     RUN_TEST(octaspire_dern_vm_builtin_ln_at_sign_called_with_0_and_vector_1_2_3_test);
     RUN_TEST(octaspire_dern_vm_builtin_ln_at_sign_called_with_1_and_vector_1_2_3_test);
     RUN_TEST(octaspire_dern_vm_builtin_ln_at_sign_called_with_2_and_vector_1_2_3_test);
