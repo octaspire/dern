@@ -1814,6 +1814,32 @@ octaspire_dern_environment_t const *octaspire_dern_value_as_environment_get_valu
     return self->value.environment;
 }
 
+bool octaspire_dern_value_is_callable(
+    octaspire_dern_value_t const * const self)
+{
+    if (octaspire_dern_value_is_function(self))
+    {
+        return true;
+    }
+
+    if (octaspire_dern_value_is_macro(self))
+    {
+        return true;
+    }
+
+    if (octaspire_dern_value_is_builtin(self))
+    {
+        return true;
+    }
+
+    if (octaspire_dern_value_is_special(self))
+    {
+        return true;
+    }
+
+    return false;
+}
+
 bool octaspire_dern_value_is_function(
     octaspire_dern_value_t const * const self)
 {
@@ -3569,6 +3595,61 @@ bool octaspire_dern_value_as_vector_push_back_element(
     return octaspire_vector_push_back_element(self->value.vector, element);
 }
 
+bool octaspire_dern_value_as_collection_push_back_element(
+    octaspire_dern_value_t *self,
+    void const *element)
+{
+    // TODO add support for more collection types.
+
+    octaspire_helpers_verify_not_null(self);
+    octaspire_helpers_verify_not_null(element);
+
+    if (octaspire_dern_value_is_text(self))
+    {
+        if (!octaspire_dern_value_is_character(element))
+        {
+            return false;
+        }
+
+        return octaspire_dern_value_as_text_push_back_character(self, element);
+    }
+    else if (octaspire_dern_value_is_vector(self))
+    {
+        return octaspire_dern_value_as_vector_push_back_element(self, element);
+    }
+
+    return false;
+}
+
+bool octaspire_dern_value_as_text_push_back_character(
+    octaspire_dern_value_t *self,
+    void const *element)
+{
+    octaspire_helpers_verify_not_null(self);
+    octaspire_helpers_verify_not_null(element);
+    octaspire_helpers_verify_true(octaspire_dern_value_is_character(element));
+
+    octaspire_dern_value_t * const charVal =
+        (octaspire_dern_value_t * const)element;
+
+    if (octaspire_dern_value_is_string(self))
+    {
+        return octaspire_string_push_back_ucs_character(
+            self->value.string,
+            octaspire_string_get_ucs_character_at_index(
+                charVal->value.character, 0));
+    }
+    else if (octaspire_dern_value_is_symbol(self))
+    {
+        return octaspire_string_push_back_ucs_character(
+            self->value.symbol,
+            octaspire_string_get_ucs_character_at_index(
+                charVal->value.character, 0));
+    }
+
+    return false;
+}
+
 bool octaspire_dern_value_as_vector_remove_element_at(
     octaspire_dern_value_t *self,
     ptrdiff_t const possiblyNegativeIndex)
@@ -3623,6 +3704,25 @@ octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_cons
     return octaspire_vector_get_element_at_const(
         self->value.vector,
         possiblyNegativeIndex);
+}
+
+octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at_evaluated(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    octaspire_dern_value_t * const environment)
+{
+    octaspire_helpers_verify_true(
+        octaspire_dern_value_is_vector(self));
+
+    octaspire_dern_value_t * const tmpVal =
+        octaspire_vector_get_element_at(
+            self->value.vector,
+            possiblyNegativeIndex);
+
+    return octaspire_dern_vm_eval(
+        octaspire_dern_value_get_vm(self),
+        tmpVal,
+        environment);
 }
 
 octaspire_dern_c_data_or_unpushed_error_const_t
@@ -3739,6 +3839,50 @@ octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
         octaspire_dern_value_as_vector_get_element_at_const(self, possiblyNegativeIndex);
 
     octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects number as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.value  = arg;
+    result.number = octaspire_dern_value_as_number_get_value(arg);
+    return result;
+}
+
+octaspire_dern_number_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_and_eval_element_at_as_number_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    octaspire_dern_value_t * const environment)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_number_or_unpushed_error_t result = {0, 0, 0};
+
+    octaspire_dern_value_t * arg =
+        octaspire_dern_value_as_vector_get_element_at(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    arg = octaspire_dern_vm_eval(vm, arg, environment);
 
     if (!octaspire_dern_value_is_number(arg))
     {
@@ -3925,6 +4069,197 @@ octaspire_dern_value_as_vector_get_element_at_as_string_or_unpushed_error(
     return result;
 }
 
+octaspire_dern_function_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_function_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_function_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t * const arg =
+        octaspire_dern_value_as_vector_get_element_at(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_function(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Function '%s' expects function as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.value  = arg;
+    return result;
+}
+
+octaspire_dern_vector_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_vector_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_vector_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t * const arg =
+        octaspire_dern_value_as_vector_get_element_at(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_vector(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Function '%s' expects vector as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.value  = arg;
+    return result;
+}
+
+octaspire_dern_vector_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_and_eval_element_at_as_vector_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    octaspire_dern_value_t * const environment)
+{
+    octaspire_dern_vector_or_unpushed_error_t result =
+        octaspire_dern_value_as_vector_get_element_at_as_vector_or_unpushed_error(
+            self,
+            possiblyNegativeIndex,
+            dernFuncName);
+
+    if (result.unpushedError)
+    {
+        return result;
+    }
+
+    result.value = octaspire_dern_vm_eval(
+        self->vm,
+        result.value,
+        environment);
+
+    return result;
+}
+
+octaspire_dern_function_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_and_eval_element_at_as_callable_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    octaspire_dern_value_t * const environment)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_function_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t * arg =
+        octaspire_dern_value_as_vector_get_element_at(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    arg = octaspire_dern_vm_eval(vm, arg, environment);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_callable(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Function '%s' expects callable as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.value = arg;
+    return result;
+}
+
+octaspire_dern_environment_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_environment_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_environment_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t * const arg =
+        octaspire_dern_value_as_vector_get_element_at(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_environment(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Function '%s' expects environment as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.value  = arg;
+    return result;
+}
+
 octaspire_dern_symbol_or_unpushed_error_t
 octaspire_dern_value_as_vector_get_element_at_as_symbol_or_unpushed_error(
     octaspire_dern_value_t * const self,
@@ -3954,6 +4289,66 @@ octaspire_dern_value_as_vector_get_element_at_as_symbol_or_unpushed_error(
             dernFuncName,
             possiblyNegativeIndex,
             octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.value  = arg;
+    result.symbol = octaspire_dern_value_as_text_get_string_const(arg);
+    return result;
+}
+
+octaspire_dern_symbol_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_this_symbol_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    char const * const str)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_symbol_or_unpushed_error_t result = {0, 0, 0};
+
+    octaspire_dern_value_t * const arg =
+        octaspire_dern_value_as_vector_get_element_at(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_symbol(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects symbol '%s' as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            str,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    if (!octaspire_dern_value_as_symbol_is_equal_to_c_string(arg, str))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects symbol '%s' as "
+            "%d. argument. Symbol '%s' was given.",
+            dernFuncName,
+            str,
+            possiblyNegativeIndex,
+            octaspire_dern_value_as_symbol_get_c_string(arg));
 
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
@@ -4763,3 +5158,16 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
     return false;
 }
 
+struct octaspire_dern_vm_t * octaspire_dern_value_get_vm(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_not_null(self);
+    return self->vm;
+}
+
+struct octaspire_dern_vm_t const * octaspire_dern_value_get_vm_const(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_not_null(self);
+    return self->vm;
+}

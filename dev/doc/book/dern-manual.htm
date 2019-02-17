@@ -954,13 +954,15 @@
 
   .INCLUDE: dev/doc/book/examples/dern/returnWithoutArguments.dern
 
-  <h2>Evaluating values</h2>
+  <h2>Evaluating, applying and generating values</h2>
 
   <p>
-    Special <code>eval</code> can be used to evaluate a given value. It can
-    be called with one or two arguments. The second argument, if present,
-    must be an environment that is used while evaluating. If no environment
-    is given, the global environment is used instead.
+    Special <code>eval</code> can be used to evaluate a given value or to
+    do the same thing that some other Lisps use function <code>apply</code>
+    for. When used for evaluating values, it can be called with either one
+    or two arguments. The second argument, if present, must be an environment
+    that is used while evaluating. If no environment is given, the global
+    environment is used instead.
   </p>
 
   <p>
@@ -969,6 +971,25 @@
   </p>
 
   .INCLUDE: dev/doc/book/examples/dern/eval.dern
+
+  <p>
+    The other use for <code>eval</code> is to apply a function
+    to one or multiple collections of values. This is like
+    calling the function in a form, but some or all of the arguments
+    can be inside one or more collections like vector. Some other
+    Lisps have a separate function <code>apply</code> for doing this;
+    In Dern <code>eval</code> can handle both of these use cases.
+  </p>
+
+  <p>
+    Dern has also function <code>generate</code>. It has also two
+    uses; it can be used for generating a collection of values
+    (somewhat like <code>std::generate_n</code> in C++), or it
+    can be used to do the same thing that other Lisps might have
+    function <code>map</code> or <code>mapcar</code> for.
+  </p>
+
+  .INCLUDE: dev/doc/book/examples/dern/applyEvalAndGenerate.dern
 
   <h2>Input and output ports</h2>
 

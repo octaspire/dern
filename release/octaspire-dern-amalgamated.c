@@ -26447,7 +26447,7 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "487"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "488"
 #define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
@@ -27182,6 +27182,9 @@ struct octaspire_dern_environment_t *octaspire_dern_value_as_environment_get_val
 struct octaspire_dern_environment_t const *octaspire_dern_value_as_environment_get_value_const(
     octaspire_dern_value_t const * const self);
 
+bool octaspire_dern_value_is_callable(
+    octaspire_dern_value_t const * const self);
+
 bool octaspire_dern_value_is_function(
     octaspire_dern_value_t const * const self);
 
@@ -27432,6 +27435,14 @@ bool octaspire_dern_value_as_vector_push_back_element(
     octaspire_dern_value_t *self,
     void const *element);
 
+bool octaspire_dern_value_as_collection_push_back_element(
+    octaspire_dern_value_t *self,
+    void const *element);
+
+bool octaspire_dern_value_as_text_push_back_character(
+    octaspire_dern_value_t *self,
+    void const *element);
+
 bool octaspire_dern_value_as_vector_remove_element_at(
     octaspire_dern_value_t *self,
     ptrdiff_t const possiblyNegativeIndex);
@@ -27450,6 +27461,11 @@ octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at(
 octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_const(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
+
+octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at_evaluated(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    octaspire_dern_value_t * const environment);
 
 typedef struct octaspire_dern_c_data_or_unpushed_error_t
 {
@@ -27523,6 +27539,59 @@ typedef struct octaspire_dern_string_or_unpushed_error_t
 }
 octaspire_dern_string_or_unpushed_error_t;
 
+typedef struct octaspire_dern_vector_or_unpushed_error_t
+{
+    octaspire_dern_value_t * value;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_vector_or_unpushed_error_t;
+
+octaspire_dern_vector_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_vector_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName);
+
+octaspire_dern_vector_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_and_eval_element_at_as_vector_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    octaspire_dern_value_t * const environment);
+
+typedef struct octaspire_dern_function_or_unpushed_error_t
+{
+    octaspire_dern_value_t * value;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_function_or_unpushed_error_t;
+
+octaspire_dern_function_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_function_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName);
+
+octaspire_dern_function_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_and_eval_element_at_as_callable_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    octaspire_dern_value_t * const environment);
+
+typedef struct octaspire_dern_environment_or_unpushed_error_t
+{
+    octaspire_dern_value_t * value;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_environment_or_unpushed_error_t;
+
+octaspire_dern_environment_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_environment_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName);
+
 typedef struct octaspire_dern_symbol_or_unpushed_error_t
 {
     octaspire_string_t     const * symbol;
@@ -27571,6 +27640,13 @@ octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
     ptrdiff_t const possiblyNegativeIndex,
     char const * const dernFuncName);
 
+octaspire_dern_number_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_and_eval_element_at_as_number_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    octaspire_dern_value_t * const environment);
+
 octaspire_dern_boolean_or_unpushed_error_t
 octaspire_dern_value_as_vector_get_element_at_as_boolean_or_unpushed_error(
     octaspire_dern_value_t * const self,
@@ -27606,6 +27682,13 @@ octaspire_dern_value_as_vector_get_element_at_as_symbol_or_unpushed_error(
     octaspire_dern_value_t * const self,
     ptrdiff_t const possiblyNegativeIndex,
     char const * const dernFuncName);
+
+octaspire_dern_symbol_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_this_symbol_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    char const * const str);
 
 octaspire_dern_one_of_texts_or_unpushed_error_const_t
 octaspire_dern_value_as_vector_get_element_at_as_one_of_texts_or_unpushed_error_const(
@@ -27675,6 +27758,12 @@ int octaspire_dern_value_compare(
     octaspire_dern_value_t const * const other);
 
 bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self);
+
+struct octaspire_dern_vm_t * octaspire_dern_value_get_vm(
+    octaspire_dern_value_t * const self);
+
+struct octaspire_dern_vm_t const * octaspire_dern_value_get_vm_const(
+    octaspire_dern_value_t const * const self);
 
 #ifdef __cplusplus
 /* extern "C" */ }
@@ -28147,11 +28236,13 @@ struct octaspire_dern_value_t *octaspire_dern_vm_create_new_value_c_data_from_ex
     octaspire_dern_vm_t * const self,
     octaspire_dern_c_data_t * const cData);
 
-bool octaspire_dern_vm_push_value(octaspire_dern_vm_t *self, struct octaspire_dern_value_t *value);
+bool octaspire_dern_vm_push_value(
+    octaspire_dern_vm_t * const self,
+    struct octaspire_dern_value_t * const value);
 
 bool octaspire_dern_vm_pop_value(
-    octaspire_dern_vm_t *self,
-    struct octaspire_dern_value_t *valueForBalanceCheck);
+    octaspire_dern_vm_t * const self,
+    struct octaspire_dern_value_t * const valueForBalanceCheck);
 
 void const * octaspire_dern_vm_get_top_value(octaspire_dern_vm_t const * const self);
 
@@ -28698,6 +28789,11 @@ octaspire_dern_value_t *octaspire_dern_vm_special_eval(
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
 
+octaspire_dern_value_t *octaspire_dern_vm_special_generate(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
 octaspire_dern_value_t *octaspire_dern_vm_special_quote(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
@@ -28826,6 +28922,11 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_nil_question_mark(
     octaspire_dern_value_t *environment);
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_boolean_question_mark(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment);
+
+octaspire_dern_value_t *octaspire_dern_vm_builtin_character(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment);
@@ -35506,41 +35607,217 @@ octaspire_dern_value_t *octaspire_dern_vm_special_define(
     }
 }
 
-octaspire_dern_value_t *octaspire_dern_vm_special_eval(
+static octaspire_dern_value_t *octaspire_dern_vm_private_special_eval_helper_apply(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
     octaspire_dern_value_t *environment)
 {
     size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
 
-    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
-    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
 
-    octaspire_vector_t * const vec = arguments->value.vector;
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
 
-    if (octaspire_vector_get_length(vec) != 1 &&
-        octaspire_vector_get_length(vec) != 2)
+    char   const * const dernFuncName = "eval";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs < 3)
     {
-        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
         return octaspire_dern_vm_create_new_value_error_format(
             vm,
-            "Special 'eval' expects one or two arguments. %zu arguments were given.",
-            octaspire_vector_get_length(vec));
+            "Special '%s' expects at least three arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            octaspire_dern_value_get_length(arguments));
     }
 
-    octaspire_dern_value_t *valueToBeEvaluated = octaspire_vector_get_element_at(vec, 0);
+    octaspire_dern_value_t * const funcValue =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(funcValue);
+
+    octaspire_dern_value_t * const funcValueEvaluated =
+        octaspire_dern_vm_eval(vm, funcValue, environment);
+
+    octaspire_helpers_verify_not_null(funcValueEvaluated);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_push_value(vm, funcValueEvaluated));
+
+    if (!octaspire_dern_value_is_callable(funcValueEvaluated))
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, funcValueEvaluated));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special '%s' expects callable value as the first argument "
+            "when used as 'apply'. Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(
+                octaspire_dern_value_get_type(funcValueEvaluated)));
+    }
+
+    octaspire_dern_value_t * const envValue =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 1);
+
+    octaspire_helpers_verify_not_null(envValue);
+
+    octaspire_dern_value_t * const envValueEvaluated =
+        octaspire_dern_vm_eval(vm, envValue, environment);
+
+    octaspire_helpers_verify_not_null(envValueEvaluated);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_push_value(vm, envValueEvaluated));
+
+    if (!octaspire_dern_value_is_environment(envValueEvaluated))
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, envValueEvaluated));
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, funcValueEvaluated));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special '%s' expects environment value as the second argument "
+            "when used as 'apply'. Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(
+                octaspire_dern_value_get_type(envValueEvaluated)));
+    }
+
+    octaspire_dern_value_t *valueToBeEvaluated =
+        octaspire_dern_vm_create_new_value_vector(vm);
+
+    octaspire_helpers_verify_not_null(valueToBeEvaluated);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_push_value(vm, valueToBeEvaluated));
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_value_as_vector_push_back_element(
+            valueToBeEvaluated,
+            &funcValueEvaluated));
+
+    for (size_t i = 2; i < numArgs; ++i)
+    {
+        octaspire_dern_value_t * const tmpVal =
+            octaspire_dern_value_as_vector_get_element_at_evaluated(
+                arguments,
+                i,
+                environment);
+
+        if (!tmpVal)
+        {
+            // NOP
+        }
+        else if (octaspire_dern_value_is_vector(tmpVal))
+        {
+            for (size_t j = 0;
+                 j < octaspire_dern_value_as_vector_get_length(tmpVal);
+                 ++j)
+            {
+                octaspire_dern_value_t * const tmpElemVal =
+                    octaspire_dern_value_as_vector_get_element_at(tmpVal, j);
+
+                octaspire_helpers_verify_true(
+                    octaspire_dern_value_as_vector_push_back_element(
+                        valueToBeEvaluated,
+                        &tmpElemVal));
+            }
+        }
+        else
+        {
+            octaspire_helpers_verify_true(
+                octaspire_dern_value_as_vector_push_back_element(
+                    valueToBeEvaluated,
+                    &tmpVal));
+        }
+    }
+
+    octaspire_dern_value_t *result = 0;
+
+    result = octaspire_dern_vm_eval(
+        vm,
+        valueToBeEvaluated,
+        envValueEvaluated);
+
+    octaspire_helpers_verify_not_null(result);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_pop_value(vm, valueToBeEvaluated));
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_pop_value(vm, envValueEvaluated));
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_pop_value(vm, funcValueEvaluated));
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return result;
+}
+
+static octaspire_dern_value_t *octaspire_dern_vm_private_special_eval_helper_eval(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "eval";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs < 1 || numArgs > 2)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special '%s' expects one or two arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            octaspire_dern_value_get_length(arguments));
+    }
+
+    octaspire_dern_value_t *valueToBeEvaluated =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
     octaspire_helpers_verify_not_null(valueToBeEvaluated);
 
     octaspire_dern_vm_push_value(vm, arguments);
 
     octaspire_dern_value_t *result = 0;
 
-    if (octaspire_vector_get_length(vec) == 2)
+    if (numArgs == 2)
     {
-        octaspire_dern_value_t *envVal = octaspire_vector_get_element_at(vec, 1);
+        octaspire_dern_value_t *envVal =
+            octaspire_dern_value_as_vector_get_element_at(arguments, 1);
+
         octaspire_helpers_verify_not_null(envVal);
 
-        if (envVal->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT)
+        if (octaspire_dern_value_is_environment(envVal))
         {
             result = octaspire_dern_vm_eval(vm, valueToBeEvaluated, envVal);
             octaspire_dern_vm_push_value(vm, result);
@@ -35554,7 +35831,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_eval(
 
             octaspire_helpers_verify_not_null(envVal);
 
-            if (envVal->typeTag == OCTASPIRE_DERN_VALUE_TAG_ERROR)
+            if (octaspire_dern_value_is_error(envVal))
             {
                 octaspire_dern_vm_pop_value(vm, arguments);
 
@@ -35564,7 +35841,7 @@ octaspire_dern_value_t *octaspire_dern_vm_special_eval(
                 return envVal;
             }
 
-            if (envVal->typeTag != OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT)
+            if (!octaspire_dern_value_is_environment(envVal))
             {
                 octaspire_dern_vm_pop_value(vm, arguments);
 
@@ -35573,15 +35850,20 @@ octaspire_dern_value_t *octaspire_dern_vm_special_eval(
 
                 return octaspire_dern_vm_create_new_value_error_format(
                     vm,
-                    "Second argument to special 'eval' must evaluate into environment value.\n"
-                    "Now it evaluated into type %s.",
-                    octaspire_dern_value_helper_get_type_as_c_string(envVal->typeTag));
+                    "Second argument to special '%s' must evaluate into "
+                    "environment value.\nNow it evaluated into type %s.",
+                    dernFuncName,
+                    octaspire_dern_value_helper_get_type_as_c_string(
+                        envVal->typeTag));
             }
 
             octaspire_dern_vm_push_value(vm, envVal);
             result = octaspire_dern_vm_eval(vm, valueToBeEvaluated, envVal);
             octaspire_dern_vm_push_value(vm, result);
-            octaspire_dern_value_t *tmpResult = octaspire_dern_vm_eval(vm, result, envVal);
+
+            octaspire_dern_value_t *tmpResult =
+                octaspire_dern_vm_eval(vm, result, envVal);
+
             octaspire_dern_vm_pop_value(vm, result);
             octaspire_dern_vm_pop_value(vm, envVal);
             result = tmpResult;
@@ -35591,7 +35873,10 @@ octaspire_dern_value_t *octaspire_dern_vm_special_eval(
     {
         result = octaspire_dern_vm_eval(vm, valueToBeEvaluated, environment);
         octaspire_dern_vm_push_value(vm, result);
-        octaspire_dern_value_t *tmpResult = octaspire_dern_vm_eval(vm, result, environment);
+
+        octaspire_dern_value_t *tmpResult =
+            octaspire_dern_vm_eval(vm, result, environment);
+
         octaspire_dern_vm_pop_value(vm, result);
         result = tmpResult;
     }
@@ -35599,8 +35884,684 @@ octaspire_dern_value_t *octaspire_dern_vm_special_eval(
     octaspire_helpers_verify_not_null(result);
 
     octaspire_dern_vm_pop_value(vm, arguments);
-    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
     return result;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_special_eval(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "eval";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    if (numArgs < 1)
+    {
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special '%s' expects at least one arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            octaspire_dern_value_get_length(arguments));
+    }
+
+    if (numArgs == 1 || numArgs == 2)
+    {
+        return octaspire_dern_vm_private_special_eval_helper_eval(
+            vm,
+            arguments,
+            environment);
+    }
+
+    return octaspire_dern_vm_private_special_eval_helper_apply(
+        vm,
+        arguments,
+        environment);
+}
+
+static octaspire_dern_value_t *octaspire_dern_vm_private_special_generate_helper_generate(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "generate";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 4)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special '%s' expects at four arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            octaspire_dern_value_get_length(arguments));
+    }
+
+    octaspire_dern_value_t * const typeValue =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(typeValue);
+
+    octaspire_dern_value_t * const typeValueEvaluated =
+        octaspire_dern_vm_eval(vm, typeValue, environment);
+
+    octaspire_helpers_verify_not_null(typeValueEvaluated);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_push_value(vm, typeValueEvaluated));
+
+    if (!octaspire_dern_value_is_symbol(typeValueEvaluated))
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, typeValueEvaluated));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special '%s' expects symbol as the first argument "
+            "when used to generate values. Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(
+                octaspire_dern_value_get_type(typeValueEvaluated)));
+    }
+
+    octaspire_dern_value_t * resultValue = 0;
+
+    // TODO add support for generating more types.
+    if (octaspire_dern_value_as_text_is_equal_to_c_string(
+            typeValueEvaluated,
+            "vector"))
+    {
+        resultValue = octaspire_dern_vm_create_new_value_vector(vm);
+    }
+    else if (octaspire_dern_value_as_text_is_equal_to_c_string(
+            typeValueEvaluated,
+            "string"))
+    {
+        resultValue = octaspire_dern_vm_create_new_value_string_from_c_string(
+            vm,
+            "");
+    }
+    else
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, typeValueEvaluated));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special '%s' expects symbol 'vector' or 'string'"
+            "as the first argument when used to generate values. "
+            "Symbol '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_as_text_get_c_string(typeValueEvaluated));
+    }
+
+    octaspire_helpers_verify_not_null(resultValue);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_push_value(vm, resultValue));
+
+    // of
+
+    octaspire_dern_symbol_or_unpushed_error_t const symbolOfOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_this_symbol_or_unpushed_error(
+            arguments,
+            1,
+            dernFuncName,
+            "of");
+
+    if (symbolOfOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, resultValue));
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, typeValueEvaluated));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return symbolOfOrError.unpushedError;
+    }
+
+    // Number
+
+    octaspire_dern_number_or_unpushed_error_t numberOrError =
+        octaspire_dern_value_as_vector_get_and_eval_element_at_as_number_or_unpushed_error(
+            arguments,
+            2,
+            dernFuncName,
+            environment);
+
+    if (numberOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, resultValue));
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, typeValueEvaluated));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return numberOrError.unpushedError;
+    }
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_push_value(vm, numberOrError.value));
+
+    if (numberOrError.number < 0)
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, numberOrError.value));
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, resultValue));
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, typeValueEvaluated));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special '%s' expects non negative number "
+            "as the third argument when used to generate values. ",
+            dernFuncName);
+    }
+
+    size_t number = (size_t)(numberOrError.number);
+
+    // Any literal value or generator function
+
+    octaspire_dern_value_t * const generatorValue =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 3);
+
+    octaspire_helpers_verify_not_null(generatorValue);
+
+    octaspire_dern_value_t * const generatorValueEvaluated =
+        octaspire_dern_vm_eval(vm, generatorValue, environment);
+
+    octaspire_helpers_verify_not_null(generatorValueEvaluated);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_push_value(vm, generatorValueEvaluated));
+
+    if (octaspire_dern_value_is_callable(generatorValueEvaluated))
+    {
+        for (size_t i = 0; i < number; ++i)
+        {
+            octaspire_dern_value_t * const indexValue =
+                octaspire_dern_vm_create_new_value_integer(
+                    vm,
+                    i);
+
+            octaspire_helpers_verify_not_null(indexValue);
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_vm_push_value(vm, indexValue));
+
+            octaspire_dern_value_t * const quoteValue =
+                octaspire_dern_vm_create_new_value_vector(vm);
+
+            octaspire_helpers_verify_not_null(quoteValue);
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_vm_push_value(vm, quoteValue));
+
+            octaspire_dern_value_t * const quoteSymbolValue =
+                octaspire_dern_vm_create_new_value_symbol_from_c_string(
+                    vm,
+                    "quote");
+
+            octaspire_helpers_verify_not_null(quoteSymbolValue);
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_value_as_vector_push_back_element(
+                    quoteValue,
+                    &quoteSymbolValue));
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_value_as_vector_push_back_element(
+                    quoteValue,
+                    &resultValue));
+
+            octaspire_dern_value_t * const formValue =
+                octaspire_dern_vm_create_new_value_vector_from_values(
+                    vm,
+                    3,
+                    //generatorValueEvaluated,
+                    generatorValue,
+                    quoteValue,
+                    indexValue);
+
+            octaspire_helpers_verify_not_null(formValue);
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_vm_push_value(vm, formValue));
+
+            octaspire_dern_value_t * const elemValue = octaspire_dern_vm_eval(
+                vm,
+                formValue,
+                environment);
+
+            octaspire_helpers_verify_not_null(elemValue);
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_value_as_collection_push_back_element(
+                    resultValue,
+                    elemValue));
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_vm_pop_value(vm, formValue));
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_vm_pop_value(vm, quoteValue));
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_vm_pop_value(vm, indexValue));
+        }
+    }
+    else
+    {
+        for (size_t i =  0; i < number; ++i)
+        {
+            octaspire_helpers_verify_true(
+                octaspire_dern_value_as_collection_push_back_element(
+                    resultValue,
+                    generatorValueEvaluated));
+        }
+    }
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_pop_value(vm, generatorValueEvaluated));
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_pop_value(vm, numberOrError.value));
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_pop_value(vm, resultValue));
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_pop_value(vm, typeValueEvaluated));
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return resultValue;
+}
+
+static octaspire_dern_value_t *octaspire_dern_vm_private_special_generate_helper_map(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "generate";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs < 5)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special '%s' expects at least five arguments "
+            "when used as 'map'; %zu arguments were given.",
+            dernFuncName,
+            octaspire_dern_value_get_length(arguments));
+    }
+
+    octaspire_dern_value_t * const typeValue =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    octaspire_helpers_verify_not_null(typeValue);
+
+    octaspire_dern_value_t * const typeValueEvaluated =
+        octaspire_dern_vm_eval(vm, typeValue, environment);
+
+    octaspire_helpers_verify_not_null(typeValueEvaluated);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_push_value(vm, typeValueEvaluated));
+
+    if (!octaspire_dern_value_is_symbol(typeValueEvaluated))
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, typeValueEvaluated));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special '%s' expects symbol as the first argument "
+            "when used to map values. Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(
+                octaspire_dern_value_get_type(typeValueEvaluated)));
+    }
+
+    octaspire_dern_value_t * resultValue = 0;
+
+    // TODO add support for generating more types.
+    if (octaspire_dern_value_as_text_is_equal_to_c_string(
+            typeValueEvaluated,
+            "vector"))
+    {
+        resultValue = octaspire_dern_vm_create_new_value_vector(vm);
+    }
+    else if (octaspire_dern_value_as_text_is_equal_to_c_string(
+            typeValueEvaluated,
+            "string"))
+    {
+        resultValue = octaspire_dern_vm_create_new_value_string_from_c_string(
+            vm,
+            "");
+    }
+    else
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, typeValueEvaluated));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special '%s' expects symbol 'vector' or 'string'"
+            "as the first argument when used to generate values. "
+            "Symbol '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_as_text_get_c_string(typeValueEvaluated));
+    }
+
+    octaspire_helpers_verify_not_null(resultValue);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_push_value(vm, resultValue));
+
+    // mapping
+
+    octaspire_dern_symbol_or_unpushed_error_t const symbolOfOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_this_symbol_or_unpushed_error(
+            arguments,
+            1,
+            dernFuncName,
+            "mapping");
+
+    if (symbolOfOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, resultValue));
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, typeValueEvaluated));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return symbolOfOrError.unpushedError;
+    }
+
+    // Callable function
+
+    octaspire_dern_function_or_unpushed_error_t const callableOrError =
+        octaspire_dern_value_as_vector_get_and_eval_element_at_as_callable_or_unpushed_error(
+            arguments,
+            2,
+            dernFuncName,
+            environment);
+
+    if (callableOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, resultValue));
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, typeValueEvaluated));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return callableOrError.unpushedError;
+    }
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_push_value(vm, callableOrError.value));
+
+    // on
+
+    octaspire_dern_symbol_or_unpushed_error_t const symbolOnOrError =
+        octaspire_dern_value_as_vector_get_element_at_as_this_symbol_or_unpushed_error(
+            arguments,
+            3,
+            dernFuncName,
+            "on");
+
+    if (symbolOnOrError.unpushedError)
+    {
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, callableOrError.value));
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, resultValue));
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, typeValueEvaluated));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return symbolOnOrError.unpushedError;
+    }
+
+    // Generate form (callable arg1 arg2 argN) to be called and call it
+    // correct number of times storing the results into the result collection.
+    // Number of arguments depends on the number of vectors after symbol 'on'.
+    // One argument is picked from each of those vectors.
+    // Shortest of those vectors tells how many calls are made.
+
+    octaspire_dern_value_t * const argVectorsVal =
+        octaspire_dern_vm_create_new_value_vector(vm);
+
+    octaspire_helpers_verify_not_null(argVectorsVal);
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_push_value(vm, argVectorsVal));
+
+    size_t minVecLen = 0;
+
+    for (size_t i = 4; i < octaspire_dern_value_as_vector_get_length(arguments); ++i)
+    {
+        octaspire_dern_vector_or_unpushed_error_t const vectorOrError =
+            octaspire_dern_value_as_vector_get_and_eval_element_at_as_vector_or_unpushed_error(
+                arguments,
+                i,
+                dernFuncName,
+                environment);
+
+        if (vectorOrError.unpushedError)
+        {
+            octaspire_helpers_verify_true(
+                octaspire_dern_vm_pop_value(vm, argVectorsVal));
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_vm_pop_value(vm, callableOrError.value));
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_vm_pop_value(vm, resultValue));
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_vm_pop_value(vm, typeValueEvaluated));
+
+            octaspire_helpers_verify_true(
+                stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+            return vectorOrError.unpushedError;
+        }
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_value_as_vector_push_back_element(
+                argVectorsVal,
+                &(vectorOrError.value)));
+
+        if (octaspire_dern_value_as_vector_get_length(vectorOrError.value) >
+            minVecLen)
+        {
+            minVecLen = octaspire_dern_value_as_vector_get_length(
+                vectorOrError.value);
+        }
+    }
+
+    for (size_t i = 0; i < minVecLen; ++i)
+    {
+        octaspire_dern_value_t * const formValue =
+            octaspire_dern_vm_create_new_value_vector(vm);
+
+        octaspire_helpers_verify_not_null(formValue);
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_push_value(vm, formValue));
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_value_as_vector_push_back_element(
+                formValue,
+                &(callableOrError.value)));
+
+        for (size_t j = 0;
+             j < octaspire_dern_value_as_vector_get_length(argVectorsVal);
+             ++j)
+        {
+            octaspire_dern_value_t * const vecVal =
+                octaspire_dern_value_as_vector_get_element_at(argVectorsVal, j);
+
+            octaspire_helpers_verify_not_null(vecVal);
+
+            octaspire_dern_value_t * argVal =
+                octaspire_dern_value_as_vector_get_element_at(vecVal, i);
+
+            octaspire_helpers_verify_not_null(argVal);
+
+            octaspire_helpers_verify_true(
+                octaspire_dern_value_as_vector_push_back_element(
+                    formValue,
+                    &argVal));
+        }
+
+        octaspire_dern_value_t * const resultElemVal =
+            octaspire_dern_vm_eval(vm, formValue, environment);
+
+        octaspire_helpers_verify_not_null(resultElemVal);
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_value_as_vector_push_back_element(
+                resultValue,
+                &resultElemVal));
+
+        octaspire_helpers_verify_true(
+            octaspire_dern_vm_pop_value(vm, formValue));
+    }
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_pop_value(vm, argVectorsVal));
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_pop_value(vm, callableOrError.value));
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_pop_value(vm, resultValue));
+
+    octaspire_helpers_verify_true(
+        octaspire_dern_vm_pop_value(vm, typeValueEvaluated));
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    return resultValue;
+}
+
+octaspire_dern_value_t *octaspire_dern_vm_special_generate(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "generate";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    octaspire_helpers_verify_true(
+        stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+    if (numArgs < 4)
+    {
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Special '%s' expects at least four arguments. "
+            "%zu arguments were given.",
+            dernFuncName,
+            octaspire_dern_value_get_length(arguments));
+    }
+
+    if (numArgs == 4)
+    {
+        return octaspire_dern_vm_private_special_generate_helper_generate(
+            vm,
+            arguments,
+            environment);
+    }
+
+    return octaspire_dern_vm_private_special_generate_helper_map(
+        vm,
+        arguments,
+        environment);
 }
 
 octaspire_dern_value_t *octaspire_dern_vm_special_quote(
@@ -45280,6 +46241,107 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_boolean_question_mark(
     return octaspire_dern_vm_create_new_value_boolean(vm, octaspire_dern_value_is_boolean(value));
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_character(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(
+        arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+
+    octaspire_helpers_verify_true(
+        environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    char   const * const dernFuncName = "character";
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 1)
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects at one argument. "
+            "%zu arguments were given.",
+            dernFuncName,
+            numArgs);
+    }
+
+    octaspire_dern_value_t const * const value =
+        octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+    if (octaspire_dern_value_is_number(value))
+    {
+        int32_t const number = octaspire_dern_value_as_number_get_value(value);
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        if (number < 0)
+        {
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin '%s' expects non-negative number as the first argument. "
+                "Negative number %" PRId32 " was given.",
+                dernFuncName,
+                number);
+        }
+
+        return octaspire_dern_vm_create_new_value_character_from_uint32t(
+            vm,
+            (uint32_t)number);
+    }
+    else if (octaspire_dern_value_is_text(value))
+    {
+        // TODO add support for more character names.
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        if (octaspire_dern_value_as_text_is_equal_to_c_string(
+                value,
+                "copyright sign"))
+        {
+            return octaspire_dern_vm_create_new_value_character_from_uint32t(
+                vm,
+                (uint32_t)0xA9);
+        }
+        if (octaspire_dern_value_as_text_is_equal_to_c_string(
+                value,
+                "greek small letter lambda"))
+        {
+            return octaspire_dern_vm_create_new_value_character_from_uint32t(
+                vm,
+                (uint32_t)0x3BB);
+        }
+        else
+        {
+            return octaspire_dern_vm_create_new_value_error_format(
+                vm,
+                "Builtin '%s' does not support character name "
+                "'%s' that was given as the first argument.",
+                dernFuncName,
+                octaspire_dern_value_as_text_get_c_string(value));
+        }
+    }
+    else
+    {
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects number of text as the first argument. "
+            "Type '%s' was given.",
+            dernFuncName,
+            octaspire_dern_value_helper_get_type_as_c_string(
+                octaspire_dern_value_get_type(value)));
+    }
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_character_question_mark(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
@@ -47867,6 +48929,32 @@ octaspire_dern_environment_t const *octaspire_dern_value_as_environment_get_valu
     return self->value.environment;
 }
 
+bool octaspire_dern_value_is_callable(
+    octaspire_dern_value_t const * const self)
+{
+    if (octaspire_dern_value_is_function(self))
+    {
+        return true;
+    }
+
+    if (octaspire_dern_value_is_macro(self))
+    {
+        return true;
+    }
+
+    if (octaspire_dern_value_is_builtin(self))
+    {
+        return true;
+    }
+
+    if (octaspire_dern_value_is_special(self))
+    {
+        return true;
+    }
+
+    return false;
+}
+
 bool octaspire_dern_value_is_function(
     octaspire_dern_value_t const * const self)
 {
@@ -49622,6 +50710,61 @@ bool octaspire_dern_value_as_vector_push_back_element(
     return octaspire_vector_push_back_element(self->value.vector, element);
 }
 
+bool octaspire_dern_value_as_collection_push_back_element(
+    octaspire_dern_value_t *self,
+    void const *element)
+{
+    // TODO add support for more collection types.
+
+    octaspire_helpers_verify_not_null(self);
+    octaspire_helpers_verify_not_null(element);
+
+    if (octaspire_dern_value_is_text(self))
+    {
+        if (!octaspire_dern_value_is_character(element))
+        {
+            return false;
+        }
+
+        return octaspire_dern_value_as_text_push_back_character(self, element);
+    }
+    else if (octaspire_dern_value_is_vector(self))
+    {
+        return octaspire_dern_value_as_vector_push_back_element(self, element);
+    }
+
+    return false;
+}
+
+bool octaspire_dern_value_as_text_push_back_character(
+    octaspire_dern_value_t *self,
+    void const *element)
+{
+    octaspire_helpers_verify_not_null(self);
+    octaspire_helpers_verify_not_null(element);
+    octaspire_helpers_verify_true(octaspire_dern_value_is_character(element));
+
+    octaspire_dern_value_t * const charVal =
+        (octaspire_dern_value_t * const)element;
+
+    if (octaspire_dern_value_is_string(self))
+    {
+        return octaspire_string_push_back_ucs_character(
+            self->value.string,
+            octaspire_string_get_ucs_character_at_index(
+                charVal->value.character, 0));
+    }
+    else if (octaspire_dern_value_is_symbol(self))
+    {
+        return octaspire_string_push_back_ucs_character(
+            self->value.symbol,
+            octaspire_string_get_ucs_character_at_index(
+                charVal->value.character, 0));
+    }
+
+    return false;
+}
+
 bool octaspire_dern_value_as_vector_remove_element_at(
     octaspire_dern_value_t *self,
     ptrdiff_t const possiblyNegativeIndex)
@@ -49676,6 +50819,25 @@ octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_cons
     return octaspire_vector_get_element_at_const(
         self->value.vector,
         possiblyNegativeIndex);
+}
+
+octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at_evaluated(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    octaspire_dern_value_t * const environment)
+{
+    octaspire_helpers_verify_true(
+        octaspire_dern_value_is_vector(self));
+
+    octaspire_dern_value_t * const tmpVal =
+        octaspire_vector_get_element_at(
+            self->value.vector,
+            possiblyNegativeIndex);
+
+    return octaspire_dern_vm_eval(
+        octaspire_dern_value_get_vm(self),
+        tmpVal,
+        environment);
 }
 
 octaspire_dern_c_data_or_unpushed_error_const_t
@@ -49792,6 +50954,50 @@ octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
         octaspire_dern_value_as_vector_get_element_at_const(self, possiblyNegativeIndex);
 
     octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_number(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects number as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.value  = arg;
+    result.number = octaspire_dern_value_as_number_get_value(arg);
+    return result;
+}
+
+octaspire_dern_number_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_and_eval_element_at_as_number_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    octaspire_dern_value_t * const environment)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_number_or_unpushed_error_t result = {0, 0, 0};
+
+    octaspire_dern_value_t * arg =
+        octaspire_dern_value_as_vector_get_element_at(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    arg = octaspire_dern_vm_eval(vm, arg, environment);
 
     if (!octaspire_dern_value_is_number(arg))
     {
@@ -49978,6 +51184,197 @@ octaspire_dern_value_as_vector_get_element_at_as_string_or_unpushed_error(
     return result;
 }
 
+octaspire_dern_function_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_function_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_function_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t * const arg =
+        octaspire_dern_value_as_vector_get_element_at(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_function(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Function '%s' expects function as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.value  = arg;
+    return result;
+}
+
+octaspire_dern_vector_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_vector_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_vector_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t * const arg =
+        octaspire_dern_value_as_vector_get_element_at(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_vector(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Function '%s' expects vector as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.value  = arg;
+    return result;
+}
+
+octaspire_dern_vector_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_and_eval_element_at_as_vector_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    octaspire_dern_value_t * const environment)
+{
+    octaspire_dern_vector_or_unpushed_error_t result =
+        octaspire_dern_value_as_vector_get_element_at_as_vector_or_unpushed_error(
+            self,
+            possiblyNegativeIndex,
+            dernFuncName);
+
+    if (result.unpushedError)
+    {
+        return result;
+    }
+
+    result.value = octaspire_dern_vm_eval(
+        self->vm,
+        result.value,
+        environment);
+
+    return result;
+}
+
+octaspire_dern_function_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_and_eval_element_at_as_callable_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    octaspire_dern_value_t * const environment)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_function_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t * arg =
+        octaspire_dern_value_as_vector_get_element_at(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    arg = octaspire_dern_vm_eval(vm, arg, environment);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_callable(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Function '%s' expects callable as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.value = arg;
+    return result;
+}
+
+octaspire_dern_environment_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_environment_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_environment_or_unpushed_error_t result = {0, 0};
+
+    octaspire_dern_value_t * const arg =
+        octaspire_dern_value_as_vector_get_element_at(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_environment(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Function '%s' expects environment as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.value  = arg;
+    return result;
+}
+
 octaspire_dern_symbol_or_unpushed_error_t
 octaspire_dern_value_as_vector_get_element_at_as_symbol_or_unpushed_error(
     octaspire_dern_value_t * const self,
@@ -50007,6 +51404,66 @@ octaspire_dern_value_as_vector_get_element_at_as_symbol_or_unpushed_error(
             dernFuncName,
             possiblyNegativeIndex,
             octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    result.value  = arg;
+    result.symbol = octaspire_dern_value_as_text_get_string_const(arg);
+    return result;
+}
+
+octaspire_dern_symbol_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_this_symbol_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    char const * const str)
+{
+    octaspire_helpers_verify_not_null(self);
+
+    octaspire_dern_vm_t * const vm = self->vm;
+
+    octaspire_helpers_verify_not_null(vm);
+
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+    octaspire_dern_symbol_or_unpushed_error_t result = {0, 0, 0};
+
+    octaspire_dern_value_t * const arg =
+        octaspire_dern_value_as_vector_get_element_at(self, possiblyNegativeIndex);
+
+    octaspire_helpers_verify_not_null(arg);
+
+    if (!octaspire_dern_value_is_symbol(arg))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects symbol '%s' as "
+            "%d. argument. Type '%s' was given.",
+            dernFuncName,
+            str,
+            possiblyNegativeIndex,
+            octaspire_dern_value_helper_get_type_as_c_string(arg->typeTag));
+
+        octaspire_helpers_verify_true(
+            stackLength == octaspire_dern_vm_get_stack_length(vm));
+
+        return result;
+    }
+
+    if (!octaspire_dern_value_as_symbol_is_equal_to_c_string(arg, str))
+    {
+        result.unpushedError = octaspire_dern_vm_create_new_value_error_format(
+            vm,
+            "Builtin '%s' expects symbol '%s' as "
+            "%d. argument. Symbol '%s' was given.",
+            dernFuncName,
+            str,
+            possiblyNegativeIndex,
+            octaspire_dern_value_as_symbol_get_c_string(arg));
 
         octaspire_helpers_verify_true(
             stackLength == octaspire_dern_vm_get_stack_length(vm));
@@ -50816,6 +52273,19 @@ bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self)
     return false;
 }
 
+struct octaspire_dern_vm_t * octaspire_dern_value_get_vm(
+    octaspire_dern_value_t * const self)
+{
+    octaspire_helpers_verify_not_null(self);
+    return self->vm;
+}
+
+struct octaspire_dern_vm_t const * octaspire_dern_value_get_vm_const(
+    octaspire_dern_value_t const * const self)
+{
+    octaspire_helpers_verify_not_null(self);
+    return self->vm;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          dev/src/octaspire_dern_value.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52076,8 +53546,24 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         "eval",
         octaspire_dern_vm_special_eval,
         1,
-        "Evaluate a value (first argument) in global environment or, if given, in then "
-        "given environment",
+        "Either (1) evaluate a value (first argument) in global environment\n"
+        "or, if given, in the given environment; or (2) apply function given\n"
+        "as the first argument in the environment given as the second argument\n"
+        "as a form with the rest of the arguments spread as the arguments to the call.",
+        true,
+        env))
+    {
+        abort();
+    }
+
+    // generate
+    if (!octaspire_dern_vm_create_and_register_new_special(
+        self,
+        "generate",
+        octaspire_dern_vm_special_generate,
+        4,
+        "Either (1) generate a collection of values, or (2) do the same\n"
+        "thing that other Lisps use 'map' or 'mapcar' for.",
         true,
         env))
     {
@@ -52371,6 +53857,19 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // character
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "character",
+        octaspire_dern_vm_builtin_character,
+        1,
+        "Create a character value from the given number or description",
+        true,
+        env))
+    {
+        abort();
+    }
+
     // character?
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
@@ -52482,14 +53981,16 @@ void octaspire_dern_vm_release(octaspire_dern_vm_t *self)
     octaspire_allocator_free(self->allocator, self);
 }
 
-bool octaspire_dern_vm_push_value(octaspire_dern_vm_t *self, octaspire_dern_value_t *value)
+bool octaspire_dern_vm_push_value(
+    octaspire_dern_vm_t * const self,
+    octaspire_dern_value_t * const value)
 {
     return octaspire_vector_push_back_element(self->stack, &value);
 }
 
 bool octaspire_dern_vm_pop_value(
-    octaspire_dern_vm_t *self,
-    octaspire_dern_value_t *valueForBalanceCheck)
+    octaspire_dern_vm_t * const self,
+    octaspire_dern_value_t * const valueForBalanceCheck)
 {
     if (octaspire_vector_peek_back_element(self->stack) != valueForBalanceCheck)
     {
@@ -62257,7 +63758,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_error_at_first_
 
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
-        "'noSuchFuNcTion'. Did you mean 'character?'?)\n"
+        "'noSuchFuNcTion'. Did you mean 'character' or 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(define x as (noSuchFuNcTion) [x])<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -62354,7 +63855,8 @@ TEST octaspire_dern_vm_special_define_called_with_eight_arguments_error_in_envir
     ASSERT_STR_EQ(
         "Special 'define' expects environment as the seventh argument in this "
         "context. Value '<error>: Cannot evaluate operator of type 'error' (<error>: "
-        "Unbound symbol 'noSuchFuNcTion'. Did you mean 'character?'?)' was given.\n"
+        "Unbound symbol 'noSuchFuNcTion'. Did you mean 'character' or "
+        "'character?'?)' was given.\n"
         "\tAt form: >>>>>>>>>>(define f as (fn () (quote x)) [f] (quote ()) in (noSuchFuNcTion) howto-ok)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -69736,7 +71238,7 @@ TEST octaspire_dern_vm_error_in_function_body_is_reported_test(void)
     // TODO type of 'error' or 'vector'?
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
-        "'NoSuchFunction'. Did you mean 'character?'?)\n"
+        "'NoSuchFunction'. Did you mean 'character' or 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(f {D+1})<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -70542,7 +72044,7 @@ TEST octaspire_dern_vm_special_do_error_stops_evaluation_and_is_reported_test(vo
 
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
-        "'NoSuchFunction'. Did you mean 'counter' or 'character?'?)\n"
+        "'NoSuchFunction'. Did you mean 'character', 'counter' or 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(NoSuchFunction)<<<<<<<<<<\n\n"
         "\tAt form: >>>>>>>>>>(do (++ counter) (NoSuchFunction) (++ counter))<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
@@ -74049,7 +75551,7 @@ TEST octaspire_dern_vm_error_during_user_function_call_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
-        "'NoSuchFunction'. Did you mean 'character?'?)\n"
+        "'NoSuchFunction'. Did you mean 'character' or 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(f)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -74145,6 +75647,79 @@ TEST octaspire_dern_vm_special_eval_plus_1_2_test(void)
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(3,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_eval_used_as_apply_1_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(eval + (env-global) '(|a| |b| |c|) |d| |e| |f|)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "abcdef",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_generate_string_of_10_a_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(generate 'string of {D+10} |a|)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "aaaaaaaaaa",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_generate_string_of_10_fn_97plusindex_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(generate 'string of {D+10} "
+            "  (fn (container index) (character (+ {D+97} index))))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "abcdefghij",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -74298,7 +75873,8 @@ TEST octaspire_dern_vm_special_eval_called_with_three_arguments_failure_test(voi
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Special 'eval' expects one or two arguments. 3 arguments were given.\n"
+        "Special 'eval' expects callable value as the first argument when used "
+        "as 'apply'. Type 'integer' was given.\n"
         "\tAt form: >>>>>>>>>>(eval (+ {D+1} {D+1}) (env-global) {D+10})<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -79321,6 +80897,9 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_error_during_special_call_test);
     RUN_TEST(octaspire_dern_vm_error_during_special_call_during_user_function_call_test);
     RUN_TEST(octaspire_dern_vm_special_eval_plus_1_2_test);
+    RUN_TEST(octaspire_dern_vm_special_eval_used_as_apply_1_test);
+    RUN_TEST(octaspire_dern_vm_special_generate_string_of_10_a_test);
+    RUN_TEST(octaspire_dern_vm_special_generate_string_of_10_fn_97plusindex_test);
     RUN_TEST(octaspire_dern_vm_special_eval_plus_1_2_in_given_global_env_test);
     RUN_TEST(octaspire_dern_vm_special_eval_value_from_given_local_env_test);
     RUN_TEST(octaspire_dern_vm_special_eval_eval_eval_f_1_2_test);

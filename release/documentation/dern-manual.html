@@ -376,7 +376,7 @@
 <a href="#19">Environments</a><br/>
 <a href="#20">Getting help with <code>howto</code></a><br/>
 <a href="#21">Returning from functions early</a><br/>
-<a href="#22">Evaluating values</a><br/>
+<a href="#22">Evaluating, applying and generating values</a><br/>
 <a href="#23">Input and output ports</a><br/>
 <a href="#24">Converting between types</a><br/>
 <a href="#25">Searching and indexing</a><br/>
@@ -1591,13 +1591,15 @@ http://www.gnu.org/software/src-highlite -->
 <pre><span class="cbracket">((</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="normal"> </span><span class="type">nil</span><span class="cbracket">)))</span><span class="normal">   </span><span class="comment">; Evaluates into 'nil'.</span>
 <span class="cbracket">((</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">()</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">return</span><span class="cbracket">)))</span><span class="normal">       </span><span class="comment">; Evaluates into 'nil'.</span></pre>
 
-  <h2><a id="22"></a>22. Evaluating values</h2>
+  <h2><a id="22"></a>22. Evaluating, applying and generating values</h2>
 
   <p>
-    Special <code>eval</code> can be used to evaluate a given value. It can
-    be called with one or two arguments. The second argument, if present,
-    must be an environment that is used while evaluating. If no environment
-    is given, the global environment is used instead.
+    Special <code>eval</code> can be used to evaluate a given value or to
+    do the same thing that some other Lisps use function <code>apply</code>
+    for. When used for evaluating values, it can be called with either one
+    or two arguments. The second argument, if present, must be an environment
+    that is used while evaluating. If no environment is given, the global
+    environment is used instead.
   </p>
 
   <p>
@@ -1622,6 +1624,51 @@ http://www.gnu.org/software/src-highlite -->
 <span class="normal">    </span><span class="cbracket">(</span><span class="keyword">+=</span><span class="normal"> name-of-fn-to-call lnum</span><span class="cbracket">)</span>
 <span class="normal">    </span><span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> </span><span class="cbracket">((</span><span class="keyword">eval</span><span class="normal"> name-of-fn-to-call</span><span class="cbracket">))))</span><span class="normal"> </span><span class="string">[next level]</span>
 <span class="normal">        '</span><span class="cbracket">()</span><span class="normal"> </span><span class="keyword">howto-no</span><span class="cbracket">)</span></pre>
+
+  <p>
+    The other use for <code>eval</code> is to apply a function
+    to one or multiple collections of values. This is like
+    calling the function in a form, but some or all of the arguments
+    can be inside one or more collections like vector. Some other
+    Lisps have a separate function <code>apply</code> for doing this;
+    In Dern <code>eval</code> can handle both of these use cases.
+  </p>
+
+  <p>
+    Dern has also function <code>generate</code>. It has also two
+    uses; it can be used for generating a collection of values
+    (somewhat like <code>std::generate_n</code> in C++), or it
+    can be used to do the same thing that other Lisps might have
+    function <code>map</code> or <code>mapcar</code> for.
+  </p>
+
+<!-- Generator: GNU source-highlight 3.1.8
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><span class="comment">; These two do the same thing:</span>
+<span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hello]</span><span class="cbracket">))</span>
+<span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hello]</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">env-current</span><span class="cbracket">))</span>
+
+<span class="comment">; These two do the same thing, when run in global scope:</span>
+<span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hello]</span><span class="cbracket">))</span>
+<span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">println</span><span class="normal"> </span><span class="string">[Hello]</span><span class="cbracket">)</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">env-global</span><span class="cbracket">))</span>
+
+<span class="comment">; "Apply" of other Lisps can be done like this:</span>
+<span class="cbracket">(</span><span class="keyword">eval</span><span class="normal"> </span><span class="keyword">+</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">env-global</span><span class="cbracket">)</span><span class="normal"> '</span><span class="cbracket">(</span><span class="normal">|a| |b| |c|</span><span class="cbracket">)</span><span class="normal"> |d| |e| |f|</span><span class="cbracket">)</span><span class="normal"> </span><span class="comment">; [abcdef]</span>
+
+<span class="comment">; Generate collection of values</span>
+<span class="cbracket">(</span><span class="normal">generate '</span><span class="keyword">vector</span><span class="normal"> of </span><span class="number">{D+10}</span><span class="normal"> |a|</span><span class="cbracket">)</span><span class="normal">                 </span><span class="comment">; (|a| |a| |a| |a| |a| |a| |a| |a| |a| |a|)</span>
+<span class="cbracket">(</span><span class="normal">generate 'string of </span><span class="number">{D+10}</span><span class="normal"> |a|</span><span class="cbracket">)</span><span class="normal">                 </span><span class="comment">; [aaaaaaaaaa]</span>
+
+<span class="comment">; ({D+0} {D+1} {D+2} {D+3} {D+4} {D+5} {D+6} {D+7} {D+8} {D+9})</span>
+<span class="cbracket">(</span><span class="normal">generate '</span><span class="keyword">vector</span><span class="normal"> of </span><span class="number">{D+10}</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">container index</span><span class="cbracket">)</span><span class="normal"> index</span><span class="cbracket">))</span>
+
+<span class="comment">; "map" or "mapcar" of other Lisps can be done like this:</span>
+<span class="cbracket">(</span><span class="normal">generate '</span><span class="keyword">vector</span><span class="normal"> mapping </span><span class="keyword">to-integer</span><span class="normal"> on '</span><span class="cbracket">(</span><span class="normal">|a| |b| |c|</span><span class="cbracket">))</span><span class="normal">        </span><span class="comment">; ({D+97} {D+98} {D+99})</span>
+<span class="cbracket">(</span><span class="normal">generate '</span><span class="keyword">vector</span><span class="normal"> mapping </span><span class="keyword">*</span><span class="normal"> on '</span><span class="cbracket">(</span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="cbracket">)</span><span class="normal"> '</span><span class="cbracket">(</span><span class="number">{D+3}</span><span class="normal"> </span><span class="number">{D+4}</span><span class="cbracket">))</span><span class="normal">  </span><span class="comment">; ({D+3} {D+8})</span>
+
+</pre>
 
   <h2><a id="23"></a>23. Input and output ports</h2>
 

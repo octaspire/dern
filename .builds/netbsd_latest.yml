@@ -1,0 +1,27 @@
+image: netbsd/latest
+packages:
+    - devel/gmake
+    - ncursesw
+    - SDL2
+    - SDL2_image
+    - SDL2_mixer
+    - SDL2_ttf
+sources:
+    - https://git.sr.ht/~octaspire/dern
+tasks:
+    - setup: |
+        cd dern
+        gmake submodules-init
+    - build-devel: |
+        cd dern
+        gmake all
+    - test-devel: |
+        cd dern
+        ./octaspire-dern-unit-test-runner --write-test-files
+        gmake test
+    - build-release: |
+        cd dern/release
+        sh how-to-build/NetBSD.sh
+    - test-release: |
+        cd dern/release
+        ./octaspire-dern-unit-test-runner --write-test-files

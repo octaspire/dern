@@ -1266,8 +1266,24 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         "eval",
         octaspire_dern_vm_special_eval,
         1,
-        "Evaluate a value (first argument) in global environment or, if given, in then "
-        "given environment",
+        "Either (1) evaluate a value (first argument) in global environment\n"
+        "or, if given, in the given environment; or (2) apply function given\n"
+        "as the first argument in the environment given as the second argument\n"
+        "as a form with the rest of the arguments spread as the arguments to the call.",
+        true,
+        env))
+    {
+        abort();
+    }
+
+    // generate
+    if (!octaspire_dern_vm_create_and_register_new_special(
+        self,
+        "generate",
+        octaspire_dern_vm_special_generate,
+        4,
+        "Either (1) generate a collection of values, or (2) do the same\n"
+        "thing that other Lisps use 'map' or 'mapcar' for.",
         true,
         env))
     {
@@ -1561,6 +1577,19 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         abort();
     }
 
+    // character
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "character",
+        octaspire_dern_vm_builtin_character,
+        1,
+        "Create a character value from the given number or description",
+        true,
+        env))
+    {
+        abort();
+    }
+
     // character?
     if (!octaspire_dern_vm_create_and_register_new_builtin(
         self,
@@ -1672,14 +1701,16 @@ void octaspire_dern_vm_release(octaspire_dern_vm_t *self)
     octaspire_allocator_free(self->allocator, self);
 }
 
-bool octaspire_dern_vm_push_value(octaspire_dern_vm_t *self, octaspire_dern_value_t *value)
+bool octaspire_dern_vm_push_value(
+    octaspire_dern_vm_t * const self,
+    octaspire_dern_value_t * const value)
 {
     return octaspire_vector_push_back_element(self->stack, &value);
 }
 
 bool octaspire_dern_vm_pop_value(
-    octaspire_dern_vm_t *self,
-    octaspire_dern_value_t *valueForBalanceCheck)
+    octaspire_dern_vm_t * const self,
+    octaspire_dern_value_t * const valueForBalanceCheck)
 {
     if (octaspire_vector_peek_back_element(self->stack) != valueForBalanceCheck)
     {

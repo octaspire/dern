@@ -16,7 +16,7 @@ RELDOCDIR=$(RELDIR)documentation/
 AMALGAMATION=$(RELDIR)octaspire-dern-amalgamated.c
 PLUGINS := $(wildcard $(PLUGINDIR)*.c)
 UNAME=$(shell uname -s)
-CFLAGS=-std=c99 -Wall -Wextra -g -O2 -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
+CFLAGS=-std=c99 -Wall -Wextra -g -Og -DOCTASPIRE_DERN_CONFIG_BINARY_PLUGINS
 SQLITE3_CFLAGS=-std=c99 -Wall
 
 TAGS_C_FILES := $(SRCDIR)*.c                          \

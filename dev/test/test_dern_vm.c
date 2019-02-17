@@ -1002,7 +1002,7 @@ TEST octaspire_dern_vm_special_define_called_with_four_arguments_error_at_first_
 
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
-        "'noSuchFuNcTion'. Did you mean 'character?'?)\n"
+        "'noSuchFuNcTion'. Did you mean 'character' or 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(define x as (noSuchFuNcTion) [x])<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -1099,7 +1099,8 @@ TEST octaspire_dern_vm_special_define_called_with_eight_arguments_error_in_envir
     ASSERT_STR_EQ(
         "Special 'define' expects environment as the seventh argument in this "
         "context. Value '<error>: Cannot evaluate operator of type 'error' (<error>: "
-        "Unbound symbol 'noSuchFuNcTion'. Did you mean 'character?'?)' was given.\n"
+        "Unbound symbol 'noSuchFuNcTion'. Did you mean 'character' or "
+        "'character?'?)' was given.\n"
         "\tAt form: >>>>>>>>>>(define f as (fn () (quote x)) [f] (quote ()) in (noSuchFuNcTion) howto-ok)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -8481,7 +8482,7 @@ TEST octaspire_dern_vm_error_in_function_body_is_reported_test(void)
     // TODO type of 'error' or 'vector'?
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
-        "'NoSuchFunction'. Did you mean 'character?'?)\n"
+        "'NoSuchFunction'. Did you mean 'character' or 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(f {D+1})<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -9287,7 +9288,7 @@ TEST octaspire_dern_vm_special_do_error_stops_evaluation_and_is_reported_test(vo
 
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
-        "'NoSuchFunction'. Did you mean 'counter' or 'character?'?)\n"
+        "'NoSuchFunction'. Did you mean 'character', 'counter' or 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(NoSuchFunction)<<<<<<<<<<\n\n"
         "\tAt form: >>>>>>>>>>(do (++ counter) (NoSuchFunction) (++ counter))<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
@@ -12794,7 +12795,7 @@ TEST octaspire_dern_vm_error_during_user_function_call_test(void)
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
     ASSERT_STR_EQ(
         "Cannot evaluate operator of type 'error' (<error>: Unbound symbol "
-        "'NoSuchFunction'. Did you mean 'character?'?)\n"
+        "'NoSuchFunction'. Did you mean 'character' or 'character?'?)\n"
         "\tAt form: >>>>>>>>>>(f)<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -12890,6 +12891,79 @@ TEST octaspire_dern_vm_special_eval_plus_1_2_test(void)
     ASSERT(evaluatedValue);
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_INTEGER, evaluatedValue->typeTag);
     ASSERT_EQ(3,                                evaluatedValue->value.integer);
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_eval_used_as_apply_1_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(eval + (env-global) '(|a| |b| |c|) |d| |e| |f|)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "abcdef",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_generate_string_of_10_a_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(generate 'string of {D+10} |a|)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "aaaaaaaaaa",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_generate_string_of_10_fn_97plusindex_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(generate 'string of {D+10} "
+            "  (fn (container index) (character (+ {D+97} index))))");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue->typeTag);
+
+    ASSERT_STR_EQ(
+        "abcdefghij",
+        octaspire_dern_value_as_string_get_c_string(evaluatedValue));
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -13043,7 +13117,8 @@ TEST octaspire_dern_vm_special_eval_called_with_three_arguments_failure_test(voi
     ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_ERROR, evaluatedValue->typeTag);
 
     ASSERT_STR_EQ(
-        "Special 'eval' expects one or two arguments. 3 arguments were given.\n"
+        "Special 'eval' expects callable value as the first argument when used "
+        "as 'apply'. Type 'integer' was given.\n"
         "\tAt form: >>>>>>>>>>(eval (+ {D+1} {D+1}) (env-global) {D+10})<<<<<<<<<<\n",
         octaspire_string_get_c_string(evaluatedValue->value.error->message));
 
@@ -18066,6 +18141,9 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_error_during_special_call_test);
     RUN_TEST(octaspire_dern_vm_error_during_special_call_during_user_function_call_test);
     RUN_TEST(octaspire_dern_vm_special_eval_plus_1_2_test);
+    RUN_TEST(octaspire_dern_vm_special_eval_used_as_apply_1_test);
+    RUN_TEST(octaspire_dern_vm_special_generate_string_of_10_a_test);
+    RUN_TEST(octaspire_dern_vm_special_generate_string_of_10_fn_97plusindex_test);
     RUN_TEST(octaspire_dern_vm_special_eval_plus_1_2_in_given_global_env_test);
     RUN_TEST(octaspire_dern_vm_special_eval_value_from_given_local_env_test);
     RUN_TEST(octaspire_dern_vm_special_eval_eval_eval_f_1_2_test);

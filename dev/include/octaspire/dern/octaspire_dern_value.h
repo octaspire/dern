@@ -371,6 +371,9 @@ struct octaspire_dern_environment_t *octaspire_dern_value_as_environment_get_val
 struct octaspire_dern_environment_t const *octaspire_dern_value_as_environment_get_value_const(
     octaspire_dern_value_t const * const self);
 
+bool octaspire_dern_value_is_callable(
+    octaspire_dern_value_t const * const self);
+
 bool octaspire_dern_value_is_function(
     octaspire_dern_value_t const * const self);
 
@@ -621,6 +624,14 @@ bool octaspire_dern_value_as_vector_push_back_element(
     octaspire_dern_value_t *self,
     void const *element);
 
+bool octaspire_dern_value_as_collection_push_back_element(
+    octaspire_dern_value_t *self,
+    void const *element);
+
+bool octaspire_dern_value_as_text_push_back_character(
+    octaspire_dern_value_t *self,
+    void const *element);
+
 bool octaspire_dern_value_as_vector_remove_element_at(
     octaspire_dern_value_t *self,
     ptrdiff_t const possiblyNegativeIndex);
@@ -639,6 +650,11 @@ octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at(
 octaspire_dern_value_t const *octaspire_dern_value_as_vector_get_element_at_const(
     octaspire_dern_value_t const * const self,
     ptrdiff_t const possiblyNegativeIndex);
+
+octaspire_dern_value_t *octaspire_dern_value_as_vector_get_element_at_evaluated(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    octaspire_dern_value_t * const environment);
 
 typedef struct octaspire_dern_c_data_or_unpushed_error_t
 {
@@ -712,6 +728,59 @@ typedef struct octaspire_dern_string_or_unpushed_error_t
 }
 octaspire_dern_string_or_unpushed_error_t;
 
+typedef struct octaspire_dern_vector_or_unpushed_error_t
+{
+    octaspire_dern_value_t * value;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_vector_or_unpushed_error_t;
+
+octaspire_dern_vector_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_vector_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName);
+
+octaspire_dern_vector_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_and_eval_element_at_as_vector_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    octaspire_dern_value_t * const environment);
+
+typedef struct octaspire_dern_function_or_unpushed_error_t
+{
+    octaspire_dern_value_t * value;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_function_or_unpushed_error_t;
+
+octaspire_dern_function_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_function_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName);
+
+octaspire_dern_function_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_and_eval_element_at_as_callable_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    octaspire_dern_value_t * const environment);
+
+typedef struct octaspire_dern_environment_or_unpushed_error_t
+{
+    octaspire_dern_value_t * value;
+    octaspire_dern_value_t * unpushedError;
+}
+octaspire_dern_environment_or_unpushed_error_t;
+
+octaspire_dern_environment_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_environment_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName);
+
 typedef struct octaspire_dern_symbol_or_unpushed_error_t
 {
     octaspire_string_t     const * symbol;
@@ -760,6 +829,13 @@ octaspire_dern_value_as_vector_get_element_at_as_number_or_unpushed_error_const(
     ptrdiff_t const possiblyNegativeIndex,
     char const * const dernFuncName);
 
+octaspire_dern_number_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_and_eval_element_at_as_number_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    octaspire_dern_value_t * const environment);
+
 octaspire_dern_boolean_or_unpushed_error_t
 octaspire_dern_value_as_vector_get_element_at_as_boolean_or_unpushed_error(
     octaspire_dern_value_t * const self,
@@ -795,6 +871,13 @@ octaspire_dern_value_as_vector_get_element_at_as_symbol_or_unpushed_error(
     octaspire_dern_value_t * const self,
     ptrdiff_t const possiblyNegativeIndex,
     char const * const dernFuncName);
+
+octaspire_dern_symbol_or_unpushed_error_t
+octaspire_dern_value_as_vector_get_element_at_as_this_symbol_or_unpushed_error(
+    octaspire_dern_value_t * const self,
+    ptrdiff_t const possiblyNegativeIndex,
+    char const * const dernFuncName,
+    char const * const str);
 
 octaspire_dern_one_of_texts_or_unpushed_error_const_t
 octaspire_dern_value_as_vector_get_element_at_as_one_of_texts_or_unpushed_error_const(
@@ -864,6 +947,12 @@ int octaspire_dern_value_compare(
     octaspire_dern_value_t const * const other);
 
 bool octaspire_dern_value_is_atom(octaspire_dern_value_t const * const self);
+
+struct octaspire_dern_vm_t * octaspire_dern_value_get_vm(
+    octaspire_dern_value_t * const self);
+
+struct octaspire_dern_vm_t const * octaspire_dern_value_get_vm_const(
+    octaspire_dern_value_t const * const self);
 
 #ifdef __cplusplus
 /* extern "C" */ }

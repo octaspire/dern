@@ -1,0 +1,22 @@
+; These two do the same thing:
+(eval (println [Hello]))
+(eval (println [Hello]) (env-current))
+
+; These two do the same thing, when run in global scope:
+(eval (println [Hello]))
+(eval (println [Hello]) (env-global))
+
+; "Apply" of other Lisps can be done like this:
+(eval + (env-global) '(|a| |b| |c|) |d| |e| |f|) ; [abcdef]
+
+; Generate collection of values
+(generate 'vector of {D+10} |a|)                 ; (|a| |a| |a| |a| |a| |a| |a| |a| |a| |a|)
+(generate 'string of {D+10} |a|)                 ; [aaaaaaaaaa]
+
+; ({D+0} {D+1} {D+2} {D+3} {D+4} {D+5} {D+6} {D+7} {D+8} {D+9})
+(generate 'vector of {D+10} (fn (container index) index))
+
+; "map" or "mapcar" of other Lisps can be done like this:
+(generate 'vector mapping to-integer on '(|a| |b| |c|))        ; ({D+97} {D+98} {D+99})
+(generate 'vector mapping * on '({D+1} {D+2}) '({D+3} {D+4}))  ; ({D+3} {D+8})
+
