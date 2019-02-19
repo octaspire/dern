@@ -1,15 +1,16 @@
 image: netbsd/latest
 packages:
+    - mozilla-rootcerts
     - devel/gmake
     - ncursesw
     - SDL2
     - SDL2_image
     - SDL2_mixer
     - SDL2_ttf
-sources:
-    - https://git.sr.ht/~octaspire/dern
 tasks:
     - setup: |
+        mozilla-rootcerts install
+        git clone https://git.sr.ht/~octaspire/dern
         cd dern
         gmake submodules-init
     - build-devel: |
