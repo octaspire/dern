@@ -26447,8 +26447,8 @@ limitations under the License.
 #define OCTASPIRE_DERN_CONFIG_H
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "0"
-#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "488"
-#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "1"
+#define OCTASPIRE_DERN_CONFIG_VERSION_MINOR "489"
+#define OCTASPIRE_DERN_CONFIG_VERSION_PATCH "0"
 
 #define OCTASPIRE_DERN_CONFIG_VERSION_STR "Octaspire Dern version " \
     OCTASPIRE_DERN_CONFIG_VERSION_MAJOR "." \
@@ -50730,7 +50730,7 @@ bool octaspire_dern_value_as_collection_push_back_element(
     }
     else if (octaspire_dern_value_is_vector(self))
     {
-        return octaspire_dern_value_as_vector_push_back_element(self, element);
+        return octaspire_dern_value_as_vector_push_back_element(self, &element);
     }
 
     return false;
@@ -52286,6 +52286,7 @@ struct octaspire_dern_vm_t const * octaspire_dern_value_get_vm_const(
     octaspire_helpers_verify_not_null(self);
     return self->vm;
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // END OF          dev/src/octaspire_dern_value.c
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75678,6 +75679,45 @@ TEST octaspire_dern_vm_special_eval_used_as_apply_1_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_special_generate_vector_of_3_ones_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(generate 'vector of {D+3} {D+1})");
+
+    size_t const expectedLen = 3;
+    int    const expectedNum = 1;
+
+    ASSERT(evaluatedValue);
+    ASSERT(octaspire_dern_value_is_vector(evaluatedValue));
+    ASSERT_EQ(expectedLen, octaspire_dern_value_as_vector_get_length(evaluatedValue));
+
+    for (size_t i = 0; i < expectedLen; ++i)
+    {
+        octaspire_dern_value_t const * const elemVal =
+            octaspire_dern_value_as_vector_get_element_of_type_at_const(
+                evaluatedValue,
+                OCTASPIRE_DERN_VALUE_TAG_INTEGER,
+                i);
+
+        ASSERT(elemVal);
+
+        ASSERT_EQ(
+            expectedNum,
+            octaspire_dern_value_as_integer_get_value(elemVal));
+    }
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 TEST octaspire_dern_vm_special_generate_string_of_10_a_test(void)
 {
     octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
@@ -75720,6 +75760,66 @@ TEST octaspire_dern_vm_special_generate_string_of_10_fn_97plusindex_test(void)
     ASSERT_STR_EQ(
         "abcdefghij",
         octaspire_dern_value_as_string_get_c_string(evaluatedValue));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
+TEST octaspire_dern_vm_special_generate_vector_of_11_first_fibonacci_numbers_test(void)
+{
+    octaspire_dern_vm_t *vm = octaspire_dern_vm_new(
+        octaspireDernVmTestAllocator,
+        octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t *evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(generate 'vector of {D+11}\n"
+            "  (fn (container index)\n"
+            "    (select (== index {D+0}) {D+0}\n"
+            "            (== index {D+1}) {D+1}\n"
+            "            default      (+ (cp@ container (- index {D+1}))\n"
+            "                            (cp@ container (- index {D+2}))))))");
+    size_t const expectedLen = 11;
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_VECTOR, evaluatedValue->typeTag);
+    ASSERT_EQ(expectedLen, octaspire_dern_value_as_vector_get_length(evaluatedValue));
+
+    int expected[11] =
+    {
+        0,
+        1,
+        1,
+        2,
+        3,
+        5,
+        8,
+        13,
+        21,
+        34,
+        55
+    };
+
+    ASSERT_EQ(expectedLen, sizeof(expected) / sizeof(expected[0]));
+
+    for (size_t i = 0; i < expectedLen; ++i)
+    {
+        octaspire_dern_value_t const * const elemVal =
+            octaspire_dern_value_as_vector_get_element_of_type_at_const(
+                evaluatedValue,
+                OCTASPIRE_DERN_VALUE_TAG_INTEGER,
+                i);
+
+        ASSERT(elemVal);
+
+        ASSERT_EQ(
+            expected[i],
+            octaspire_dern_value_as_integer_get_value(elemVal));
+    }
+
 
     octaspire_dern_vm_release(vm);
     vm = 0;
@@ -80898,8 +80998,10 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_error_during_special_call_during_user_function_call_test);
     RUN_TEST(octaspire_dern_vm_special_eval_plus_1_2_test);
     RUN_TEST(octaspire_dern_vm_special_eval_used_as_apply_1_test);
+    RUN_TEST(octaspire_dern_vm_special_generate_vector_of_3_ones_test);
     RUN_TEST(octaspire_dern_vm_special_generate_string_of_10_a_test);
     RUN_TEST(octaspire_dern_vm_special_generate_string_of_10_fn_97plusindex_test);
+    RUN_TEST(octaspire_dern_vm_special_generate_vector_of_11_first_fibonacci_numbers_test);
     RUN_TEST(octaspire_dern_vm_special_eval_plus_1_2_in_given_global_env_test);
     RUN_TEST(octaspire_dern_vm_special_eval_value_from_given_local_env_test);
     RUN_TEST(octaspire_dern_vm_special_eval_eval_eval_f_1_2_test);

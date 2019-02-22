@@ -1664,10 +1664,18 @@ http://www.gnu.org/software/src-highlite -->
 <span class="comment">; ({D+0} {D+1} {D+2} {D+3} {D+4} {D+5} {D+6} {D+7} {D+8} {D+9})</span>
 <span class="cbracket">(</span><span class="normal">generate '</span><span class="keyword">vector</span><span class="normal"> of </span><span class="number">{D+10}</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">container index</span><span class="cbracket">)</span><span class="normal"> index</span><span class="cbracket">))</span>
 
+<span class="comment">; Generate first 11 Fibonacci numbers into a vector</span>
+<span class="comment">; ({D+0} {D+1} {D+1} {D+2} {D+3} {D+5} {D+8} {D+13} {D+21} {D+34} {D+55})</span>
+<span class="cbracket">(</span><span class="normal">generate '</span><span class="keyword">vector</span><span class="normal"> of </span><span class="number">{D+11}</span>
+<span class="normal">  </span><span class="cbracket">(</span><span class="keyword">fn</span><span class="normal"> </span><span class="cbracket">(</span><span class="normal">container index</span><span class="cbracket">)</span>
+<span class="normal">    </span><span class="cbracket">(</span><span class="keyword">select</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">==</span><span class="normal"> index </span><span class="number">{D+0}</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+0}</span>
+<span class="normal">            </span><span class="cbracket">(</span><span class="keyword">==</span><span class="normal"> index </span><span class="number">{D+1}</span><span class="cbracket">)</span><span class="normal"> </span><span class="number">{D+1}</span>
+<span class="normal">            default      </span><span class="cbracket">(</span><span class="keyword">+</span><span class="normal"> </span><span class="cbracket">(</span><span class="keyword">cp@</span><span class="normal"> container </span><span class="cbracket">(</span><span class="keyword">-</span><span class="normal"> index </span><span class="number">{D+1}</span><span class="cbracket">))</span>
+<span class="normal">                            </span><span class="cbracket">(</span><span class="keyword">cp@</span><span class="normal"> container </span><span class="cbracket">(</span><span class="keyword">-</span><span class="normal"> index </span><span class="number">{D+2}</span><span class="cbracket">))))))</span>
+
 <span class="comment">; "map" or "mapcar" of other Lisps can be done like this:</span>
 <span class="cbracket">(</span><span class="normal">generate '</span><span class="keyword">vector</span><span class="normal"> mapping </span><span class="keyword">to-integer</span><span class="normal"> on '</span><span class="cbracket">(</span><span class="normal">|a| |b| |c|</span><span class="cbracket">))</span><span class="normal">        </span><span class="comment">; ({D+97} {D+98} {D+99})</span>
 <span class="cbracket">(</span><span class="normal">generate '</span><span class="keyword">vector</span><span class="normal"> mapping </span><span class="keyword">*</span><span class="normal"> on '</span><span class="cbracket">(</span><span class="number">{D+1}</span><span class="normal"> </span><span class="number">{D+2}</span><span class="cbracket">)</span><span class="normal"> '</span><span class="cbracket">(</span><span class="number">{D+3}</span><span class="normal"> </span><span class="number">{D+4}</span><span class="cbracket">))</span><span class="normal">  </span><span class="comment">; ({D+3} {D+8})</span>
-
 </pre>
 
   <h2><a id="23"></a>23. Input and output ports</h2>

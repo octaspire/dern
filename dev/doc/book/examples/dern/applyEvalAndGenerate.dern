@@ -16,7 +16,15 @@
 ; ({D+0} {D+1} {D+2} {D+3} {D+4} {D+5} {D+6} {D+7} {D+8} {D+9})
 (generate 'vector of {D+10} (fn (container index) index))
 
+; Generate first 11 Fibonacci numbers into a vector
+; ({D+0} {D+1} {D+1} {D+2} {D+3} {D+5} {D+8} {D+13} {D+21} {D+34} {D+55})
+(generate 'vector of {D+11}
+  (fn (container index)
+    (select (== index {D+0}) {D+0}
+            (== index {D+1}) {D+1}
+            default      (+ (cp@ container (- index {D+1}))
+                            (cp@ container (- index {D+2}))))))
+
 ; "map" or "mapcar" of other Lisps can be done like this:
 (generate 'vector mapping to-integer on '(|a| |b| |c|))        ; ({D+97} {D+98} {D+99})
 (generate 'vector mapping * on '({D+1} {D+2}) '({D+3} {D+4}))  ; ({D+3} {D+8})
-

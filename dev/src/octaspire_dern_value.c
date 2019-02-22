@@ -3615,7 +3615,7 @@ bool octaspire_dern_value_as_collection_push_back_element(
     }
     else if (octaspire_dern_value_is_vector(self))
     {
-        return octaspire_dern_value_as_vector_push_back_element(self, element);
+        return octaspire_dern_value_as_vector_push_back_element(self, &element);
     }
 
     return false;
@@ -5171,3 +5171,4 @@ struct octaspire_dern_vm_t const * octaspire_dern_value_get_vm_const(
     octaspire_helpers_verify_not_null(self);
     return self->vm;
 }
+
