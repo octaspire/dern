@@ -31,7 +31,7 @@
 #ifndef alloca
 	#ifdef _WIN32
 		#include <malloc.h>
-	#elif defined(__FreeBSD__)
+	#elif defined(__FreeBSD__) || defined(__NetBSD__)
 		/* already included in <stdlib.h> */
 	#else
 		#include <alloca.h>
