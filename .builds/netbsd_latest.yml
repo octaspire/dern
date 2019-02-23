@@ -9,7 +9,6 @@ packages:
     - SDL2_ttf
 tasks:
     - setup: |
-        mozilla-rootcerts install
         git clone https://git.sr.ht/~octaspire/dern
         cd dern
         gmake submodules-init
