@@ -10,7 +10,7 @@ tasks:
     - setup: |
         GIT_SSL_NO_VERIFY=true git clone https://git.sr.ht/~octaspire/dern
         cd dern
-        git config http.sslVerify false
+        git config --global http.sslVerify false
         gmake submodules-init
     - build-devel: |
         cd dern
