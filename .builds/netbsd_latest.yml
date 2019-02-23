@@ -1,6 +1,5 @@
 image: netbsd/latest
 packages:
-    - mozilla-rootcerts
     - devel/gmake
     - ncursesw
     - SDL2
@@ -9,11 +8,9 @@ packages:
     - SDL2_ttf
 tasks:
     - setup: |
-        su root
-        mozilla-rootcerts install
-        exit
-        git clone https://git.sr.ht/~octaspire/dern
+        GIT_SSL_NO_VERIFY=true git clone https://git.sr.ht/~octaspire/dern
         cd dern
+        git config http.sslVerify false
         gmake submodules-init
     - build-devel: |
         cd dern
