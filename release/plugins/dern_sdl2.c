@@ -4183,6 +4183,11 @@ octaspire_dern_value_t *dern_sdl2_glColor4ub(
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     glColor4ub(r, g, b, a);
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(r);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(g);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(b);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(a);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_from_c_string(
         vm,
@@ -4302,6 +4307,11 @@ octaspire_dern_value_t *dern_sdl2_glClearColor(
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     glClearColor(r, g, b, a);
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(r);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(g);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(b);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(a);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_from_c_string(
         vm,
@@ -4408,6 +4418,9 @@ octaspire_dern_value_t *dern_sdl2_glReadPixel(
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return result;
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(x);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(y);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_from_c_string(
         vm,
@@ -4652,6 +4665,10 @@ octaspire_dern_value_t *dern_sdl2_glTranslatef(
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     glTranslatef(x, y, z);
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(x);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(y);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(z);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_from_c_string(
         vm,
@@ -4717,6 +4734,8 @@ octaspire_dern_value_t *dern_sdl2_gluLookAt(
         num[3], num[4], num[5],
         num[6], num[7], num[8]);
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(num);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_from_c_string(
         vm,
@@ -4879,6 +4898,8 @@ octaspire_dern_value_t *dern_sdl2_gl_screen_to_world(
             (error != GL_NO_ERROR) ? dern_sdl2_glError_to_cstr(error) : "");
     }
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(args);
+
     octaspire_helpers_verify_true(octaspire_dern_vm_pop_value(vm, result));
 
     octaspire_helpers_verify_true(
@@ -5000,6 +5021,11 @@ octaspire_dern_value_t *dern_sdl2_gluPerspective(
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     gluPerspective(fovy, aspect, zNear, zFar);
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(fovy);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(aspect);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(zNear);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(zFar);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_from_c_string(
         vm,
@@ -5119,6 +5145,11 @@ octaspire_dern_value_t *dern_sdl2_glViewport(
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     glViewport(x, y, width, height);
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(x);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(y);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(width);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(height);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_from_c_string(
         vm,
@@ -5178,6 +5209,8 @@ octaspire_dern_value_t *dern_sdl2_glClearDepth(
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     glClearDepth(depth);
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(depth);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_from_c_string(
         vm,
@@ -5297,6 +5330,11 @@ octaspire_dern_value_t *dern_sdl2_glRotatef(
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     glRotatef(angle, x, y, z);
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(angle);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(x);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(y);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(z);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_from_c_string(
         vm,
@@ -5396,6 +5434,10 @@ octaspire_dern_value_t *dern_sdl2_glVertex3(
 #ifdef OCTASPIRE_DERN_SDL2_PLUGIN_USE_OPENGL2_LIBRARY
     glVertex3f(x, y, z);
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(x);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(y);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(z);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_from_c_string(
         vm,
@@ -5476,6 +5518,9 @@ octaspire_dern_value_t *dern_sdl2_glTexCoord2f(
     glBindTexture(GL_TEXTURE_2D, dern_sdl2_private_gltextures[0]);
     glTexCoord2f(s, t);
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(s);
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(t);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_from_c_string(
         vm,
@@ -5554,6 +5599,8 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_enter(
     glDisable(GL_LIGHTING);
     glEnable(GL_BLEND);
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(args);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_format(
         vm,
@@ -5705,6 +5752,8 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_circle(
     }
     glEnd();
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(args);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_format(
         vm,
@@ -5801,6 +5850,8 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_circle_rotated(
     glEnd();
     glPopMatrix();
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(args);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_format(
         vm,
@@ -5898,6 +5949,8 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_square_box_rotated(
     glEnd();
     glPopMatrix();
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(args);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_format(
         vm,
@@ -5992,6 +6045,8 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_star_rotated(
     glEnd();
     glPopMatrix();
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(args);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_format(
         vm,
@@ -6068,6 +6123,8 @@ octaspire_dern_value_t *dern_sdl2_gl_ortho_line(
     glVertex2f(args[2], args[3]);
     glEnd();
 #else
+    OCTASPIRE_HELPERS_UNUSED_PARAMETER(args);
+
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_create_new_value_error_format(
         vm,

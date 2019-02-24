@@ -13,7 +13,7 @@
 #ifndef NK_SDL_GL2_H_
 #define NK_SDL_GL2_H_
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__NetBSD__)
 #include "SDL.h"
 #else
 #include <SDL2/SDL.h>
