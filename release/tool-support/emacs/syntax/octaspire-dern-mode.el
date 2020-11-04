@@ -1,8 +1,14 @@
 ; Based on tutorial on emacswiki.org/emacs/ModeTutorial
+
+(use-package highlight
+  :ensure t)
+
 (require 'highlight)
 
 (defvar octaspire-dern-mode-hook
   (lambda ()
+    (when (fboundp 'lispy-mode)
+      (lispy-mode 1))
     (hlt-highlight-regexp-region nil nil "|newline|"       'highlight)
     (hlt-highlight-regexp-region nil nil "|tab|"           'highlight)
     (hlt-highlight-regexp-region nil nil "|bar|"           'highlight)
