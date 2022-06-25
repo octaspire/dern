@@ -323,6 +323,13 @@ bool octaspire_dern_vm_create_and_define_new_integer(
     char const * const docstr,
     int32_t const value);
 
+void octaspire_dern_vm_set_print_readably(
+    octaspire_dern_vm_t * const self,
+    bool const value);
+
+bool octaspire_dern_vm_get_print_readably(
+    octaspire_dern_vm_t const * const self);
+
 size_t octaspire_dern_vm_get_stack_length(
     octaspire_dern_vm_t const * const self);
 

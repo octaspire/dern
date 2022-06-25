@@ -1293,6 +1293,8 @@ octaspire_string_t *octaspire_dern_private_value_to_string(
     octaspire_allocator_t * const allocator)
 {
     octaspire_helpers_verify_not_null(self);
+    octaspire_helpers_verify_not_null(self->vm);
+    bool const printReadably = octaspire_dern_vm_get_print_readably(self->vm);
 
     switch (self->typeTag)
     {
@@ -1316,25 +1318,47 @@ octaspire_string_t *octaspire_dern_private_value_to_string(
 
         case OCTASPIRE_DERN_VALUE_TAG_INTEGER:
             {
-                return octaspire_string_new_format(
-                    allocator,
-                    "%s%" PRId32 "}",
-                    (self->value.integer >= 0) ? "{D+" : "{D",
-                    self->value.integer);
+                if (printReadably)
+                {
+                    return octaspire_string_new_format(
+                        allocator,
+                        "%s%" PRId32 "}",
+                        (self->value.integer >= 0) ? "{D+" : "{D",
+                        self->value.integer);
+                }
+                else
+                {
+                    return octaspire_string_new_format(
+                        allocator,
+                        "%" PRId32,
+                        self->value.integer);
+                }
             }
 
             case OCTASPIRE_DERN_VALUE_TAG_REAL:
             {
-                return octaspire_string_new_format(
-                    allocator,
-                    "%s%g}",
-                    (self->value.real >= 0) ? "{D+" : "{D",
-                    self->value.real);
+                if (printReadably)
+                {
+                    return octaspire_string_new_format(
+                        allocator,
+                        "%s%g}",
+                        (self->value.real >= 0) ? "{D+" : "{D",
+                        self->value.real);
+                }
+                else
+                {
+                    return octaspire_string_new_format(
+                        allocator,
+                        "%g",
+                        self->value.real);
+                }
             }
 
             case OCTASPIRE_DERN_VALUE_TAG_STRING:
             {
-                return octaspire_string_new_format(allocator, plain ? "%s" :"[%s]",
+                return octaspire_string_new_format(
+                    allocator,
+                    (plain || !printReadably) ? "%s" :"[%s]",
                     octaspire_string_get_c_string(self->value.string));
             }
 
@@ -1349,26 +1373,31 @@ octaspire_string_t *octaspire_dern_private_value_to_string(
                     self->value.character,
                     "|"))
                 {
-                    return octaspire_string_new(plain ? "|" : "|bar|", allocator);
+                    return octaspire_string_new(
+                        (plain || !printReadably) ? "|" : "|bar|",
+                        allocator);
                 }
                 else if (octaspire_string_is_equal_to_c_string(
                     self->value.character,
                     "\n"))
                 {
                     return octaspire_string_new(
-                        plain ? "\n" : "|newline|", allocator);
+                        (plain || !printReadably) ? "\n" : "|newline|",
+                        allocator);
                 }
                 else if (octaspire_string_is_equal_to_c_string(
                     self->value.character,
                     "\t"))
                 {
-                    return octaspire_string_new(plain ? "\t" :"|tab|", allocator);
+                    return octaspire_string_new(
+                        (plain || !printReadably) ? "\t" :"|tab|",
+                        allocator);
                 }
                 else
                 {
                     return octaspire_string_new_format(
                         allocator,
-                        plain ? "%s" : "|%s|",
+                        (plain || !printReadably) ? "%s" : "|%s|",
                         octaspire_string_get_c_string(self->value.character));
                 }
             }

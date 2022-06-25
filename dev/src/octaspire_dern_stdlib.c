@@ -6208,7 +6208,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_string_format(
     if (numArgs == 1)
     {
         octaspire_string_t *str =
-            octaspire_dern_value_to_string_plain(fmtStr, octaspire_dern_vm_get_allocator(vm));
+            octaspire_dern_value_to_string(fmtStr, octaspire_dern_vm_get_allocator(vm));
 
         octaspire_dern_value_t *result = octaspire_dern_vm_create_new_value_string(vm, str);
 
@@ -6539,6 +6539,55 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_to_integer(
     }
 }
 
+octaspire_dern_value_t *octaspire_dern_vm_builtin_print_readably(
+    octaspire_dern_vm_t *vm,
+    octaspire_dern_value_t *arguments,
+    octaspire_dern_value_t *environment)
+{
+    size_t const stackLength = octaspire_dern_vm_get_stack_length(vm);
+
+    octaspire_helpers_verify_true(arguments->typeTag   == OCTASPIRE_DERN_VALUE_TAG_VECTOR);
+    octaspire_helpers_verify_true(environment->typeTag == OCTASPIRE_DERN_VALUE_TAG_ENVIRONMENT);
+
+    size_t const numArgs = octaspire_dern_value_get_length(arguments);
+
+    if (numArgs != 0 && numArgs != 1)
+    {
+        octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+        return octaspire_dern_vm_create_new_value_error_from_c_string(
+            vm,
+            "Builtin 'print-readably' expects zero or one argument.");
+    }
+
+    if (numArgs == 1)
+    {
+        octaspire_dern_vm_push_value(vm, arguments);
+
+        octaspire_dern_value_t *firstArg =
+            octaspire_dern_value_as_vector_get_element_at(arguments, 0);
+
+        octaspire_helpers_verify_not_null(firstArg);
+
+        if (firstArg->typeTag != OCTASPIRE_DERN_VALUE_TAG_BOOLEAN)
+        {
+            octaspire_dern_vm_pop_value(vm, arguments);
+            octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+            return octaspire_dern_vm_create_new_value_error_from_c_string(
+                vm,
+                "Builtin 'print-readably' expects boolean argument or no arguments.");
+        }
+
+        bool const given = firstArg->value.boolean;
+        octaspire_dern_vm_set_print_readably(vm, given);
+        octaspire_dern_vm_pop_value(vm, arguments);
+    }
+
+    octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
+    return octaspire_dern_vm_create_new_value_boolean(
+        vm,
+        octaspire_dern_vm_get_print_readably(vm));
+}
+
 octaspire_dern_value_t *octaspire_dern_vm_builtin_print(
     octaspire_dern_vm_t *vm,
     octaspire_dern_value_t *arguments,
@@ -6564,7 +6613,7 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_print(
 
     octaspire_helpers_verify_not_null(fmtStr);
 
-    if (fmtStr->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING)
+    if (fmtStr->typeTag != OCTASPIRE_DERN_VALUE_TAG_STRING || numArgs == 1)
     {
         octaspire_dern_value_print(fmtStr, octaspire_dern_vm_get_allocator(vm));
 
@@ -6572,91 +6621,83 @@ octaspire_dern_value_t *octaspire_dern_vm_builtin_print(
         return octaspire_dern_vm_get_value_true(vm);
     }
 
-    if (numArgs == 1)
+    size_t const fmtStrLen =
+        octaspire_string_get_length_in_ucs_characters(fmtStr->value.string);
+
+    uint32_t prevChar = 0;
+    uint32_t curChar = 0;
+    uint32_t nextChar = 0;
+
+    size_t fmtValueIndex = 1;
+
+    for (size_t c = 0; c < fmtStrLen; ++c)
     {
-        printf("%s", octaspire_string_get_c_string(fmtStr->value.string));
-    }
-    else
-    {
-        size_t const fmtStrLen =
-            octaspire_string_get_length_in_ucs_characters(fmtStr->value.string);
+        curChar =
+            octaspire_string_get_ucs_character_at_index(
+                fmtStr->value.string,
+                (ptrdiff_t)c);
 
-        uint32_t prevChar = 0;
-        uint32_t curChar = 0;
-        uint32_t nextChar = 0;
-
-        size_t fmtValueIndex = 1;
-
-        for (size_t c = 0; c < fmtStrLen; ++c)
+        if ((c + 1) < fmtStrLen)
         {
-            curChar =
+            nextChar =
                 octaspire_string_get_ucs_character_at_index(
                     fmtStr->value.string,
-                    (ptrdiff_t)c);
+                    (ptrdiff_t)(c + 1));
+        }
+        else
+        {
+            nextChar = 0;
+        }
 
-            if ((c + 1) < fmtStrLen)
+        if (curChar == '\'' && prevChar == '\'')
+        {
+            printf("'");
+            curChar = 0; // To prevent prevChar from becoming '
+        }
+        else if (curChar == '{' && prevChar != '\'')
+        {
+            if (nextChar == '}')
             {
-                nextChar =
-                    octaspire_string_get_ucs_character_at_index(
-                        fmtStr->value.string,
-                        (ptrdiff_t)(c + 1));
-            }
-            else
-            {
-                nextChar = 0;
-            }
-
-            if (curChar == '\'' && prevChar == '\'')
-            {
-                printf("'");
-                curChar = 0; // To prevent prevChar from becoming '
-            }
-            else if (curChar == '{' && prevChar != '\'')
-            {
-                if (nextChar == '}')
+                if (fmtValueIndex >= numArgs)
                 {
-                    if (fmtValueIndex >= numArgs)
-                    {
-                        octaspire_helpers_verify_true(
-                            stackLength == octaspire_dern_vm_get_stack_length(vm));
+                    octaspire_helpers_verify_true(
+                        stackLength == octaspire_dern_vm_get_stack_length(vm));
 
-                        return octaspire_dern_vm_create_new_value_error_from_c_string(
-                            vm,
-                            "Not enough arguments for the format string of 'println'.");
-                    }
-
-                    octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
-                        octaspire_dern_value_as_vector_get_element_at(
-                            arguments,
-                            (ptrdiff_t)fmtValueIndex),
-                        octaspire_dern_vm_get_allocator(vm));
-
-                    printf("%s", octaspire_string_get_c_string(tmpStr));
-
-                    octaspire_string_release(tmpStr);
-                    tmpStr = 0;
-
-                    ++c;
-                    ++fmtValueIndex;
+                    return octaspire_dern_vm_create_new_value_error_from_c_string(
+                        vm,
+                        "Not enough arguments for the format string of 'println'.");
                 }
-                else
-                {
-                    printf("%c", (char)curChar);
-                }
+
+                octaspire_string_t *tmpStr = octaspire_dern_value_to_string(
+                    octaspire_dern_value_as_vector_get_element_at(
+                        arguments,
+                        (ptrdiff_t)fmtValueIndex),
+                    octaspire_dern_vm_get_allocator(vm));
+
+                printf("%s", octaspire_string_get_c_string(tmpStr));
+
+                octaspire_string_release(tmpStr);
+                tmpStr = 0;
+
+                ++c;
+                ++fmtValueIndex;
             }
             else
             {
                 printf("%c", (char)curChar);
             }
-
-            prevChar = curChar;
         }
+        else
+        {
+            printf("%c", (char)curChar);
+        }
+
+        prevChar = curChar;
     }
 
     octaspire_helpers_verify_true(stackLength == octaspire_dern_vm_get_stack_length(vm));
     return octaspire_dern_vm_get_value_true(vm);
 }
-
 
 octaspire_dern_value_t *octaspire_dern_vm_builtin_println(
     octaspire_dern_vm_t *vm,

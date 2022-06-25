@@ -17795,6 +17795,57 @@ TEST octaspire_dern_vm_builtin_to_string_called_with_character_a_test(void)
     PASS();
 }
 
+TEST octaspire_dern_vm_builtin_print_readably_false_and_true_test(void)
+{
+    octaspire_dern_vm_t *vm =
+        octaspire_dern_vm_new(octaspireDernVmTestAllocator, octaspireDernVmTestStdio);
+
+    octaspire_dern_value_t const * const evaluatedValue =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(print-readably false)");
+
+    ASSERT(evaluatedValue);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue->typeTag);
+    ASSERT_EQ(false, evaluatedValue->value.boolean);
+
+    octaspire_dern_value_t const * const evaluatedValue2 =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string {D+123})");
+
+    ASSERT(evaluatedValue2);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue2->typeTag);
+    ASSERT_STR_EQ(
+        "123",
+        octaspire_string_get_c_string(evaluatedValue2->value.string));
+
+    octaspire_dern_value_t const * const evaluatedValue3 =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(print-readably true)");
+
+    ASSERT(evaluatedValue3);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_BOOLEAN, evaluatedValue3->typeTag);
+    ASSERT_EQ(true, evaluatedValue3->value.boolean);
+
+    octaspire_dern_value_t const * const evaluatedValue4 =
+        octaspire_dern_vm_read_from_c_string_and_eval_in_global_environment(
+            vm,
+            "(to-string {D+123})");
+
+    ASSERT(evaluatedValue4);
+    ASSERT_EQ(OCTASPIRE_DERN_VALUE_TAG_STRING, evaluatedValue4->typeTag);
+    ASSERT_STR_EQ(
+        "{D+123}",
+        octaspire_string_get_c_string(evaluatedValue4->value.string));
+
+    octaspire_dern_vm_release(vm);
+    vm = 0;
+
+    PASS();
+}
+
 GREATEST_SUITE(octaspire_dern_vm_suite)
 {
     octaspireDernVmTestAllocator = octaspire_allocator_new(0);
@@ -18357,6 +18408,7 @@ GREATEST_SUITE(octaspire_dern_vm_suite)
     RUN_TEST(octaspire_dern_vm_builtin_to_integer_called_with_real_10dot12_test);
     RUN_TEST(octaspire_dern_vm_builtin_to_string_called_with_integer_10_test);
     RUN_TEST(octaspire_dern_vm_builtin_to_string_called_with_character_a_test);
+    RUN_TEST(octaspire_dern_vm_builtin_print_readably_false_and_true_test);
 
     octaspire_stdio_release(octaspireDernVmTestStdio);
     octaspireDernVmTestStdio = 0;

@@ -70,6 +70,7 @@ struct octaspire_dern_vm_t
     int32_t                    exitCode;
     bool                       preventGc;
     bool                       quit;
+    bool                       printReadably;
     octaspire_dern_vm_config_t config;
 };
 
@@ -127,6 +128,7 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
     self->userData                  = 0;
     self->nextFreeUniqueIdForValues = 0;
     self->functionReturn            = 0;
+    self->printReadably             = true;
     self->config                    = config;
 
     self->libraries =
@@ -715,6 +717,19 @@ octaspire_dern_vm_t *octaspire_dern_vm_new_with_config(
         1,
         "Give value or values as real number(s)",
         true,
+        env))
+    {
+        abort();
+    }
+
+    // print-readably
+    if (!octaspire_dern_vm_create_and_register_new_builtin(
+        self,
+        "print-readably",
+        octaspire_dern_vm_builtin_print_readably,
+        0,
+        "Set or return current print format.",
+        false,
         env))
     {
         abort();
@@ -4626,6 +4641,21 @@ bool octaspire_dern_vm_create_and_define_new_integer(
     }
 
     return false;
+}
+
+void octaspire_dern_vm_set_print_readably(
+    octaspire_dern_vm_t * const self,
+    bool const value)
+{
+    octaspire_helpers_verify_true(self);
+    self->printReadably = value;
+}
+
+bool octaspire_dern_vm_get_print_readably(
+    octaspire_dern_vm_t const * const self)
+{
+    octaspire_helpers_verify_true(self);
+    return self->printReadably;
 }
 
 size_t octaspire_dern_vm_get_stack_length(
